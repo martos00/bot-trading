@@ -23,12 +23,13 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    independientemente de la temporalidad del gráfico donde corre el EA.
    Las zonas se recalculan cada vez que cierra una nueva vela de esa
    temporalidad macro, usando el máximo/mínimo de las últimas
-   `InpZonaLookbackMacro` velas (100 por defecto) y el cierre de la vela
+   `g_zonaLookbackMacro` velas (100 por defecto) y el cierre de la vela
    extrema, para reflejar liquidez institucional real acumulada durante
    horas/días completos en vez de ruido de velas de 5 minutos.
-2. **Gatillo — RSI Trendlines with Breakouts**: RSI de 14 períodos sobre
-   cierre, calculado en la temporalidad de ejecución `InpTimeframe` (5M
-   por defecto). El EA detecta picos y valles locales del RSI (pivotes),
+2. **Gatillo — RSI Trendlines with Breakouts**: RSI de `g_rsiPeriod`
+   períodos (14 por defecto) sobre cierre, calculado en la temporalidad
+   de ejecución `InpTimeframe` (5M por defecto). El EA detecta picos y
+   valles locales del RSI (pivotes),
    traza una línea de tendencia entre los dos últimos pivotes de cada
    tipo y valida una ruptura ("breakout") cuando el RSI cruza y cierra
    por encima/debajo de dicha línea. El cálculo detallado está
@@ -52,6 +53,21 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    - Cierre obligatorio de posiciones los viernes a las 21:00 hora de
      Nueva York (`InpFridayCloseHourNY`), calculado aplicando el
      horario de verano de EE.UU.
+5. **Auto-Optimización Walk-Forward (Método 1)**: una vez por semana,
+   en la primera vela de H1 tras el cierre de fin de semana, el EA mide
+   el régimen de volatilidad del oro (ATR reciente vs. ATR medio, y
+   desviación estándar del cierre) sobre las últimas
+   `InpVelasAnalisisOptimizacion` velas de H1 (500 por defecto) y
+   recalibra dinámicamente `g_zonaLookbackMacro` y `g_rsiPeriod`:
+   valores más amplios (`InpZonaLookbackVolatilidadAlta` = 100,
+   `InpRSIPeriodoVolatilidadAlta` = 21) si la volatilidad reciente supera
+   la media histórica, o más ajustados (`InpZonaLookbackVolatilidadBaja`
+   = 30, `InpRSIPeriodoVolatilidadBaja` = 10) si el mercado está lento.
+   Esta recalibración **no afecta** al riesgo por operación, el Kill
+   Switch diario, el filtro de spread ni el cierre de fin de semana, que
+   permanecen totalmente independientes. Lógica comentada en detalle en
+   `EjecutarOptimizacionSemanal()`. Se puede desactivar con
+   `InpOptimizacionActiva = false`.
 
 ## Parámetros importantes a calibrar por bróker
 

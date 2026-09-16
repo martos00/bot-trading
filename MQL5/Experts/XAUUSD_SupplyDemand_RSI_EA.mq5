@@ -20,10 +20,12 @@ input ENUM_TIMEFRAMES InpTimeframe  = PERIOD_M5;   // Temporalidad de ejecución
 
 input group "=== Indicador 1: Zonas de Oferta y Demanda (Multi-Timeframe) ==="
 input ENUM_TIMEFRAMES Temporalidad_Liquidez = PERIOD_H1; // Temporalidad macro para zonas de liquidez (H1 o H4)
-input int    InpZonaLookbackMacro   = 100;         // Nº de velas de la temporalidad macro para máximo/mínimo
+// NOTA: el lookback de las zonas ya NO es un input fijo: es la variable global
+// "g_zonaLookbackMacro" (ver más abajo), recalibrada por el módulo de auto-optimización.
 
 input group "=== Indicador 2: RSI Trendlines with Breakouts ==="
-input int    InpRSIPeriod           = 14;          // Período del RSI
+// NOTA: el período del RSI ya NO es un input fijo: es la variable global
+// "g_rsiPeriod" (ver más abajo), recalibrada por el módulo de auto-optimización.
 input int    InpRSITrendLookback    = 150;         // Velas analizadas para localizar pivotes del RSI
 input int    InpPivotLeftBars       = 3;           // Barras a la izquierda para confirmar un pivote
 input int    InpPivotRightBars      = 3;           // Barras a la derecha para confirmar un pivote
@@ -44,6 +46,15 @@ input bool   InpCerrarViernes       = true;        // Activar cierre obligatorio
 input int    InpFridayCloseHourNY   = 21;          // Hora de Nueva York para liquidar (21:00)
 input int    InpBrokerGMTOffsetHrs  = 2;           // Offset del servidor del bróker respecto a UTC (ajustar según bróker)
 
+input group "=== Módulo de Auto-Optimización Walk-Forward (Método 1) ==="
+input bool   InpOptimizacionActiva          = true;  // Activar la recalibración semanal automática
+input int    InpVelasAnalisisOptimizacion   = 500;   // Nº de velas H1 analizadas para medir volatilidad
+input int    InpATRPeriodoOptimizacion      = 14;    // Período del ATR usado en el análisis de volatilidad
+input int    InpZonaLookbackVolatilidadAlta = 100;   // Lookback de zonas aplicado si la volatilidad es ALTA
+input int    InpRSIPeriodoVolatilidadAlta   = 21;    // Período de RSI aplicado si la volatilidad es ALTA
+input int    InpZonaLookbackVolatilidadBaja = 30;    // Lookback de zonas aplicado si la volatilidad es BAJA
+input int    InpRSIPeriodoVolatilidadBaja   = 10;    // Período de RSI aplicado si la volatilidad es BAJA
+
 //======================================================================
 // VARIABLES GLOBALES
 //======================================================================
@@ -52,6 +63,15 @@ CTrade         trade;
 int            g_handleRSI = INVALID_HANDLE;
 datetime       g_ultimaVelaProcesada = 0;      // Última vela procesada en la temporalidad de ejecución (RSI)
 datetime       g_ultimaVelaMacroProcesada = 0; // Última vela procesada en la temporalidad macro (zonas)
+datetime       g_ultimaVelaH1Procesada = 0;    // Última vela H1 procesada por el módulo de auto-optimización
+
+// --- Parámetros adaptativos: dejan de ser "input" fijos para que el módulo de
+//     auto-optimización walk-forward pueda reconfigurarlos dinámicamente ---
+int            g_zonaLookbackMacro = 100; // Lookback de las zonas de Oferta/Demanda (temporalidad macro)
+int            g_rsiPeriod         = 14;  // Período del RSI
+
+// --- Estado del módulo de auto-optimización walk-forward ---
+datetime       ultimaOptimizacion = 0; // Fecha/hora de la última recalibración semanal aplicada
 
 // --- Estructura de una zona de oferta/demanda ---
 struct SZona
@@ -124,7 +144,7 @@ string ClaveGlobal(const string sufijo)
 //  Multi-Timeframe (MTF): en lugar de mirar las velas de la temporalidad
 //  de ejecución (5M), el bot "hace zoom" hacia la temporalidad macro
 //  configurada en "Temporalidad_Liquidez" (por defecto H1, también válido
-//  H4) y escanea allí las últimas "InpZonaLookbackMacro" velas (100 por
+//  H4) y escanea allí las últimas "g_zonaLookbackMacro" velas (100 por
 //  defecto). Esto asegura que las zonas representan liquidez institucional
 //  real acumulada durante horas/días completos, y no simple ruido de
 //  velas de 5 minutos.
@@ -144,14 +164,14 @@ string ClaveGlobal(const string sufijo)
 void ActualizarZonasOfertaDemanda()
   {
 // Verifica que exista histórico suficiente de la temporalidad macro
-   if(Bars(_Symbol, Temporalidad_Liquidez) < InpZonaLookbackMacro + 1)
+   if(Bars(_Symbol, Temporalidad_Liquidez) < g_zonaLookbackMacro + 1)
       return;
 
-// iHighest/iLowest buscan, dentro de "InpZonaLookbackMacro" velas de la
+// iHighest/iLowest buscan, dentro de "g_zonaLookbackMacro" velas de la
 // temporalidad MACRO, comenzando en la vela cerrada más reciente
 // (shift = 1), el índice de la vela con el máximo/mínimo extremo.
-   int shiftMax = iHighest(_Symbol, Temporalidad_Liquidez, SERIES_HIGH, InpZonaLookbackMacro, 1);
-   int shiftMin = iLowest(_Symbol, Temporalidad_Liquidez, SERIES_LOW, InpZonaLookbackMacro, 1);
+   int shiftMax = iHighest(_Symbol, Temporalidad_Liquidez, SERIES_HIGH, g_zonaLookbackMacro, 1);
+   int shiftMin = iLowest(_Symbol, Temporalidad_Liquidez, SERIES_LOW, g_zonaLookbackMacro, 1);
 
    if(shiftMax < 0 || shiftMin < 0)
       return;
@@ -697,6 +717,143 @@ void EvaluarSenalDeCompra()
   }
 
 //======================================================================
+// MÓDULO DE AUTO-OPTIMIZACIÓN WALK-FORWARD (MÉTODO 1)
+//======================================================================
+// Cada semana, en la primera vela de H1 que abre en domingo o lunes (es
+// decir, justo cuando el mercado reabre tras el cierre de fin de
+// semana), el EA analiza las últimas "InpVelasAnalisisOptimizacion"
+// velas de 1 Hora del símbolo y mide el régimen de volatilidad reciente
+// mediante dos indicadores estadísticos:
+//
+//   1) ATR (Average True Range): se calcula el ATR de cada una de esas
+//      velas y se obtienen dos promedios:
+//        - "mediaATR"    -> promedio del ATR en TODO el rango analizado
+//                           (línea base histórica de volatilidad).
+//        - "atrReciente" -> promedio del ATR en las últimas 20 velas
+//                           (fotografía de la volatilidad actual).
+//   2) Desviación estándar de los precios de cierre del mismo rango,
+//      como segunda medida de dispersión/volatilidad del mercado.
+//
+// Si "atrReciente" supera a "mediaATR", el mercado está en un régimen
+// de volatilidad ALTA y el EA amplía el lookback de las zonas de Oferta/
+// Demanda (más contexto, zonas más amplias) y el período del RSI (menos
+// sensible al ruido). Si no, el mercado está "lento" (volatilidad BAJA)
+// y el EA reduce ambos parámetros para reaccionar con mayor agilidad a
+// movimientos más pequeños.
+//
+// Esta recalibración es puramente de PARÁMETROS DE ESTRATEGIA (lookback
+// de zonas y período de RSI). NO toca ninguna regla de gestión de
+// riesgo: el 0.5% de riesgo por operación, el cálculo de lotaje
+// dinámico, el Kill Switch del 4% diario y el cierre de fin de semana
+// siguen funcionando exactamente igual, de forma totalmente
+// independiente a este módulo.
+//----------------------------------------------------------------------
+
+//--- Determina si la vela H1 recién abierta es la primera de la semana de trading
+//    (apertura de domingo o lunes, justo tras el cierre del fin de semana).
+bool EsPrimeraVelaDeLaSemana(const datetime horaVela)
+  {
+   MqlDateTime dt;
+   TimeToStruct(horaVela, dt);
+   return (dt.day_of_week == 0 || dt.day_of_week == 1);
+  }
+
+//--- Ejecuta, como máximo una vez por semana, la recalibración walk-forward de estrategia.
+void EjecutarOptimizacionSemanal()
+  {
+   if(!InpOptimizacionActiva)
+      return;
+
+   datetime horaVelaH1 = iTime(_Symbol, PERIOD_H1, 0);
+
+   // Sólo se evalúa una vez por cada vela H1 nueva (evita repetir el análisis en cada tick)
+   if(horaVelaH1 == g_ultimaVelaH1Procesada)
+      return;
+   g_ultimaVelaH1Procesada = horaVelaH1;
+
+   if(!EsPrimeraVelaDeLaSemana(horaVelaH1))
+      return;
+
+   // Bloqueo semanal: no recalibrar dos veces dentro de la misma semana.
+   // Se agrupan las velas en "cubos" de 7 días desde una referencia fija
+   // (Epoch), en vez de usar fechas de calendario, para no depender de
+   // en qué día exacto abre la semana cada bróker.
+   long semanaActual     = (long)(horaVelaH1 / 604800);       // 604800 s = 7 días
+   long semanaOptimizada = (long)(ultimaOptimizacion / 604800);
+   if(ultimaOptimizacion > 0 && semanaActual == semanaOptimizada)
+      return;
+
+   // --- Recolección de datos: últimas InpVelasAnalisisOptimizacion velas cerradas de H1 ---
+   int velas = InpVelasAnalisisOptimizacion;
+   if(Bars(_Symbol, PERIOD_H1) < velas + InpATRPeriodoOptimizacion + 1)
+      return; // histórico insuficiente todavía
+
+   int handleATR = iATR(_Symbol, PERIOD_H1, InpATRPeriodoOptimizacion);
+   if(handleATR == INVALID_HANDLE)
+      return;
+
+   double atrBuffer[];
+   ArraySetAsSeries(atrBuffer, false);
+   int copiadosATR = CopyBuffer(handleATR, 0, 1, velas, atrBuffer);
+   IndicatorRelease(handleATR);
+   if(copiadosATR < velas)
+      return;
+
+   double closeBuffer[];
+   ArraySetAsSeries(closeBuffer, false);
+   if(CopyClose(_Symbol, PERIOD_H1, 1, velas, closeBuffer) < velas)
+      return;
+
+   // --- ATR: media histórica del rango completo frente al promedio reciente (últimas 20 velas) ---
+   double sumaATR = 0.0;
+   for(int i = 0; i < velas; i++)
+      sumaATR += atrBuffer[i];
+   double mediaATR = sumaATR / velas;
+
+   int velasReciente = MathMin(20, velas);
+   double sumaATRReciente = 0.0;
+   for(int i = velas - velasReciente; i < velas; i++)
+      sumaATRReciente += atrBuffer[i];
+   double atrReciente = sumaATRReciente / velasReciente;
+
+   // --- Desviación estándar de los precios de cierre del mismo rango analizado ---
+   double sumaClose = 0.0;
+   for(int i = 0; i < velas; i++)
+      sumaClose += closeBuffer[i];
+   double mediaClose = sumaClose / velas;
+
+   double sumaCuadrados = 0.0;
+   for(int i = 0; i < velas; i++)
+      sumaCuadrados += MathPow(closeBuffer[i] - mediaClose, 2);
+   double desviacionEstandar = MathSqrt(sumaCuadrados / velas);
+
+   // --- Clasificación del régimen de volatilidad y recalibración dinámica de la estrategia ---
+   bool volatilidadAlta = (atrReciente > mediaATR);
+
+   if(volatilidadAlta)
+     {
+      g_zonaLookbackMacro = InpZonaLookbackVolatilidadAlta;
+      g_rsiPeriod         = InpRSIPeriodoVolatilidadAlta;
+     }
+   else
+     {
+      g_zonaLookbackMacro = InpZonaLookbackVolatilidadBaja;
+      g_rsiPeriod         = InpRSIPeriodoVolatilidadBaja;
+     }
+
+   // El período del RSI pudo haber cambiado: hay que recrear su handle de indicador
+   if(g_handleRSI != INVALID_HANDLE)
+      IndicatorRelease(g_handleRSI);
+   g_handleRSI = iRSI(_Symbol, InpTimeframe, g_rsiPeriod, PRICE_CLOSE);
+
+   ultimaOptimizacion = horaVelaH1;
+
+   PrintFormat("AUTO-OPTIMIZACIÓN SEMANAL: volatilidad %s (ATR reciente=%.2f, ATR medio=%.2f, desv.est.=%.2f) -> Lookback zonas=%d, Período RSI=%d",
+               volatilidadAlta ? "ALTA" : "BAJA", atrReciente, mediaATR, desviacionEstandar,
+               g_zonaLookbackMacro, g_rsiPeriod);
+  }
+
+//======================================================================
 // DETECCIÓN DE VELA NUEVA
 //======================================================================
 
@@ -731,7 +888,7 @@ bool EsVelaNuevaMacro()
 //======================================================================
 int OnInit()
   {
-   g_handleRSI = iRSI(_Symbol, InpTimeframe, InpRSIPeriod, PRICE_CLOSE);
+   g_handleRSI = iRSI(_Symbol, InpTimeframe, g_rsiPeriod, PRICE_CLOSE);
    if(g_handleRSI == INVALID_HANDLE)
      {
       Print("Error al crear el indicador RSI.");
@@ -762,15 +919,20 @@ void OnDeinit(const int reason)
 
 void OnTick()
   {
-   // 1) Gestión de cambio de día (referencia para el Kill Switch)
+   // 1) Auto-optimización walk-forward: revisa al inicio de cada vela si toca
+   //    recalibrar (sólo se ejecuta de verdad una vez por semana). Es un ajuste
+   //    de parámetros de estrategia, independiente de la gestión de riesgo.
+   EjecutarOptimizacionSemanal();
+
+   // 2) Gestión de cambio de día (referencia para el Kill Switch)
    GestionarCambioDeDia();
 
-   // 2) Kill Switch diario: si ya se activó, no se hace nada más hasta el día siguiente
+   // 3) Kill Switch diario: si ya se activó, no se hace nada más hasta el día siguiente
    ComprobarKillSwitchDiario();
    if(g_killSwitchActivo)
       return;
 
-   // 3) Cierre obligatorio de fin de semana
+   // 4) Cierre obligatorio de fin de semana
    if(DebeCerrarPorFinDeSemana())
      {
       if(HayPosicionAbierta())
@@ -782,23 +944,23 @@ void OnTick()
       return;
      }
 
-   // 4a) Al cerrar una nueva vela de la temporalidad MACRO, recalcular las zonas de liquidez (contexto MTF)
+   // 5a) Al cerrar una nueva vela de la temporalidad MACRO, recalcular las zonas de liquidez (contexto MTF)
    if(EsVelaNuevaMacro())
       ActualizarZonasOfertaDemanda();
 
-   // 4b) Al cerrar una nueva vela de la temporalidad de EJECUCIÓN (5M), recalcular el gatillo RSI
+   // 5b) Al cerrar una nueva vela de la temporalidad de EJECUCIÓN (5M), recalcular el gatillo RSI
    if(EsVelaNueva())
       ActualizarRSITrendlinesYBreakouts();
 
-   // 5) Filtro de spread: prohíbe abrir operaciones si el spread es excesivo
+   // 6) Filtro de spread: prohíbe abrir operaciones si el spread es excesivo
    if(!SpreadPermitido())
       return;
 
-   // 6) Sólo se gestiona una posición simultánea por este EA
+   // 7) Sólo se gestiona una posición simultánea por este EA
    if(HayPosicionAbierta())
       return;
 
-   // 7) Evaluación de señales de entrada (contexto + gatillo)
+   // 8) Evaluación de señales de entrada (contexto + gatillo)
    EvaluarSenalDeVenta();
    EvaluarSenalDeCompra();
   }
