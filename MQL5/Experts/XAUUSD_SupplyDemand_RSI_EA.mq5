@@ -170,8 +170,8 @@ void ActualizarZonasOfertaDemanda()
 // iHighest/iLowest buscan, dentro de "g_zonaLookbackMacro" velas de la
 // temporalidad MACRO, comenzando en la vela cerrada más reciente
 // (shift = 1), el índice de la vela con el máximo/mínimo extremo.
-   int shiftMax = iHighest(_Symbol, Temporalidad_Liquidez, SERIES_HIGH, g_zonaLookbackMacro, 1);
-   int shiftMin = iLowest(_Symbol, Temporalidad_Liquidez, SERIES_LOW, g_zonaLookbackMacro, 1);
+   int shiftMax = iHighest(_Symbol, Temporalidad_Liquidez, MODE_HIGH, g_zonaLookbackMacro, 1);
+   int shiftMin = iLowest(_Symbol, Temporalidad_Liquidez, MODE_LOW, g_zonaLookbackMacro, 1);
 
    if(shiftMax < 0 || shiftMin < 0)
       return;
