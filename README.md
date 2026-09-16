@@ -16,21 +16,30 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
 
 ## Arquitectura del EA
 
-1. **Contexto — Zonas de Oferta y Demanda**: replica "Supply and Demand
-   Visible Range" de LuxAlgo. Se recalculan en cada vela cerrada de M5,
-   usando el máximo/mínimo de las últimas `InpZonaLookback` velas y el
-   cierre de la vela extrema.
+1. **Contexto — Zonas de Oferta y Demanda Multi-Timeframe (MTF)**: replica
+   "Supply and Demand Visible Range" de LuxAlgo, pero haciendo "zoom
+   alejado" hacia una temporalidad macro configurable en
+   `Temporalidad_Liquidez` (por defecto H1, también válido H4),
+   independientemente de la temporalidad del gráfico donde corre el EA.
+   Las zonas se recalculan cada vez que cierra una nueva vela de esa
+   temporalidad macro, usando el máximo/mínimo de las últimas
+   `InpZonaLookbackMacro` velas (100 por defecto) y el cierre de la vela
+   extrema, para reflejar liquidez institucional real acumulada durante
+   horas/días completos en vez de ruido de velas de 5 minutos.
 2. **Gatillo — RSI Trendlines with Breakouts**: RSI de 14 períodos sobre
-   cierre. El EA detecta picos y valles locales del RSI (pivotes),
+   cierre, calculado en la temporalidad de ejecución `InpTimeframe` (5M
+   por defecto). El EA detecta picos y valles locales del RSI (pivotes),
    traza una línea de tendencia entre los dos últimos pivotes de cada
    tipo y valida una ruptura ("breakout") cuando el RSI cruza y cierra
    por encima/debajo de dicha línea. El cálculo detallado está
    comentado en español directamente en el código, dentro de
    `ActualizarRSITrendlinesYBreakouts()` y `BuscarUltimosDosPivotes()`.
-3. **Entradas**: venta cuando el precio está dentro de la zona de Oferta
-   y se produce un breakout bajista de la línea de picos del RSI; compra
-   cuando el precio está dentro de la zona de Demanda y se produce un
-   breakout alcista de la línea de valles.
+3. **Entradas**: el gatillo del RSI en 5M sólo se evalúa cuando el precio
+   actual ya entró en una zona macro (MTF): venta cuando el precio está
+   dentro de la zona de Oferta macro y se produce un breakout bajista de
+   la línea de picos del RSI; compra cuando el precio está dentro de la
+   zona de Demanda macro y se produce un breakout alcista de la línea de
+   valles.
 4. **Gestión de riesgo institucional**:
    - Lotaje calculado dinámicamente para arriesgar `InpRiskPercent`
      (0.5% por defecto) del balance en cada operación.
@@ -46,6 +55,10 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
 
 ## Parámetros importantes a calibrar por bróker
 
+- **`Temporalidad_Liquidez`**: temporalidad macro usada para las zonas
+  de Oferta/Demanda (H1 por defecto; H4 es una alternativa válida para
+  zonas aún más amplias). Cuanto mayor sea esta temporalidad, más
+  "institucionales" y menos frecuentes serán las zonas detectadas.
 - **`InpBrokerGMTOffsetHrs`**: offset (en horas) del servidor de tu
   bróker respecto a UTC. Varía entre brokers (GMT+0, +2, +3, etc.) y es
   necesario para calcular correctamente las 21:00 de Nueva York. Ajusta

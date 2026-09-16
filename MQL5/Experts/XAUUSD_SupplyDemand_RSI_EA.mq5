@@ -16,10 +16,11 @@
 
 input group "=== Configuración General ==="
 input ulong  InpMagicNumber         = 20250916;   // Número mágico
-input ENUM_TIMEFRAMES InpTimeframe  = PERIOD_M5;   // Temporalidad de operación (5M)
+input ENUM_TIMEFRAMES InpTimeframe  = PERIOD_M5;   // Temporalidad de ejecución / gatillo RSI (5M)
 
-input group "=== Indicador 1: Zonas de Oferta y Demanda ==="
-input int    InpZonaLookback        = 50;          // Nº de velas para calcular máximo/mínimo
+input group "=== Indicador 1: Zonas de Oferta y Demanda (Multi-Timeframe) ==="
+input ENUM_TIMEFRAMES Temporalidad_Liquidez = PERIOD_H1; // Temporalidad macro para zonas de liquidez (H1 o H4)
+input int    InpZonaLookbackMacro   = 100;         // Nº de velas de la temporalidad macro para máximo/mínimo
 
 input group "=== Indicador 2: RSI Trendlines with Breakouts ==="
 input int    InpRSIPeriod           = 14;          // Período del RSI
@@ -49,7 +50,8 @@ input int    InpBrokerGMTOffsetHrs  = 2;           // Offset del servidor del br
 CTrade         trade;
 
 int            g_handleRSI = INVALID_HANDLE;
-datetime       g_ultimaVelaProcesada = 0;
+datetime       g_ultimaVelaProcesada = 0;      // Última vela procesada en la temporalidad de ejecución (RSI)
+datetime       g_ultimaVelaMacroProcesada = 0; // Última vela procesada en la temporalidad macro (zonas)
 
 // --- Estructura de una zona de oferta/demanda ---
 struct SZona
@@ -116,38 +118,56 @@ string ClaveGlobal(const string sufijo)
   }
 
 //======================================================================
-// MÓDULO 1A: ZONAS DE OFERTA Y DEMANDA (CONTEXTO)
+// MÓDULO 1A: ZONAS DE OFERTA Y DEMANDA MULTI-TIMEFRAME (CONTEXTO MACRO)
 //======================================================================
-//  Replica la lógica de "Supply and Demand Visible Range":
+//  Replica la lógica de "Supply and Demand Visible Range", pero en modo
+//  Multi-Timeframe (MTF): en lugar de mirar las velas de la temporalidad
+//  de ejecución (5M), el bot "hace zoom" hacia la temporalidad macro
+//  configurada en "Temporalidad_Liquidez" (por defecto H1, también válido
+//  H4) y escanea allí las últimas "InpZonaLookbackMacro" velas (100 por
+//  defecto). Esto asegura que las zonas representan liquidez institucional
+//  real acumulada durante horas/días completos, y no simple ruido de
+//  velas de 5 minutos.
+//
 //  - Zona de OFERTA (Supply): rango entre el máximo más alto de las
-//    últimas N velas y el precio de cierre de esa misma vela.
+//    últimas N velas MACRO y el precio de cierre de esa misma vela.
 //  - Zona de DEMANDA (Demand): rango entre el mínimo más bajo de las
-//    últimas N velas y el precio de cierre de esa misma vela.
-//  Se recalcula en cada vela nueva del timeframe operativo (5M).
+//    últimas N velas MACRO y el precio de cierre de esa misma vela.
+//
+//  El escaneo se repite de forma constante cada vez que cierra una
+//  nueva vela en la temporalidad macro (ver EsVelaNuevaMacro()), sin
+//  importar que el EA esté corriendo sobre un gráfico de 5 minutos: el
+//  historial de la temporalidad macro se solicita directamente al
+//  terminal mediante iHighest/iLowest/iHigh/iLow/iClose indicando
+//  "Temporalidad_Liquidez" como parámetro de timeframe.
 //----------------------------------------------------------------------
 void ActualizarZonasOfertaDemanda()
   {
-// iHighest/iLowest buscan, dentro de "InpZonaLookback" velas comenzando
-// en la vela cerrada más reciente (shift = 1), el índice de la vela con
-// el máximo/mínimo extremo.
-   int shiftMax = iHighest(_Symbol, InpTimeframe, SERIES_HIGH, InpZonaLookback, 1);
-   int shiftMin = iLowest(_Symbol, InpTimeframe, SERIES_LOW, InpZonaLookback, 1);
+// Verifica que exista histórico suficiente de la temporalidad macro
+   if(Bars(_Symbol, Temporalidad_Liquidez) < InpZonaLookbackMacro + 1)
+      return;
+
+// iHighest/iLowest buscan, dentro de "InpZonaLookbackMacro" velas de la
+// temporalidad MACRO, comenzando en la vela cerrada más reciente
+// (shift = 1), el índice de la vela con el máximo/mínimo extremo.
+   int shiftMax = iHighest(_Symbol, Temporalidad_Liquidez, SERIES_HIGH, InpZonaLookbackMacro, 1);
+   int shiftMin = iLowest(_Symbol, Temporalidad_Liquidez, SERIES_LOW, InpZonaLookbackMacro, 1);
 
    if(shiftMax < 0 || shiftMin < 0)
       return;
 
-   double highExtremo  = iHigh(_Symbol, InpTimeframe, shiftMax);
-   double closeDeHigh  = iClose(_Symbol, InpTimeframe, shiftMax);
+   double highExtremo  = iHigh(_Symbol, Temporalidad_Liquidez, shiftMax);
+   double closeDeHigh  = iClose(_Symbol, Temporalidad_Liquidez, shiftMax);
 
-   double lowExtremo   = iLow(_Symbol, InpTimeframe, shiftMin);
-   double closeDeLow   = iClose(_Symbol, InpTimeframe, shiftMin);
+   double lowExtremo   = iLow(_Symbol, Temporalidad_Liquidez, shiftMin);
+   double closeDeLow   = iClose(_Symbol, Temporalidad_Liquidez, shiftMin);
 
-// Zona de Oferta: entre el cierre (límite inferior) y el máximo (límite superior)
+// Zona de Oferta (macro): entre el cierre (límite inferior) y el máximo (límite superior)
    g_zonaSupply.superior = highExtremo;
    g_zonaSupply.inferior = closeDeHigh;
    g_zonaSupply.activa   = true;
 
-// Zona de Demanda: entre el mínimo (límite inferior) y el cierre (límite superior)
+// Zona de Demanda (macro): entre el mínimo (límite inferior) y el cierre (límite superior)
    g_zonaDemand.inferior = lowExtremo;
    g_zonaDemand.superior = closeDeLow;
    g_zonaDemand.activa   = true;
@@ -679,12 +699,28 @@ void EvaluarSenalDeCompra()
 //======================================================================
 // DETECCIÓN DE VELA NUEVA
 //======================================================================
+
+//--- Nueva vela en la temporalidad de EJECUCIÓN (5M): dispara el recálculo del gatillo RSI
 bool EsVelaNueva()
   {
    datetime horaVelaActual = iTime(_Symbol, InpTimeframe, 0);
    if(horaVelaActual != g_ultimaVelaProcesada)
      {
       g_ultimaVelaProcesada = horaVelaActual;
+      return true;
+     }
+   return false;
+  }
+
+//--- Nueva vela en la temporalidad MACRO (H1/H4): dispara el recálculo de las zonas de liquidez.
+//    Se comprueba de forma independiente al timeframe de ejecución, de modo que el escaneo
+//    Multi-Timeframe se mantiene "constante" aunque el gráfico donde corre el EA sea de 5 minutos.
+bool EsVelaNuevaMacro()
+  {
+   datetime horaVelaMacroActual = iTime(_Symbol, Temporalidad_Liquidez, 0);
+   if(horaVelaMacroActual != g_ultimaVelaMacroProcesada)
+     {
+      g_ultimaVelaMacroProcesada = horaVelaMacroActual;
       return true;
      }
    return false;
@@ -709,6 +745,11 @@ int OnInit()
 
    g_diaActual = 0; // fuerza la inicialización del día en el primer tick
    GestionarCambioDeDia();
+
+   // Siembra inicial de las zonas macro para no operar sin contexto mientras
+   // se espera al cierre de la primera vela de "Temporalidad_Liquidez"
+   ActualizarZonasOfertaDemanda();
+   g_ultimaVelaMacroProcesada = iTime(_Symbol, Temporalidad_Liquidez, 0);
 
    return(INIT_SUCCEEDED);
   }
@@ -741,12 +782,13 @@ void OnTick()
       return;
      }
 
-   // 4) Al cerrar una nueva vela del timeframe operativo, recalcular contexto y gatillo
-   if(EsVelaNueva())
-     {
+   // 4a) Al cerrar una nueva vela de la temporalidad MACRO, recalcular las zonas de liquidez (contexto MTF)
+   if(EsVelaNuevaMacro())
       ActualizarZonasOfertaDemanda();
+
+   // 4b) Al cerrar una nueva vela de la temporalidad de EJECUCIÓN (5M), recalcular el gatillo RSI
+   if(EsVelaNueva())
       ActualizarRSITrendlinesYBreakouts();
-     }
 
    // 5) Filtro de spread: prohíbe abrir operaciones si el spread es excesivo
    if(!SpreadPermitido())
