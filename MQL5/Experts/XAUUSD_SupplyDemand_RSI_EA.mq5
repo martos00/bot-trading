@@ -72,6 +72,8 @@ datetime       g_ultimaVelaProcesada = 0;      // Última vela procesada en la t
 datetime       g_ultimaVelaMacroProcesada = 0; // Última vela procesada en la temporalidad macro (zonas)
 datetime       g_ultimaVelaH1Procesada = 0;    // Última vela H1 procesada por el módulo de auto-optimización
 datetime       g_ultimaVelaIntentoCierreFDS = 0; // Última vela en la que se intentó el cierre de fin de semana
+datetime       g_ultimaVelaIntentoVenta = 0;    // Última vela en la que se intentó abrir una venta
+datetime       g_ultimaVelaIntentoCompra = 0;   // Última vela en la que se intentó abrir una compra
 
 // --- Parámetros adaptativos: dejan de ser "input" fijos para que el módulo de
 //     auto-optimización walk-forward pueda reconfigurarlos dinámicamente ---
@@ -724,6 +726,15 @@ void EvaluarSenalDeVenta()
    if(!FiltroTendenciaPermiteVenta())
       return;
 
+   // Como máximo un intento de apertura por vela: si trade.Sell() falla (p.ej.
+   // "mercado cerrado" fuera de horario), la señal seguía armada y el EA
+   // reintentaba en cada tick sin parar hasta que la señal expiraba -- se
+   // detectaron cientos de órdenes de venta fallidas seguidas en el backtest.
+   datetime velaIntento = iTime(_Symbol, InpTimeframe, 0);
+   if(velaIntento == g_ultimaVelaIntentoVenta)
+      return;
+   g_ultimaVelaIntentoVenta = velaIntento;
+
    double pip = PipSize();
    double entrada = bid;
    double sl = g_zonaSupply.superior + InpSLBufferPips * pip;
@@ -763,6 +774,12 @@ void EvaluarSenalDeCompra()
    // Condición 3: filtro de tendencia macro (evita comprar en tendencia bajista de fondo)
    if(!FiltroTendenciaPermiteCompra())
       return;
+
+   // Como máximo un intento de apertura por vela (ver misma nota en EvaluarSenalDeVenta()).
+   datetime velaIntento = iTime(_Symbol, InpTimeframe, 0);
+   if(velaIntento == g_ultimaVelaIntentoCompra)
+      return;
+   g_ultimaVelaIntentoCompra = velaIntento;
 
    double pip = PipSize();
    double entrada = ask;
