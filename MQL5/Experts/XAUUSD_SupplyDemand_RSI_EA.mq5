@@ -318,6 +318,8 @@ int RecopilarSwingLows(const ENUM_TIMEFRAMES tf, const int leftBars, const int r
 // INDEFINIDO -- y con él, no se buscan setups nuevos (regla explícita del
 // punto 2 del encargo).
 //----------------------------------------------------------------------
+string NombreRegimen(const ENUM_REGIMEN r); // definida en el módulo de log CSV, más abajo
+
 void ActualizarRegimen()
   {
    double emaBuf[];
@@ -355,12 +357,18 @@ void ActualizarRegimen()
       if(!(vL[i] < vL[i + 1])) llDecrecientes = false;
      }
 
+   ENUM_REGIMEN nuevoRegimen;
    if(porEncimaEMA && hhCrecientes && hlCrecientes)
-      g_regimenActual = REGIMEN_ALCISTA;
+      nuevoRegimen = REGIMEN_ALCISTA;
    else if(porDebajoEMA && lhDecrecientes && llDecrecientes)
-      g_regimenActual = REGIMEN_BAJISTA;
+      nuevoRegimen = REGIMEN_BAJISTA;
    else
-      g_regimenActual = REGIMEN_INDEFINIDO;
+      nuevoRegimen = REGIMEN_INDEFINIDO;
+
+   if(nuevoRegimen != g_regimenActual)
+      PrintFormat("[DIAG] Régimen H4 cambia de %s a %s (cierre=%.2f EMA=%.2f)",
+                  NombreRegimen(g_regimenActual), NombreRegimen(nuevoRegimen), cierre, emaBuf[0]);
+   g_regimenActual = nuevoRegimen;
   }
 
 //======================================================================
@@ -949,6 +957,8 @@ void ResetearSetup()
    g_setup.ticketPendiente = 0;
   }
 
+string NombreZona(const ENUM_TIPO_ZONA t); // definida en el módulo de log CSV, más abajo
+
 //--- Paso 1: buscar un sweep nuevo (sólo si no hay setup ni posición/orden en curso)
 void BuscarNuevoSweep()
   {
@@ -975,6 +985,8 @@ void BuscarNuevoSweep()
       g_setup.importanciaZonaSweep  = importanciaZona;
       g_setup.sweepTime             = iTime(_Symbol, InpTimeframeEntrada, 1);
       g_setup.regimenEnSweep        = g_regimenActual;
+      PrintFormat("[DIAG] Sweep LONG detectado: zona=%s(imp.%d) nivel=%.2f sweep=%.2f dist=%.2f",
+                  NombreZona(tipoZona), importanciaZona, nivelZona, precioSweep, distancia);
       return;
      }
 
@@ -990,6 +1002,8 @@ void BuscarNuevoSweep()
       g_setup.importanciaZonaSweep  = importanciaZona;
       g_setup.sweepTime             = iTime(_Symbol, InpTimeframeEntrada, 1);
       g_setup.regimenEnSweep        = g_regimenActual;
+      PrintFormat("[DIAG] Sweep SHORT detectado: zona=%s(imp.%d) nivel=%.2f sweep=%.2f dist=%.2f",
+                  NombreZona(tipoZona), importanciaZona, nivelZona, precioSweep, distancia);
      }
   }
 
@@ -999,6 +1013,7 @@ void ComprobarMSS()
    double nivel;
    if(!LocalizarSwingPrevioAlSweep(g_setup.esLong, g_setup.sweepTime, nivel))
      {
+      Print("[DIAG] Setup descartado: no hay swing previo utilizable para el MSS.");
       ResetearSetup(); // no hay swing previo utilizable: setup inviable
       return;
      }
@@ -1008,11 +1023,13 @@ void ComprobarMSS()
      {
       g_setup.mssLevel = nivel;
       g_setup.estado   = SETUP_MSS_CONFIRMADO;
+      PrintFormat("[DIAG] MSS alcista confirmado: swing=%.2f cierre=%.2f", nivel, close1);
      }
    else if(!g_setup.esLong && close1 < nivel)
      {
       g_setup.mssLevel = nivel;
       g_setup.estado   = SETUP_MSS_CONFIRMADO;
+      PrintFormat("[DIAG] MSS bajista confirmado: swing=%.2f cierre=%.2f", nivel, close1);
      }
   }
 
@@ -1025,8 +1042,13 @@ void BuscarFVG()
 
    double atr = ATRActual();
    if(InpUsarFiltroFVGMinimo && atr > 0.0 && (sup - inf) < InpFVGMinSizeATRMult * atr)
+     {
+      PrintFormat("[DIAG] FVG encontrado pero descartado por tamaño mínimo: tamaño=%.2f mínimo=%.2f",
+                  sup - inf, InpFVGMinSizeATRMult * atr);
       return; // FVG demasiado pequeño: se ignora, se sigue esperando otro
+     }
 
+   PrintFormat("[DIAG] FVG %s válido: superior=%.2f inferior=%.2f", g_setup.esLong ? "alcista" : "bajista", sup, inf);
    g_setup.fvgSuperior = sup;
    g_setup.fvgInferior = inf;
 
@@ -1042,6 +1064,7 @@ void BuscarFVG()
    double tp, rr;
    if(!CalcularTP(g_setup.esLong, g_setup.entradaObjetivo, g_setup.slPlan, tp, rr))
      {
+      Print("[DIAG] Setup descartado: ningún TP lógico alcanza el RR mínimo (InpMinimumRR).");
       ResetearSetup(); // ningún TP lógico alcanza el RR mínimo: no hay operación
       return;
      }
@@ -1107,6 +1130,7 @@ void SupervisarSetupPendiente()
                                                 : (close1 > g_setup.mssLevel);
    if(estructuraInvalidada)
      {
+      Print("[DIAG] Setup invalidado: el precio cerró de nuevo más allá del nivel del MSS.");
       if(g_setup.estado == SETUP_FVG_LISTO && g_setup.ticketPendiente != 0 && HayOrdenPendiente(g_setup.ticketPendiente))
          trade.OrderDelete(g_setup.ticketPendiente);
       ResetearSetup();
@@ -1119,7 +1143,10 @@ void SupervisarSetupPendiente()
       // o expiró/fue cancelada por el bróker): si no hay posición nuestra
       // abierta, fue una expiración -- se libera el setup.
       if(!HayPosicionAbierta())
+        {
+         Print("[DIAG] Orden límite de retest expirada sin rellenarse.");
          ResetearSetup();
+        }
      }
   }
 
@@ -1571,7 +1598,10 @@ void OnTick()
      {
       if(SetupExpiradoPorTiempo() &&
          (g_setup.estado == SETUP_SWEEP_DETECTADO || g_setup.estado == SETUP_MSS_CONFIRMADO))
+        {
+         PrintFormat("[DIAG] Setup descartado por timeout (InpSetupMaxBarras) en estado %d.", g_setup.estado);
          ResetearSetup();
+        }
       if(g_setup.estado == SETUP_MSS_CONFIRMADO || g_setup.estado == SETUP_FVG_LISTO)
          SupervisarSetupPendiente();
      }
