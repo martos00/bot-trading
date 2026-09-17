@@ -37,9 +37,10 @@ input double InpRiskRewardRatio     = 3.0;         // Ratio Riesgo:Beneficio (1:
 input double InpManualPipSize       = 0.0;         // Tamaño de pip manual (0 = automático)
 
 input group "=== Blindaje de Riesgo Institucional ==="
-input double InpRiskPercent         = 0.5;         // % de riesgo del balance por operación
-input double InpMaxDailyLossPercent = 4.0;         // % máximo de pérdida diaria (Kill Switch)
-input double InpMaxSpreadPips       = 4.0;         // Spread máximo permitido en pips
+input double InpRiskPercent          = 0.5;        // % de riesgo del balance por operación
+input double InpMaxDailyLossPercent  = 4.0;        // % máximo de pérdida diaria (Kill Switch)
+input double InpMaxSpreadPips        = 4.0;        // Spread máximo permitido en pips
+input int    InpMaxPerdidasConsecutivas = 3;       // Nº de pérdidas seguidas en el día que bloquean nuevas entradas
 
 input group "=== Cierre de Fin de Semana ==="
 input bool   InpCerrarViernes       = true;        // Activar cierre obligatorio de fin de semana
@@ -106,6 +107,10 @@ datetime       g_breakoutAlcistaTime   = 0;
 datetime       g_diaActual          = 0;
 double         g_balanceInicioDia   = 0.0;
 bool           g_killSwitchActivo   = false;
+
+// --- Circuito de pérdidas consecutivas (independiente del Kill Switch del 4%) ---
+int            g_perdidasConsecutivasHoy = 0;
+bool           g_circuitoPerdidasActivo  = false;
 
 //======================================================================
 // UTILIDADES
@@ -518,6 +523,10 @@ void GestionarCambioDeDia()
      {
       g_diaActual        = inicioDeHoy;
 
+      // Reinicio diario del circuito de pérdidas consecutivas
+      g_perdidasConsecutivasHoy = 0;
+      g_circuitoPerdidasActivo  = false;
+
       string claveBal = ClaveGlobal("BalanceInicioDia");
       string claveKS  = ClaveGlobal("KillSwitch");
 
@@ -917,6 +926,64 @@ void OnDeinit(const int reason)
       IndicatorRelease(g_handleRSI);
   }
 
+//======================================================================
+// CIRCUITO DE PÉRDIDAS CONSECUTIVAS
+//======================================================================
+// Complementa al Kill Switch del 4%: en vez de esperar a que se acumule
+// toda la pérdida diaria permitida, cuenta las pérdidas SEGUIDAS del día
+// (se reinicia a 0 en cuanto una operación cierra en positivo) y bloquea
+// nuevas entradas en cuanto se alcanza "InpMaxPerdidasConsecutivas",
+// mucho antes de llegar al límite diario. No fuerza el cierre de nada
+// (cuando se evalúa ya se está plano, tras el cierre que disparó la
+// cuenta), simplemente impide abrir la siguiente operación hasta el
+// día siguiente.
+//
+// Se detecta el resultado de cada operación cerrada en OnTradeTransaction,
+// el evento nativo de MQL5 para cambios en el historial de trading: cuando
+// MetaTrader añade un nuevo deal de cierre (TRADE_TRANSACTION_DEAL_ADD con
+// ENTRY_OUT/ENTRY_OUT_BY) de este símbolo y con nuestro número mágico, se
+// suma su beneficio/pérdida real (incluyendo swap y comisión) para saber
+// si fue ganadora o perdedora.
+//----------------------------------------------------------------------
+void OnTradeTransaction(const MqlTradeTransaction &trans,
+                         const MqlTradeRequest &request,
+                         const MqlTradeResult &result)
+  {
+   if(trans.type != TRADE_TRANSACTION_DEAL_ADD)
+      return;
+
+   if(!HistoryDealSelect(trans.deal))
+      return;
+
+   if(HistoryDealGetString(trans.deal, DEAL_SYMBOL) != _Symbol)
+      return;
+   if(HistoryDealGetInteger(trans.deal, DEAL_MAGIC) != (long)InpMagicNumber)
+      return;
+
+   ENUM_DEAL_ENTRY tipoEntrada = (ENUM_DEAL_ENTRY)HistoryDealGetInteger(trans.deal, DEAL_ENTRY);
+   if(tipoEntrada != DEAL_ENTRY_OUT && tipoEntrada != DEAL_ENTRY_OUT_BY)
+      return; // sólo interesan los cierres, no las aperturas
+
+   double resultado = HistoryDealGetDouble(trans.deal, DEAL_PROFIT)
+                     + HistoryDealGetDouble(trans.deal, DEAL_SWAP)
+                     + HistoryDealGetDouble(trans.deal, DEAL_COMMISSION);
+
+   if(resultado < 0.0)
+     {
+      g_perdidasConsecutivasHoy++;
+      if(g_perdidasConsecutivasHoy >= InpMaxPerdidasConsecutivas && !g_circuitoPerdidasActivo)
+        {
+         g_circuitoPerdidasActivo = true;
+         PrintFormat("CIRCUITO DE PÉRDIDAS CONSECUTIVAS ACTIVADO: %d pérdidas seguidas hoy (límite %d). Sin nuevas entradas hasta el día siguiente.",
+                     g_perdidasConsecutivasHoy, InpMaxPerdidasConsecutivas);
+        }
+     }
+   else
+     {
+      g_perdidasConsecutivasHoy = 0;
+     }
+  }
+
 void OnTick()
   {
    // 1) Auto-optimización walk-forward: revisa al inicio de cada vela si toca
@@ -960,7 +1027,12 @@ void OnTick()
    if(HayPosicionAbierta())
       return;
 
-   // 8) Evaluación de señales de entrada (contexto + gatillo)
+   // 8) Circuito de pérdidas consecutivas: bloquea nuevas entradas el resto
+   //    del día tras InpMaxPerdidasConsecutivas pérdidas seguidas
+   if(g_circuitoPerdidasActivo)
+      return;
+
+   // 9) Evaluación de señales de entrada (contexto + gatillo)
    EvaluarSenalDeVenta();
    EvaluarSenalDeCompra();
   }

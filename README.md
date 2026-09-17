@@ -53,6 +53,12 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    - Cierre obligatorio de posiciones los viernes a las 21:00 hora de
      Nueva York (`InpFridayCloseHourNY`), calculado aplicando el
      horario de verano de EE.UU.
+   - **Circuito de pérdidas consecutivas** (`InpMaxPerdidasConsecutivas`,
+     3 por defecto): complementa al Kill Switch del 4%. Cuenta las
+     pérdidas seguidas del día (se reinicia en cuanto una operación cierra
+     en positivo) y bloquea nuevas entradas en cuanto se alcanza el
+     límite, mucho antes de agotar el presupuesto diario completo del 4%.
+     Detecta el resultado de cada cierre en `OnTradeTransaction()`.
 5. **Auto-Optimización Walk-Forward (Método 1)**: una vez por semana,
    en la primera vela de H1 tras el cierre de fin de semana, el EA mide
    el régimen de volatilidad del oro (ATR reciente vs. ATR medio, y
