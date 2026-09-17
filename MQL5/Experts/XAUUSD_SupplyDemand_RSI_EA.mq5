@@ -23,6 +23,9 @@ input ENUM_TIMEFRAMES Temporalidad_Liquidez = PERIOD_H1; // Temporalidad macro p
 // NOTA: el lookback de las zonas ya NO es un input fijo: es la variable global
 // "g_zonaLookbackMacro" (ver más abajo), recalibrada por el módulo de auto-optimización.
 
+input group "=== Filtro de Zona Fresca ==="
+input bool   InpUsarFiltroZonaFresca = true;       // Sólo operar el primer toque de cada zona (bloquea retests)
+
 input group "=== Filtro de Tendencia Macro ==="
 input bool   InpUsarFiltroTendencia = true;        // Activar filtro de tendencia (evita operar contra la tendencia de fondo)
 input int    InpTrendMAPeriod       = 200;         // Período de la media móvil de tendencia (en Temporalidad_Liquidez)
@@ -43,9 +46,11 @@ input double InpManualPipSize       = 0.0;         // Tamaño de pip manual (0 =
 input bool   InpUsarBreakeven       = true;        // Mover el SL a breakeven cuando la operación vaya a favor
 input double InpBreakevenTriggerR   = 1.5;         // Múltiplo de riesgo (R) de beneficio flotante para activar el breakeven
 input double InpBreakevenBufferPips = 2.0;         // Colchón en pips sobre el precio de entrada al mover a breakeven
-input bool   InpUsarTrailingStop    = true;        // Liberar el TP fijo y arrastrar el SL en tendencias fuertes
-input double InpTrailingStartR      = 2.0;         // Múltiplo de riesgo (R) a partir del cual se activa el trailing
-input double InpTrailingDistanceR   = 1.0;         // Distancia del trailing stop por detrás del precio, en múltiplos de R
+input bool   InpUsarTrailingStop      = true;       // Liberar el TP fijo y arrastrar el SL en tendencias fuertes
+input double InpCierreParcialTriggerR = 3.0;        // Múltiplo de riesgo (R) al que se dispara el cierre parcial y se libera el TP
+input double InpTrailingDistanceR     = 1.0;        // Distancia del trailing stop por detrás del precio, en múltiplos de R
+input bool   InpUsarCierreParcial     = true;       // Cerrar parcialmente en el disparo y dejar correr sólo el resto
+input double InpCierreParcialPercent  = 50.0;       // % del volumen a cerrar en el disparo del cierre parcial
 
 input group "=== Blindaje de Riesgo Institucional ==="
 input double InpRiskPercent          = 1.5;        // % de riesgo del balance por operación
@@ -95,6 +100,8 @@ struct SZona
    double superior;
    double inferior;
    bool   activa;
+   bool   huboEntrada; // el precio ya entró en esta zona alguna vez desde que se formó
+   bool   tocada;      // el precio entró y ya volvió a salir: la zona quedó "puesta a prueba"
   };
 
 SZona          g_zonaSupply;
@@ -131,6 +138,7 @@ bool           g_circuitoPerdidasActivo  = false;
 double         g_slOriginalPosicion   = 0.0; // SL con el que se abrió la posición (antes de cualquier breakeven)
 bool           g_breakevenAplicado    = false;
 bool           g_trailingActivado     = false; // true en cuanto se libera el TP fijo y empieza el trailing
+bool           g_cierreParcialAplicado = false; // true en cuanto se ejecuta el cierre parcial de la posición
 
 //======================================================================
 // UTILIDADES
@@ -209,14 +217,18 @@ void ActualizarZonasOfertaDemanda()
    double closeDeLow   = iClose(_Symbol, Temporalidad_Liquidez, shiftMin);
 
 // Zona de Oferta (macro): entre el cierre (límite inferior) y el máximo (límite superior)
-   g_zonaSupply.superior = highExtremo;
-   g_zonaSupply.inferior = closeDeHigh;
-   g_zonaSupply.activa   = true;
+   g_zonaSupply.superior    = highExtremo;
+   g_zonaSupply.inferior    = closeDeHigh;
+   g_zonaSupply.activa      = true;
+   g_zonaSupply.huboEntrada = false;
+   g_zonaSupply.tocada      = false;
 
 // Zona de Demanda (macro): entre el mínimo (límite inferior) y el cierre (límite superior)
-   g_zonaDemand.inferior = lowExtremo;
-   g_zonaDemand.superior = closeDeLow;
-   g_zonaDemand.activa   = true;
+   g_zonaDemand.inferior    = lowExtremo;
+   g_zonaDemand.superior    = closeDeLow;
+   g_zonaDemand.activa      = true;
+   g_zonaDemand.huboEntrada = false;
+   g_zonaDemand.tocada      = false;
   }
 
 //--- Comprueba si un precio dado se encuentra dentro de una zona
@@ -225,6 +237,30 @@ bool PrecioEnZona(const double precio, const SZona &zona)
    if(!zona.activa)
       return false;
    return (precio >= zona.inferior && precio <= zona.superior);
+  }
+
+//--- Filtro de zona fresca: las zonas institucionales pierden fuerza cada vez que el
+//    precio las revisita. Se considera que una zona ha sido "puesta a prueba" (tocada)
+//    sólo cuando el precio entró en ella y DESPUÉS volvió a salir -- mientras el precio
+//    permanece dentro de forma continua (su primera visita), la zona sigue "fresca" y
+//    puede seguir generando señales; sólo se bloquean los retests posteriores a esa
+//    primera visita, hasta que se forme una zona nueva en el siguiente cierre de vela
+//    macro (ver el reseteo de huboEntrada/tocada en ActualizarZonasOfertaDemanda()).
+void ActualizarEstadoDeZona(SZona &zona, const double precio)
+  {
+   if(PrecioEnZona(precio, zona))
+      zona.huboEntrada = true;
+   else if(zona.huboEntrada)
+      zona.tocada = true;
+  }
+
+void MarcarZonasTocadas()
+  {
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+
+   ActualizarEstadoDeZona(g_zonaSupply, bid);
+   ActualizarEstadoDeZona(g_zonaDemand, ask);
   }
 
 //======================================================================
@@ -729,6 +765,10 @@ void EvaluarSenalDeVenta()
    if(!PrecioEnZona(bid, g_zonaSupply))
       return;
 
+   // Condición 1b: filtro de zona fresca -- evita operar zonas ya puestas a prueba antes
+   if(InpUsarFiltroZonaFresca && g_zonaSupply.tocada)
+      return;
+
    // Condición 2: ruptura bajista vigente de la línea de picos del RSI
    if(!BreakoutBajistaVigente())
       return;
@@ -768,6 +808,7 @@ void EvaluarSenalDeVenta()
       g_slOriginalPosicion = sl;
       g_breakevenAplicado = false;
       g_trailingActivado = false;
+      g_cierreParcialAplicado = false;
       PrintFormat("VENTA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
      }
   }
@@ -779,6 +820,10 @@ void EvaluarSenalDeCompra()
 
    // Condición 1: el precio actual entra en la zona de Demanda
    if(!PrecioEnZona(ask, g_zonaDemand))
+      return;
+
+   // Condición 1b: filtro de zona fresca -- evita operar zonas ya puestas a prueba antes
+   if(InpUsarFiltroZonaFresca && g_zonaDemand.tocada)
       return;
 
    // Condición 2: ruptura alcista vigente de la línea de valles del RSI
@@ -817,6 +862,7 @@ void EvaluarSenalDeCompra()
       g_slOriginalPosicion = sl;
       g_breakevenAplicado = false;
       g_trailingActivado = false;
+      g_cierreParcialAplicado = false;
       PrintFormat("COMPRA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
      }
   }
@@ -880,15 +926,20 @@ void GestionarBreakeven()
      }
   }
 
-//--- Una vez el precio se ha movido a favor InpTrailingStartR veces el riesgo original
-//    (2R por defecto, más allá del breakeven), esta función libera el Take Profit fijo
-//    (lo pone a 0) y empieza a arrastrar el Stop Loss a una distancia de
-//    InpTrailingDistanceR por detrás del precio. Sin esto, toda operación que llegase a
-//    superar el TP fijo (1:3 por defecto) cerraría siempre en el mismo múltiplo de
-//    riesgo por muy fuerte que fuese la tendencia; con el trailing, las tendencias
-//    fuertes de XAUUSD pueden seguir corriendo mucho más allá de 3R, capturando más
-//    beneficio sin aumentar el riesgo inicial de la operación. Usa g_slOriginalPosicion
-//    (no el SL actual) para medir el múltiplo de riesgo real, igual que GestionarBreakeven().
+//--- Una vez el precio se ha movido a favor InpCierreParcialTriggerR veces el riesgo
+//    original (3R por defecto, el mismo nivel que el TP fijo), esta función:
+//      1) Si InpUsarCierreParcial está activo, cierra InpCierreParcialPercent% del
+//         volumen (50% por defecto) para asegurar la ganancia del ratio 1:3 original.
+//      2) Libera el Take Profit fijo del volumen restante (lo pone a 0) y empieza a
+//         arrastrar su Stop Loss a una distancia de InpTrailingDistanceR por detrás del
+//         precio.
+//    Sin esto, toda operación que llegase a superar el TP fijo cerraría siempre en el
+//    mismo múltiplo de riesgo por muy fuerte que fuese la tendencia; con el cierre
+//    parcial + trailing, la mitad de la ganancia queda asegurada en el objetivo
+//    original y la otra mitad puede seguir corriendo mucho más allá de 3R en
+//    tendencias fuertes de XAUUSD, sin aumentar el riesgo inicial de la operación.
+//    Usa g_slOriginalPosicion (no el SL actual) para medir el múltiplo de riesgo real,
+//    igual que GestionarBreakeven().
 void GestionarTrailingStop()
   {
    if(!InpUsarTrailingStop || g_slOriginalPosicion <= 0.0)
@@ -910,46 +961,59 @@ void GestionarTrailingStop()
       double tpActual = PositionGetDouble(POSITION_TP);
       ENUM_POSITION_TYPE tipo = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
 
-      if(tipo == POSITION_TYPE_BUY)
-        {
-         double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-         double currentR = (bid - precioApertura) / riesgo;
-         if(currentR < InpTrailingStartR)
-            return;
+      double precioActual = (tipo == POSITION_TYPE_BUY) ? SymbolInfoDouble(_Symbol, SYMBOL_BID)
+                                                          : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+      double currentR = (tipo == POSITION_TYPE_BUY) ? (precioActual - precioApertura) / riesgo
+                                                      : (precioApertura - precioActual) / riesgo;
 
-         double nuevoSL = precioApertura + (currentR - InpTrailingDistanceR) * riesgo;
-         bool liberarTP = !g_trailingActivado && tpActual != 0.0;
-         bool mejoraSL  = nuevoSL > slActual;
-         if(liberarTP || mejoraSL)
+      if(currentR < InpCierreParcialTriggerR)
+         return;
+
+      // --- Cierre parcial: se ejecuta una única vez por posición, en cuanto se alcanza
+      //     el múltiplo de riesgo objetivo, para asegurar parte de la ganancia al nivel
+      //     del TP original antes de liberar el TP y dejar correr el resto con trailing.
+      if(InpUsarCierreParcial && !g_cierreParcialAplicado)
+        {
+         double volumenActual  = PositionGetDouble(POSITION_VOLUME);
+         double volStep        = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
+         double volMin         = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
+         double volumenCerrar  = MathFloor((volumenActual * InpCierreParcialPercent / 100.0) / volStep) * volStep;
+
+         // Sólo cierra parcialmente si queda volumen suficiente a ambos lados (el
+         // cerrado y el que sigue abierto) para respetar el mínimo del bróker; si no,
+         // se deja correr toda la posición sin cierre parcial.
+         if(volumenCerrar >= volMin && (volumenActual - volumenCerrar) >= volMin)
            {
-            double slFinal = MathMax(nuevoSL, slActual);
-            if(trade.PositionModify(ticket, slFinal, 0.0))
+            if(trade.PositionClosePartial(ticket, NormalizeDouble(volumenCerrar, 2)))
               {
-               g_trailingActivado = true;
-               PrintFormat("Trailing stop en compra #%I64u: SL=%.2f (R actual=%.2f, TP fijo liberado)", ticket, slFinal, currentR);
+               g_cierreParcialAplicado = true;
+               PrintFormat("Cierre parcial ejecutado en posición #%I64u: %.2f lotes cerrados en R=%.2f",
+                           ticket, volumenCerrar, currentR);
               }
            }
+         else
+            g_cierreParcialAplicado = true; // volumen insuficiente: no reintentar cada tick
         }
-      else if(tipo == POSITION_TYPE_SELL)
-        {
-         double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-         double currentR = (precioApertura - ask) / riesgo;
-         if(currentR < InpTrailingStartR)
-            return;
 
-         double nuevoSL = precioApertura - (currentR - InpTrailingDistanceR) * riesgo;
-         bool liberarTP = !g_trailingActivado && tpActual != 0.0;
-         bool mejoraSL  = (slActual <= 0.0) || (nuevoSL < slActual);
-         if(liberarTP || mejoraSL)
+      double nuevoSL = (tipo == POSITION_TYPE_BUY)
+                        ? precioApertura + (currentR - InpTrailingDistanceR) * riesgo
+                        : precioApertura - (currentR - InpTrailingDistanceR) * riesgo;
+
+      bool liberarTP = !g_trailingActivado && tpActual != 0.0;
+      bool mejoraSL  = (tipo == POSITION_TYPE_BUY) ? (nuevoSL > slActual)
+                                                     : (slActual <= 0.0 || nuevoSL < slActual);
+
+      if(liberarTP || mejoraSL)
+        {
+         double slFinal = mejoraSL ? nuevoSL : slActual;
+         if(trade.PositionModify(ticket, slFinal, 0.0))
            {
-            double slFinal = mejoraSL ? nuevoSL : slActual;
-            if(trade.PositionModify(ticket, slFinal, 0.0))
-              {
-               g_trailingActivado = true;
-               PrintFormat("Trailing stop en venta #%I64u: SL=%.2f (R actual=%.2f, TP fijo liberado)", ticket, slFinal, currentR);
-              }
+            g_trailingActivado = true;
+            PrintFormat("Trailing stop en %s #%I64u: SL=%.2f (R actual=%.2f, TP fijo liberado)",
+                        (tipo == POSITION_TYPE_BUY ? "compra" : "venta"), ticket, slFinal, currentR);
            }
         }
+
       return; // sólo hay una posición gestionada por este EA
      }
   }
@@ -1142,8 +1206,12 @@ int OnInit()
 
    trade.SetExpertMagicNumber(InpMagicNumber);
 
-   g_zonaSupply.activa = false;
-   g_zonaDemand.activa = false;
+   g_zonaSupply.activa      = false;
+   g_zonaSupply.huboEntrada = false;
+   g_zonaSupply.tocada      = false;
+   g_zonaDemand.activa      = false;
+   g_zonaDemand.huboEntrada = false;
+   g_zonaDemand.tocada      = false;
 
    g_diaActual = 0; // fuerza la inicialización del día en el primer tick
    GestionarCambioDeDia();
@@ -1202,14 +1270,41 @@ void OnTradeTransaction(const MqlTradeTransaction &trans,
    if(tipoEntrada != DEAL_ENTRY_OUT && tipoEntrada != DEAL_ENTRY_OUT_BY)
       return; // sólo interesan los cierres, no las aperturas
 
-   // La posición se cerró: el SL original ya no aplica a ninguna posición viva
+   // Si la posición sigue abierta tras este cierre, fue un cierre PARCIAL (el cierre
+   // parcial en el TP original): la posición sigue viva con el resto del volumen, así
+   // que no se resetea su estado (SL original, breakeven, trailing) ni cuenta todavía
+   // para el circuito de pérdidas consecutivas, que sólo evalúa el resultado final de
+   // la operación completa.
+   ulong idPosicion = (ulong)HistoryDealGetInteger(trans.deal, DEAL_POSITION_ID);
+   if(PositionSelectByTicket(idPosicion))
+      return;
+
+   // La posición se cerró por completo: el SL original ya no aplica a ninguna posición viva
    g_slOriginalPosicion = 0.0;
    g_breakevenAplicado = false;
    g_trailingActivado = false;
+   g_cierreParcialAplicado = false;
 
-   double resultado = HistoryDealGetDouble(trans.deal, DEAL_PROFIT)
-                     + HistoryDealGetDouble(trans.deal, DEAL_SWAP)
-                     + HistoryDealGetDouble(trans.deal, DEAL_COMMISSION);
+   // Se suma el resultado de TODOS los cierres de esta posición (el cierre parcial en
+   // el TP original, si lo hubo, más el cierre final) para clasificar correctamente la
+   // operación completa como ganadora o perdedora en el circuito de pérdidas consecutivas.
+   double resultado = 0.0;
+   if(HistorySelectByPosition(idPosicion))
+     {
+      int totalDeals = HistoryDealsTotal();
+      for(int d = 0; d < totalDeals; d++)
+        {
+         ulong dealTicket = HistoryDealGetTicket(d);
+         if(dealTicket == 0) continue;
+         ENUM_DEAL_ENTRY entradaDeal = (ENUM_DEAL_ENTRY)HistoryDealGetInteger(dealTicket, DEAL_ENTRY);
+         if(entradaDeal != DEAL_ENTRY_OUT && entradaDeal != DEAL_ENTRY_OUT_BY)
+            continue;
+
+         resultado += HistoryDealGetDouble(dealTicket, DEAL_PROFIT)
+                    + HistoryDealGetDouble(dealTicket, DEAL_SWAP)
+                    + HistoryDealGetDouble(dealTicket, DEAL_COMMISSION);
+        }
+     }
 
    if(resultado < 0.0)
      {
@@ -1272,6 +1367,9 @@ void OnTick()
    // 5b) Al cerrar una nueva vela de la temporalidad de EJECUCIÓN (5M), recalcular el gatillo RSI
    if(EsVelaNueva())
       ActualizarRSITrendlinesYBreakouts();
+
+   // 5c) Registrar si el precio ha entrado/salido de alguna zona, para el filtro de zona fresca
+   MarcarZonasTocadas();
 
    // 6) Filtro de spread: prohíbe abrir operaciones si el spread es excesivo
    if(!SpreadPermitido())

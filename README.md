@@ -40,8 +40,17 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    dentro de la zona de Oferta macro y se produce un breakout bajista de
    la línea de picos del RSI; compra cuando el precio está dentro de la
    zona de Demanda macro y se produce un breakout alcista de la línea de
-   valles. Ambas requieren además pasar el **filtro de tendencia macro**
-   (`InpUsarFiltroTendencia`, **activado por defecto**): sólo se permiten
+   valles. Ambas requieren además pasar el **filtro de zona fresca**
+   (`InpUsarFiltroZonaFresca`, **activado por defecto**): una zona de
+   Oferta/Demanda pierde fuerza institucional cada vez que el precio la
+   revisita, así que sólo se permite operar durante la primera visita del
+   precio a la zona; en cuanto el precio sale de ella tras haber entrado,
+   la zona queda marcada como "puesta a prueba" (`tocada`) y no vuelve a
+   generar señales hasta que se forme una zona nueva en el siguiente
+   cierre de vela macro. Desactívalo (`InpUsarFiltroZonaFresca=false`) si
+   prefieres operar también los retests de una misma zona. Lógica en
+   `ActualizarEstadoDeZona()` / `MarcarZonasTocadas()`. Y el **filtro de
+   tendencia macro** (`InpUsarFiltroTendencia`, **activado por defecto**): sólo se permiten
    ventas si el precio está por debajo de una media móvil larga
    (`InpTrendMAPeriod`, 200 por defecto) calculada en
    `Temporalidad_Liquidez`, y compras si está por encima. Desactívalo
@@ -62,20 +71,28 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    antes de proteger, preservando más del upside del ratio 1:3 sin perder
    la protección contra reversiones fuertes. Lógica en
    `GestionarBreakeven()`.
-5. **Trailing stop tras superar el TP fijo** (`InpUsarTrailingStop`,
-   activado por defecto): con un TP fijo en 1:3, cualquier tendencia que
-   se moviera más allá de 3R cerraba igualmente en el TP, dejando sobre
-   la mesa todo el recorrido adicional. En cuanto el precio se mueve a
-   favor `InpTrailingStartR` veces (**2.0 por defecto**) la distancia de
-   riesgo original, el EA libera el TP fijo (lo quita) y empieza a
-   arrastrar el Stop Loss a `InpTrailingDistanceR` (**1.0 por defecto**)
-   de distancia por detrás del precio, siempre en la dirección
-   favorable. Así, una tendencia fuerte puede seguir corriendo mucho más
-   allá de +3R, y sólo cierra cuando el precio revierte lo suficiente
-   como para tocar el trailing stop — sin aumentar el riesgo inicial de
-   la operación. Se activa después del breakeven (`InpBreakevenTriggerR`
-   en 1.5R) y sólo mejora el SL, nunca lo empeora. Lógica en
-   `GestionarTrailingStop()`.
+5. **Cierre parcial en el TP original + trailing stop en el resto**
+   (`InpUsarTrailingStop` y `InpUsarCierreParcial`, ambos activados por
+   defecto): con un TP fijo en 1:3, cualquier tendencia que se moviera
+   más allá de 3R cerraba igualmente en el TP, dejando sobre la mesa todo
+   el recorrido adicional. En cuanto el precio se mueve a favor
+   `InpCierreParcialTriggerR` veces (**3.0 por defecto, el mismo nivel
+   que el TP original**) la distancia de riesgo, el EA:
+   1. Cierra `InpCierreParcialPercent` % del volumen (**50% por
+      defecto**) para asegurar la ganancia del ratio 1:3 original, igual
+      que si hubiera cerrado en el TP fijo.
+   2. Libera el TP fijo del volumen restante (lo quita) y empieza a
+      arrastrar su Stop Loss a `InpTrailingDistanceR` (**1.0 por
+      defecto**) de distancia por detrás del precio, siempre en la
+      dirección favorable.
+   Así, la mitad de la ganancia queda asegurada en el objetivo original y
+   la otra mitad puede seguir corriendo mucho más allá de +3R en
+   tendencias fuertes, sin aumentar el riesgo inicial de la operación. Si
+   se desactiva `InpUsarCierreParcial`, el EA simplemente libera el TP
+   del 100% del volumen en ese mismo nivel y deja correr toda la
+   posición con trailing (comportamiento anterior). Se activa después del
+   breakeven (`InpBreakevenTriggerR` en 1.5R) y sólo mejora el SL, nunca
+   lo empeora. Lógica en `GestionarTrailingStop()`.
 6. **Gestión de riesgo institucional**:
    - Lotaje calculado dinámicamente para arriesgar `InpRiskPercent`
      (**1.5% por defecto**, subido desde 0.5% para aumentar la
