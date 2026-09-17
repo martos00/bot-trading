@@ -24,7 +24,7 @@ input ENUM_TIMEFRAMES Temporalidad_Liquidez = PERIOD_H1; // Temporalidad macro p
 // "g_zonaLookbackMacro" (ver más abajo), recalibrada por el módulo de auto-optimización.
 
 input group "=== Filtro de Tendencia Macro ==="
-input bool   InpUsarFiltroTendencia = true;        // Activar filtro de tendencia (evita operar contra la tendencia de fondo)
+input bool   InpUsarFiltroTendencia = false;       // Activar filtro de tendencia (evita operar contra la tendencia de fondo)
 input int    InpTrendMAPeriod       = 200;         // Período de la media móvil de tendencia (en Temporalidad_Liquidez)
 input ENUM_MA_METHOD InpTrendMAMethod = MODE_SMA;  // Método de la media móvil de tendencia
 
@@ -122,21 +122,22 @@ bool           g_circuitoPerdidasActivo  = false;
 // UTILIDADES
 //======================================================================
 
-//--- Calcula el tamaño de un "pip" para el símbolo actual.
-//    En instrumentos de 3 ó 5 decimales, un pip equivale a 10 puntos.
-//    En instrumentos de 2 ó 4 decimales, un pip equivale a 1 punto.
+//--- Calcula el tamaño de un "pip" para XAUUSD.
+//    La heurística de pips por nº de decimales (estándar en pares de Forex)
+//    NO aplica al oro: muchos brokers cotizan XAUUSD con 2 decimales (ej.
+//    4212.45), lo que esa heurística clasificaría como "1 punto = 1 pip"
+//    (0.01), cuando la convención real de mercado para el oro es que un pip
+//    equivale a 0.10 (10 centavos). Usar 0.01 hacía que InpSLBufferPips=10
+//    colocara el SL a solo $0.10 del borde de la zona -- diez veces más
+//    ajustado de lo previsto, y explicaba stops saltando en segundos/minutos
+//    detectados en el backtest. Por eso el valor por defecto para el oro es
+//    fijo (0.10) salvo que el usuario indique InpManualPipSize explícitamente.
 double PipSize()
   {
    if(InpManualPipSize > 0.0)
       return InpManualPipSize;
 
-   int digits = (int)SymbolInfoInteger(_Symbol, SYMBOL_DIGITS);
-   double point = SymbolInfoDouble(_Symbol, SYMBOL_POINT);
-
-   if(digits == 3 || digits == 5)
-      return point * 10.0;
-
-   return point;
+   return 0.10;
   }
 
 //--- Clave única (por símbolo/magic/día) para variables globales persistentes

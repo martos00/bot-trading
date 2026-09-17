@@ -40,13 +40,16 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    dentro de la zona de Oferta macro y se produce un breakout bajista de
    la línea de picos del RSI; compra cuando el precio está dentro de la
    zona de Demanda macro y se produce un breakout alcista de la línea de
-   valles. Además, ambas requieren pasar el **filtro de tendencia macro**
-   (`InpUsarFiltroTendencia`): sólo se permiten ventas si el precio está
-   por debajo de una media móvil larga (`InpTrendMAPeriod`, 200 por
-   defecto) calculada en `Temporalidad_Liquidez`, y compras si está por
-   encima — evita operar en contra de la tendencia de fondo y reduce las
-   rachas de whipsaws en mercado lateral. Lógica en
-   `FiltroTendenciaPermiteVenta()` / `FiltroTendenciaPermiteCompra()`.
+   valles. Opcionalmente, ambas pueden requerir pasar el **filtro de
+   tendencia macro** (`InpUsarFiltroTendencia`, **desactivado por defecto**):
+   sólo se permitirían ventas si el precio está por debajo de una media
+   móvil larga (`InpTrendMAPeriod`, 200 por defecto) calculada en
+   `Temporalidad_Liquidez`, y compras si está por encima. Se desactivó por
+   defecto porque, junto a la zona MTF y el breakout de RSI, dejaba pasar
+   muy pocas señales (sin forma de medir cuántas se descartaban en el
+   backtest); actívalo (`InpUsarFiltroTendencia=true`) si quieres volver a
+   exigirlo. Lógica en `FiltroTendenciaPermiteVenta()` /
+   `FiltroTendenciaPermiteCompra()`.
 4. **Gestión de riesgo institucional**:
    - Lotaje calculado dinámicamente para arriesgar `InpRiskPercent`
      (0.5% por defecto) del balance en cada operación, usando la función
@@ -98,10 +101,15 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
   bróker respecto a UTC. Varía entre brokers (GMT+0, +2, +3, etc.) y es
   necesario para calcular correctamente las 21:00 de Nueva York. Ajusta
   este valor según la especificación de tu bróker antes de operar en real.
-- **`InpManualPipSize`**: por defecto el EA detecta automáticamente el
-  tamaño de "pip" según los decimales del símbolo (10 puntos si tiene 3
-  o 5 decimales, 1 punto si tiene 2 o 4). Si tu bróker cotiza XAUUSD de
-  forma distinta, fija aquí manualmente el valor del pip.
+- **`InpManualPipSize`**: por defecto el EA usa 0.10 como tamaño de "pip"
+  para el oro (la convención de mercado, independientemente de cuántos
+  decimales use tu bróker para cotizar XAUUSD). La heurística de pips por
+  nº de decimales típica de Forex NO aplica al oro: con brokers que cotizan
+  XAUUSD a 2 decimales daba un pip de 0.01, diez veces más pequeño de lo
+  previsto, lo que colocaba el Stop Loss demasiado cerca del precio y
+  provocaba que saltara en segundos o minutos en el backtest. Si tu bróker
+  usa una convención de pip distinta para el oro, fija aquí manualmente el
+  valor correcto.
 
 ## Advertencia
 
