@@ -23,6 +23,11 @@ input ENUM_TIMEFRAMES Temporalidad_Liquidez = PERIOD_H1; // Temporalidad macro p
 // NOTA: el lookback de las zonas ya NO es un input fijo: es la variable global
 // "g_zonaLookbackMacro" (ver más abajo), recalibrada por el módulo de auto-optimización.
 
+input group "=== Filtro de Tendencia Macro ==="
+input bool   InpUsarFiltroTendencia = true;        // Activar filtro de tendencia (evita operar contra la tendencia de fondo)
+input int    InpTrendMAPeriod       = 200;         // Período de la media móvil de tendencia (en Temporalidad_Liquidez)
+input ENUM_MA_METHOD InpTrendMAMethod = MODE_SMA;  // Método de la media móvil de tendencia
+
 input group "=== Indicador 2: RSI Trendlines with Breakouts ==="
 // NOTA: el período del RSI ya NO es un input fijo: es la variable global
 // "g_rsiPeriod" (ver más abajo), recalibrada por el módulo de auto-optimización.
@@ -62,6 +67,7 @@ input int    InpRSIPeriodoVolatilidadBaja   = 10;    // Período de RSI aplicado
 CTrade         trade;
 
 int            g_handleRSI = INVALID_HANDLE;
+int            g_handleTendenciaMA = INVALID_HANDLE;
 datetime       g_ultimaVelaProcesada = 0;      // Última vela procesada en la temporalidad de ejecución (RSI)
 datetime       g_ultimaVelaMacroProcesada = 0; // Última vela procesada en la temporalidad macro (zonas)
 datetime       g_ultimaVelaH1Procesada = 0;    // Última vela H1 procesada por el módulo de auto-optimización
@@ -637,6 +643,46 @@ bool DebeCerrarPorFinDeSemana()
   }
 
 //======================================================================
+// FILTRO DE TENDENCIA MACRO
+//======================================================================
+// Reduce las rachas de pérdidas seguidas en mercado lateral: sólo deja
+// operar a favor de la tendencia de fondo, medida con una media móvil
+// larga (InpTrendMAPeriod) calculada en la misma temporalidad macro que
+// las zonas de Oferta/Demanda (Temporalidad_Liquidez). Si el cierre de
+// la última vela macro cerrada está por encima de la media, se considera
+// tendencia alcista (sólo se permiten compras); si está por debajo,
+// tendencia bajista (sólo se permiten ventas). Con InpUsarFiltroTendencia
+// en false, el filtro queda desactivado y ambos lados quedan permitidos.
+//----------------------------------------------------------------------
+bool FiltroTendenciaPermiteVenta()
+  {
+   if(!InpUsarFiltroTendencia)
+      return true;
+
+   double maBuffer[];
+   ArraySetAsSeries(maBuffer, true);
+   if(CopyBuffer(g_handleTendenciaMA, 0, 1, 1, maBuffer) < 1)
+      return false; // sin datos suficientes todavía: no arriesgar
+
+   double cierreMacro = iClose(_Symbol, Temporalidad_Liquidez, 1);
+   return (cierreMacro < maBuffer[0]); // tendencia bajista
+  }
+
+bool FiltroTendenciaPermiteCompra()
+  {
+   if(!InpUsarFiltroTendencia)
+      return true;
+
+   double maBuffer[];
+   ArraySetAsSeries(maBuffer, true);
+   if(CopyBuffer(g_handleTendenciaMA, 0, 1, 1, maBuffer) < 1)
+      return false;
+
+   double cierreMacro = iClose(_Symbol, Temporalidad_Liquidez, 1);
+   return (cierreMacro > maBuffer[0]); // tendencia alcista
+  }
+
+//======================================================================
 // MÓDULO 4: LÓGICA DE ENTRADA Y SALIDA
 //======================================================================
 
@@ -664,6 +710,10 @@ void EvaluarSenalDeVenta()
 
    // Condición 2: ruptura bajista vigente de la línea de picos del RSI
    if(!BreakoutBajistaVigente())
+      return;
+
+   // Condición 3: filtro de tendencia macro (evita vender en tendencia alcista de fondo)
+   if(!FiltroTendenciaPermiteVenta())
       return;
 
    double pip = PipSize();
@@ -700,6 +750,10 @@ void EvaluarSenalDeCompra()
 
    // Condición 2: ruptura alcista vigente de la línea de valles del RSI
    if(!BreakoutAlcistaVigente())
+      return;
+
+   // Condición 3: filtro de tendencia macro (evita comprar en tendencia bajista de fondo)
+   if(!FiltroTendenciaPermiteCompra())
       return;
 
    double pip = PipSize();
@@ -904,6 +958,13 @@ int OnInit()
       return(INIT_FAILED);
      }
 
+   g_handleTendenciaMA = iMA(_Symbol, Temporalidad_Liquidez, InpTrendMAPeriod, 0, InpTrendMAMethod, PRICE_CLOSE);
+   if(g_handleTendenciaMA == INVALID_HANDLE)
+     {
+      Print("Error al crear la media móvil del filtro de tendencia.");
+      return(INIT_FAILED);
+     }
+
    trade.SetExpertMagicNumber(InpMagicNumber);
 
    g_zonaSupply.activa = false;
@@ -924,6 +985,8 @@ void OnDeinit(const int reason)
   {
    if(g_handleRSI != INVALID_HANDLE)
       IndicatorRelease(g_handleRSI);
+   if(g_handleTendenciaMA != INVALID_HANDLE)
+      IndicatorRelease(g_handleTendenciaMA);
   }
 
 //======================================================================
