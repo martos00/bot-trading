@@ -41,7 +41,7 @@ input double InpSLBufferPips        = 10.0;        // Colchón del Stop Loss en 
 input double InpRiskRewardRatio     = 3.0;         // Ratio Riesgo:Beneficio (1:N)
 input double InpManualPipSize       = 0.0;         // Tamaño de pip manual (0 = automático)
 input bool   InpUsarBreakeven       = true;        // Mover el SL a breakeven cuando la operación vaya a favor
-input double InpBreakevenTriggerR   = 1.0;         // Múltiplo de riesgo (R) de beneficio flotante para activar el breakeven
+input double InpBreakevenTriggerR   = 1.5;         // Múltiplo de riesgo (R) de beneficio flotante para activar el breakeven
 input double InpBreakevenBufferPips = 2.0;         // Colchón en pips sobre el precio de entrada al mover a breakeven
 
 input group "=== Blindaje de Riesgo Institucional ==="

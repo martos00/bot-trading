@@ -50,15 +50,18 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    `FiltroTendenciaPermiteVenta()` / `FiltroTendenciaPermiteCompra()`.
 4. **Breakeven automático** (`InpUsarBreakeven`, activado por defecto):
    en cuanto el precio se mueve a favor `InpBreakevenTriggerR` veces
-   (1.0 por defecto) la distancia de riesgo original de la operación
+   (**1.5 por defecto**) la distancia de riesgo original de la operación
    (entrada-SL), el EA mueve el Stop Loss al precio de entrada más un
    pequeño colchón (`InpBreakevenBufferPips`, 2 pips por defecto), de
    forma que la operación ya no puede cerrarse en pérdida aunque el
-   precio revierta antes de llegar al Take Profit. No cambia la
-   rentabilidad esperada por operación ganadora, pero reduce el
-   drawdown al convertir parte de las operaciones que iban ganando y
-   acaban revirtiendo en cierres a breakeven en vez de en pérdidas
-   completas. Lógica en `GestionarBreakeven()`.
+   precio revierta antes de llegar al Take Profit. Con `InpRiskRewardRatio`
+   en 3.0 por defecto, un disparo demasiado pronto (p.ej. 1.0R) capa parte
+   de las ganancias grandes: la operación llega a 1R, se protege a
+   breakeven, el precio revierte y cierra en 0 en vez de seguir hasta el
+   TP completo (+3R). Subirlo a 1.5R le da más recorrido a la operación
+   antes de proteger, preservando más del upside del ratio 1:3 sin perder
+   la protección contra reversiones fuertes. Lógica en
+   `GestionarBreakeven()`.
 5. **Gestión de riesgo institucional**:
    - Lotaje calculado dinámicamente para arriesgar `InpRiskPercent`
      (**1.5% por defecto**, subido desde 0.5% para aumentar la
