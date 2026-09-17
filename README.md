@@ -40,16 +40,14 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    dentro de la zona de Oferta macro y se produce un breakout bajista de
    la línea de picos del RSI; compra cuando el precio está dentro de la
    zona de Demanda macro y se produce un breakout alcista de la línea de
-   valles. Opcionalmente, ambas pueden requerir pasar el **filtro de
-   tendencia macro** (`InpUsarFiltroTendencia`, **desactivado por defecto**):
-   sólo se permitirían ventas si el precio está por debajo de una media
-   móvil larga (`InpTrendMAPeriod`, 200 por defecto) calculada en
-   `Temporalidad_Liquidez`, y compras si está por encima. Se desactivó por
-   defecto porque, junto a la zona MTF y el breakout de RSI, dejaba pasar
-   muy pocas señales (sin forma de medir cuántas se descartaban en el
-   backtest); actívalo (`InpUsarFiltroTendencia=true`) si quieres volver a
-   exigirlo. Lógica en `FiltroTendenciaPermiteVenta()` /
-   `FiltroTendenciaPermiteCompra()`.
+   valles. Ambas requieren además pasar el **filtro de tendencia macro**
+   (`InpUsarFiltroTendencia`, **activado por defecto**): sólo se permiten
+   ventas si el precio está por debajo de una media móvil larga
+   (`InpTrendMAPeriod`, 200 por defecto) calculada en
+   `Temporalidad_Liquidez`, y compras si está por encima. Desactívalo
+   (`InpUsarFiltroTendencia=false`) si prefieres dejar pasar más señales a
+   cambio de operar también contra la tendencia de fondo. Lógica en
+   `FiltroTendenciaPermiteVenta()` / `FiltroTendenciaPermiteCompra()`.
 4. **Gestión de riesgo institucional**:
    - Lotaje calculado dinámicamente para arriesgar `InpRiskPercent`
      (**1.5% por defecto**, subido desde 0.5% para aumentar la

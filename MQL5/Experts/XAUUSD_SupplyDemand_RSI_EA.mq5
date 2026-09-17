@@ -24,7 +24,7 @@ input ENUM_TIMEFRAMES Temporalidad_Liquidez = PERIOD_H1; // Temporalidad macro p
 // "g_zonaLookbackMacro" (ver más abajo), recalibrada por el módulo de auto-optimización.
 
 input group "=== Filtro de Tendencia Macro ==="
-input bool   InpUsarFiltroTendencia = false;       // Activar filtro de tendencia (evita operar contra la tendencia de fondo)
+input bool   InpUsarFiltroTendencia = true;        // Activar filtro de tendencia (evita operar contra la tendencia de fondo)
 input int    InpTrendMAPeriod       = 200;         // Período de la media móvil de tendencia (en Temporalidad_Liquidez)
 input ENUM_MA_METHOD InpTrendMAMethod = MODE_SMA;  // Método de la media móvil de tendencia
 
