@@ -58,6 +58,11 @@ input double InpMaxDailyLossPercent  = 4.0;        // % máximo de pérdida diar
 input double InpMaxSpreadPips        = 4.0;        // Spread máximo permitido en pips
 input int    InpMaxPerdidasConsecutivas = 3;       // Nº de pérdidas seguidas en el día que bloquean nuevas entradas
 
+input group "=== Filtro de Horario de Sesión ==="
+input bool   InpUsarFiltroSesion    = true;        // Sólo abrir operaciones en la franja de mayor liquidez del oro
+input int    InpSesionInicioHoraNY  = 8;           // Hora de inicio (hora de Nueva York): solapamiento Londres-NY
+input int    InpSesionFinHoraNY     = 17;          // Hora de fin (hora de Nueva York): cierre de la sesión de NY
+
 input group "=== Cierre de Fin de Semana ==="
 input bool   InpCerrarViernes       = true;        // Activar cierre obligatorio de fin de semana
 input int    InpFridayCloseHourNY   = 21;          // Hora de Nueva York para liquidar (21:00)
@@ -697,6 +702,32 @@ bool DebeCerrarPorFinDeSemana()
       return true;
 
    return false;
+  }
+
+//----------------------------------------------------------------------
+// FILTRO DE HORARIO DE SESIÓN
+// El oro se mueve con volumen y tendencias limpias durante el solapamiento
+// Londres-Nueva York y la sesión de Nueva York; fuera de esa franja (sesión
+// asiática, madrugada europea) el volumen es más bajo y las rupturas del RSI
+// tienden a ser ruido. Este filtro sólo bloquea la APERTURA de operaciones
+// nuevas fuera de [InpSesionInicioHoraNY, InpSesionFinHoraNY) en hora de
+// Nueva York; una posición ya abierta sigue gestionándose (breakeven,
+// trailing, Kill Switch, cierre de fin de semana) a cualquier hora.
+//----------------------------------------------------------------------
+bool SesionPermiteOperar()
+  {
+   if(!InpUsarFiltroSesion)
+      return true;
+
+   datetime horaNY = ConvertirServidorANuevaYork(TimeCurrent());
+   MqlDateTime dt;
+   TimeToStruct(horaNY, dt);
+
+   if(InpSesionInicioHoraNY <= InpSesionFinHoraNY)
+      return (dt.hour >= InpSesionInicioHoraNY && dt.hour < InpSesionFinHoraNY);
+
+// Rango que cruza la medianoche (por si se configura así)
+   return (dt.hour >= InpSesionInicioHoraNY || dt.hour < InpSesionFinHoraNY);
   }
 
 //======================================================================
@@ -1389,7 +1420,12 @@ void OnTick()
    if(g_circuitoPerdidasActivo)
       return;
 
-   // 9) Evaluación de señales de entrada (contexto + gatillo)
+   // 9) Filtro de horario de sesión: sólo abre operaciones nuevas en la franja de
+   //    mayor liquidez del oro (una posición ya abierta se sigue gestionando siempre)
+   if(!SesionPermiteOperar())
+      return;
+
+   // 10) Evaluación de señales de entrada (contexto + gatillo)
    EvaluarSenalDeVenta();
    EvaluarSenalDeCompra();
   }

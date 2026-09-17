@@ -93,7 +93,19 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    posición con trailing (comportamiento anterior). Se activa después del
    breakeven (`InpBreakevenTriggerR` en 1.5R) y sólo mejora el SL, nunca
    lo empeora. Lógica en `GestionarTrailingStop()`.
-6. **Gestión de riesgo institucional**:
+6. **Filtro de horario de sesión** (`InpUsarFiltroSesion`, activado por
+   defecto): el oro se mueve con volumen y tendencias limpias durante el
+   solapamiento Londres-Nueva York y la sesión de Nueva York; fuera de
+   esa franja (sesión asiática, madrugada europea) el volumen es más bajo
+   y las rupturas del RSI tienden a ser ruido. El EA sólo abre
+   operaciones **nuevas** entre `InpSesionInicioHoraNY` y
+   `InpSesionFinHoraNY` (**08:00–17:00 hora de Nueva York por defecto**);
+   una posición ya abierta se sigue gestionando con normalidad
+   (breakeven, trailing, Kill Switch, cierre de fin de semana) a
+   cualquier hora, y el filtro no restringe el símbolo con el que se
+   opera (el EA siempre opera únicamente XAUUSD), sólo la franja horaria
+   dentro de ese único mercado. Lógica en `SesionPermiteOperar()`.
+7. **Gestión de riesgo institucional**:
    - Lotaje calculado dinámicamente para arriesgar `InpRiskPercent`
      (**1.5% por defecto**, subido desde 0.5% para aumentar la
      rentabilidad total del sistema) del balance en cada operación,
@@ -126,7 +138,7 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
      en positivo) y bloquea nuevas entradas en cuanto se alcanza el
      límite, mucho antes de agotar el presupuesto diario completo del 4%.
      Detecta el resultado de cada cierre en `OnTradeTransaction()`.
-7. **Auto-Optimización Walk-Forward (Método 1)**: una vez por semana,
+8. **Auto-Optimización Walk-Forward (Método 1)**: una vez por semana,
    en la primera vela de H1 tras el cierre de fin de semana, el EA mide
    el régimen de volatilidad del oro (ATR reciente vs. ATR medio, y
    desviación estándar del cierre) sobre las últimas
