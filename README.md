@@ -1,183 +1,197 @@
-# XAUUSD Supply/Demand + RSI Trendline Breakout EA
+# XAUUSD Liquidity Sweep -> MSS -> FVG Retest EA
 
-Expert Advisor para MetaTrader 5, diseñado para operar **XAUUSD (Oro)** en
-temporalidad de 5 minutos (M5), pensado para superar y operar cuentas de
-fondeo (prop firms).
+Expert Advisor para MetaTrader 5, diseñado para operar **XAUUSD (Oro)**
+combinando un régimen de tendencia en H4 con una secuencia de entrada
+100% objetiva en M15: **Liquidity Sweep -> Market Structure Shift (MSS)
+-> Fair Value Gap (FVG) Retest**.
 
-Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
+> Este EA sustituyó en septiembre de 2026 a una versión anterior basada
+> en zonas de Oferta/Demanda + rupturas de trendlines sobre el RSI. La
+> gestión de riesgo, ejecución y position management (Kill Switch,
+> filtro de spread, cierre de fin de semana, circuito de pérdidas
+> consecutivas, breakeven, trailing stop y cierre parcial) se mantuvieron
+> sin cambios; sólo cambió la lógica de generación de señales.
+
+Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5` (el
+nombre del archivo es un resto de la versión anterior; se mantuvo para
+no romper referencias/despliegues existentes — puede renombrarse sin
+problema si se prefiere).
 
 ## Instalación
 
 1. Copia el archivo `.mq5` dentro de `MQL5/Experts/` de tu terminal MetaTrader 5
    (`Archivo -> Abrir carpeta de datos -> MQL5 -> Experts`).
 2. Compílalo con MetaEditor (F7).
-3. Arrástralo sobre un gráfico de **XAUUSD en temporalidad M5**.
-4. Activa "Permitir trading algorítmico".
+3. Arrástralo sobre un gráfico de **XAUUSD** (el EA usa internamente M15
+   para la señal y H4 para el régimen, independientemente de la
+   temporalidad del gráfico donde se adjunte).
+4. Activa "Permitir trading algorítmico" y, en la pestaña "Dependencias"
+   de las propiedades del EA, activa el acceso a archivos si quieres el
+   log CSV (`InpRegistrarCSV`).
 
-## Arquitectura del EA
+## Arquitectura de la señal (100% objetiva, sin repintado)
 
-1. **Contexto — Zonas de Oferta y Demanda Multi-Timeframe (MTF)**: replica
-   "Supply and Demand Visible Range" de LuxAlgo, pero haciendo "zoom
-   alejado" hacia una temporalidad macro configurable en
-   `Temporalidad_Liquidez` (por defecto H1, también válido H4),
-   independientemente de la temporalidad del gráfico donde corre el EA.
-   Las zonas se recalculan cada vez que cierra una nueva vela de esa
-   temporalidad macro, usando el máximo/mínimo de las últimas
-   `g_zonaLookbackMacro` velas (100 por defecto) y el cierre de la vela
-   extrema, para reflejar liquidez institucional real acumulada durante
-   horas/días completos en vez de ruido de velas de 5 minutos.
-2. **Gatillo — RSI Trendlines with Breakouts**: RSI de `g_rsiPeriod`
-   períodos (14 por defecto) sobre cierre, calculado en la temporalidad
-   de ejecución `InpTimeframe` (5M por defecto). El EA detecta picos y
-   valles locales del RSI (pivotes),
-   traza una línea de tendencia entre los dos últimos pivotes de cada
-   tipo y valida una ruptura ("breakout") cuando el RSI cruza y cierra
-   por encima/debajo de dicha línea. El cálculo detallado está
-   comentado en español directamente en el código, dentro de
-   `ActualizarRSITrendlinesYBreakouts()` y `BuscarUltimosDosPivotes()`.
-3. **Entradas**: el gatillo del RSI en 5M sólo se evalúa cuando el precio
-   actual ya entró en una zona macro (MTF): venta cuando el precio está
-   dentro de la zona de Oferta macro y se produce un breakout bajista de
-   la línea de picos del RSI; compra cuando el precio está dentro de la
-   zona de Demanda macro y se produce un breakout alcista de la línea de
-   valles. Ambas requieren además pasar el **filtro de zona fresca**
-   (`InpUsarFiltroZonaFresca`, **activado por defecto**): una zona de
-   Oferta/Demanda pierde fuerza institucional cada vez que el precio la
-   revisita, así que sólo se permite operar durante la primera visita del
-   precio a la zona; en cuanto el precio sale de ella tras haber entrado,
-   la zona queda marcada como "puesta a prueba" (`tocada`) y no vuelve a
-   generar señales hasta que se forme una zona nueva en el siguiente
-   cierre de vela macro. Desactívalo (`InpUsarFiltroZonaFresca=false`) si
-   prefieres operar también los retests de una misma zona. Lógica en
-   `ActualizarEstadoDeZona()` / `MarcarZonasTocadas()`. Y el **filtro de
-   tendencia macro** (`InpUsarFiltroTendencia`, **activado por defecto**): sólo se permiten
-   ventas si el precio está por debajo de una media móvil larga
-   (`InpTrendMAPeriod`, 200 por defecto) calculada en
-   `Temporalidad_Liquidez`, y compras si está por encima. Desactívalo
-   (`InpUsarFiltroTendencia=false`) si prefieres dejar pasar más señales a
-   cambio de operar también contra la tendencia de fondo. Lógica en
-   `FiltroTendenciaPermiteVenta()` / `FiltroTendenciaPermiteCompra()`.
-4. **Breakeven automático** (`InpUsarBreakeven`, activado por defecto):
-   en cuanto el precio se mueve a favor `InpBreakevenTriggerR` veces
-   (**1.5 por defecto**) la distancia de riesgo original de la operación
-   (entrada-SL), el EA mueve el Stop Loss al precio de entrada más un
-   pequeño colchón (`InpBreakevenBufferPips`, 2 pips por defecto), de
-   forma que la operación ya no puede cerrarse en pérdida aunque el
-   precio revierta antes de llegar al Take Profit. Con `InpRiskRewardRatio`
-   en 3.0 por defecto, un disparo demasiado pronto (p.ej. 1.0R) capa parte
-   de las ganancias grandes: la operación llega a 1R, se protege a
-   breakeven, el precio revierte y cierra en 0 en vez de seguir hasta el
-   TP completo (+3R). Subirlo a 1.5R le da más recorrido a la operación
-   antes de proteger, preservando más del upside del ratio 1:3 sin perder
-   la protección contra reversiones fuertes. Lógica en
-   `GestionarBreakeven()`.
-5. **Cierre parcial en el TP original + trailing stop en el resto**
-   (`InpUsarTrailingStop` y `InpUsarCierreParcial`, ambos activados por
-   defecto): con un TP fijo en 1:3, cualquier tendencia que se moviera
-   más allá de 3R cerraba igualmente en el TP, dejando sobre la mesa todo
-   el recorrido adicional. En cuanto el precio se mueve a favor
-   `InpCierreParcialTriggerR` veces (**3.0 por defecto, el mismo nivel
-   que el TP original**) la distancia de riesgo, el EA:
-   1. Cierra `InpCierreParcialPercent` % del volumen (**50% por
-      defecto**) para asegurar la ganancia del ratio 1:3 original, igual
-      que si hubiera cerrado en el TP fijo.
-   2. Libera el TP fijo del volumen restante (lo quita) y empieza a
-      arrastrar su Stop Loss a `InpTrailingDistanceR` (**1.0 por
-      defecto**) de distancia por detrás del precio, siempre en la
-      dirección favorable.
-   Así, la mitad de la ganancia queda asegurada en el objetivo original y
-   la otra mitad puede seguir corriendo mucho más allá de +3R en
-   tendencias fuertes, sin aumentar el riesgo inicial de la operación. Si
-   se desactiva `InpUsarCierreParcial`, el EA simplemente libera el TP
-   del 100% del volumen en ese mismo nivel y deja correr toda la
-   posición con trailing (comportamiento anterior). Se activa después del
-   breakeven (`InpBreakevenTriggerR` en 1.5R) y sólo mejora el SL, nunca
-   lo empeora. Lógica en `GestionarTrailingStop()`.
-6. **Filtro de horario de sesión** (`InpUsarFiltroSesion`, activado por
-   defecto): el oro se mueve con volumen y tendencias limpias durante el
-   solapamiento Londres-Nueva York y la sesión de Nueva York; fuera de
-   esa franja (sesión asiática, madrugada europea) el volumen es más bajo
-   y las rupturas del RSI tienden a ser ruido. El EA sólo abre
-   operaciones **nuevas** entre `InpSesionInicioHoraNY` y
-   `InpSesionFinHoraNY` (**08:00–17:00 hora de Nueva York por defecto**);
-   una posición ya abierta se sigue gestionando con normalidad
-   (breakeven, trailing, Kill Switch, cierre de fin de semana) a
-   cualquier hora, y el filtro no restringe el símbolo con el que se
-   opera (el EA siempre opera únicamente XAUUSD), sólo la franja horaria
-   dentro de ese único mercado. Lógica en `SesionPermiteOperar()`.
-7. **Gestión de riesgo institucional**:
-   - Lotaje calculado dinámicamente para arriesgar `InpRiskPercent`
-     (**1.5% por defecto**, subido desde 0.5% para aumentar la
-     rentabilidad total del sistema) del balance en cada operación,
-     usando la función nativa `OrderCalcProfit()` para preguntarle
-     directamente al bróker cuál sería la pérdida real de 1 lote entre
-     el precio de entrada y el Stop Loss, en vez de derivarla
-     manualmente a partir de `SYMBOL_TRADE_TICK_VALUE`/
-     `SYMBOL_TRADE_TICK_SIZE` (que en algunos brokers no reflejan el
-     valor real por punto en XAUUSD y podían provocar lotajes varias
-     veces más grandes de lo previsto). Lógica en `CalcularLotaje()`.
-     A 1.5% de riesgo, 3 pérdidas seguidas ya rondan el 4.5% de
-     pérdida diaria, por lo que el Kill Switch diario (ver abajo) puede
-     activarse antes o al mismo tiempo que el circuito de pérdidas
-     consecutivas (`InpMaxPerdidasConsecutivas`); ambos siguen actuando
-     como redes de seguridad independientes, solo que ahora se solapan
-     más. Si prefieres más margen entre ambos, baja `InpRiskPercent` o
-     sube `InpMaxDailyLossPercent`.
-   - Kill Switch diario (`InpMaxDailyLossPercent`, 4% por defecto):
-     cierra todo y bloquea el EA hasta el cambio de día del servidor.
-     El estado se persiste en variables globales de la terminal por si
-     se reinicia MetaTrader durante el día. Lógica detallada comentada
-     en `GestionarCambioDeDia()` y `ComprobarKillSwitchDiario()`.
-   - Filtro de spread máximo (`InpMaxSpreadPips`).
-   - Cierre obligatorio de posiciones los viernes a las 21:00 hora de
-     Nueva York (`InpFridayCloseHourNY`), calculado aplicando el
-     horario de verano de EE.UU.
-   - **Circuito de pérdidas consecutivas** (`InpMaxPerdidasConsecutivas`,
-     3 por defecto): complementa al Kill Switch del 4%. Cuenta las
-     pérdidas seguidas del día (se reinicia en cuanto una operación cierra
-     en positivo) y bloquea nuevas entradas en cuanto se alcanza el
-     límite, mucho antes de agotar el presupuesto diario completo del 4%.
-     Detecta el resultado de cada cierre en `OnTradeTransaction()`.
-8. **Auto-Optimización Walk-Forward (Método 1)**: una vez por semana,
-   en la primera vela de H1 tras el cierre de fin de semana, el EA mide
-   el régimen de volatilidad del oro (ATR reciente vs. ATR medio, y
-   desviación estándar del cierre) sobre las últimas
-   `InpVelasAnalisisOptimizacion` velas de H1 (500 por defecto) y
-   recalibra dinámicamente `g_zonaLookbackMacro` y `g_rsiPeriod`:
-   valores más amplios (`InpZonaLookbackVolatilidadAlta` = 100,
-   `InpRSIPeriodoVolatilidadAlta` = 21) si la volatilidad reciente supera
-   la media histórica, o más ajustados (`InpZonaLookbackVolatilidadBaja`
-   = 30, `InpRSIPeriodoVolatilidadBaja` = 10) si el mercado está lento.
-   Esta recalibración **no afecta** al riesgo por operación, el Kill
-   Switch diario, el filtro de spread ni el cierre de fin de semana, que
-   permanecen totalmente independientes. Lógica comentada en detalle en
-   `EjecutarOptimizacionSemanal()`. Se puede desactivar con
-   `InpOptimizacionActiva = false`.
+Todas las reglas siguientes se evalúan exclusivamente sobre velas ya
+CERRADAS (nunca sobre la vela en formación), y ningún cálculo de una
+temporalidad usa información de una vela que temporalmente no habría
+existido todavía en la otra temporalidad.
 
-## Parámetros importantes a calibrar por bróker
+1. **Régimen de mercado (H4)** — `ActualizarRegimen()`:
+   alcista si el cierre H4 > EMA(`InpEMARegimenPeriod`, 200 por defecto)
+   Y los últimos `InpRegimenSwingsAConfirmar` swing highs y swing lows en
+   H4 son crecientes (HH/HL); bajista si el cierre < EMA y los swings son
+   decrecientes (LH/LL). Si no hay swings suficientes o la estructura es
+   mixta, el régimen queda **INDEFINIDO** y no se buscan setups nuevos.
+   El régimen alcista sólo habilita setups LONG; el bajista, sólo SHORT
+   (filtro estricto, no "principalmente" — ver "Decisiones de diseño").
 
-- **`Temporalidad_Liquidez`**: temporalidad macro usada para las zonas
-  de Oferta/Demanda (H1 por defecto; H4 es una alternativa válida para
-  zonas aún más amplias). Cuanto mayor sea esta temporalidad, más
-  "institucionales" y menos frecuentes serán las zonas detectadas.
-- **`InpBrokerGMTOffsetHrs`**: offset (en horas) del servidor de tu
-  bróker respecto a UTC. Varía entre brokers (GMT+0, +2, +3, etc.) y es
-  necesario para calcular correctamente las 21:00 de Nueva York. Ajusta
-  este valor según la especificación de tu bróker antes de operar en real.
-- **`InpManualPipSize`**: por defecto el EA usa 0.10 como tamaño de "pip"
-  para el oro (la convención de mercado, independientemente de cuántos
-  decimales use tu bróker para cotizar XAUUSD). La heurística de pips por
-  nº de decimales típica de Forex NO aplica al oro: con brokers que cotizan
-  XAUUSD a 2 decimales daba un pip de 0.01, diez veces más pequeño de lo
-  previsto, lo que colocaba el Stop Loss demasiado cerca del precio y
-  provocaba que saltara en segundos o minutos en el backtest. Si tu bróker
-  usa una convención de pip distinta para el oro, fija aquí manualmente el
-  valor correcto.
+2. **Liquidity zones (M15)** — `ReconstruirZonasLiquidez()`, recalculadas
+   al cerrar cada vela M15:
+   - Previous Week High/Low (importancia 5), Previous Day High/Low (4),
+     Equal High/Low (4, agrupando swings dentro de
+     `InpEqualToleranceATRMult`×ATR), Asia High/Low (3, sesión
+     `InpAsiaInicioHoraNY`–`InpAsiaFinHoraNY` hora de Nueva York), Swing
+     High/Low (2, con `InpSwingLeftBars`/`InpSwingRightBars` velas de
+     confirmación).
+   - Las zonas del mismo lado (buy-side/sell-side) que caen dentro de
+     `InpZonaAgrupamientoATRMult`×ATR se fusionan en una sola,
+     conservando la de mayor importancia.
+
+3. **Liquidity Sweep** — `BuscarSweepSellSide()` / `BuscarSweepBuySide()`:
+   sweep de una única vela cerrada cuya mecha penetra la zona una
+   distancia limitada (≤ `InpMaxSweepDistanceATRMult`×ATR(`InpATRPeriod`))
+   y cuyo **cierre** vuelve a quedar del lado seguro de la zona. Exige
+   interacción real con una zona ya identificada, no cualquier mecha.
+
+4. **Market Structure Shift (MSS)** — `ComprobarMSS()`: tras el sweep, se
+   localiza el último swing significativo confirmado **antes** del sweep
+   (nunca después) y se espera un cierre que lo supere (LONG) o lo pierda
+   (SHORT) en una vela **posterior** al sweep.
+
+5. **Fair Value Gap (FVG)** — `BuscarFVG()` / `DetectarFVG()`: tras el
+   MSS, se busca el primer hueco de 3 velas en la dirección del
+   movimiento (low actual > high de 2 velas atrás para FVG alcista, y a
+   la inversa para bajista). Si `InpUsarFiltroFVGMinimo` está activo se
+   ignoran los huecos menores a `InpFVGMinSizeATRMult`×ATR.
+
+6. **Retest y entrada**: al encontrar un FVG válido, el EA coloca una
+   **orden límite** (`BuyLimit`/`SellLimit`) al `InpFVGEntryPercent`%
+   de profundidad del FVG (25/50/75/100, 50% por defecto), con
+   expiración de `InpSetupMaxBarras` velas M15. La secuencia completa
+   (Sweep → MSS → FVG → Retest → Entry) es obligatoria: si cualquier
+   paso falla o expira, no hay operación.
+
+7. **Invalidación**: si mientras se espera el FVG o el retest el precio
+   cierra de nuevo más allá del nivel del MSS (en contra), la orden
+   pendiente se cancela y el setup se descarta.
+
+## Stop Loss y Take Profit
+
+- **SL**: `sweep_low - InpSLBufferATRMult×ATR` (LONG) /
+  `sweep_high + InpSLBufferATRMult×ATR` (SHORT) — invalida directamente
+  la hipótesis del sweep.
+- **TP — Modo A** (`InpModoTP = MODO_TP_FIJO_RR`): fijo a `InpFixedRR`
+  (2.0 por defecto).
+- **TP — Modo B** (`InpModoTP = MODO_TP_SIGUIENTE_LIQUIDEZ`): la
+  liquidity zone relevante más cercana en dirección del trade cuyo RR
+  implícito ya cumpla `InpMinimumRR`.
+- Si el TP lógico más cercano no alcanza `InpMinimumRR` (2.0 por
+  defecto), **no se abre la operación** (se descarta el setup), en
+  ambos modos.
+
+## Position Sizing y límites
+
+- Riesgo como % del balance (`InpRiskPercent`, valores previstos
+  0.25/0.50/0.75/1.00, **0.50% por defecto**), vía `CalcularLotaje()` +
+  `OrderCalcProfit()` (sin martingala: el riesgo nunca cambia tras una
+  pérdida).
+- Máximo `InpMaxOperacionesPorSesion` operaciones por sesión (sesión =
+  día de trading del servidor, 2 por defecto).
+- Una única posición gestionada a la vez (no se buscan setups nuevos con
+  una posición u orden pendiente ya abierta), lo que además impide
+  automáticamente abrir una segunda operación en la misma dirección.
+- Cada sweep que llega a abrir una operación queda consumido (el setup
+  se resetea nada más rellenarse la orden), evitando reentradas sobre el
+  mismo sweep.
+
+## Gestión de posición, riesgo institucional y filtros (heredados sin cambios)
+
+- **Breakeven** (`InpUsarBreakeven`, `InpBreakevenTriggerR`,
+  `InpBreakevenBufferPips`), **cierre parcial + trailing**
+  (`InpUsarCierreParcial`, `InpCierreParcialPercent`,
+  `InpCierreParcialTriggerR`, `InpUsarTrailingStop`,
+  `InpTrailingDistanceR`).
+- **Kill Switch diario** (`InpMaxDailyLossPercent`), **filtro de spread**
+  (`InpMaxSpreadPips`), **circuito de pérdidas consecutivas**
+  (`InpMaxPerdidasConsecutivas`), **cierre de fin de semana**
+  (`InpCerrarViernes`, `InpFridayCloseHourNY`, `InpBrokerGMTOffsetHrs`),
+  **filtro de horario de sesión** (`InpUsarFiltroSesion`,
+  `InpSesionInicioHoraNY`, `InpSesionFinHoraNY`; ahora sólo bloquea la
+  búsqueda de sweeps **nuevos**, no la gestión de un setup/posición ya en
+  curso).
+
+## Log CSV de operaciones
+
+Con `InpRegistrarCSV = true` (por defecto), cada operación cerrada se
+añade a `InpNombreArchivoCSV` (`LiquiditySweepMSS_FVG_Log.csv` por
+defecto, en la carpeta `MQL5/Files/` del terminal o `Tester/Files/` si
+corre en el Strategy Tester) con: fecha/hora de apertura y cierre,
+dirección, tipo e importancia de la liquidity zone barrida, precio y
+distancia del sweep, nivel del MSS, límites del FVG, precio de entrada,
+SL, TP, RR planeado, resultado en R, resultado monetario, duración,
+drawdown durante la operación y régimen 4H vigente.
+
+Este log es necesario porque el informe nativo del Strategy Tester de
+MT5 no separa resultados por dirección ni por tipo de zona, ni calcula
+CAGR o Sortino. Para esas métricas, usa el script complementario:
+
+```
+python3 analysis/analizar_backtest.py "<ruta al CSV>" --balance-inicial <balance_inicial_del_test>
+```
+
+(requiere `pandas`/`numpy`; instala con `pip install pandas numpy` si
+hace falta). Calcula Net Profit, CAGR, Max Drawdown, Sharpe/Sortino
+(aproximados a nivel de operación), Profit Factor, Win Rate, Average
+Win/Loss, Expectancy, nº de operaciones, R medio, mejor/peor operación,
+rachas de ganadoras/perdedoras consecutivas y exposición media —
+globalmente y desglosado por LONG/SHORT y por tipo de liquidity zone.
+
+## Validación / Walk-Forward
+
+El repositorio no incluye un motor de backtesting propio: el backtest se
+ejecuta en el Strategy Tester nativo de MetaTrader 5. Para la división
+70% desarrollo / 15% validación / 15% out-of-sample, ejecuta tres
+backtests separados (mismo EA compilado, mismos parámetros) cambiando
+sólo el rango de fechas del Tester a los tres tramos correspondientes de
+tu histórico disponible, y compara los informes (y los CSV, con el
+script de arriba) entre sí. Para walk-forward, el Strategy Tester de
+MT5 incluye un campo nativo "Forward" en la configuración del test que
+reserva automáticamente el tramo final del rango como período de
+validación separado del de optimización — actívalo si vas a optimizar
+alguno de los parámetros listados más abajo.
+
+**No optimices ningún parámetro usando el tramo out-of-sample.**
+
+## Parámetros pensados para pruebas de robustez (no para maximizar el resultado histórico)
+
+`InpSwingLeftBars`/`InpSwingRightBars`, `InpEqualToleranceATRMult`,
+`InpMaxSweepDistanceATRMult`, `InpSLBufferATRMult`, `InpFVGMinSizeATRMult`,
+`InpFVGEntryPercent`, `InpMinimumRR`, `InpRiskPercent`,
+`InpUsarFiltroSesion`/`InpSesionInicioHoraNY`/`InpSesionFinHoraNY`.
+
+## Objetivos de investigación (no garantizados)
+
+CAGR ≥ 25%, Max Drawdown ≤ 20%, Profit Factor ≥ 1.5, Sharpe ≥ 1.0 sobre
+un período histórico largo. Son objetivos a **comprobar empíricamente**
+ejecutando el backtest — no se ha forzado ni asumido que la estrategia
+los alcance; si no se alcanzan, el resultado real es el que hay que
+reportar.
 
 ## Advertencia
 
-Antes de usarlo en una cuenta de fondeo real, realiza pruebas exhaustivas
-en el Strategy Tester (modo "Cada tick basado en datos reales") y en
-cuenta demo. Verifica que `InpBrokerGMTOffsetHrs` esté correctamente
-calibrado para el cierre de fin de semana y que el símbolo `XAUUSD` de tu
-bróker coincide con el usado en el gráfico donde se adjunta el EA.
+Antes de usarlo en una cuenta de fondeo real, realiza pruebas
+exhaustivas en el Strategy Tester (modo "Cada tick basado en datos
+reales") y en cuenta demo. Verifica que `InpBrokerGMTOffsetHrs` esté
+correctamente calibrado (afecta al cierre de fin de semana, la sesión
+asiática y el filtro de horario de sesión) y que el símbolo `XAUUSD` de
+tu bróker coincide con el usado en el gráfico donde se adjunta el EA.

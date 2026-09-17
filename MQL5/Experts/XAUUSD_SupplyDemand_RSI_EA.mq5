@@ -1,11 +1,12 @@
 //+------------------------------------------------------------------+
 //|                                XAUUSD_SupplyDemand_RSI_EA.mq5   |
-//|   EA para XAUUSD basado en zonas de Oferta/Demanda (contexto)   |
-//|   y rupturas de líneas de tendencia sobre el RSI (gatillo).     |
-//|   Diseñado con blindaje de riesgo para cuentas de fondeo.       |
+//|   Estrategia: LIQUIDITY SWEEP -> MARKET STRUCTURE SHIFT (MSS)   |
+//|   -> FAIR VALUE GAP (FVG) RETEST, sobre XAUUSD.                 |
+//|   La gestión de riesgo, ejecución y position management se     |
+//|   mantienen sin cambios respecto a la versión anterior del EA. |
 //+------------------------------------------------------------------+
 #property copyright "Bot Trading"
-#property version   "1.00"
+#property version   "2.00"
 #property strict
 
 #include <Trade\Trade.mqh>
@@ -15,155 +16,198 @@
 //======================================================================
 
 input group "=== Configuración General ==="
-input ulong  InpMagicNumber         = 20250916;   // Número mágico
-input ENUM_TIMEFRAMES InpTimeframe  = PERIOD_M5;   // Temporalidad de ejecución / gatillo RSI (5M)
+input ulong  InpMagicNumber             = 20250916;   // Número mágico
+input ENUM_TIMEFRAMES InpTimeframeEntrada = PERIOD_M15; // Temporalidad de detección de liquidez/sweep/MSS/FVG/entrada
+input ENUM_TIMEFRAMES InpTimeframeRegimen = PERIOD_H4;  // Temporalidad del régimen de tendencia principal
 
-input group "=== Indicador 1: Zonas de Oferta y Demanda (Multi-Timeframe) ==="
-input ENUM_TIMEFRAMES Temporalidad_Liquidez = PERIOD_H1; // Temporalidad macro para zonas de liquidez (H1 o H4)
-// NOTA: el lookback de las zonas ya NO es un input fijo: es la variable global
-// "g_zonaLookbackMacro" (ver más abajo), recalibrada por el módulo de auto-optimización.
+input group "=== Régimen de Mercado (H4) ==="
+input int    InpEMARegimenPeriod        = 200;        // Período de la EMA de régimen en H4
+input int    InpRegimenSwingBars        = 2;          // Velas a cada lado para confirmar swings de estructura en H4
+input int    InpRegimenSwingsAConfirmar = 2;          // Nº de HH/HL (o LH/LL) consecutivos exigidos
 
-input group "=== Filtro de Zona Fresca ==="
-input bool   InpUsarFiltroZonaFresca = true;       // Sólo operar el primer toque de cada zona (bloquea retests)
+input group "=== Detección de Liquidez (M15) ==="
+input int    InpSwingLeftBars           = 5;          // Velas a la izquierda para confirmar un swing
+input int    InpSwingRightBars          = 5;          // Velas a la derecha para confirmar un swing
+input double InpEqualToleranceATRMult   = 0.10;       // Tolerancia equal high/low, en múltiplos de ATR
+input double InpZonaAgrupamientoATRMult = 0.15;       // Distancia máxima para fusionar zonas de liquidez próximas
+input int    InpAsiaInicioHoraNY        = 19;         // Inicio de la sesión asiática (hora de Nueva York, día anterior)
+input int    InpAsiaFinHoraNY           = 3;          // Fin de la sesión asiática (hora de Nueva York)
+input int    InpSwingHistorialBarras    = 300;        // Velas M15 escaneadas hacia atrás para localizar swings
 
-input group "=== Filtro de Tendencia Macro ==="
-input bool   InpUsarFiltroTendencia = true;        // Activar filtro de tendencia (evita operar contra la tendencia de fondo)
-input int    InpTrendMAPeriod       = 200;         // Período de la media móvil de tendencia (en Temporalidad_Liquidez)
-input ENUM_MA_METHOD InpTrendMAMethod = MODE_SMA;  // Método de la media móvil de tendencia
+input group "=== Liquidity Sweep ==="
+input int    InpATRPeriod               = 14;         // Período del ATR (en InpTimeframeEntrada)
+input double InpMaxSweepDistanceATRMult = 0.5;        // Penetración máxima permitida, en múltiplos de ATR
 
-input group "=== Indicador 2: RSI Trendlines with Breakouts ==="
-// NOTA: el período del RSI ya NO es un input fijo: es la variable global
-// "g_rsiPeriod" (ver más abajo), recalibrada por el módulo de auto-optimización.
-input int    InpRSITrendLookback    = 150;         // Velas analizadas para localizar pivotes del RSI
-input int    InpPivotLeftBars       = 3;           // Barras a la izquierda para confirmar un pivote
-input int    InpPivotRightBars      = 3;           // Barras a la derecha para confirmar un pivote
-input int    InpSignalValidityBars  = 3;           // Nº de velas que la ruptura del RSI permanece "armada"
+input group "=== Market Structure Shift (MSS) / Timeout del Setup ==="
+input int    InpSetupMaxBarras          = 48;         // Velas máximas para completar sweep -> MSS -> FVG -> retest
 
-input group "=== Gestión de Posición (SL / TP) ==="
-input double InpSLBufferPips        = 10.0;        // Colchón del Stop Loss en pips, fuera de la zona
-input double InpRiskRewardRatio     = 3.0;         // Ratio Riesgo:Beneficio (1:N)
-input double InpManualPipSize       = 0.0;         // Tamaño de pip manual (0 = automático)
-input bool   InpUsarBreakeven       = true;        // Mover el SL a breakeven cuando la operación vaya a favor
-input double InpBreakevenTriggerR   = 1.5;         // Múltiplo de riesgo (R) de beneficio flotante para activar el breakeven
-input double InpBreakevenBufferPips = 2.0;         // Colchón en pips sobre el precio de entrada al mover a breakeven
-input bool   InpUsarTrailingStop      = true;       // Liberar el TP fijo y arrastrar el SL en tendencias fuertes
-input double InpCierreParcialTriggerR = 3.0;        // Múltiplo de riesgo (R) al que se dispara el cierre parcial y se libera el TP
-input double InpTrailingDistanceR     = 1.0;        // Distancia del trailing stop por detrás del precio, en múltiplos de R
-input bool   InpUsarCierreParcial     = true;       // Cerrar parcialmente en el disparo y dejar correr sólo el resto
-input double InpCierreParcialPercent  = 50.0;       // % del volumen a cerrar en el disparo del cierre parcial
+input group "=== Fair Value Gap (FVG) ==="
+input bool   InpUsarFiltroFVGMinimo     = true;       // Ignorar FVG demasiado pequeños respecto al ATR
+input double InpFVGMinSizeATRMult       = 0.10;       // Tamaño mínimo del FVG, en múltiplos de ATR
+
+input group "=== Entrada ==="
+input double InpFVGEntryPercent         = 50.0;       // % de profundidad del FVG para la entrada (25/50/75/100)
+
+input group "=== Stop Loss ==="
+input double InpSLBufferATRMult         = 0.2;        // Colchón del SL más allá del extremo del sweep, en múltiplos de ATR
+
+input group "=== Take Profit ==="
+enum ENUM_MODO_TP
+  {
+   MODO_TP_FIJO_RR          = 0, // MODE A: TP fijo en InpFixedRR
+   MODO_TP_SIGUIENTE_LIQUIDEZ = 1 // MODE B: TP dinámico en la siguiente liquidity zone relevante
+  };
+input ENUM_MODO_TP InpModoTP            = MODO_TP_FIJO_RR;
+input double InpFixedRR                 = 2.0;        // R:R fijo del Modo A (debe ser >= InpMinimumRR)
+input double InpMinimumRR               = 2.0;        // RR mínimo exigido para aceptar la operación
+
+input group "=== Position Sizing ==="
+input double InpRiskPercent             = 0.5;        // % de riesgo del balance por operación (0.25/0.50/0.75/1.00)
+
+input group "=== Límites de Operaciones ==="
+input int    InpMaxOperacionesPorSesion = 2;          // Máximo de operaciones por sesión (sesión = día de trading del servidor)
+
+input group "=== Gestión de Posición (Breakeven / Trailing / Cierre Parcial) ==="
+input bool   InpUsarBreakeven           = true;       // Mover el SL a breakeven cuando la operación vaya a favor
+input double InpBreakevenTriggerR       = 1.5;        // Múltiplo de riesgo (R) para activar el breakeven
+input double InpBreakevenBufferPips     = 2.0;        // Colchón en pips sobre el precio de entrada al mover a breakeven
+input bool   InpUsarTrailingStop        = true;       // Liberar el TP fijo y arrastrar el SL en tendencias fuertes
+input double InpCierreParcialTriggerR   = 3.0;        // Múltiplo de riesgo (R) al que se dispara el cierre parcial
+input double InpTrailingDistanceR       = 1.0;        // Distancia del trailing stop por detrás del precio, en múltiplos de R
+input bool   InpUsarCierreParcial       = true;       // Cerrar parcialmente en el disparo y dejar correr sólo el resto
+input double InpCierreParcialPercent    = 50.0;       // % del volumen a cerrar en el disparo del cierre parcial
+input double InpManualPipSize           = 0.0;        // Tamaño de pip manual (0 = automático, 0.10 para oro)
 
 input group "=== Blindaje de Riesgo Institucional ==="
-input double InpRiskPercent          = 1.5;        // % de riesgo del balance por operación
-input double InpMaxDailyLossPercent  = 4.0;        // % máximo de pérdida diaria (Kill Switch)
-input double InpMaxSpreadPips        = 4.0;        // Spread máximo permitido en pips
-input int    InpMaxPerdidasConsecutivas = 3;       // Nº de pérdidas seguidas en el día que bloquean nuevas entradas
+input double InpMaxDailyLossPercent     = 4.0;        // % máximo de pérdida diaria (Kill Switch)
+input double InpMaxSpreadPips           = 4.0;        // Spread máximo permitido en pips
+input int    InpMaxPerdidasConsecutivas = 3;          // Nº de pérdidas seguidas en el día que bloquean nuevas entradas
 
 input group "=== Filtro de Horario de Sesión ==="
-input bool   InpUsarFiltroSesion    = true;        // Sólo abrir operaciones en la franja de mayor liquidez del oro
-input int    InpSesionInicioHoraNY  = 8;           // Hora de inicio (hora de Nueva York): solapamiento Londres-NY
-input int    InpSesionFinHoraNY     = 17;          // Hora de fin (hora de Nueva York): cierre de la sesión de NY
+input bool   InpUsarFiltroSesion        = true;       // Sólo buscar sweeps nuevos en la franja de mayor liquidez
+input int    InpSesionInicioHoraNY      = 2;          // Hora de inicio (hora de Nueva York): killzone de Londres
+input int    InpSesionFinHoraNY         = 17;         // Hora de fin (hora de Nueva York): cierre de la sesión de NY
 
 input group "=== Cierre de Fin de Semana ==="
-input bool   InpCerrarViernes       = true;        // Activar cierre obligatorio de fin de semana
-input int    InpFridayCloseHourNY   = 21;          // Hora de Nueva York para liquidar (21:00)
-input int    InpBrokerGMTOffsetHrs  = 2;           // Offset del servidor del bróker respecto a UTC (ajustar según bróker)
+input bool   InpCerrarViernes           = true;       // Activar cierre obligatorio de fin de semana
+input int    InpFridayCloseHourNY       = 21;         // Hora de Nueva York para liquidar (21:00)
+input int    InpBrokerGMTOffsetHrs      = 2;          // Offset del servidor del bróker respecto a UTC
 
-input group "=== Módulo de Auto-Optimización Walk-Forward (Método 1) ==="
-input bool   InpOptimizacionActiva          = true;  // Activar la recalibración semanal automática
-input int    InpVelasAnalisisOptimizacion   = 500;   // Nº de velas H1 analizadas para medir volatilidad
-input int    InpATRPeriodoOptimizacion      = 14;    // Período del ATR usado en el análisis de volatilidad
-input int    InpZonaLookbackVolatilidadAlta = 100;   // Lookback de zonas aplicado si la volatilidad es ALTA
-input int    InpRSIPeriodoVolatilidadAlta   = 21;    // Período de RSI aplicado si la volatilidad es ALTA
-input int    InpZonaLookbackVolatilidadBaja = 30;    // Lookback de zonas aplicado si la volatilidad es BAJA
-input int    InpRSIPeriodoVolatilidadBaja   = 10;    // Período de RSI aplicado si la volatilidad es BAJA
+input group "=== Registro de Operaciones (CSV) ==="
+input bool   InpRegistrarCSV            = true;       // Escribir un log CSV detallado de cada operación cerrada
+input string InpNombreArchivoCSV        = "LiquiditySweepMSS_FVG_Log.csv"; // Nombre del archivo (carpeta MQL5\Files)
 
 //======================================================================
 // VARIABLES GLOBALES
 //======================================================================
 CTrade         trade;
 
-int            g_handleRSI = INVALID_HANDLE;
-int            g_handleTendenciaMA = INVALID_HANDLE;
-datetime       g_ultimaVelaProcesada = 0;      // Última vela procesada en la temporalidad de ejecución (RSI)
-datetime       g_ultimaVelaMacroProcesada = 0; // Última vela procesada en la temporalidad macro (zonas)
-datetime       g_ultimaVelaH1Procesada = 0;    // Última vela H1 procesada por el módulo de auto-optimización
-datetime       g_ultimaVelaIntentoCierreFDS = 0; // Última vela en la que se intentó el cierre de fin de semana
-datetime       g_ultimaVelaIntentoVenta = 0;    // Última vela en la que se intentó abrir una venta
-datetime       g_ultimaVelaIntentoCompra = 0;   // Última vela en la que se intentó abrir una compra
+int            g_handleEMARegimen = INVALID_HANDLE;
+int            g_handleATR        = INVALID_HANDLE;
 
-// --- Parámetros adaptativos: dejan de ser "input" fijos para que el módulo de
-//     auto-optimización walk-forward pueda reconfigurarlos dinámicamente ---
-int            g_zonaLookbackMacro = 100; // Lookback de las zonas de Oferta/Demanda (temporalidad macro)
-int            g_rsiPeriod         = 14;  // Período del RSI
+datetime       g_ultimaVelaEntradaProcesada = 0;
+datetime       g_ultimaVelaRegimenProcesada = 0;
+datetime       g_ultimaVelaIntentoCierreFDS = 0;
 
-// --- Estado del módulo de auto-optimización walk-forward ---
-datetime       ultimaOptimizacion = 0; // Fecha/hora de la última recalibración semanal aplicada
+//--- Régimen de mercado (H4)
+enum ENUM_REGIMEN { REGIMEN_INDEFINIDO = 0, REGIMEN_ALCISTA = 1, REGIMEN_BAJISTA = 2 };
+ENUM_REGIMEN   g_regimenActual = REGIMEN_INDEFINIDO;
 
-// --- Estructura de una zona de oferta/demanda ---
-struct SZona
-  {
-   double superior;
-   double inferior;
-   bool   activa;
-   bool   huboEntrada; // el precio ya entró en esta zona alguna vez desde que se formó
-   bool   tocada;      // el precio entró y ya volvió a salir: la zona quedó "puesta a prueba"
-  };
+//--- Sesión asiática (recalculada una vez por día de servidor)
+double         g_asiaHigh = 0.0;
+double         g_asiaLow  = 0.0;
+datetime       g_asiaCalculadaParaDia = 0;
 
-SZona          g_zonaSupply;
-SZona          g_zonaDemand;
-
-// --- Estado de las líneas de tendencia del RSI ---
-bool           g_lineaPicosValida  = false;   // Línea sobre picos (máximos locales) del RSI
-double         g_picosPendiente    = 0.0;
-double         g_picosValorBase    = 0.0;
-int            g_picosBarraBase    = 0;
-
-bool           g_lineaVallesValida = false;   // Línea sobre valles (mínimos locales) del RSI
-double         g_vallesPendiente   = 0.0;
-double         g_vallesValorBase   = 0.0;
-int            g_vallesBarraBase   = 0;
-
-// --- Señales de ruptura (breakout) del RSI, con "armado" temporal ---
-bool           g_breakoutBajistaArmado = false;
-datetime       g_breakoutBajistaTime   = 0;
-
-bool           g_breakoutAlcistaArmado = false;
-datetime       g_breakoutAlcistaTime   = 0;
-
-// --- Kill Switch diario ---
-datetime       g_diaActual          = 0;
-double         g_balanceInicioDia   = 0.0;
-bool           g_killSwitchActivo   = false;
-
-// --- Circuito de pérdidas consecutivas (independiente del Kill Switch del 4%) ---
+//--- Kill Switch / cambio de día / circuito de pérdidas / límite de operaciones por sesión
+datetime       g_diaActual         = 0;
+double         g_balanceInicioDia  = 0.0;
+bool           g_killSwitchActivo  = false;
 int            g_perdidasConsecutivasHoy = 0;
 bool           g_circuitoPerdidasActivo  = false;
+int            g_operacionesHoy    = 0;
 
-// --- Breakeven de la posición actualmente abierta (sólo se gestiona una a la vez) ---
-double         g_slOriginalPosicion   = 0.0; // SL con el que se abrió la posición (antes de cualquier breakeven)
-bool           g_breakevenAplicado    = false;
-bool           g_trailingActivado     = false; // true en cuanto se libera el TP fijo y empieza el trailing
-bool           g_cierreParcialAplicado = false; // true en cuanto se ejecuta el cierre parcial de la posición
+//--- Tipos y puntuación de importancia de las liquidity zones
+enum ENUM_TIPO_ZONA
+  {
+   ZONA_PWH, ZONA_PWL, ZONA_PDH, ZONA_PDL,
+   ZONA_ASIA_HIGH, ZONA_ASIA_LOW,
+   ZONA_SWING_HIGH, ZONA_SWING_LOW,
+   ZONA_EQUAL_HIGH, ZONA_EQUAL_LOW
+  };
+
+struct SLiquidityZone
+  {
+   double         nivel;
+   ENUM_TIPO_ZONA tipo;
+   int            importancia;
+  };
+
+SLiquidityZone g_zonasBuySide[];   // liquidez por ENCIMA del precio (highs): se barre en setups SHORT
+SLiquidityZone g_zonasSellSide[];  // liquidez por DEBAJO del precio (lows):  se barre en setups LONG
+
+//--- Máquina de estados del setup Sweep -> MSS -> FVG -> Retest (un único setup activo a la vez)
+enum ENUM_ESTADO_SETUP { SETUP_NINGUNO, SETUP_SWEEP_DETECTADO, SETUP_MSS_CONFIRMADO, SETUP_FVG_LISTO };
+
+struct SSetupActivo
+  {
+   ENUM_ESTADO_SETUP estado;
+   bool           esLong;
+   double         precioSweep;         // extremo alcanzado por el sweep (low en LONG, high en SHORT)
+   double         sweepDistancia;      // penetración más allá de la zona, en precio
+   ENUM_TIPO_ZONA tipoZonaSweep;
+   double         nivelZonaSweep;
+   int            importanciaZonaSweep;
+   datetime       sweepTime;
+   double         mssLevel;
+   double         fvgSuperior;
+   double         fvgInferior;
+   double         entradaObjetivo;
+   double         slPlan;
+   double         tpPlan;
+   double         rrPlan;
+   ulong          ticketPendiente;
+   ENUM_REGIMEN   regimenEnSweep;
+  };
+SSetupActivo   g_setup;
+
+//--- Estado de la posición actualmente gestionada (heredado sin cambios)
+double         g_slOriginalPosicion    = 0.0;
+bool           g_breakevenAplicado     = false;
+bool           g_trailingActivado      = false;
+bool           g_cierreParcialAplicado = false;
+
+//--- Datos del setup que originó la posición abierta, para el log CSV al cerrarla
+struct SDatosOperacionLog
+  {
+   datetime       horaApertura;
+   bool           esLong;
+   ENUM_TIPO_ZONA tipoZonaSweep;
+   int            importanciaZonaSweep;
+   double         precioSweep;
+   double         sweepDistancia;
+   double         mssLevel;
+   double         fvgSuperior;
+   double         fvgInferior;
+   double         precioEntrada;
+   double         sl;
+   double         tp;
+   double         rrPlan;
+   ENUM_REGIMEN   regimen;
+   double         riesgoMonetarioPlan;
+   double         equityMinimaDurante;
+  };
+SDatosOperacionLog g_logOperacionActiva;
+bool               g_hayLogOperacionActiva = false;
 
 //======================================================================
-// UTILIDADES
+// UTILIDADES (heredadas sin cambios)
 //======================================================================
 
-//--- Calcula el tamaño de un "pip" para XAUUSD.
-//    La heurística de pips por nº de decimales (estándar en pares de Forex)
-//    NO aplica al oro: muchos brokers cotizan XAUUSD con 2 decimales (ej.
-//    4212.45), lo que esa heurística clasificaría como "1 punto = 1 pip"
-//    (0.01), cuando la convención real de mercado para el oro es que un pip
-//    equivale a 0.10 (10 centavos). Usar 0.01 hacía que InpSLBufferPips=10
-//    colocara el SL a solo $0.10 del borde de la zona -- diez veces más
-//    ajustado de lo previsto, y explicaba stops saltando en segundos/minutos
-//    detectados en el backtest. Por eso el valor por defecto para el oro es
-//    fijo (0.10) salvo que el usuario indique InpManualPipSize explícitamente.
+//--- Calcula el tamaño de un "pip" para XAUUSD (convención de mercado: 0.10)
 double PipSize()
   {
    if(InpManualPipSize > 0.0)
       return InpManualPipSize;
-
    return 0.10;
   }
 
@@ -176,312 +220,440 @@ string ClaveGlobal(const string sufijo)
    return StringFormat("EA_%s_%s_%d_%s", _Symbol, sufijo, (int)InpMagicNumber, diaStr);
   }
 
+//--- ATR más reciente CERRADO (shift=1) en la temporalidad de entrada
+double ATRActual()
+  {
+   double buf[];
+   ArraySetAsSeries(buf, true);
+   if(CopyBuffer(g_handleATR, 0, 1, 1, buf) < 1)
+      return 0.0;
+   return buf[0];
+  }
+
 //======================================================================
-// MÓDULO 1A: ZONAS DE OFERTA Y DEMANDA MULTI-TIMEFRAME (CONTEXTO MACRO)
+// MÓDULO 1: SWINGS DE ESTRUCTURA (genérico, reutilizado para régimen H4,
+// zonas de liquidez M15 y localización del swing previo al MSS)
 //======================================================================
-//  Replica la lógica de "Supply and Demand Visible Range", pero en modo
-//  Multi-Timeframe (MTF): en lugar de mirar las velas de la temporalidad
-//  de ejecución (5M), el bot "hace zoom" hacia la temporalidad macro
-//  configurada en "Temporalidad_Liquidez" (por defecto H1, también válido
-//  H4) y escanea allí las últimas "g_zonaLookbackMacro" velas (100 por
-//  defecto). Esto asegura que las zonas representan liquidez institucional
-//  real acumulada durante horas/días completos, y no simple ruido de
-//  velas de 5 minutos.
-//
-//  - Zona de OFERTA (Supply): rango entre el máximo más alto de las
-//    últimas N velas MACRO y el precio de cierre de esa misma vela.
-//  - Zona de DEMANDA (Demand): rango entre el mínimo más bajo de las
-//    últimas N velas MACRO y el precio de cierre de esa misma vela.
-//
-//  El escaneo se repite de forma constante cada vez que cierra una
-//  nueva vela en la temporalidad macro (ver EsVelaNuevaMacro()), sin
-//  importar que el EA esté corriendo sobre un gráfico de 5 minutos: el
-//  historial de la temporalidad macro se solicita directamente al
-//  terminal mediante iHighest/iLowest/iHigh/iLow/iClose indicando
-//  "Temporalidad_Liquidez" como parámetro de timeframe.
+// Un swing high en la barra "shift" sólo se considera CONFIRMADO cuando ya
+// han cerrado "rightBars" velas después de él -- por eso el barrido empieza
+// en shift = 1+rightBars (shift=1 es la última vela cerrada) y nunca usa
+// información de velas aún no formadas. Devuelve los swings ordenados del
+// más reciente al más antiguo.
 //----------------------------------------------------------------------
-void ActualizarZonasOfertaDemanda()
+int RecopilarSwingHighs(const ENUM_TIMEFRAMES tf, const int leftBars, const int rightBars,
+                         const int barrasHistorial, datetime &tiempos[], double &valores[])
   {
-// Verifica que exista histórico suficiente de la temporalidad macro
-   if(Bars(_Symbol, Temporalidad_Liquidez) < g_zonaLookbackMacro + 1)
-      return;
-
-// iHighest/iLowest buscan, dentro de "g_zonaLookbackMacro" velas de la
-// temporalidad MACRO, comenzando en la vela cerrada más reciente
-// (shift = 1), el índice de la vela con el máximo/mínimo extremo.
-   int shiftMax = iHighest(_Symbol, Temporalidad_Liquidez, MODE_HIGH, g_zonaLookbackMacro, 1);
-   int shiftMin = iLowest(_Symbol, Temporalidad_Liquidez, MODE_LOW, g_zonaLookbackMacro, 1);
-
-   if(shiftMax < 0 || shiftMin < 0)
-      return;
-
-   double highExtremo  = iHigh(_Symbol, Temporalidad_Liquidez, shiftMax);
-   double closeDeHigh  = iClose(_Symbol, Temporalidad_Liquidez, shiftMax);
-
-   double lowExtremo   = iLow(_Symbol, Temporalidad_Liquidez, shiftMin);
-   double closeDeLow   = iClose(_Symbol, Temporalidad_Liquidez, shiftMin);
-
-// Zona de Oferta (macro): entre el cierre (límite inferior) y el máximo (límite superior)
-   g_zonaSupply.superior    = highExtremo;
-   g_zonaSupply.inferior    = closeDeHigh;
-   g_zonaSupply.activa      = true;
-   g_zonaSupply.huboEntrada = false;
-   g_zonaSupply.tocada      = false;
-
-// Zona de Demanda (macro): entre el mínimo (límite inferior) y el cierre (límite superior)
-   g_zonaDemand.inferior    = lowExtremo;
-   g_zonaDemand.superior    = closeDeLow;
-   g_zonaDemand.activa      = true;
-   g_zonaDemand.huboEntrada = false;
-   g_zonaDemand.tocada      = false;
-  }
-
-//--- Comprueba si un precio dado se encuentra dentro de una zona
-bool PrecioEnZona(const double precio, const SZona &zona)
-  {
-   if(!zona.activa)
-      return false;
-   return (precio >= zona.inferior && precio <= zona.superior);
-  }
-
-//--- Filtro de zona fresca: las zonas institucionales pierden fuerza cada vez que el
-//    precio las revisita. Se considera que una zona ha sido "puesta a prueba" (tocada)
-//    sólo cuando el precio entró en ella y DESPUÉS volvió a salir -- mientras el precio
-//    permanece dentro de forma continua (su primera visita), la zona sigue "fresca" y
-//    puede seguir generando señales; sólo se bloquean los retests posteriores a esa
-//    primera visita, hasta que se forme una zona nueva en el siguiente cierre de vela
-//    macro (ver el reseteo de huboEntrada/tocada en ActualizarZonasOfertaDemanda()).
-void ActualizarEstadoDeZona(SZona &zona, const double precio)
-  {
-   if(PrecioEnZona(precio, zona))
-      zona.huboEntrada = true;
-   else if(zona.huboEntrada)
-      zona.tocada = true;
-  }
-
-void MarcarZonasTocadas()
-  {
-   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-
-   ActualizarEstadoDeZona(g_zonaSupply, bid);
-   ActualizarEstadoDeZona(g_zonaDemand, ask);
-  }
-
-//======================================================================
-// MÓDULO 1B: RSI TRENDLINES WITH BREAKOUTS (GATILLO)
-//======================================================================
-// Cómo se calculan las líneas de tendencia dentro del RSI:
-//
-// 1) Se copian los últimos "InpRSITrendLookback" valores CERRADOS del
-//    RSI (se excluye la vela en formación, por eso se copia con shift=1).
-//
-// 2) Se buscan "pivotes" del RSI:
-//      - Un PICO (máximo local) en la barra i se confirma si su valor
-//        es mayor que el de todas las barras dentro de una ventana de
-//        "InpPivotLeftBars" barras a la izquierda y "InpPivotRightBars"
-//        a la derecha.
-//      - Un VALLE (mínimo local) se confirma de forma análoga pero
-//        buscando el valor mínimo dentro de esa misma ventana.
-//
-// 3) Se toman los DOS pivotes más recientes de cada tipo (picos y
-//    valles) y se traza una recta que los une, igual que si se
-//    dibujaran manualmente las trendlines sobre el indicador RSI en el
-//    gráfico:
-//
-//        pendiente = (valor2 - valor1) / (indice2 - indice1)
-//        valorLinea(i) = valor1 + pendiente * (i - indice1)
-//
-//    Esta recta se proyecta hacia adelante en el tiempo (extrapolación),
-//    de modo que en cada nueva vela se puede calcular el valor teórico
-//    que tendría la línea de tendencia en ese punto, exactamente igual
-//    a como LuxAlgo extiende sus trendlines hasta la vela actual.
-//
-// 4) Un "Breakout" (ruptura) se valida cuando el RSI CIERRA cruzando la
-//    línea proyectada:
-//      - Breakout BAJISTA (línea de picos): el RSI de la vela anterior
-//        estaba en o por encima de la línea, y el RSI de la vela recién
-//        cerrada terminó por DEBAJO de la línea -> señal de VENTA.
-//      - Breakout ALCISTA (línea de valles): el RSI de la vela anterior
-//        estaba en o por debajo de la línea, y el RSI de la vela recién
-//        cerrada terminó por ENCIMA de la línea -> señal de COMPRA.
-//----------------------------------------------------------------------
-
-//--- Busca los dos pivotes (picos o valles) más recientes dentro del buffer del RSI.
-//    rsi[] debe estar indexado como serie NO temporal (0 = valor más antiguo).
-bool BuscarUltimosDosPivotes(const double &rsi[], const int total, const int pivLeft, const int pivRight,
-                              const bool buscarPicos, int &idx1, double &val1, int &idx2, double &val2)
-  {
-   int encontrados[]; // índices de pivotes encontrados, del más reciente al más antiguo
-   double valores[];
-   int total_piv = 0;
-   ArrayResize(encontrados, 0);
+   ArrayResize(tiempos, 0);
    ArrayResize(valores, 0);
 
-// Se recorre el buffer de más reciente a más antiguo. Un pivote en la
-// posición "i" sólo puede confirmarse si existen "pivRight" barras más
-// nuevas que ya cerraron después de él (para poder compararlas).
-   for(int i = total - 1 - pivRight; i >= pivLeft; i--)
+   int disponibles = Bars(_Symbol, tf);
+   int limiteShift = MathMin(barrasHistorial + leftBars + rightBars + 1, disponibles - 1);
+   if(limiteShift <= leftBars + rightBars)
+      return 0;
+
+   int contador = 0;
+   for(int shift = 1 + rightBars; shift <= limiteShift - leftBars && contador < barrasHistorial; shift++)
      {
-      bool esPivote = true;
-      double centro = rsi[i];
+      double centro = iHigh(_Symbol, tf, shift);
+      bool esSwing = true;
+      for(int k = 1; k <= leftBars && esSwing; k++)
+         if(iHigh(_Symbol, tf, shift + k) > centro) esSwing = false;
+      for(int k = 1; k <= rightBars && esSwing; k++)
+         if(iHigh(_Symbol, tf, shift - k) > centro) esSwing = false;
 
-      for(int k = 1; k <= pivLeft && esPivote; k++)
+      if(esSwing)
         {
-         if(buscarPicos)
-           {
-            if(rsi[i - k] > centro) esPivote = false;
-           }
-         else
-           {
-            if(rsi[i - k] < centro) esPivote = false;
-           }
-        }
-
-      for(int k = 1; k <= pivRight && esPivote; k++)
-        {
-         if(buscarPicos)
-           {
-            if(rsi[i + k] > centro) esPivote = false;
-           }
-         else
-           {
-            if(rsi[i + k] < centro) esPivote = false;
-           }
-        }
-
-      if(esPivote)
-        {
-         total_piv++;
-         ArrayResize(encontrados, total_piv);
-         ArrayResize(valores, total_piv);
-         encontrados[total_piv - 1] = i;
-         valores[total_piv - 1]     = centro;
-
-         if(total_piv >= 2)
-            break; // ya tenemos los dos pivotes más recientes
+         int n = ArraySize(tiempos);
+         ArrayResize(tiempos, n + 1);
+         ArrayResize(valores, n + 1);
+         tiempos[n] = iTime(_Symbol, tf, shift);
+         valores[n] = centro;
+         contador++;
         }
      }
-
-   if(total_piv < 2)
-      return false;
-
-// encontrados[0] es el pivote más reciente, encontrados[1] el anterior
-   idx2 = encontrados[0];
-   val2 = valores[0];
-   idx1 = encontrados[1];
-   val1 = valores[1];
-
-   return true;
+   return ArraySize(tiempos);
   }
 
-//--- Recalcula ambas líneas de tendencia (picos y valles) del RSI y determina
-//    si se ha producido una ruptura (breakout) confirmada en la última vela cerrada.
-void ActualizarRSITrendlinesYBreakouts()
+int RecopilarSwingLows(const ENUM_TIMEFRAMES tf, const int leftBars, const int rightBars,
+                        const int barrasHistorial, datetime &tiempos[], double &valores[])
   {
-   int velasNecesarias = InpRSITrendLookback + InpPivotRightBars + 2;
-   double rsiBuffer[];
-   ArraySetAsSeries(rsiBuffer, false);
+   ArrayResize(tiempos, 0);
+   ArrayResize(valores, 0);
 
-// Se copia desde shift=1 para trabajar únicamente con velas ya cerradas
-   int copiados = CopyBuffer(g_handleRSI, 0, 1, velasNecesarias, rsiBuffer);
-   if(copiados < velasNecesarias)
-      return; // aún no hay histórico suficiente
+   int disponibles = Bars(_Symbol, tf);
+   int limiteShift = MathMin(barrasHistorial + leftBars + rightBars + 1, disponibles - 1);
+   if(limiteShift <= leftBars + rightBars)
+      return 0;
 
-   int total = ArraySize(rsiBuffer);
-
-// --- Línea de tendencia sobre PICOS (para detectar breakout bajista / venta) ---
-   int idx1p, idx2p;
-   double val1p, val2p;
-   g_lineaPicosValida = BuscarUltimosDosPivotes(rsiBuffer, total, InpPivotLeftBars, InpPivotRightBars,
-                                                 true, idx1p, val1p, idx2p, val2p);
-   if(g_lineaPicosValida)
+   int contador = 0;
+   for(int shift = 1 + rightBars; shift <= limiteShift - leftBars && contador < barrasHistorial; shift++)
      {
-      g_picosPendiente = (val2p - val1p) / (double)(idx2p - idx1p);
-      g_picosValorBase = val1p;
-      g_picosBarraBase = idx1p;
-     }
+      double centro = iLow(_Symbol, tf, shift);
+      bool esSwing = true;
+      for(int k = 1; k <= leftBars && esSwing; k++)
+         if(iLow(_Symbol, tf, shift + k) < centro) esSwing = false;
+      for(int k = 1; k <= rightBars && esSwing; k++)
+         if(iLow(_Symbol, tf, shift - k) < centro) esSwing = false;
 
-// --- Línea de tendencia sobre VALLES (para detectar breakout alcista / compra) ---
-   int idx1v, idx2v;
-   double val1v, val2v;
-   g_lineaVallesValida = BuscarUltimosDosPivotes(rsiBuffer, total, InpPivotLeftBars, InpPivotRightBars,
-                                                  false, idx1v, val1v, idx2v, val2v);
-   if(g_lineaVallesValida)
-     {
-      g_vallesPendiente = (val2v - val1v) / (double)(idx2v - idx1v);
-      g_vallesValorBase = val1v;
-      g_vallesBarraBase = idx1v;
-     }
-
-// Índices de la última vela cerrada (total-1) y la anterior a esa (total-2)
-   int iActual   = total - 1;
-   int iAnterior = total - 2;
-   double rsiActual   = rsiBuffer[iActual];
-   double rsiAnterior = rsiBuffer[iAnterior];
-
-// --- Comprobar breakout BAJISTA sobre la línea de picos ---
-   if(g_lineaPicosValida)
-     {
-      double lineaActual   = g_picosValorBase + g_picosPendiente * (iActual   - g_picosBarraBase);
-      double lineaAnterior = g_picosValorBase + g_picosPendiente * (iAnterior - g_picosBarraBase);
-
-      bool cruceBajista = (rsiAnterior >= lineaAnterior) && (rsiActual < lineaActual);
-      if(cruceBajista)
+      if(esSwing)
         {
-         g_breakoutBajistaArmado = true;
-         g_breakoutBajistaTime   = TimeCurrent();
+         int n = ArraySize(tiempos);
+         ArrayResize(tiempos, n + 1);
+         ArrayResize(valores, n + 1);
+         tiempos[n] = iTime(_Symbol, tf, shift);
+         valores[n] = centro;
+         contador++;
         }
      }
-
-// --- Comprobar breakout ALCISTA sobre la línea de valles ---
-   if(g_lineaVallesValida)
-     {
-      double lineaActual   = g_vallesValorBase + g_vallesPendiente * (iActual   - g_vallesBarraBase);
-      double lineaAnterior = g_vallesValorBase + g_vallesPendiente * (iAnterior - g_vallesBarraBase);
-
-      bool cruceAlcista = (rsiAnterior <= lineaAnterior) && (rsiActual > lineaActual);
-      if(cruceAlcista)
-        {
-         g_breakoutAlcistaArmado = true;
-         g_breakoutAlcistaTime   = TimeCurrent();
-        }
-     }
-  }
-
-//--- Un breakout permanece "armado" (válido) durante InpSignalValidityBars velas,
-//    tiempo en el que se espera a que el precio también entre en su zona.
-bool BreakoutBajistaVigente()
-  {
-   if(!g_breakoutBajistaArmado)
-      return false;
-   long segundosVela = PeriodSeconds(InpTimeframe);
-   long limite = segundosVela * InpSignalValidityBars;
-   return ((TimeCurrent() - g_breakoutBajistaTime) <= limite);
-  }
-
-bool BreakoutAlcistaVigente()
-  {
-   if(!g_breakoutAlcistaArmado)
-      return false;
-   long segundosVela = PeriodSeconds(InpTimeframe);
-   long limite = segundosVela * InpSignalValidityBars;
-   return ((TimeCurrent() - g_breakoutAlcistaTime) <= limite);
+   return ArraySize(tiempos);
   }
 
 //======================================================================
-// MÓDULO 2: GESTIÓN DE RIESGO Y CÁLCULO DE LOTAJE
+// MÓDULO 2: RÉGIMEN DE MERCADO (H4)
 //======================================================================
+// Alcista: cierre H4 > EMA200 H4 Y los últimos InpRegimenSwingsAConfirmar
+// swing highs son crecientes (HH) Y los últimos swing lows son crecientes
+// (HL). Bajista: análogo con cierre < EMA200 y swings decrecientes
+// (LH/LL). Si no hay swings suficientes o la estructura es mixta, régimen
+// INDEFINIDO -- y con él, no se buscan setups nuevos (regla explícita del
+// punto 2 del encargo).
+//----------------------------------------------------------------------
+void ActualizarRegimen()
+  {
+   double emaBuf[];
+   ArraySetAsSeries(emaBuf, true);
+   if(CopyBuffer(g_handleEMARegimen, 0, 1, 1, emaBuf) < 1)
+     {
+      g_regimenActual = REGIMEN_INDEFINIDO;
+      return;
+     }
+   double cierre = iClose(_Symbol, InpTimeframeRegimen, 1);
+   bool porEncimaEMA = (cierre > emaBuf[0]);
+   bool porDebajoEMA = (cierre < emaBuf[0]);
 
-//--- Calcula el volumen (lotaje) exacto para que, si el precio toca el
-//    Stop Loss, la pérdida sea igual a InpRiskPercent % del balance.
-//    Usa OrderCalcProfit() en vez de derivar el valor manualmente a partir
-//    de SYMBOL_TRADE_TICK_VALUE/SYMBOL_TRADE_TICK_SIZE: para algunos
-//    brokers/símbolos (como ciertas cotizaciones de XAUUSD) esos valores no
-//    reflejan el $ real por punto y por lote, lo que provocaba lotajes hasta
-//    10 veces mayores de lo previsto. OrderCalcProfit() le pregunta
-//    directamente al bróker cuál sería el resultado monetario de la
-//    operación, sin asumir nada sobre el tick.
+   int necesarios = InpRegimenSwingsAConfirmar + 1;
+   datetime tH[], tL[];
+   double   vH[], vL[];
+   int nH = RecopilarSwingHighs(InpTimeframeRegimen, InpRegimenSwingBars, InpRegimenSwingBars, necesarios, tH, vH);
+   int nL = RecopilarSwingLows(InpTimeframeRegimen, InpRegimenSwingBars, InpRegimenSwingBars, necesarios, tL, vL);
+
+   if(nH < necesarios || nL < necesarios)
+     {
+      g_regimenActual = REGIMEN_INDEFINIDO;
+      return;
+     }
+
+   // vH[0]/vL[0] son los más recientes; para HH/HL cada uno debe ser mayor
+   // que el siguiente más antiguo (índices crecientes = más atrás en el tiempo).
+   bool hhCrecientes = true, hlCrecientes = true;
+   bool lhDecrecientes = true, llDecrecientes = true;
+   for(int i = 0; i < InpRegimenSwingsAConfirmar; i++)
+     {
+      if(!(vH[i] > vH[i + 1])) hhCrecientes = false;
+      if(!(vL[i] > vL[i + 1])) hlCrecientes = false;
+      if(!(vH[i] < vH[i + 1])) lhDecrecientes = false;
+      if(!(vL[i] < vL[i + 1])) llDecrecientes = false;
+     }
+
+   if(porEncimaEMA && hhCrecientes && hlCrecientes)
+      g_regimenActual = REGIMEN_ALCISTA;
+   else if(porDebajoEMA && lhDecrecientes && llDecrecientes)
+      g_regimenActual = REGIMEN_BAJISTA;
+   else
+      g_regimenActual = REGIMEN_INDEFINIDO;
+  }
+
+//======================================================================
+// MÓDULO 3: SESIÓN ASIÁTICA (Asia High / Asia Low)
+//======================================================================
+// Se recalcula una vez por día de servidor, escaneando velas M15 cerradas
+// hacia atrás hasta cubrir el bloque [InpAsiaInicioHoraNY, InpAsiaFinHoraNY)
+// más reciente y completo (en hora de Nueva York). Tope de 200 velas
+// (~50h) para evitar bucles largos si el rango horario está mal configurado.
+//----------------------------------------------------------------------
+datetime ConvertirServidorANuevaYork(const datetime tiempoServidor);
+bool     EsHorarioDeVeranoUSA(const datetime tiempoUTC);
+
+void ActualizarAsiaHighLow()
+  {
+   MqlDateTime dtHoy;
+   TimeToStruct(TimeCurrent(), dtHoy);
+   dtHoy.hour = 0; dtHoy.min = 0; dtHoy.sec = 0;
+   datetime hoy00 = StructToTime(dtHoy);
+   if(hoy00 == g_asiaCalculadaParaDia)
+      return;
+
+   double maxH = -DBL_MAX, minL = DBL_MAX;
+   bool   dentroDelBloque = false, bloqueEncontrado = false;
+   int    tope = 200;
+
+   for(int shift = 1; shift <= tope; shift++)
+     {
+      datetime tVela = iTime(_Symbol, InpTimeframeEntrada, shift);
+      if(tVela == 0) break;
+      datetime horaNY = ConvertirServidorANuevaYork(tVela);
+      MqlDateTime dtVela;
+      TimeToStruct(horaNY, dtVela);
+
+      bool enVentana;
+      if(InpAsiaInicioHoraNY > InpAsiaFinHoraNY)
+         enVentana = (dtVela.hour >= InpAsiaInicioHoraNY || dtVela.hour < InpAsiaFinHoraNY);
+      else
+         enVentana = (dtVela.hour >= InpAsiaInicioHoraNY && dtVela.hour < InpAsiaFinHoraNY);
+
+      if(enVentana)
+        {
+         dentroDelBloque = true;
+         bloqueEncontrado = true;
+         double h = iHigh(_Symbol, InpTimeframeEntrada, shift);
+         double l = iLow(_Symbol, InpTimeframeEntrada, shift);
+         if(h > maxH) maxH = h;
+         if(l < minL) minL = l;
+        }
+      else if(dentroDelBloque)
+        {
+         // ya recorrimos el bloque contiguo más reciente; al salir de la
+         // ventana horaria, el bloque está completo
+         break;
+        }
+     }
+
+   if(bloqueEncontrado)
+     {
+      g_asiaHigh = maxH;
+      g_asiaLow  = minL;
+      g_asiaCalculadaParaDia = hoy00;
+     }
+  }
+
+//======================================================================
+// MÓDULO 4: CONSTRUCCIÓN DE LIQUIDITY ZONES
+//======================================================================
+// Reúne PWH/PWL, PDH/PDL, Asia High/Low, swing highs/lows y equal highs/
+// lows de M15 en dos listas (buy-side / sell-side), con su puntuación de
+// importancia, fusionando zonas del mismo lado que caigan dentro de
+// InpZonaAgrupamientoATRMult*ATR entre sí (se conserva la de mayor
+// importancia).
+//----------------------------------------------------------------------
+void AgregarZona(SLiquidityZone &lista[], const double nivel, const ENUM_TIPO_ZONA tipo,
+                  const int importancia, const double distanciaAgrupamiento)
+  {
+   int n = ArraySize(lista);
+   for(int i = 0; i < n; i++)
+     {
+      if(MathAbs(lista[i].nivel - nivel) <= distanciaAgrupamiento)
+        {
+         if(importancia > lista[i].importancia)
+           {
+            lista[i].nivel       = nivel;
+            lista[i].tipo        = tipo;
+            lista[i].importancia = importancia;
+           }
+         return; // fusionada con una zona existente próxima
+        }
+     }
+   ArrayResize(lista, n + 1);
+   lista[n].nivel       = nivel;
+   lista[n].tipo        = tipo;
+   lista[n].importancia = importancia;
+  }
+
+void ReconstruirZonasLiquidez()
+  {
+   ArrayResize(g_zonasBuySide, 0);
+   ArrayResize(g_zonasSellSide, 0);
+
+   double atr = ATRActual();
+   if(atr <= 0.0)
+      return;
+   double distAgrupamiento = InpZonaAgrupamientoATRMult * atr;
+   double toleranciaEqual  = InpEqualToleranceATRMult * atr;
+
+   // --- Previous Week High/Low (semana W1 ya cerrada, shift=1) ---
+   if(Bars(_Symbol, PERIOD_W1) > 1)
+     {
+      AgregarZona(g_zonasBuySide,  iHigh(_Symbol, PERIOD_W1, 1), ZONA_PWH, 5, distAgrupamiento);
+      AgregarZona(g_zonasSellSide, iLow(_Symbol,  PERIOD_W1, 1), ZONA_PWL, 5, distAgrupamiento);
+     }
+
+   // --- Previous Day High/Low (día D1 ya cerrado, shift=1) ---
+   if(Bars(_Symbol, PERIOD_D1) > 1)
+     {
+      AgregarZona(g_zonasBuySide,  iHigh(_Symbol, PERIOD_D1, 1), ZONA_PDH, 4, distAgrupamiento);
+      AgregarZona(g_zonasSellSide, iLow(_Symbol,  PERIOD_D1, 1), ZONA_PDL, 4, distAgrupamiento);
+     }
+
+   // --- Asia High/Low ---
+   if(g_asiaHigh > 0.0 && g_asiaLow > 0.0)
+     {
+      AgregarZona(g_zonasBuySide,  g_asiaHigh, ZONA_ASIA_HIGH, 3, distAgrupamiento);
+      AgregarZona(g_zonasSellSide, g_asiaLow,  ZONA_ASIA_LOW,  3, distAgrupamiento);
+     }
+
+   // --- Swing highs/lows + Equal highs/lows (clustering por tolerancia ATR) ---
+   datetime tH[], tL[];
+   double   vH[], vL[];
+   int nH = RecopilarSwingHighs(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars, InpSwingHistorialBarras, tH, vH);
+   int nL = RecopilarSwingLows(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars, InpSwingHistorialBarras, tL, vL);
+
+   bool esEqualH[];
+   ArrayResize(esEqualH, nH);
+   for(int i = 0; i < nH; i++) esEqualH[i] = false;
+   for(int i = 0; i < nH; i++)
+      for(int j = i + 1; j < nH; j++)
+         if(MathAbs(vH[i] - vH[j]) <= toleranciaEqual)
+           { esEqualH[i] = true; esEqualH[j] = true; }
+
+   bool esEqualL[];
+   ArrayResize(esEqualL, nL);
+   for(int i = 0; i < nL; i++) esEqualL[i] = false;
+   for(int i = 0; i < nL; i++)
+      for(int j = i + 1; j < nL; j++)
+         if(MathAbs(vL[i] - vL[j]) <= toleranciaEqual)
+           { esEqualL[i] = true; esEqualL[j] = true; }
+
+   for(int i = 0; i < nH; i++)
+      AgregarZona(g_zonasBuySide, vH[i], esEqualH[i] ? ZONA_EQUAL_HIGH : ZONA_SWING_HIGH,
+                  esEqualH[i] ? 4 : 2, distAgrupamiento);
+
+   for(int i = 0; i < nL; i++)
+      AgregarZona(g_zonasSellSide, vL[i], esEqualL[i] ? ZONA_EQUAL_LOW : ZONA_SWING_LOW,
+                  esEqualL[i] ? 4 : 2, distAgrupamiento);
+  }
+
+//======================================================================
+// MÓDULO 5: LIQUIDITY SWEEP
+//======================================================================
+// Sweep de una sola vela CERRADA: la mecha penetra la zona una distancia
+// limitada (<= InpMaxSweepDistanceATRMult*ATR) y el CIERRE de esa misma
+// vela vuelve a quedar del lado seguro de la zona. Esto exige interacción
+// real con una liquidity zone ya identificada (no cualquier mecha).
+//----------------------------------------------------------------------
+bool BuscarSweepSellSide(double &precioSweep, double &distancia, ENUM_TIPO_ZONA &tipoZona,
+                          double &nivelZona, int &importanciaZona)
+  {
+   double atr = ATRActual();
+   if(atr <= 0.0) return false;
+   double maxDist = InpMaxSweepDistanceATRMult * atr;
+
+   double low1   = iLow(_Symbol, InpTimeframeEntrada, 1);
+   double close1 = iClose(_Symbol, InpTimeframeEntrada, 1);
+
+   int n = ArraySize(g_zonasSellSide);
+   for(int i = 0; i < n; i++)
+     {
+      double nivel = g_zonasSellSide[i].nivel;
+      if(low1 < nivel && close1 > nivel)
+        {
+         double dist = nivel - low1;
+         if(dist > 0.0 && dist <= maxDist)
+           {
+            precioSweep     = low1;
+            distancia       = dist;
+            tipoZona        = g_zonasSellSide[i].tipo;
+            nivelZona       = nivel;
+            importanciaZona = g_zonasSellSide[i].importancia;
+            return true;
+           }
+        }
+     }
+   return false;
+  }
+
+bool BuscarSweepBuySide(double &precioSweep, double &distancia, ENUM_TIPO_ZONA &tipoZona,
+                         double &nivelZona, int &importanciaZona)
+  {
+   double atr = ATRActual();
+   if(atr <= 0.0) return false;
+   double maxDist = InpMaxSweepDistanceATRMult * atr;
+
+   double high1  = iHigh(_Symbol, InpTimeframeEntrada, 1);
+   double close1 = iClose(_Symbol, InpTimeframeEntrada, 1);
+
+   int n = ArraySize(g_zonasBuySide);
+   for(int i = 0; i < n; i++)
+     {
+      double nivel = g_zonasBuySide[i].nivel;
+      if(high1 > nivel && close1 < nivel)
+        {
+         double dist = high1 - nivel;
+         if(dist > 0.0 && dist <= maxDist)
+           {
+            precioSweep     = high1;
+            distancia       = dist;
+            tipoZona        = g_zonasBuySide[i].tipo;
+            nivelZona       = nivel;
+            importanciaZona = g_zonasBuySide[i].importancia;
+            return true;
+           }
+        }
+     }
+   return false;
+  }
+
+//======================================================================
+// MÓDULO 6: MARKET STRUCTURE SHIFT (MSS)
+//======================================================================
+// Localiza el último swing significativo CONFIRMADO antes del sweep
+// (usando únicamente velas ya cerradas) y comprueba, vela a vela tras el
+// sweep, si el CIERRE lo supera (LONG) o lo pierde (SHORT).
+//----------------------------------------------------------------------
+bool LocalizarSwingPrevioAlSweep(const bool paraLong, const datetime antesDe, double &nivel)
+  {
+   datetime t[]; double v[];
+   if(paraLong)
+     {
+      int n = RecopilarSwingHighs(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars, InpSwingHistorialBarras, t, v);
+      for(int i = 0; i < n; i++)
+         if(t[i] < antesDe) { nivel = v[i]; return true; }
+     }
+   else
+     {
+      int n = RecopilarSwingLows(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars, InpSwingHistorialBarras, t, v);
+      for(int i = 0; i < n; i++)
+         if(t[i] < antesDe) { nivel = v[i]; return true; }
+     }
+   return false;
+  }
+
+//======================================================================
+// MÓDULO 7: FAIR VALUE GAP (FVG)
+//======================================================================
+// FVG alcista: low de la vela cerrada más reciente > high de la vela
+// cerrada dos posiciones antes. FVG bajista: análogo invertido. Ambas
+// comparaciones usan sólo velas ya cerradas (shift 1 y shift 3).
+//----------------------------------------------------------------------
+bool DetectarFVG(const bool esLong, double &superior, double &inferior)
+  {
+   double low1   = iLow(_Symbol, InpTimeframeEntrada, 1);
+   double high1  = iHigh(_Symbol, InpTimeframeEntrada, 1);
+   double high3  = iHigh(_Symbol, InpTimeframeEntrada, 3);
+   double low3   = iLow(_Symbol, InpTimeframeEntrada, 3);
+
+   if(esLong)
+     {
+      if(low1 > high3)
+        {
+         superior = low1;
+         inferior = high3;
+         return true;
+        }
+     }
+   else
+     {
+      if(high1 < low3)
+        {
+         superior = low3;
+         inferior = high1;
+         return true;
+        }
+     }
+   return false;
+  }
+
+//======================================================================
+// MÓDULO 8: GESTIÓN DE RIESGO Y CÁLCULO DE LOTAJE (heredado sin cambios)
+//======================================================================
 double CalcularLotaje(const double precioEntrada, const double precioSL, const ENUM_ORDER_TYPE tipoOrden)
   {
    double balance      = AccountInfoDouble(ACCOUNT_BALANCE);
@@ -491,8 +663,6 @@ double CalcularLotaje(const double precioEntrada, const double precioSL, const E
    if(distanciaSL <= 0.0)
       return 0.0;
 
-// Pérdida monetaria real que reportaría el bróker para 1.0 lote si el
-// precio recorriera toda la distancia del SL.
    double perdidaPorLote = 0.0;
    if(!OrderCalcProfit(tipoOrden, _Symbol, 1.0, precioEntrada, precioSL, perdidaPorLote))
       return 0.0;
@@ -503,7 +673,6 @@ double CalcularLotaje(const double precioEntrada, const double precioSL, const E
 
    double lotes = montoRiesgo / perdidaPorLote;
 
-// Ajustar a los límites y al paso de volumen permitidos por el bróker
    double volMin  = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
    double volMax  = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX);
    double volStep = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
@@ -515,10 +684,9 @@ double CalcularLotaje(const double precioEntrada, const double precioSL, const E
   }
 
 //======================================================================
-// MÓDULO 3: FILTROS DE PROTECCIÓN (SPREAD, KILL SWITCH, FIN DE SEMANA)
+// MÓDULO 9: FILTROS DE PROTECCIÓN (SPREAD, KILL SWITCH, FIN DE SEMANA,
+// SESIÓN) -- heredados sin cambios
 //======================================================================
-
-//--- Filtro de Spread: bloquea nuevas operaciones si el spread actual supera el máximo permitido.
 bool SpreadPermitido()
   {
    double spreadPuntos = (double)SymbolInfoInteger(_Symbol, SYMBOL_SPREAD);
@@ -526,7 +694,6 @@ bool SpreadPermitido()
    return (spreadPips <= InpMaxSpreadPips);
   }
 
-//--- Cierra todas las posiciones abiertas por este EA en este símbolo
 void CerrarTodasLasPosiciones()
   {
    for(int i = PositionsTotal() - 1; i >= 0; i--)
@@ -535,12 +702,10 @@ void CerrarTodasLasPosiciones()
       if(ticket == 0) continue;
       if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
       if(PositionGetInteger(POSITION_MAGIC) != (long)InpMagicNumber) continue;
-
       trade.PositionClose(ticket);
      }
   }
 
-//--- Elimina todas las órdenes pendientes de este EA en este símbolo
 void BorrarTodasLasOrdenesPendientes()
   {
    for(int i = OrdersTotal() - 1; i >= 0; i--)
@@ -549,37 +714,10 @@ void BorrarTodasLasOrdenesPendientes()
       if(ticket == 0) continue;
       if(OrderGetString(ORDER_SYMBOL) != _Symbol) continue;
       if(OrderGetInteger(ORDER_MAGIC) != (long)InpMagicNumber) continue;
-
       trade.OrderDelete(ticket);
      }
   }
 
-//----------------------------------------------------------------------
-// KILL SWITCH DIARIO
-//
-// Funcionamiento:
-//   1) Al iniciar cada nuevo día de servidor se guarda el balance de
-//      referencia ("g_balanceInicioDia").
-//   2) En cada tick se calcula la pérdida diaria total SUMANDO el
-//      resultado ya cerrado en el día (implícito en el Balance actual,
-//      que ya refleja las operaciones cerradas) más el flotante en
-//      tiempo real de las posiciones abiertas. Esa suma es exactamente
-//      el Equity actual de la cuenta:
-//
-//         PérdidaDiaria(%) = (BalanceInicioDia - EquityActual) / BalanceInicioDia * 100
-//
-//   3) Si esa pérdida alcanza o supera "InpMaxDailyLossPercent":
-//        - Se cierran TODAS las posiciones a mercado.
-//        - Se eliminan TODAS las órdenes pendientes.
-//        - Se activa una bandera "g_killSwitchActivo" que bloquea
-//          cualquier nueva operación.
-//   4) La bandera sólo se libera cuando el servidor cambia de día
-//      (nueva fecha en TimeCurrent()), momento en el que se reinicia
-//      también el balance de referencia.
-//   5) El estado se guarda además en variables globales de la
-//      terminal (GlobalVariableSet) para que, si la plataforma se
-//      reinicia en pleno día, el bloqueo del Kill Switch no se pierda.
-//----------------------------------------------------------------------
 void GestionarCambioDeDia()
   {
    MqlDateTime dt;
@@ -589,18 +727,16 @@ void GestionarCambioDeDia()
 
    if(inicioDeHoy != g_diaActual)
      {
-      g_diaActual        = inicioDeHoy;
-
-      // Reinicio diario del circuito de pérdidas consecutivas
+      g_diaActual = inicioDeHoy;
       g_perdidasConsecutivasHoy = 0;
       g_circuitoPerdidasActivo  = false;
+      g_operacionesHoy          = 0;
 
       string claveBal = ClaveGlobal("BalanceInicioDia");
       string claveKS  = ClaveGlobal("KillSwitch");
 
       if(GlobalVariableCheck(claveBal))
         {
-         // Ya existía un registro para hoy (ej. reinicio de la terminal)
          g_balanceInicioDia = GlobalVariableGet(claveBal);
          g_killSwitchActivo = GlobalVariableCheck(claveKS) && (GlobalVariableGet(claveKS) > 0.5);
         }
@@ -620,9 +756,8 @@ void ComprobarKillSwitchDiario()
   {
    if(g_balanceInicioDia <= 0.0)
       return;
-
    if(g_killSwitchActivo)
-      return; // ya activado hoy, no hay nada más que comprobar
+      return;
 
    double equityActual   = AccountInfoDouble(ACCOUNT_EQUITY);
    double perdidaDiaria   = g_balanceInicioDia - equityActual;
@@ -632,27 +767,17 @@ void ComprobarKillSwitchDiario()
      {
       PrintFormat("KILL SWITCH ACTIVADO: pérdida diaria %.2f%% >= límite %.2f%%. Cerrando todo.",
                   perdidaDiariaPct, InpMaxDailyLossPercent);
-
       CerrarTodasLasPosiciones();
       BorrarTodasLasOrdenesPendientes();
-
       g_killSwitchActivo = true;
       GlobalVariableSet(ClaveGlobal("KillSwitch"), 1.0);
      }
   }
 
-//----------------------------------------------------------------------
-// CIERRE DE FIN DE SEMANA
-// Convierte la hora del servidor a hora de Nueva York (aplicando el
-// horario de verano de EE.UU.) y liquida toda posición flotante los
-// viernes a partir de las InpFridayCloseHourNY (21:00 por defecto).
-//----------------------------------------------------------------------
 bool EsHorarioDeVeranoUSA(const datetime tiempoUTC)
   {
    MqlDateTime dt;
    TimeToStruct(tiempoUTC, dt);
-
-// DST en EE.UU.: comienza el 2º domingo de marzo y termina el 1er domingo de noviembre
    int year = dt.year;
 
    MqlDateTime tmp;
@@ -660,7 +785,7 @@ bool EsHorarioDeVeranoUSA(const datetime tiempoUTC)
    tmp.year = year; tmp.mon = 3; tmp.day = 1;
    datetime primerDiaMarzo = StructToTime(tmp);
    TimeToStruct(primerDiaMarzo, tmp);
-   int diaSemana1Marzo = tmp.day_of_week; // 0=domingo
+   int diaSemana1Marzo = tmp.day_of_week;
    int diaSegundoDomingoMarzo = 1 + ((7 - diaSemana1Marzo) % 7) + 7;
 
    ZeroMemory(tmp);
@@ -684,7 +809,7 @@ bool EsHorarioDeVeranoUSA(const datetime tiempoUTC)
 datetime ConvertirServidorANuevaYork(const datetime tiempoServidor)
   {
    datetime tiempoUTC = tiempoServidor - InpBrokerGMTOffsetHrs * 3600;
-   int offsetNY = EsHorarioDeVeranoUSA(tiempoUTC) ? -4 : -5; // EDT / EST
+   int offsetNY = EsHorarioDeVeranoUSA(tiempoUTC) ? -4 : -5;
    return tiempoUTC + offsetNY * 3600;
   }
 
@@ -692,87 +817,25 @@ bool DebeCerrarPorFinDeSemana()
   {
    if(!InpCerrarViernes)
       return false;
-
    datetime horaNY = ConvertirServidorANuevaYork(TimeCurrent());
    MqlDateTime dt;
    TimeToStruct(horaNY, dt);
-
-// day_of_week: 0=domingo,...,5=viernes,6=sábado
    if(dt.day_of_week == 5 && dt.hour >= InpFridayCloseHourNY)
       return true;
-
    return false;
   }
 
-//----------------------------------------------------------------------
-// FILTRO DE HORARIO DE SESIÓN
-// El oro se mueve con volumen y tendencias limpias durante el solapamiento
-// Londres-Nueva York y la sesión de Nueva York; fuera de esa franja (sesión
-// asiática, madrugada europea) el volumen es más bajo y las rupturas del RSI
-// tienden a ser ruido. Este filtro sólo bloquea la APERTURA de operaciones
-// nuevas fuera de [InpSesionInicioHoraNY, InpSesionFinHoraNY) en hora de
-// Nueva York; una posición ya abierta sigue gestionándose (breakeven,
-// trailing, Kill Switch, cierre de fin de semana) a cualquier hora.
-//----------------------------------------------------------------------
 bool SesionPermiteOperar()
   {
    if(!InpUsarFiltroSesion)
       return true;
-
    datetime horaNY = ConvertirServidorANuevaYork(TimeCurrent());
    MqlDateTime dt;
    TimeToStruct(horaNY, dt);
-
    if(InpSesionInicioHoraNY <= InpSesionFinHoraNY)
       return (dt.hour >= InpSesionInicioHoraNY && dt.hour < InpSesionFinHoraNY);
-
-// Rango que cruza la medianoche (por si se configura así)
    return (dt.hour >= InpSesionInicioHoraNY || dt.hour < InpSesionFinHoraNY);
   }
-
-//======================================================================
-// FILTRO DE TENDENCIA MACRO
-//======================================================================
-// Reduce las rachas de pérdidas seguidas en mercado lateral: sólo deja
-// operar a favor de la tendencia de fondo, medida con una media móvil
-// larga (InpTrendMAPeriod) calculada en la misma temporalidad macro que
-// las zonas de Oferta/Demanda (Temporalidad_Liquidez). Si el cierre de
-// la última vela macro cerrada está por encima de la media, se considera
-// tendencia alcista (sólo se permiten compras); si está por debajo,
-// tendencia bajista (sólo se permiten ventas). Con InpUsarFiltroTendencia
-// en false, el filtro queda desactivado y ambos lados quedan permitidos.
-//----------------------------------------------------------------------
-bool FiltroTendenciaPermiteVenta()
-  {
-   if(!InpUsarFiltroTendencia)
-      return true;
-
-   double maBuffer[];
-   ArraySetAsSeries(maBuffer, true);
-   if(CopyBuffer(g_handleTendenciaMA, 0, 1, 1, maBuffer) < 1)
-      return false; // sin datos suficientes todavía: no arriesgar
-
-   double cierreMacro = iClose(_Symbol, Temporalidad_Liquidez, 1);
-   return (cierreMacro < maBuffer[0]); // tendencia bajista
-  }
-
-bool FiltroTendenciaPermiteCompra()
-  {
-   if(!InpUsarFiltroTendencia)
-      return true;
-
-   double maBuffer[];
-   ArraySetAsSeries(maBuffer, true);
-   if(CopyBuffer(g_handleTendenciaMA, 0, 1, 1, maBuffer) < 1)
-      return false;
-
-   double cierreMacro = iClose(_Symbol, Temporalidad_Liquidez, 1);
-   return (cierreMacro > maBuffer[0]); // tendencia alcista
-  }
-
-//======================================================================
-// MÓDULO 4: LÓGICA DE ENTRADA Y SALIDA
-//======================================================================
 
 bool HayPosicionAbierta()
   {
@@ -787,122 +850,283 @@ bool HayPosicionAbierta()
    return false;
   }
 
-//--- Intenta ejecutar una venta cuando el precio está en zona de Oferta y hay breakout bajista del RSI
-void EvaluarSenalDeVenta()
+bool HayOrdenPendiente(const ulong ticket)
   {
-   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   for(int i = 0; i < OrdersTotal(); i++)
+      if(OrderGetTicket(i) == ticket)
+         return true;
+   return false;
+  }
 
-   // Condición 1: el precio actual entra en la zona de Oferta
-   if(!PrecioEnZona(bid, g_zonaSupply))
-      return;
+//======================================================================
+// MÓDULO 10: TAKE PROFIT Y VALIDACIÓN DE RR
+//======================================================================
+// MODE A: TP fijo a InpFixedRR. MODE B: TP en la siguiente liquidity zone
+// relevante en dirección del trade (la más cercana cuyo RR implícito ya
+// cumpla InpMinimumRR; si la más cercana no lo cumple se prueba con la
+// siguiente más lejana). Si ningún TP lógico alcanza InpMinimumRR, no hay
+// operación (se descarta el setup).
+//----------------------------------------------------------------------
+bool CalcularTP(const bool esLong, const double entrada, const double sl, double &tp, double &rr)
+  {
+   double riesgo = MathAbs(entrada - sl);
+   if(riesgo <= 0.0)
+      return false;
 
-   // Condición 1b: filtro de zona fresca -- evita operar zonas ya puestas a prueba antes
-   if(InpUsarFiltroZonaFresca && g_zonaSupply.tocada)
-      return;
-
-   // Condición 2: ruptura bajista vigente de la línea de picos del RSI
-   if(!BreakoutBajistaVigente())
-      return;
-
-   // Condición 3: filtro de tendencia macro (evita vender en tendencia alcista de fondo)
-   if(!FiltroTendenciaPermiteVenta())
-      return;
-
-   // Como máximo un intento de apertura por vela: si trade.Sell() falla (p.ej.
-   // "mercado cerrado" fuera de horario), la señal seguía armada y el EA
-   // reintentaba en cada tick sin parar hasta que la señal expiraba -- se
-   // detectaron cientos de órdenes de venta fallidas seguidas en el backtest.
-   datetime velaIntento = iTime(_Symbol, InpTimeframe, 0);
-   if(velaIntento == g_ultimaVelaIntentoVenta)
-      return;
-   g_ultimaVelaIntentoVenta = velaIntento;
-
-   double pip = PipSize();
-   double entrada = bid;
-   double sl = g_zonaSupply.superior + InpSLBufferPips * pip;
-   double distanciaSL = sl - entrada;
-   if(distanciaSL <= 0.0)
-      return;
-   double tp = entrada - distanciaSL * InpRiskRewardRatio;
-
-   double lotes = CalcularLotaje(entrada, sl, ORDER_TYPE_SELL);
-   if(lotes <= 0.0)
+   if(InpModoTP == MODO_TP_FIJO_RR)
      {
-      Print("No se pudo calcular un lotaje válido para la venta.");
+      tp = esLong ? entrada + InpFixedRR * riesgo : entrada - InpFixedRR * riesgo;
+      rr = InpFixedRR;
+      return (rr >= InpMinimumRR);
+     }
+
+   // MODE B: siguiente liquidity zone relevante en la dirección del trade,
+   // ordenada por proximidad; se prueba cada una hasta encontrar la
+   // primera que cumpla el RR mínimo.
+   SLiquidityZone candidatas[];
+   ArrayResize(candidatas, 0);
+   if(esLong)
+     {
+      int n = ArraySize(g_zonasBuySide);
+      for(int i = 0; i < n; i++)
+         if(g_zonasBuySide[i].nivel > entrada)
+           {
+            int k = ArraySize(candidatas);
+            ArrayResize(candidatas, k + 1);
+            candidatas[k] = g_zonasBuySide[i];
+           }
+     }
+   else
+     {
+      int n = ArraySize(g_zonasSellSide);
+      for(int i = 0; i < n; i++)
+         if(g_zonasSellSide[i].nivel < entrada)
+           {
+            int k = ArraySize(candidatas);
+            ArrayResize(candidatas, k + 1);
+            candidatas[k] = g_zonasSellSide[i];
+           }
+     }
+
+   // Ordenar por proximidad a la entrada (selection sort simple; listas pequeñas)
+   int total = ArraySize(candidatas);
+   for(int i = 0; i < total - 1; i++)
+     {
+      int mejor = i;
+      for(int j = i + 1; j < total; j++)
+        {
+         double distJ = MathAbs(candidatas[j].nivel - entrada);
+         double distMejor = MathAbs(candidatas[mejor].nivel - entrada);
+         if(distJ < distMejor) mejor = j;
+        }
+      if(mejor != i)
+        {
+         SLiquidityZone tmp = candidatas[i];
+         candidatas[i] = candidatas[mejor];
+         candidatas[mejor] = tmp;
+        }
+     }
+
+   for(int i = 0; i < total; i++)
+     {
+      double rrCandidato = MathAbs(candidatas[i].nivel - entrada) / riesgo;
+      if(rrCandidato >= InpMinimumRR)
+        {
+         tp = candidatas[i].nivel;
+         rr = rrCandidato;
+         return true;
+        }
+     }
+   return false; // ninguna liquidity zone ofrece un RR suficiente: no hay operación
+  }
+
+//======================================================================
+// MÓDULO 11: MÁQUINA DE ESTADOS DEL SETUP (Sweep -> MSS -> FVG -> Retest)
+//======================================================================
+void ResetearSetup()
+  {
+   g_setup.estado = SETUP_NINGUNO;
+   g_setup.ticketPendiente = 0;
+  }
+
+//--- Paso 1: buscar un sweep nuevo (sólo si no hay setup ni posición/orden en curso)
+void BuscarNuevoSweep()
+  {
+   if(g_regimenActual == REGIMEN_INDEFINIDO)
+      return;
+   if(!SesionPermiteOperar())
+      return;
+   if(g_operacionesHoy >= InpMaxOperacionesPorSesion)
+      return;
+
+   double precioSweep, distancia, nivelZona;
+   ENUM_TIPO_ZONA tipoZona;
+   int importanciaZona;
+
+   if(g_regimenActual == REGIMEN_ALCISTA &&
+      BuscarSweepSellSide(precioSweep, distancia, tipoZona, nivelZona, importanciaZona))
+     {
+      g_setup.estado               = SETUP_SWEEP_DETECTADO;
+      g_setup.esLong                = true;
+      g_setup.precioSweep           = precioSweep;
+      g_setup.sweepDistancia        = distancia;
+      g_setup.tipoZonaSweep         = tipoZona;
+      g_setup.nivelZonaSweep        = nivelZona;
+      g_setup.importanciaZonaSweep  = importanciaZona;
+      g_setup.sweepTime             = iTime(_Symbol, InpTimeframeEntrada, 1);
+      g_setup.regimenEnSweep        = g_regimenActual;
       return;
      }
 
-   trade.SetExpertMagicNumber(InpMagicNumber);
-   if(trade.Sell(lotes, _Symbol, entrada, sl, tp, "SD_RSI_Venta"))
+   if(g_regimenActual == REGIMEN_BAJISTA &&
+      BuscarSweepBuySide(precioSweep, distancia, tipoZona, nivelZona, importanciaZona))
      {
-      g_breakoutBajistaArmado = false; // consumir la señal
-      g_slOriginalPosicion = sl;
-      g_breakevenAplicado = false;
-      g_trailingActivado = false;
-      g_cierreParcialAplicado = false;
-      PrintFormat("VENTA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
+      g_setup.estado               = SETUP_SWEEP_DETECTADO;
+      g_setup.esLong                = false;
+      g_setup.precioSweep           = precioSweep;
+      g_setup.sweepDistancia        = distancia;
+      g_setup.tipoZonaSweep         = tipoZona;
+      g_setup.nivelZonaSweep        = nivelZona;
+      g_setup.importanciaZonaSweep  = importanciaZona;
+      g_setup.sweepTime             = iTime(_Symbol, InpTimeframeEntrada, 1);
+      g_setup.regimenEnSweep        = g_regimenActual;
      }
   }
 
-//--- Intenta ejecutar una compra cuando el precio está en zona de Demanda y hay breakout alcista del RSI
-void EvaluarSenalDeCompra()
+//--- Paso 2: tras el sweep, esperar el Market Structure Shift
+void ComprobarMSS()
   {
-   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-
-   // Condición 1: el precio actual entra en la zona de Demanda
-   if(!PrecioEnZona(ask, g_zonaDemand))
-      return;
-
-   // Condición 1b: filtro de zona fresca -- evita operar zonas ya puestas a prueba antes
-   if(InpUsarFiltroZonaFresca && g_zonaDemand.tocada)
-      return;
-
-   // Condición 2: ruptura alcista vigente de la línea de valles del RSI
-   if(!BreakoutAlcistaVigente())
-      return;
-
-   // Condición 3: filtro de tendencia macro (evita comprar en tendencia bajista de fondo)
-   if(!FiltroTendenciaPermiteCompra())
-      return;
-
-   // Como máximo un intento de apertura por vela (ver misma nota en EvaluarSenalDeVenta()).
-   datetime velaIntento = iTime(_Symbol, InpTimeframe, 0);
-   if(velaIntento == g_ultimaVelaIntentoCompra)
-      return;
-   g_ultimaVelaIntentoCompra = velaIntento;
-
-   double pip = PipSize();
-   double entrada = ask;
-   double sl = g_zonaDemand.inferior - InpSLBufferPips * pip;
-   double distanciaSL = entrada - sl;
-   if(distanciaSL <= 0.0)
-      return;
-   double tp = entrada + distanciaSL * InpRiskRewardRatio;
-
-   double lotes = CalcularLotaje(entrada, sl, ORDER_TYPE_BUY);
-   if(lotes <= 0.0)
+   double nivel;
+   if(!LocalizarSwingPrevioAlSweep(g_setup.esLong, g_setup.sweepTime, nivel))
      {
-      Print("No se pudo calcular un lotaje válido para la compra.");
+      ResetearSetup(); // no hay swing previo utilizable: setup inviable
       return;
      }
 
-   trade.SetExpertMagicNumber(InpMagicNumber);
-   if(trade.Buy(lotes, _Symbol, entrada, sl, tp, "SD_RSI_Compra"))
+   double close1 = iClose(_Symbol, InpTimeframeEntrada, 1);
+   if(g_setup.esLong && close1 > nivel)
      {
-      g_breakoutAlcistaArmado = false; // consumir la señal
-      g_slOriginalPosicion = sl;
-      g_breakevenAplicado = false;
-      g_trailingActivado = false;
-      g_cierreParcialAplicado = false;
-      PrintFormat("COMPRA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
+      g_setup.mssLevel = nivel;
+      g_setup.estado   = SETUP_MSS_CONFIRMADO;
+     }
+   else if(!g_setup.esLong && close1 < nivel)
+     {
+      g_setup.mssLevel = nivel;
+      g_setup.estado   = SETUP_MSS_CONFIRMADO;
      }
   }
 
-//--- Una vez el precio se ha movido a favor InpBreakevenTriggerR veces la distancia
-//    de riesgo original (entrada-SL), mueve el SL al precio de entrada (+/- un
-//    pequeño colchón) para que la operación ya no pueda cerrar en pérdida. Usa
-//    g_slOriginalPosicion (el SL con el que se abrió) en vez del SL actual, porque
-//    tras aplicar el breakeven el SL actual ya no refleja el riesgo original.
+//--- Paso 3: tras el MSS, buscar el primer FVG en la dirección del movimiento
+void BuscarFVG()
+  {
+   double sup, inf;
+   if(!DetectarFVG(g_setup.esLong, sup, inf))
+      return;
+
+   double atr = ATRActual();
+   if(InpUsarFiltroFVGMinimo && atr > 0.0 && (sup - inf) < InpFVGMinSizeATRMult * atr)
+      return; // FVG demasiado pequeño: se ignora, se sigue esperando otro
+
+   g_setup.fvgSuperior = sup;
+   g_setup.fvgInferior = inf;
+
+   double pct = InpFVGEntryPercent / 100.0;
+   g_setup.entradaObjetivo = g_setup.esLong ? inf + pct * (sup - inf)
+                                              : sup - pct * (sup - inf);
+
+   // Stop Loss: invalida la hipótesis del liquidity sweep
+   if(atr <= 0.0) { ResetearSetup(); return; }
+   g_setup.slPlan = g_setup.esLong ? g_setup.precioSweep - InpSLBufferATRMult * atr
+                                     : g_setup.precioSweep + InpSLBufferATRMult * atr;
+
+   double tp, rr;
+   if(!CalcularTP(g_setup.esLong, g_setup.entradaObjetivo, g_setup.slPlan, tp, rr))
+     {
+      ResetearSetup(); // ningún TP lógico alcanza el RR mínimo: no hay operación
+      return;
+     }
+   g_setup.tpPlan = tp;
+   g_setup.rrPlan = rr;
+   g_setup.estado = SETUP_FVG_LISTO;
+
+   // Colocar la orden límite de retest al nivel objetivo del FVG, con
+   // expiración = InpSetupMaxBarras velas (si no se rellena, expira sola).
+   double lotes = CalcularLotaje(g_setup.entradaObjetivo, g_setup.slPlan,
+                                  g_setup.esLong ? ORDER_TYPE_BUY : ORDER_TYPE_SELL);
+   if(lotes <= 0.0)
+     {
+      Print("No se pudo calcular un lotaje válido para el retest del FVG.");
+      ResetearSetup();
+      return;
+     }
+
+   datetime expiracion = TimeCurrent() + InpSetupMaxBarras * PeriodSeconds(InpTimeframeEntrada);
+   trade.SetExpertMagicNumber(InpMagicNumber);
+   bool enviado;
+   if(g_setup.esLong)
+      enviado = trade.BuyLimit(lotes, g_setup.entradaObjetivo, _Symbol, g_setup.slPlan, g_setup.tpPlan,
+                                ORDER_TIME_SPECIFIED, expiracion, "SweepMSSFVG_Long");
+   else
+      enviado = trade.SellLimit(lotes, g_setup.entradaObjetivo, _Symbol, g_setup.slPlan, g_setup.tpPlan,
+                                 ORDER_TIME_SPECIFIED, expiracion, "SweepMSSFVG_Short");
+
+   if(enviado)
+     {
+      g_setup.ticketPendiente = trade.ResultOrder();
+      PrintFormat("Orden límite de retest FVG colocada (%s): entrada=%.2f SL=%.2f TP=%.2f RR=%.2f",
+                  g_setup.esLong ? "LONG" : "SHORT", g_setup.entradaObjetivo, g_setup.slPlan, g_setup.tpPlan, g_setup.rrPlan);
+     }
+   else
+     {
+      Print("Fallo al colocar la orden límite de retest del FVG.");
+      ResetearSetup();
+     }
+  }
+
+//--- Timeout general: si desde el sweep han pasado más de InpSetupMaxBarras velas sin
+//    completar la secuencia sweep->MSS->FVG->retest, se descarta el setup (cubre las
+//    fases SWEEP_DETECTADO y MSS_CONFIRMADO; la fase FVG_LISTO expira sola vía la
+//    fecha de expiración de la orden límite, ver BuscarFVG()).
+bool SetupExpiradoPorTiempo()
+  {
+   if(g_setup.estado == SETUP_NINGUNO)
+      return false;
+   datetime ahora = iTime(_Symbol, InpTimeframeEntrada, 1);
+   long barrasTranscurridas = (long)((ahora - g_setup.sweepTime) / PeriodSeconds(InpTimeframeEntrada));
+   return (barrasTranscurridas > InpSetupMaxBarras);
+  }
+
+//--- Comprueba invalidación (rotura de estructura en contra) o expiración de la orden pendiente
+void SupervisarSetupPendiente()
+  {
+   if(g_setup.estado != SETUP_MSS_CONFIRMADO && g_setup.estado != SETUP_FVG_LISTO)
+      return;
+
+   double close1 = iClose(_Symbol, InpTimeframeEntrada, 1);
+   bool estructuraInvalidada = g_setup.esLong ? (close1 < g_setup.mssLevel)
+                                                : (close1 > g_setup.mssLevel);
+   if(estructuraInvalidada)
+     {
+      if(g_setup.estado == SETUP_FVG_LISTO && g_setup.ticketPendiente != 0 && HayOrdenPendiente(g_setup.ticketPendiente))
+         trade.OrderDelete(g_setup.ticketPendiente);
+      ResetearSetup();
+      return;
+     }
+
+   if(g_setup.estado == SETUP_FVG_LISTO && g_setup.ticketPendiente != 0 && !HayOrdenPendiente(g_setup.ticketPendiente))
+     {
+      // la orden ya no existe (se rellenó -> gestionado en OnTradeTransaction,
+      // o expiró/fue cancelada por el bróker): si no hay posición nuestra
+      // abierta, fue una expiración -- se libera el setup.
+      if(!HayPosicionAbierta())
+         ResetearSetup();
+     }
+  }
+
+//======================================================================
+// MÓDULO 12: GESTIÓN DE POSICIÓN (BREAKEVEN / TRAILING / CIERRE PARCIAL)
+// -- heredado sin cambios de la versión anterior del EA --
+//======================================================================
 void GestionarBreakeven()
   {
    if(!InpUsarBreakeven || g_breakevenAplicado || g_slOriginalPosicion <= 0.0)
@@ -953,24 +1177,10 @@ void GestionarBreakeven()
               }
            }
         }
-      return; // sólo hay una posición gestionada por este EA
+      return;
      }
   }
 
-//--- Una vez el precio se ha movido a favor InpCierreParcialTriggerR veces el riesgo
-//    original (3R por defecto, el mismo nivel que el TP fijo), esta función:
-//      1) Si InpUsarCierreParcial está activo, cierra InpCierreParcialPercent% del
-//         volumen (50% por defecto) para asegurar la ganancia del ratio 1:3 original.
-//      2) Libera el Take Profit fijo del volumen restante (lo pone a 0) y empieza a
-//         arrastrar su Stop Loss a una distancia de InpTrailingDistanceR por detrás del
-//         precio.
-//    Sin esto, toda operación que llegase a superar el TP fijo cerraría siempre en el
-//    mismo múltiplo de riesgo por muy fuerte que fuese la tendencia; con el cierre
-//    parcial + trailing, la mitad de la ganancia queda asegurada en el objetivo
-//    original y la otra mitad puede seguir corriendo mucho más allá de 3R en
-//    tendencias fuertes de XAUUSD, sin aumentar el riesgo inicial de la operación.
-//    Usa g_slOriginalPosicion (no el SL actual) para medir el múltiplo de riesgo real,
-//    igual que GestionarBreakeven().
 void GestionarTrailingStop()
   {
    if(!InpUsarTrailingStop || g_slOriginalPosicion <= 0.0)
@@ -1000,9 +1210,6 @@ void GestionarTrailingStop()
       if(currentR < InpCierreParcialTriggerR)
          return;
 
-      // --- Cierre parcial: se ejecuta una única vez por posición, en cuanto se alcanza
-      //     el múltiplo de riesgo objetivo, para asegurar parte de la ganancia al nivel
-      //     del TP original antes de liberar el TP y dejar correr el resto con trailing.
       if(InpUsarCierreParcial && !g_cierreParcialAplicado)
         {
          double volumenActual  = PositionGetDouble(POSITION_VOLUME);
@@ -1010,9 +1217,6 @@ void GestionarTrailingStop()
          double volMin         = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
          double volumenCerrar  = MathFloor((volumenActual * InpCierreParcialPercent / 100.0) / volStep) * volStep;
 
-         // Sólo cierra parcialmente si queda volumen suficiente a ambos lados (el
-         // cerrado y el que sigue abierto) para respetar el mínimo del bróker; si no,
-         // se deja correr toda la posición sin cierre parcial.
          if(volumenCerrar >= volMin && (volumenActual - volumenCerrar) >= volMin)
            {
             if(trade.PositionClosePartial(ticket, NormalizeDouble(volumenCerrar, 2)))
@@ -1023,7 +1227,7 @@ void GestionarTrailingStop()
               }
            }
          else
-            g_cierreParcialAplicado = true; // volumen insuficiente: no reintentar cada tick
+            g_cierreParcialAplicado = true;
         }
 
       double nuevoSL = (tipo == POSITION_TYPE_BUY)
@@ -1044,176 +1248,89 @@ void GestionarTrailingStop()
                         (tipo == POSITION_TYPE_BUY ? "compra" : "venta"), ticket, slFinal, currentR);
            }
         }
-
-      return; // sólo hay una posición gestionada por este EA
+      return;
      }
   }
 
 //======================================================================
-// MÓDULO DE AUTO-OPTIMIZACIÓN WALK-FORWARD (MÉTODO 1)
+// MÓDULO 13: LOG CSV DE OPERACIONES
 //======================================================================
-// Cada semana, en la primera vela de H1 que abre en domingo o lunes (es
-// decir, justo cuando el mercado reabre tras el cierre de fin de
-// semana), el EA analiza las últimas "InpVelasAnalisisOptimizacion"
-// velas de 1 Hora del símbolo y mide el régimen de volatilidad reciente
-// mediante dos indicadores estadísticos:
-//
-//   1) ATR (Average True Range): se calcula el ATR de cada una de esas
-//      velas y se obtienen dos promedios:
-//        - "mediaATR"    -> promedio del ATR en TODO el rango analizado
-//                           (línea base histórica de volatilidad).
-//        - "atrReciente" -> promedio del ATR en las últimas 20 velas
-//                           (fotografía de la volatilidad actual).
-//   2) Desviación estándar de los precios de cierre del mismo rango,
-//      como segunda medida de dispersión/volatilidad del mercado.
-//
-// Si "atrReciente" supera a "mediaATR", el mercado está en un régimen
-// de volatilidad ALTA y el EA amplía el lookback de las zonas de Oferta/
-// Demanda (más contexto, zonas más amplias) y el período del RSI (menos
-// sensible al ruido). Si no, el mercado está "lento" (volatilidad BAJA)
-// y el EA reduce ambos parámetros para reaccionar con mayor agilidad a
-// movimientos más pequeños.
-//
-// Esta recalibración es puramente de PARÁMETROS DE ESTRATEGIA (lookback
-// de zonas y período de RSI). NO toca ninguna regla de gestión de
-// riesgo: el 0.5% de riesgo por operación, el cálculo de lotaje
-// dinámico, el Kill Switch del 4% diario y el cierre de fin de semana
-// siguen funcionando exactamente igual, de forma totalmente
-// independiente a este módulo.
-//----------------------------------------------------------------------
-
-//--- Determina si la vela H1 recién abierta es la primera de la semana de trading
-//    (apertura de domingo o lunes, justo tras el cierre del fin de semana).
-bool EsPrimeraVelaDeLaSemana(const datetime horaVela)
+void EscribirCabeceraSiHaceFalta(const int handle)
   {
-   MqlDateTime dt;
-   TimeToStruct(horaVela, dt);
-   return (dt.day_of_week == 0 || dt.day_of_week == 1);
+   if(FileSize(handle) == 0)
+      FileWrite(handle, "FechaHoraApertura", "FechaHoraCierre", "Direccion", "TipoZonaLiquidez",
+                "ImportanciaZona", "PrecioSweep", "SweepDistancia", "MSSLevel", "FVGSuperior",
+                "FVGInferior", "PrecioEntrada", "StopLoss", "TakeProfit", "RRPlan", "ResultadoR",
+                "ResultadoMonetario", "DuracionMinutos", "DrawdownDuranteTrade", "Regimen4H");
   }
 
-//--- Ejecuta, como máximo una vez por semana, la recalibración walk-forward de estrategia.
-void EjecutarOptimizacionSemanal()
+string NombreZona(const ENUM_TIPO_ZONA t)
   {
-   if(!InpOptimizacionActiva)
-      return;
-
-   datetime horaVelaH1 = iTime(_Symbol, PERIOD_H1, 0);
-
-   // Sólo se evalúa una vez por cada vela H1 nueva (evita repetir el análisis en cada tick)
-   if(horaVelaH1 == g_ultimaVelaH1Procesada)
-      return;
-   g_ultimaVelaH1Procesada = horaVelaH1;
-
-   if(!EsPrimeraVelaDeLaSemana(horaVelaH1))
-      return;
-
-   // Bloqueo semanal: no recalibrar dos veces dentro de la misma semana.
-   // Se agrupan las velas en "cubos" de 7 días desde una referencia fija
-   // (Epoch), en vez de usar fechas de calendario, para no depender de
-   // en qué día exacto abre la semana cada bróker.
-   long semanaActual     = (long)(horaVelaH1 / 604800);       // 604800 s = 7 días
-   long semanaOptimizada = (long)(ultimaOptimizacion / 604800);
-   if(ultimaOptimizacion > 0 && semanaActual == semanaOptimizada)
-      return;
-
-   // --- Recolección de datos: últimas InpVelasAnalisisOptimizacion velas cerradas de H1 ---
-   int velas = InpVelasAnalisisOptimizacion;
-   if(Bars(_Symbol, PERIOD_H1) < velas + InpATRPeriodoOptimizacion + 1)
-      return; // histórico insuficiente todavía
-
-   int handleATR = iATR(_Symbol, PERIOD_H1, InpATRPeriodoOptimizacion);
-   if(handleATR == INVALID_HANDLE)
-      return;
-
-   double atrBuffer[];
-   ArraySetAsSeries(atrBuffer, false);
-   int copiadosATR = CopyBuffer(handleATR, 0, 1, velas, atrBuffer);
-   IndicatorRelease(handleATR);
-   if(copiadosATR < velas)
-      return;
-
-   double closeBuffer[];
-   ArraySetAsSeries(closeBuffer, false);
-   if(CopyClose(_Symbol, PERIOD_H1, 1, velas, closeBuffer) < velas)
-      return;
-
-   // --- ATR: media histórica del rango completo frente al promedio reciente (últimas 20 velas) ---
-   double sumaATR = 0.0;
-   for(int i = 0; i < velas; i++)
-      sumaATR += atrBuffer[i];
-   double mediaATR = sumaATR / velas;
-
-   int velasReciente = MathMin(20, velas);
-   double sumaATRReciente = 0.0;
-   for(int i = velas - velasReciente; i < velas; i++)
-      sumaATRReciente += atrBuffer[i];
-   double atrReciente = sumaATRReciente / velasReciente;
-
-   // --- Desviación estándar de los precios de cierre del mismo rango analizado ---
-   double sumaClose = 0.0;
-   for(int i = 0; i < velas; i++)
-      sumaClose += closeBuffer[i];
-   double mediaClose = sumaClose / velas;
-
-   double sumaCuadrados = 0.0;
-   for(int i = 0; i < velas; i++)
-      sumaCuadrados += MathPow(closeBuffer[i] - mediaClose, 2);
-   double desviacionEstandar = MathSqrt(sumaCuadrados / velas);
-
-   // --- Clasificación del régimen de volatilidad y recalibración dinámica de la estrategia ---
-   bool volatilidadAlta = (atrReciente > mediaATR);
-
-   if(volatilidadAlta)
+   switch(t)
      {
-      g_zonaLookbackMacro = InpZonaLookbackVolatilidadAlta;
-      g_rsiPeriod         = InpRSIPeriodoVolatilidadAlta;
+      case ZONA_PWH:        return "PWH";
+      case ZONA_PWL:        return "PWL";
+      case ZONA_PDH:        return "PDH";
+      case ZONA_PDL:        return "PDL";
+      case ZONA_ASIA_HIGH:  return "AsiaHigh";
+      case ZONA_ASIA_LOW:   return "AsiaLow";
+      case ZONA_SWING_HIGH: return "SwingHigh";
+      case ZONA_SWING_LOW:  return "SwingLow";
+      case ZONA_EQUAL_HIGH: return "EqualHigh";
+      case ZONA_EQUAL_LOW:  return "EqualLow";
      }
-   else
-     {
-      g_zonaLookbackMacro = InpZonaLookbackVolatilidadBaja;
-      g_rsiPeriod         = InpRSIPeriodoVolatilidadBaja;
-     }
-
-   // El período del RSI pudo haber cambiado: hay que recrear su handle de indicador
-   if(g_handleRSI != INVALID_HANDLE)
-      IndicatorRelease(g_handleRSI);
-   g_handleRSI = iRSI(_Symbol, InpTimeframe, g_rsiPeriod, PRICE_CLOSE);
-
-   ultimaOptimizacion = horaVelaH1;
-
-   PrintFormat("AUTO-OPTIMIZACIÓN SEMANAL: volatilidad %s (ATR reciente=%.2f, ATR medio=%.2f, desv.est.=%.2f) -> Lookback zonas=%d, Período RSI=%d",
-               volatilidadAlta ? "ALTA" : "BAJA", atrReciente, mediaATR, desviacionEstandar,
-               g_zonaLookbackMacro, g_rsiPeriod);
+   return "?";
   }
 
-//======================================================================
-// DETECCIÓN DE VELA NUEVA
-//======================================================================
-
-//--- Nueva vela en la temporalidad de EJECUCIÓN (5M): dispara el recálculo del gatillo RSI
-bool EsVelaNueva()
+string NombreRegimen(const ENUM_REGIMEN r)
   {
-   datetime horaVelaActual = iTime(_Symbol, InpTimeframe, 0);
-   if(horaVelaActual != g_ultimaVelaProcesada)
-     {
-      g_ultimaVelaProcesada = horaVelaActual;
-      return true;
-     }
-   return false;
+   if(r == REGIMEN_ALCISTA) return "ALCISTA";
+   if(r == REGIMEN_BAJISTA) return "BAJISTA";
+   return "INDEFINIDO";
   }
 
-//--- Nueva vela en la temporalidad MACRO (H1/H4): dispara el recálculo de las zonas de liquidez.
-//    Se comprueba de forma independiente al timeframe de ejecución, de modo que el escaneo
-//    Multi-Timeframe se mantiene "constante" aunque el gráfico donde corre el EA sea de 5 minutos.
-bool EsVelaNuevaMacro()
+void RegistrarOperacionEnCSV(const double resultadoMonetario, const datetime horaCierre)
   {
-   datetime horaVelaMacroActual = iTime(_Symbol, Temporalidad_Liquidez, 0);
-   if(horaVelaMacroActual != g_ultimaVelaMacroProcesada)
+   if(!InpRegistrarCSV)
+      return;
+
+   int handle = FileOpen(InpNombreArchivoCSV, FILE_READ | FILE_WRITE | FILE_CSV | FILE_ANSI, ';');
+   if(handle == INVALID_HANDLE)
      {
-      g_ultimaVelaMacroProcesada = horaVelaMacroActual;
-      return true;
+      PrintFormat("No se pudo abrir el archivo de log CSV '%s' (error %d).", InpNombreArchivoCSV, GetLastError());
+      return;
      }
-   return false;
+   EscribirCabeceraSiHaceFalta(handle);
+   FileSeek(handle, 0, SEEK_END);
+
+   double resultadoR = (g_logOperacionActiva.riesgoMonetarioPlan > 0.0)
+                        ? resultadoMonetario / g_logOperacionActiva.riesgoMonetarioPlan : 0.0;
+   double duracionMin = (double)(horaCierre - g_logOperacionActiva.horaApertura) / 60.0;
+   double drawdownTrade = (AccountInfoDouble(ACCOUNT_BALANCE) - g_logOperacionActiva.equityMinimaDurante);
+   if(drawdownTrade < 0.0) drawdownTrade = 0.0;
+
+   FileWrite(handle,
+             TimeToString(g_logOperacionActiva.horaApertura, TIME_DATE | TIME_SECONDS),
+             TimeToString(horaCierre, TIME_DATE | TIME_SECONDS),
+             g_logOperacionActiva.esLong ? "LONG" : "SHORT",
+             NombreZona(g_logOperacionActiva.tipoZonaSweep),
+             g_logOperacionActiva.importanciaZonaSweep,
+             DoubleToString(g_logOperacionActiva.precioSweep, _Digits),
+             DoubleToString(g_logOperacionActiva.sweepDistancia, _Digits),
+             DoubleToString(g_logOperacionActiva.mssLevel, _Digits),
+             DoubleToString(g_logOperacionActiva.fvgSuperior, _Digits),
+             DoubleToString(g_logOperacionActiva.fvgInferior, _Digits),
+             DoubleToString(g_logOperacionActiva.precioEntrada, _Digits),
+             DoubleToString(g_logOperacionActiva.sl, _Digits),
+             DoubleToString(g_logOperacionActiva.tp, _Digits),
+             DoubleToString(g_logOperacionActiva.rrPlan, 2),
+             DoubleToString(resultadoR, 3),
+             DoubleToString(resultadoMonetario, 2),
+             DoubleToString(duracionMin, 1),
+             DoubleToString(drawdownTrade, 2),
+             NombreRegimen(g_logOperacionActiva.regimen));
+
+   FileClose(handle);
   }
 
 //======================================================================
@@ -1221,104 +1338,112 @@ bool EsVelaNuevaMacro()
 //======================================================================
 int OnInit()
   {
-   g_handleRSI = iRSI(_Symbol, InpTimeframe, g_rsiPeriod, PRICE_CLOSE);
-   if(g_handleRSI == INVALID_HANDLE)
+   g_handleEMARegimen = iMA(_Symbol, InpTimeframeRegimen, InpEMARegimenPeriod, 0, MODE_EMA, PRICE_CLOSE);
+   if(g_handleEMARegimen == INVALID_HANDLE)
      {
-      Print("Error al crear el indicador RSI.");
+      Print("Error al crear la EMA de régimen.");
       return(INIT_FAILED);
      }
 
-   g_handleTendenciaMA = iMA(_Symbol, Temporalidad_Liquidez, InpTrendMAPeriod, 0, InpTrendMAMethod, PRICE_CLOSE);
-   if(g_handleTendenciaMA == INVALID_HANDLE)
+   g_handleATR = iATR(_Symbol, InpTimeframeEntrada, InpATRPeriod);
+   if(g_handleATR == INVALID_HANDLE)
      {
-      Print("Error al crear la media móvil del filtro de tendencia.");
+      Print("Error al crear el ATR.");
       return(INIT_FAILED);
      }
+
+   if(InpFixedRR < InpMinimumRR)
+      Print("AVISO: InpFixedRR es menor que InpMinimumRR; en Modo A ninguna operación pasará el filtro de RR mínimo.");
 
    trade.SetExpertMagicNumber(InpMagicNumber);
 
-   g_zonaSupply.activa      = false;
-   g_zonaSupply.huboEntrada = false;
-   g_zonaSupply.tocada      = false;
-   g_zonaDemand.activa      = false;
-   g_zonaDemand.huboEntrada = false;
-   g_zonaDemand.tocada      = false;
-
-   g_diaActual = 0; // fuerza la inicialización del día en el primer tick
+   ResetearSetup();
+   g_diaActual = 0;
    GestionarCambioDeDia();
 
-   // Siembra inicial de las zonas macro para no operar sin contexto mientras
-   // se espera al cierre de la primera vela de "Temporalidad_Liquidez"
-   ActualizarZonasOfertaDemanda();
-   g_ultimaVelaMacroProcesada = iTime(_Symbol, Temporalidad_Liquidez, 0);
+   ActualizarAsiaHighLow();
+   ActualizarRegimen();
+   ReconstruirZonasLiquidez();
+   g_ultimaVelaEntradaProcesada = iTime(_Symbol, InpTimeframeEntrada, 0);
+   g_ultimaVelaRegimenProcesada = iTime(_Symbol, InpTimeframeRegimen, 0);
 
    return(INIT_SUCCEEDED);
   }
 
 void OnDeinit(const int reason)
   {
-   if(g_handleRSI != INVALID_HANDLE)
-      IndicatorRelease(g_handleRSI);
-   if(g_handleTendenciaMA != INVALID_HANDLE)
-      IndicatorRelease(g_handleTendenciaMA);
+   if(g_handleEMARegimen != INVALID_HANDLE)
+      IndicatorRelease(g_handleEMARegimen);
+   if(g_handleATR != INVALID_HANDLE)
+      IndicatorRelease(g_handleATR);
   }
 
 //======================================================================
-// CIRCUITO DE PÉRDIDAS CONSECUTIVAS
+// CIRCUITO DE PÉRDIDAS CONSECUTIVAS (heredado sin cambios) + FILL/CIERRE
+// DE ÓRDENES DEL SETUP SWEEP->MSS->FVG
 //======================================================================
-// Complementa al Kill Switch del 4%: en vez de esperar a que se acumule
-// toda la pérdida diaria permitida, cuenta las pérdidas SEGUIDAS del día
-// (se reinicia a 0 en cuanto una operación cierra en positivo) y bloquea
-// nuevas entradas en cuanto se alcanza "InpMaxPerdidasConsecutivas",
-// mucho antes de llegar al límite diario. No fuerza el cierre de nada
-// (cuando se evalúa ya se está plano, tras el cierre que disparó la
-// cuenta), simplemente impide abrir la siguiente operación hasta el
-// día siguiente.
-//
-// Se detecta el resultado de cada operación cerrada en OnTradeTransaction,
-// el evento nativo de MQL5 para cambios en el historial de trading: cuando
-// MetaTrader añade un nuevo deal de cierre (TRADE_TRANSACTION_DEAL_ADD con
-// ENTRY_OUT/ENTRY_OUT_BY) de este símbolo y con nuestro número mágico, se
-// suma su beneficio/pérdida real (incluyendo swap y comisión) para saber
-// si fue ganadora o perdedora.
-//----------------------------------------------------------------------
 void OnTradeTransaction(const MqlTradeTransaction &trans,
                          const MqlTradeRequest &request,
                          const MqlTradeResult &result)
   {
    if(trans.type != TRADE_TRANSACTION_DEAL_ADD)
       return;
-
    if(!HistoryDealSelect(trans.deal))
       return;
-
    if(HistoryDealGetString(trans.deal, DEAL_SYMBOL) != _Symbol)
       return;
    if(HistoryDealGetInteger(trans.deal, DEAL_MAGIC) != (long)InpMagicNumber)
       return;
 
    ENUM_DEAL_ENTRY tipoEntrada = (ENUM_DEAL_ENTRY)HistoryDealGetInteger(trans.deal, DEAL_ENTRY);
-   if(tipoEntrada != DEAL_ENTRY_OUT && tipoEntrada != DEAL_ENTRY_OUT_BY)
-      return; // sólo interesan los cierres, no las aperturas
 
-   // Si la posición sigue abierta tras este cierre, fue un cierre PARCIAL (el cierre
-   // parcial en el TP original): la posición sigue viva con el resto del volumen, así
-   // que no se resetea su estado (SL original, breakeven, trailing) ni cuenta todavía
-   // para el circuito de pérdidas consecutivas, que sólo evalúa el resultado final de
-   // la operación completa.
-   ulong idPosicion = (ulong)HistoryDealGetInteger(trans.deal, DEAL_POSITION_ID);
-   if(PositionSelectByTicket(idPosicion))
+   // --- Apertura (fill de la orden límite de retest del FVG) ---
+   if(tipoEntrada == DEAL_ENTRY_IN)
+     {
+      double precioEntradaReal = HistoryDealGetDouble(trans.deal, DEAL_PRICE);
+      g_slOriginalPosicion    = g_setup.slPlan;
+      g_breakevenAplicado     = false;
+      g_trailingActivado      = false;
+      g_cierreParcialAplicado = false;
+      g_operacionesHoy++;
+
+      g_logOperacionActiva.horaApertura          = TimeCurrent();
+      g_logOperacionActiva.esLong                = g_setup.esLong;
+      g_logOperacionActiva.tipoZonaSweep         = g_setup.tipoZonaSweep;
+      g_logOperacionActiva.importanciaZonaSweep  = g_setup.importanciaZonaSweep;
+      g_logOperacionActiva.precioSweep           = g_setup.precioSweep;
+      g_logOperacionActiva.sweepDistancia        = g_setup.sweepDistancia;
+      g_logOperacionActiva.mssLevel              = g_setup.mssLevel;
+      g_logOperacionActiva.fvgSuperior           = g_setup.fvgSuperior;
+      g_logOperacionActiva.fvgInferior           = g_setup.fvgInferior;
+      g_logOperacionActiva.precioEntrada         = precioEntradaReal;
+      g_logOperacionActiva.sl                    = g_setup.slPlan;
+      g_logOperacionActiva.tp                    = g_setup.tpPlan;
+      g_logOperacionActiva.rrPlan                = g_setup.rrPlan;
+      g_logOperacionActiva.regimen               = g_setup.regimenEnSweep;
+      g_logOperacionActiva.riesgoMonetarioPlan   = AccountInfoDouble(ACCOUNT_BALANCE) * (InpRiskPercent / 100.0);
+      g_logOperacionActiva.equityMinimaDurante   = AccountInfoDouble(ACCOUNT_EQUITY);
+      g_hayLogOperacionActiva = true;
+
+      PrintFormat("%s ejecutada (retest FVG): entrada=%.2f SL=%.2f TP=%.2f RR=%.2f",
+                  g_setup.esLong ? "COMPRA" : "VENTA", precioEntradaReal, g_setup.slPlan, g_setup.tpPlan, g_setup.rrPlan);
+
+      ResetearSetup(); // el sweep que originó esta operación queda consumido
+      return;
+     }
+
+   if(tipoEntrada != DEAL_ENTRY_OUT && tipoEntrada != DEAL_ENTRY_OUT_BY)
       return;
 
-   // La posición se cerró por completo: el SL original ya no aplica a ninguna posición viva
-   g_slOriginalPosicion = 0.0;
-   g_breakevenAplicado = false;
-   g_trailingActivado = false;
+   ulong idPosicion = (ulong)HistoryDealGetInteger(trans.deal, DEAL_POSITION_ID);
+   if(PositionSelectByTicket(idPosicion))
+      return; // cierre parcial: la posición sigue viva, no se resetea su estado
+
+   g_slOriginalPosicion    = 0.0;
+   g_breakevenAplicado     = false;
+   g_trailingActivado      = false;
    g_cierreParcialAplicado = false;
 
-   // Se suma el resultado de TODOS los cierres de esta posición (el cierre parcial en
-   // el TP original, si lo hubo, más el cierre final) para clasificar correctamente la
-   // operación completa como ganadora o perdedora en el circuito de pérdidas consecutivas.
    double resultado = 0.0;
    if(HistorySelectByPosition(idPosicion))
      {
@@ -1330,11 +1455,16 @@ void OnTradeTransaction(const MqlTradeTransaction &trans,
          ENUM_DEAL_ENTRY entradaDeal = (ENUM_DEAL_ENTRY)HistoryDealGetInteger(dealTicket, DEAL_ENTRY);
          if(entradaDeal != DEAL_ENTRY_OUT && entradaDeal != DEAL_ENTRY_OUT_BY)
             continue;
-
          resultado += HistoryDealGetDouble(dealTicket, DEAL_PROFIT)
                     + HistoryDealGetDouble(dealTicket, DEAL_SWAP)
                     + HistoryDealGetDouble(dealTicket, DEAL_COMMISSION);
         }
+     }
+
+   if(g_hayLogOperacionActiva)
+     {
+      RegistrarOperacionEnCSV(resultado, TimeCurrent());
+      g_hayLogOperacionActiva = false;
      }
 
    if(resultado < 0.0)
@@ -1353,31 +1483,45 @@ void OnTradeTransaction(const MqlTradeTransaction &trans,
      }
   }
 
+//======================================================================
+// DETECCIÓN DE VELA NUEVA
+//======================================================================
+bool EsVelaNuevaEntrada()
+  {
+   datetime horaVelaActual = iTime(_Symbol, InpTimeframeEntrada, 0);
+   if(horaVelaActual != g_ultimaVelaEntradaProcesada)
+     {
+      g_ultimaVelaEntradaProcesada = horaVelaActual;
+      return true;
+     }
+   return false;
+  }
+
+bool EsVelaNuevaRegimen()
+  {
+   datetime horaVelaActual = iTime(_Symbol, InpTimeframeRegimen, 0);
+   if(horaVelaActual != g_ultimaVelaRegimenProcesada)
+     {
+      g_ultimaVelaRegimenProcesada = horaVelaActual;
+      return true;
+     }
+   return false;
+  }
+
 void OnTick()
   {
-   // 1) Auto-optimización walk-forward: revisa al inicio de cada vela si toca
-   //    recalibrar (sólo se ejecuta de verdad una vez por semana). Es un ajuste
-   //    de parámetros de estrategia, independiente de la gestión de riesgo.
-   EjecutarOptimizacionSemanal();
-
-   // 2) Gestión de cambio de día (referencia para el Kill Switch)
+   // 1) Gestión de cambio de día (referencia para el Kill Switch y el límite de operaciones por sesión)
    GestionarCambioDeDia();
 
-   // 3) Kill Switch diario: si ya se activó, no se hace nada más hasta el día siguiente
+   // 2) Kill Switch diario
    ComprobarKillSwitchDiario();
    if(g_killSwitchActivo)
       return;
 
-   // 4) Cierre obligatorio de fin de semana.
-   //    Se intenta como máximo una vez por cada vela nueva (no en cada tick):
-   //    si el mercado ya cerró para el símbolo, CerrarTodasLasPosiciones()
-   //    falla y, sin este límite, el EA reintentaba en cada tick -- se
-   //    detectaron cientos de órdenes fallidas seguidas ("Market closed") en
-   //    el backtest, sin ningún beneficio, hasta que dejaban de llegar ticks
-   //    por el fin de semana.
+   // 3) Cierre obligatorio de fin de semana
    if(DebeCerrarPorFinDeSemana())
      {
-      datetime velaActual = iTime(_Symbol, InpTimeframe, 0);
+      datetime velaActual = iTime(_Symbol, InpTimeframeEntrada, 0);
       if(velaActual != g_ultimaVelaIntentoCierreFDS)
         {
          g_ultimaVelaIntentoCierreFDS = velaActual;
@@ -1387,27 +1531,31 @@ void OnTick()
             CerrarTodasLasPosiciones();
            }
          BorrarTodasLasOrdenesPendientes();
+         ResetearSetup();
         }
       return;
      }
 
-   // 5a) Al cerrar una nueva vela de la temporalidad MACRO, recalcular las zonas de liquidez (contexto MTF)
-   if(EsVelaNuevaMacro())
-      ActualizarZonasOfertaDemanda();
+   // 4) Actualizar equity mínima de la operación activa (para el drawdown por trade del log CSV)
+   if(g_hayLogOperacionActiva)
+     {
+      double equityActual = AccountInfoDouble(ACCOUNT_EQUITY);
+      if(equityActual < g_logOperacionActiva.equityMinimaDurante)
+         g_logOperacionActiva.equityMinimaDurante = equityActual;
+     }
 
-   // 5b) Al cerrar una nueva vela de la temporalidad de EJECUCIÓN (5M), recalcular el gatillo RSI
-   if(EsVelaNueva())
-      ActualizarRSITrendlinesYBreakouts();
+   // 5) Régimen 4H: sólo se recalcula al cerrar una nueva vela H4
+   if(EsVelaNuevaRegimen())
+      ActualizarRegimen();
 
-   // 5c) Registrar si el precio ha entrado/salido de alguna zona, para el filtro de zona fresca
-   MarcarZonasTocadas();
+   // 6) Sesión asiática y liquidity zones: se recalculan al cerrar una nueva vela M15
+   if(EsVelaNuevaEntrada())
+     {
+      ActualizarAsiaHighLow();
+      ReconstruirZonasLiquidez();
+     }
 
-   // 6) Filtro de spread: prohíbe abrir operaciones si el spread es excesivo
-   if(!SpreadPermitido())
-      return;
-
-   // 7) Sólo se gestiona una posición simultánea por este EA. Si ya hay una
-   //    abierta, no se evalúan nuevas entradas, pero sí se gestiona su breakeven.
+   // 7) Si ya hay una posición abierta, sólo se gestiona (breakeven/trailing); no se buscan setups nuevos
    if(HayPosicionAbierta())
      {
       GestionarBreakeven();
@@ -1415,18 +1563,44 @@ void OnTick()
       return;
      }
 
-   // 8) Circuito de pérdidas consecutivas: bloquea nuevas entradas el resto
-   //    del día tras InpMaxPerdidasConsecutivas pérdidas seguidas
+   // 8) Supervisión del setup en curso (invalidación de estructura / expiración de la
+   //    orden pendiente): se hace siempre, incluso si el spread está momentáneamente
+   //    alto o el circuito de pérdidas está activo, para no dejar huérfana una orden
+   //    límite ya colocada en el mercado.
+   if(EsVelaNuevaEntrada())
+     {
+      if(SetupExpiradoPorTiempo() &&
+         (g_setup.estado == SETUP_SWEEP_DETECTADO || g_setup.estado == SETUP_MSS_CONFIRMADO))
+         ResetearSetup();
+      if(g_setup.estado == SETUP_MSS_CONFIRMADO || g_setup.estado == SETUP_FVG_LISTO)
+         SupervisarSetupPendiente();
+     }
+   else if(g_setup.estado == SETUP_FVG_LISTO)
+     {
+      // entre velas, sólo se supervisa la orden pendiente (expiración/invalidación);
+      // el propio relleno de la orden llega por OnTradeTransaction
+      SupervisarSetupPendiente();
+     }
+
+   // 9) Filtro de spread: sólo bloquea la búsqueda/activación de setups NUEVOS
+   if(!SpreadPermitido())
+      return;
+
+   // 10) Circuito de pérdidas consecutivas: idem, sólo bloquea aperturas nuevas
    if(g_circuitoPerdidasActivo)
       return;
 
-   // 9) Filtro de horario de sesión: sólo abre operaciones nuevas en la franja de
-   //    mayor liquidez del oro (una posición ya abierta se sigue gestionando siempre)
-   if(!SesionPermiteOperar())
-      return;
-
-   // 10) Evaluación de señales de entrada (contexto + gatillo)
-   EvaluarSenalDeVenta();
-   EvaluarSenalDeCompra();
+   // 11) Progresión de la máquina de estados (buscar un sweep nuevo, comprobar el MSS
+   //     o, tras un MSS ya supervisado, buscar el FVG), sólo al cerrar una vela M15 nueva
+   //     (todas las reglas -sweep, MSS, FVG- se evalúan sobre velas ya cerradas)
+   if(EsVelaNuevaEntrada())
+     {
+      if(g_setup.estado == SETUP_NINGUNO)
+         BuscarNuevoSweep();
+      else if(g_setup.estado == SETUP_SWEEP_DETECTADO)
+         ComprobarMSS();
+      else if(g_setup.estado == SETUP_MSS_CONFIRMADO)
+         BuscarFVG();
+     }
   }
 //+------------------------------------------------------------------+
