@@ -71,6 +71,7 @@ int            g_handleTendenciaMA = INVALID_HANDLE;
 datetime       g_ultimaVelaProcesada = 0;      // Última vela procesada en la temporalidad de ejecución (RSI)
 datetime       g_ultimaVelaMacroProcesada = 0; // Última vela procesada en la temporalidad macro (zonas)
 datetime       g_ultimaVelaH1Procesada = 0;    // Última vela H1 procesada por el módulo de auto-optimización
+datetime       g_ultimaVelaIntentoCierreFDS = 0; // Última vela en la que se intentó el cierre de fin de semana
 
 // --- Parámetros adaptativos: dejan de ser "input" fijos para que el módulo de
 //     auto-optimización walk-forward pueda reconfigurarlos dinámicamente ---
@@ -1069,15 +1070,26 @@ void OnTick()
    if(g_killSwitchActivo)
       return;
 
-   // 4) Cierre obligatorio de fin de semana
+   // 4) Cierre obligatorio de fin de semana.
+   //    Se intenta como máximo una vez por cada vela nueva (no en cada tick):
+   //    si el mercado ya cerró para el símbolo, CerrarTodasLasPosiciones()
+   //    falla y, sin este límite, el EA reintentaba en cada tick -- se
+   //    detectaron cientos de órdenes fallidas seguidas ("Market closed") en
+   //    el backtest, sin ningún beneficio, hasta que dejaban de llegar ticks
+   //    por el fin de semana.
    if(DebeCerrarPorFinDeSemana())
      {
-      if(HayPosicionAbierta())
+      datetime velaActual = iTime(_Symbol, InpTimeframe, 0);
+      if(velaActual != g_ultimaVelaIntentoCierreFDS)
         {
-         Print("Cierre de fin de semana: liquidando posiciones flotantes.");
-         CerrarTodasLasPosiciones();
+         g_ultimaVelaIntentoCierreFDS = velaActual;
+         if(HayPosicionAbierta())
+           {
+            Print("Cierre de fin de semana: liquidando posiciones flotantes.");
+            CerrarTodasLasPosiciones();
+           }
+         BorrarTodasLasOrdenesPendientes();
         }
-      BorrarTodasLasOrdenesPendientes();
       return;
      }
 
