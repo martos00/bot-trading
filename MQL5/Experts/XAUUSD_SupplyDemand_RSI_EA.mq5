@@ -419,23 +419,29 @@ bool BreakoutAlcistaVigente()
 
 //--- Calcula el volumen (lotaje) exacto para que, si el precio toca el
 //    Stop Loss, la pérdida sea igual a InpRiskPercent % del balance.
-double CalcularLotaje(const double precioEntrada, const double precioSL)
+//    Usa OrderCalcProfit() en vez de derivar el valor manualmente a partir
+//    de SYMBOL_TRADE_TICK_VALUE/SYMBOL_TRADE_TICK_SIZE: para algunos
+//    brokers/símbolos (como ciertas cotizaciones de XAUUSD) esos valores no
+//    reflejan el $ real por punto y por lote, lo que provocaba lotajes hasta
+//    10 veces mayores de lo previsto. OrderCalcProfit() le pregunta
+//    directamente al bróker cuál sería el resultado monetario de la
+//    operación, sin asumir nada sobre el tick.
+double CalcularLotaje(const double precioEntrada, const double precioSL, const ENUM_ORDER_TYPE tipoOrden)
   {
    double balance      = AccountInfoDouble(ACCOUNT_BALANCE);
    double montoRiesgo   = balance * (InpRiskPercent / 100.0);
-
-   double tickValue = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
-   double tickSize  = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE);
-
-   if(tickSize <= 0.0 || tickValue <= 0.0)
-      return 0.0;
 
    double distanciaSL = MathAbs(precioEntrada - precioSL);
    if(distanciaSL <= 0.0)
       return 0.0;
 
-// Pérdida monetaria por 1 lote si el precio recorre toda la distancia del SL
-   double perdidaPorLote = (distanciaSL / tickSize) * tickValue;
+// Pérdida monetaria real que reportaría el bróker para 1.0 lote si el
+// precio recorriera toda la distancia del SL.
+   double perdidaPorLote = 0.0;
+   if(!OrderCalcProfit(tipoOrden, _Symbol, 1.0, precioEntrada, precioSL, perdidaPorLote))
+      return 0.0;
+
+   perdidaPorLote = MathAbs(perdidaPorLote);
    if(perdidaPorLote <= 0.0)
       return 0.0;
 
@@ -724,7 +730,7 @@ void EvaluarSenalDeVenta()
       return;
    double tp = entrada - distanciaSL * InpRiskRewardRatio;
 
-   double lotes = CalcularLotaje(entrada, sl);
+   double lotes = CalcularLotaje(entrada, sl, ORDER_TYPE_SELL);
    if(lotes <= 0.0)
      {
       Print("No se pudo calcular un lotaje válido para la venta.");
@@ -764,7 +770,7 @@ void EvaluarSenalDeCompra()
       return;
    double tp = entrada + distanciaSL * InpRiskRewardRatio;
 
-   double lotes = CalcularLotaje(entrada, sl);
+   double lotes = CalcularLotaje(entrada, sl, ORDER_TYPE_BUY);
    if(lotes <= 0.0)
      {
       Print("No se pudo calcular un lotaje válido para la compra.");

@@ -49,7 +49,14 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    `FiltroTendenciaPermiteVenta()` / `FiltroTendenciaPermiteCompra()`.
 4. **Gestión de riesgo institucional**:
    - Lotaje calculado dinámicamente para arriesgar `InpRiskPercent`
-     (0.5% por defecto) del balance en cada operación.
+     (0.5% por defecto) del balance en cada operación, usando la función
+     nativa `OrderCalcProfit()` para preguntarle directamente al bróker
+     cuál sería la pérdida real de 1 lote entre el precio de entrada y el
+     Stop Loss, en vez de derivarla manualmente a partir de
+     `SYMBOL_TRADE_TICK_VALUE`/`SYMBOL_TRADE_TICK_SIZE` (que en algunos
+     brokers no reflejan el valor real por punto en XAUUSD y podían
+     provocar lotajes varias veces más grandes de lo previsto). Lógica en
+     `CalcularLotaje()`.
    - Kill Switch diario (`InpMaxDailyLossPercent`, 4% por defecto):
      cierra todo y bloquea el EA hasta el cambio de día del servidor.
      El estado se persiste en variables globales de la terminal por si
