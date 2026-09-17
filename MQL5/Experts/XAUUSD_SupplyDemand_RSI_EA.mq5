@@ -42,7 +42,7 @@ input double InpRiskRewardRatio     = 3.0;         // Ratio Riesgo:Beneficio (1:
 input double InpManualPipSize       = 0.0;         // Tamaño de pip manual (0 = automático)
 
 input group "=== Blindaje de Riesgo Institucional ==="
-input double InpRiskPercent          = 0.5;        // % de riesgo del balance por operación
+input double InpRiskPercent          = 1.5;        // % de riesgo del balance por operación
 input double InpMaxDailyLossPercent  = 4.0;        // % máximo de pérdida diaria (Kill Switch)
 input double InpMaxSpreadPips        = 4.0;        // Spread máximo permitido en pips
 input int    InpMaxPerdidasConsecutivas = 3;       // Nº de pérdidas seguidas en el día que bloquean nuevas entradas
