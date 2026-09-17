@@ -43,6 +43,9 @@ input double InpManualPipSize       = 0.0;         // Tamaño de pip manual (0 =
 input bool   InpUsarBreakeven       = true;        // Mover el SL a breakeven cuando la operación vaya a favor
 input double InpBreakevenTriggerR   = 1.5;         // Múltiplo de riesgo (R) de beneficio flotante para activar el breakeven
 input double InpBreakevenBufferPips = 2.0;         // Colchón en pips sobre el precio de entrada al mover a breakeven
+input bool   InpUsarTrailingStop    = true;        // Liberar el TP fijo y arrastrar el SL en tendencias fuertes
+input double InpTrailingStartR      = 2.0;         // Múltiplo de riesgo (R) a partir del cual se activa el trailing
+input double InpTrailingDistanceR   = 1.0;         // Distancia del trailing stop por detrás del precio, en múltiplos de R
 
 input group "=== Blindaje de Riesgo Institucional ==="
 input double InpRiskPercent          = 1.5;        // % de riesgo del balance por operación
@@ -127,6 +130,7 @@ bool           g_circuitoPerdidasActivo  = false;
 // --- Breakeven de la posición actualmente abierta (sólo se gestiona una a la vez) ---
 double         g_slOriginalPosicion   = 0.0; // SL con el que se abrió la posición (antes de cualquier breakeven)
 bool           g_breakevenAplicado    = false;
+bool           g_trailingActivado     = false; // true en cuanto se libera el TP fijo y empieza el trailing
 
 //======================================================================
 // UTILIDADES
@@ -763,6 +767,7 @@ void EvaluarSenalDeVenta()
       g_breakoutBajistaArmado = false; // consumir la señal
       g_slOriginalPosicion = sl;
       g_breakevenAplicado = false;
+      g_trailingActivado = false;
       PrintFormat("VENTA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
      }
   }
@@ -811,6 +816,7 @@ void EvaluarSenalDeCompra()
       g_breakoutAlcistaArmado = false; // consumir la señal
       g_slOriginalPosicion = sl;
       g_breakevenAplicado = false;
+      g_trailingActivado = false;
       PrintFormat("COMPRA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
      }
   }
@@ -867,6 +873,80 @@ void GestionarBreakeven()
               {
                g_breakevenAplicado = true;
                PrintFormat("Breakeven aplicado a la venta #%I64u: SL movido a %.2f", ticket, nuevoSL);
+              }
+           }
+        }
+      return; // sólo hay una posición gestionada por este EA
+     }
+  }
+
+//--- Una vez el precio se ha movido a favor InpTrailingStartR veces el riesgo original
+//    (2R por defecto, más allá del breakeven), esta función libera el Take Profit fijo
+//    (lo pone a 0) y empieza a arrastrar el Stop Loss a una distancia de
+//    InpTrailingDistanceR por detrás del precio. Sin esto, toda operación que llegase a
+//    superar el TP fijo (1:3 por defecto) cerraría siempre en el mismo múltiplo de
+//    riesgo por muy fuerte que fuese la tendencia; con el trailing, las tendencias
+//    fuertes de XAUUSD pueden seguir corriendo mucho más allá de 3R, capturando más
+//    beneficio sin aumentar el riesgo inicial de la operación. Usa g_slOriginalPosicion
+//    (no el SL actual) para medir el múltiplo de riesgo real, igual que GestionarBreakeven().
+void GestionarTrailingStop()
+  {
+   if(!InpUsarTrailingStop || g_slOriginalPosicion <= 0.0)
+      return;
+
+   for(int i = 0; i < PositionsTotal(); i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket == 0) continue;
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      if(PositionGetInteger(POSITION_MAGIC) != (long)InpMagicNumber) continue;
+
+      double precioApertura = PositionGetDouble(POSITION_PRICE_OPEN);
+      double riesgo = MathAbs(precioApertura - g_slOriginalPosicion);
+      if(riesgo <= 0.0)
+         return;
+
+      double slActual = PositionGetDouble(POSITION_SL);
+      double tpActual = PositionGetDouble(POSITION_TP);
+      ENUM_POSITION_TYPE tipo = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+
+      if(tipo == POSITION_TYPE_BUY)
+        {
+         double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+         double currentR = (bid - precioApertura) / riesgo;
+         if(currentR < InpTrailingStartR)
+            return;
+
+         double nuevoSL = precioApertura + (currentR - InpTrailingDistanceR) * riesgo;
+         bool liberarTP = !g_trailingActivado && tpActual != 0.0;
+         bool mejoraSL  = nuevoSL > slActual;
+         if(liberarTP || mejoraSL)
+           {
+            double slFinal = MathMax(nuevoSL, slActual);
+            if(trade.PositionModify(ticket, slFinal, 0.0))
+              {
+               g_trailingActivado = true;
+               PrintFormat("Trailing stop en compra #%I64u: SL=%.2f (R actual=%.2f, TP fijo liberado)", ticket, slFinal, currentR);
+              }
+           }
+        }
+      else if(tipo == POSITION_TYPE_SELL)
+        {
+         double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+         double currentR = (precioApertura - ask) / riesgo;
+         if(currentR < InpTrailingStartR)
+            return;
+
+         double nuevoSL = precioApertura - (currentR - InpTrailingDistanceR) * riesgo;
+         bool liberarTP = !g_trailingActivado && tpActual != 0.0;
+         bool mejoraSL  = (slActual <= 0.0) || (nuevoSL < slActual);
+         if(liberarTP || mejoraSL)
+           {
+            double slFinal = mejoraSL ? nuevoSL : slActual;
+            if(trade.PositionModify(ticket, slFinal, 0.0))
+              {
+               g_trailingActivado = true;
+               PrintFormat("Trailing stop en venta #%I64u: SL=%.2f (R actual=%.2f, TP fijo liberado)", ticket, slFinal, currentR);
               }
            }
         }
@@ -1125,6 +1205,7 @@ void OnTradeTransaction(const MqlTradeTransaction &trans,
    // La posición se cerró: el SL original ya no aplica a ninguna posición viva
    g_slOriginalPosicion = 0.0;
    g_breakevenAplicado = false;
+   g_trailingActivado = false;
 
    double resultado = HistoryDealGetDouble(trans.deal, DEAL_PROFIT)
                      + HistoryDealGetDouble(trans.deal, DEAL_SWAP)
@@ -1201,6 +1282,7 @@ void OnTick()
    if(HayPosicionAbierta())
      {
       GestionarBreakeven();
+      GestionarTrailingStop();
       return;
      }
 

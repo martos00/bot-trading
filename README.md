@@ -62,7 +62,21 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    antes de proteger, preservando más del upside del ratio 1:3 sin perder
    la protección contra reversiones fuertes. Lógica en
    `GestionarBreakeven()`.
-5. **Gestión de riesgo institucional**:
+5. **Trailing stop tras superar el TP fijo** (`InpUsarTrailingStop`,
+   activado por defecto): con un TP fijo en 1:3, cualquier tendencia que
+   se moviera más allá de 3R cerraba igualmente en el TP, dejando sobre
+   la mesa todo el recorrido adicional. En cuanto el precio se mueve a
+   favor `InpTrailingStartR` veces (**2.0 por defecto**) la distancia de
+   riesgo original, el EA libera el TP fijo (lo quita) y empieza a
+   arrastrar el Stop Loss a `InpTrailingDistanceR` (**1.0 por defecto**)
+   de distancia por detrás del precio, siempre en la dirección
+   favorable. Así, una tendencia fuerte puede seguir corriendo mucho más
+   allá de +3R, y sólo cierra cuando el precio revierte lo suficiente
+   como para tocar el trailing stop — sin aumentar el riesgo inicial de
+   la operación. Se activa después del breakeven (`InpBreakevenTriggerR`
+   en 1.5R) y sólo mejora el SL, nunca lo empeora. Lógica en
+   `GestionarTrailingStop()`.
+6. **Gestión de riesgo institucional**:
    - Lotaje calculado dinámicamente para arriesgar `InpRiskPercent`
      (**1.5% por defecto**, subido desde 0.5% para aumentar la
      rentabilidad total del sistema) del balance en cada operación,
@@ -95,7 +109,7 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
      en positivo) y bloquea nuevas entradas en cuanto se alcanza el
      límite, mucho antes de agotar el presupuesto diario completo del 4%.
      Detecta el resultado de cada cierre en `OnTradeTransaction()`.
-6. **Auto-Optimización Walk-Forward (Método 1)**: una vez por semana,
+7. **Auto-Optimización Walk-Forward (Método 1)**: una vez por semana,
    en la primera vela de H1 tras el cierre de fin de semana, el EA mide
    el régimen de volatilidad del oro (ATR reciente vs. ATR medio, y
    desviación estándar del cierre) sobre las últimas
