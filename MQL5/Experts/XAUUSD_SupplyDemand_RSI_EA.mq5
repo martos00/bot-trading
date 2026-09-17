@@ -40,6 +40,9 @@ input group "=== Gestión de Posición (SL / TP) ==="
 input double InpSLBufferPips        = 10.0;        // Colchón del Stop Loss en pips, fuera de la zona
 input double InpRiskRewardRatio     = 3.0;         // Ratio Riesgo:Beneficio (1:N)
 input double InpManualPipSize       = 0.0;         // Tamaño de pip manual (0 = automático)
+input bool   InpUsarBreakeven       = true;        // Mover el SL a breakeven cuando la operación vaya a favor
+input double InpBreakevenTriggerR   = 1.0;         // Múltiplo de riesgo (R) de beneficio flotante para activar el breakeven
+input double InpBreakevenBufferPips = 2.0;         // Colchón en pips sobre el precio de entrada al mover a breakeven
 
 input group "=== Blindaje de Riesgo Institucional ==="
 input double InpRiskPercent          = 1.5;        // % de riesgo del balance por operación
@@ -120,6 +123,10 @@ bool           g_killSwitchActivo   = false;
 // --- Circuito de pérdidas consecutivas (independiente del Kill Switch del 4%) ---
 int            g_perdidasConsecutivasHoy = 0;
 bool           g_circuitoPerdidasActivo  = false;
+
+// --- Breakeven de la posición actualmente abierta (sólo se gestiona una a la vez) ---
+double         g_slOriginalPosicion   = 0.0; // SL con el que se abrió la posición (antes de cualquier breakeven)
+bool           g_breakevenAplicado    = false;
 
 //======================================================================
 // UTILIDADES
@@ -754,6 +761,8 @@ void EvaluarSenalDeVenta()
    if(trade.Sell(lotes, _Symbol, entrada, sl, tp, "SD_RSI_Venta"))
      {
       g_breakoutBajistaArmado = false; // consumir la señal
+      g_slOriginalPosicion = sl;
+      g_breakevenAplicado = false;
       PrintFormat("VENTA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
      }
   }
@@ -800,7 +809,68 @@ void EvaluarSenalDeCompra()
    if(trade.Buy(lotes, _Symbol, entrada, sl, tp, "SD_RSI_Compra"))
      {
       g_breakoutAlcistaArmado = false; // consumir la señal
+      g_slOriginalPosicion = sl;
+      g_breakevenAplicado = false;
       PrintFormat("COMPRA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
+     }
+  }
+
+//--- Una vez el precio se ha movido a favor InpBreakevenTriggerR veces la distancia
+//    de riesgo original (entrada-SL), mueve el SL al precio de entrada (+/- un
+//    pequeño colchón) para que la operación ya no pueda cerrar en pérdida. Usa
+//    g_slOriginalPosicion (el SL con el que se abrió) en vez del SL actual, porque
+//    tras aplicar el breakeven el SL actual ya no refleja el riesgo original.
+void GestionarBreakeven()
+  {
+   if(!InpUsarBreakeven || g_breakevenAplicado || g_slOriginalPosicion <= 0.0)
+      return;
+
+   for(int i = 0; i < PositionsTotal(); i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket == 0) continue;
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      if(PositionGetInteger(POSITION_MAGIC) != (long)InpMagicNumber) continue;
+
+      double precioApertura = PositionGetDouble(POSITION_PRICE_OPEN);
+      double riesgo = MathAbs(precioApertura - g_slOriginalPosicion);
+      if(riesgo <= 0.0)
+         return;
+
+      double pip = PipSize();
+      double slActual = PositionGetDouble(POSITION_SL);
+      double tpActual = PositionGetDouble(POSITION_TP);
+      ENUM_POSITION_TYPE tipo = (ENUM_POSITION_TYPE)PositionGetInteger(POSITION_TYPE);
+
+      if(tipo == POSITION_TYPE_BUY)
+        {
+         double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+         double disparo = precioApertura + riesgo * InpBreakevenTriggerR;
+         double nuevoSL = precioApertura + InpBreakevenBufferPips * pip;
+         if(bid >= disparo && nuevoSL > slActual)
+           {
+            if(trade.PositionModify(ticket, nuevoSL, tpActual))
+              {
+               g_breakevenAplicado = true;
+               PrintFormat("Breakeven aplicado a la compra #%I64u: SL movido a %.2f", ticket, nuevoSL);
+              }
+           }
+        }
+      else if(tipo == POSITION_TYPE_SELL)
+        {
+         double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+         double disparo = precioApertura - riesgo * InpBreakevenTriggerR;
+         double nuevoSL = precioApertura - InpBreakevenBufferPips * pip;
+         if(ask <= disparo && (slActual <= 0.0 || nuevoSL < slActual))
+           {
+            if(trade.PositionModify(ticket, nuevoSL, tpActual))
+              {
+               g_breakevenAplicado = true;
+               PrintFormat("Breakeven aplicado a la venta #%I64u: SL movido a %.2f", ticket, nuevoSL);
+              }
+           }
+        }
+      return; // sólo hay una posición gestionada por este EA
      }
   }
 
@@ -1052,6 +1122,10 @@ void OnTradeTransaction(const MqlTradeTransaction &trans,
    if(tipoEntrada != DEAL_ENTRY_OUT && tipoEntrada != DEAL_ENTRY_OUT_BY)
       return; // sólo interesan los cierres, no las aperturas
 
+   // La posición se cerró: el SL original ya no aplica a ninguna posición viva
+   g_slOriginalPosicion = 0.0;
+   g_breakevenAplicado = false;
+
    double resultado = HistoryDealGetDouble(trans.deal, DEAL_PROFIT)
                      + HistoryDealGetDouble(trans.deal, DEAL_SWAP)
                      + HistoryDealGetDouble(trans.deal, DEAL_COMMISSION);
@@ -1122,9 +1196,13 @@ void OnTick()
    if(!SpreadPermitido())
       return;
 
-   // 7) Sólo se gestiona una posición simultánea por este EA
+   // 7) Sólo se gestiona una posición simultánea por este EA. Si ya hay una
+   //    abierta, no se evalúan nuevas entradas, pero sí se gestiona su breakeven.
    if(HayPosicionAbierta())
+     {
+      GestionarBreakeven();
       return;
+     }
 
    // 8) Circuito de pérdidas consecutivas: bloquea nuevas entradas el resto
    //    del día tras InpMaxPerdidasConsecutivas pérdidas seguidas

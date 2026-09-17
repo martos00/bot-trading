@@ -48,7 +48,18 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
    (`InpUsarFiltroTendencia=false`) si prefieres dejar pasar más señales a
    cambio de operar también contra la tendencia de fondo. Lógica en
    `FiltroTendenciaPermiteVenta()` / `FiltroTendenciaPermiteCompra()`.
-4. **Gestión de riesgo institucional**:
+4. **Breakeven automático** (`InpUsarBreakeven`, activado por defecto):
+   en cuanto el precio se mueve a favor `InpBreakevenTriggerR` veces
+   (1.0 por defecto) la distancia de riesgo original de la operación
+   (entrada-SL), el EA mueve el Stop Loss al precio de entrada más un
+   pequeño colchón (`InpBreakevenBufferPips`, 2 pips por defecto), de
+   forma que la operación ya no puede cerrarse en pérdida aunque el
+   precio revierta antes de llegar al Take Profit. No cambia la
+   rentabilidad esperada por operación ganadora, pero reduce el
+   drawdown al convertir parte de las operaciones que iban ganando y
+   acaban revirtiendo en cierres a breakeven en vez de en pérdidas
+   completas. Lógica en `GestionarBreakeven()`.
+5. **Gestión de riesgo institucional**:
    - Lotaje calculado dinámicamente para arriesgar `InpRiskPercent`
      (**1.5% por defecto**, subido desde 0.5% para aumentar la
      rentabilidad total del sistema) del balance en cada operación,
@@ -81,7 +92,7 @@ Archivo principal: `MQL5/Experts/XAUUSD_SupplyDemand_RSI_EA.mq5`
      en positivo) y bloquea nuevas entradas en cuanto se alcanza el
      límite, mucho antes de agotar el presupuesto diario completo del 4%.
      Detecta el resultado de cada cierre en `OnTradeTransaction()`.
-5. **Auto-Optimización Walk-Forward (Método 1)**: una vez por semana,
+6. **Auto-Optimización Walk-Forward (Método 1)**: una vez por semana,
    en la primera vela de H1 tras el cierre de fin de semana, el EA mide
    el régimen de volatilidad del oro (ATR reciente vs. ATR medio, y
    desviación estándar del cierre) sobre las últimas
