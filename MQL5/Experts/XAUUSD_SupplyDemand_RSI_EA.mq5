@@ -1590,7 +1590,14 @@ void OnTick()
       ActualizarRegimen();
 
    // 6) Sesión asiática y liquidity zones: se recalculan al cerrar una nueva vela M15
-   if(EsVelaNuevaEntrada())
+   //    NOTA: EsVelaNuevaEntrada() tiene efecto colateral (consume el flag de "vela
+   //    nueva" al devolver true una única vez por vela) -- se llama UNA SOLA VEZ por
+   //    tick y se reutiliza el resultado en todo OnTick(). Llamarla varias veces por
+   //    tick (bug anterior) hacía que sólo el primer "if" viera vela nueva y el resto,
+   //    incluida la búsqueda de sweeps, la viera siempre como false: la máquina de
+   //    estados nunca llegaba a ejecutarse pese al régimen estar activo.
+   bool esVelaNuevaEntrada = EsVelaNuevaEntrada();
+   if(esVelaNuevaEntrada)
      {
       ActualizarAsiaHighLow();
       ReconstruirZonasLiquidez();
@@ -1608,7 +1615,7 @@ void OnTick()
    //    orden pendiente): se hace siempre, incluso si el spread está momentáneamente
    //    alto o el circuito de pérdidas está activo, para no dejar huérfana una orden
    //    límite ya colocada en el mercado.
-   if(EsVelaNuevaEntrada())
+   if(esVelaNuevaEntrada)
      {
       if(SetupExpiradoPorTiempo() &&
          (g_setup.estado == SETUP_SWEEP_DETECTADO || g_setup.estado == SETUP_MSS_CONFIRMADO))
@@ -1637,7 +1644,7 @@ void OnTick()
    // 11) Progresión de la máquina de estados (buscar un sweep nuevo, comprobar el MSS
    //     o, tras un MSS ya supervisado, buscar el FVG), sólo al cerrar una vela M15 nueva
    //     (todas las reglas -sweep, MSS, FVG- se evalúan sobre velas ya cerradas)
-   if(EsVelaNuevaEntrada())
+   if(esVelaNuevaEntrada)
      {
       if(g_setup.estado == SETUP_NINGUNO)
          BuscarNuevoSweep();
