@@ -40,10 +40,14 @@ existido todavía en la otra temporalidad.
    alcista si el cierre H4 > EMA(`InpEMARegimenPeriod`, 200 por defecto)
    Y los últimos `InpRegimenSwingsAConfirmar` swing highs y swing lows en
    H4 son crecientes (HH/HL); bajista si el cierre < EMA y los swings son
-   decrecientes (LH/LL). Si no hay swings suficientes o la estructura es
-   mixta, el régimen queda **INDEFINIDO** y no se buscan setups nuevos.
-   El régimen alcista sólo habilita setups LONG; el bajista, sólo SHORT
-   (filtro estricto, no "principalmente" — ver "Decisiones de diseño").
+   decrecientes (LH/LL). Esos swings se buscan retrocediendo
+   `InpRegimenHistorialBarras` velas H4 (60 por defecto, ~10 días de
+   trading) — este parámetro es independiente de cuántos swings hacen
+   falta confirmar (`InpRegimenSwingsAConfirmar`); si no hay swings
+   suficientes en esa ventana o la estructura es mixta, el régimen queda
+   **INDEFINIDO** y no se buscan setups nuevos. El régimen alcista sólo
+   habilita setups LONG; el bajista, sólo SHORT (filtro estricto, no
+   "principalmente" — ver "Decisiones de diseño").
 
 2. **Liquidity zones (M15)** — `ReconstruirZonasLiquidez()`, recalculadas
    al cerrar cada vela M15:

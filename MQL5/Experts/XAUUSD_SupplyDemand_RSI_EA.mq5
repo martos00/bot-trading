@@ -24,6 +24,7 @@ input group "=== Régimen de Mercado (H4) ==="
 input int    InpEMARegimenPeriod        = 200;        // Período de la EMA de régimen en H4
 input int    InpRegimenSwingBars        = 2;          // Velas a cada lado para confirmar swings de estructura en H4
 input int    InpRegimenSwingsAConfirmar = 2;          // Nº de HH/HL (o LH/LL) consecutivos exigidos
+input int    InpRegimenHistorialBarras  = 60;         // Velas H4 escaneadas hacia atrás para localizar esos swings
 
 input group "=== Detección de Liquidez (M15) ==="
 input int    InpSwingLeftBars           = 5;          // Velas a la izquierda para confirmar un swing
@@ -240,19 +241,26 @@ double ATRActual()
 // información de velas aún no formadas. Devuelve los swings ordenados del
 // más reciente al más antiguo.
 //----------------------------------------------------------------------
+// NOTA: "barrasEscaneo" y "maxSwings" son conceptos independientes -- el primero
+// determina hasta dónde se retrocede en el historial buscando candidatos, el
+// segundo cuántos swings confirmados como máximo se devuelven (puede cortar antes
+// de agotar barrasEscaneo). Antes de esta corrección compartían un único parámetro,
+// lo que en ActualizarRegimen() (que sólo pedía 3 swings) limitaba el escaneo a
+// apenas ~4 velas en H4 -- prácticamente imposible de que aparecieran 3 swings
+// confirmados ahí, dejando el régimen permanentemente INDEFINIDO.
 int RecopilarSwingHighs(const ENUM_TIMEFRAMES tf, const int leftBars, const int rightBars,
-                         const int barrasHistorial, datetime &tiempos[], double &valores[])
+                         const int barrasEscaneo, const int maxSwings, datetime &tiempos[], double &valores[])
   {
    ArrayResize(tiempos, 0);
    ArrayResize(valores, 0);
 
    int disponibles = Bars(_Symbol, tf);
-   int limiteShift = MathMin(barrasHistorial + leftBars + rightBars + 1, disponibles - 1);
+   int limiteShift = MathMin(barrasEscaneo + leftBars + rightBars + 1, disponibles - 1);
    if(limiteShift <= leftBars + rightBars)
       return 0;
 
    int contador = 0;
-   for(int shift = 1 + rightBars; shift <= limiteShift - leftBars && contador < barrasHistorial; shift++)
+   for(int shift = 1 + rightBars; shift <= limiteShift - leftBars && contador < maxSwings; shift++)
      {
       double centro = iHigh(_Symbol, tf, shift);
       bool esSwing = true;
@@ -275,18 +283,18 @@ int RecopilarSwingHighs(const ENUM_TIMEFRAMES tf, const int leftBars, const int 
   }
 
 int RecopilarSwingLows(const ENUM_TIMEFRAMES tf, const int leftBars, const int rightBars,
-                        const int barrasHistorial, datetime &tiempos[], double &valores[])
+                        const int barrasEscaneo, const int maxSwings, datetime &tiempos[], double &valores[])
   {
    ArrayResize(tiempos, 0);
    ArrayResize(valores, 0);
 
    int disponibles = Bars(_Symbol, tf);
-   int limiteShift = MathMin(barrasHistorial + leftBars + rightBars + 1, disponibles - 1);
+   int limiteShift = MathMin(barrasEscaneo + leftBars + rightBars + 1, disponibles - 1);
    if(limiteShift <= leftBars + rightBars)
       return 0;
 
    int contador = 0;
-   for(int shift = 1 + rightBars; shift <= limiteShift - leftBars && contador < barrasHistorial; shift++)
+   for(int shift = 1 + rightBars; shift <= limiteShift - leftBars && contador < maxSwings; shift++)
      {
       double centro = iLow(_Symbol, tf, shift);
       bool esSwing = true;
@@ -336,8 +344,10 @@ void ActualizarRegimen()
    int necesarios = InpRegimenSwingsAConfirmar + 1;
    datetime tH[], tL[];
    double   vH[], vL[];
-   int nH = RecopilarSwingHighs(InpTimeframeRegimen, InpRegimenSwingBars, InpRegimenSwingBars, necesarios, tH, vH);
-   int nL = RecopilarSwingLows(InpTimeframeRegimen, InpRegimenSwingBars, InpRegimenSwingBars, necesarios, tL, vL);
+   int nH = RecopilarSwingHighs(InpTimeframeRegimen, InpRegimenSwingBars, InpRegimenSwingBars,
+                                 InpRegimenHistorialBarras, necesarios, tH, vH);
+   int nL = RecopilarSwingLows(InpTimeframeRegimen, InpRegimenSwingBars, InpRegimenSwingBars,
+                                InpRegimenHistorialBarras, necesarios, tL, vL);
 
    if(nH < necesarios || nL < necesarios)
      {
@@ -501,8 +511,10 @@ void ReconstruirZonasLiquidez()
    // --- Swing highs/lows + Equal highs/lows (clustering por tolerancia ATR) ---
    datetime tH[], tL[];
    double   vH[], vL[];
-   int nH = RecopilarSwingHighs(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars, InpSwingHistorialBarras, tH, vH);
-   int nL = RecopilarSwingLows(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars, InpSwingHistorialBarras, tL, vL);
+   int nH = RecopilarSwingHighs(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars,
+                                 InpSwingHistorialBarras, InpSwingHistorialBarras, tH, vH);
+   int nL = RecopilarSwingLows(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars,
+                                InpSwingHistorialBarras, InpSwingHistorialBarras, tL, vL);
 
    bool esEqualH[];
    ArrayResize(esEqualH, nH);
@@ -611,13 +623,15 @@ bool LocalizarSwingPrevioAlSweep(const bool paraLong, const datetime antesDe, do
    datetime t[]; double v[];
    if(paraLong)
      {
-      int n = RecopilarSwingHighs(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars, InpSwingHistorialBarras, t, v);
+      int n = RecopilarSwingHighs(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars,
+                                   InpSwingHistorialBarras, InpSwingHistorialBarras, t, v);
       for(int i = 0; i < n; i++)
          if(t[i] < antesDe) { nivel = v[i]; return true; }
      }
    else
      {
-      int n = RecopilarSwingLows(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars, InpSwingHistorialBarras, t, v);
+      int n = RecopilarSwingLows(InpTimeframeEntrada, InpSwingLeftBars, InpSwingRightBars,
+                                  InpSwingHistorialBarras, InpSwingHistorialBarras, t, v);
       for(int i = 0; i < n; i++)
          if(t[i] < antesDe) { nivel = v[i]; return true; }
      }
