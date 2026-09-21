@@ -1097,6 +1097,29 @@ void BuscarFVG()
       return;
      }
 
+   // Comprobación de margen: cuando el SL está anormalmente cerca del entry (ATR
+   // momentáneamente muy bajo), CalcularLotaje() puede devolver un lotaje que el
+   // % de riesgo justifica matemáticamente pero que la cuenta no puede permitirse
+   // (margen requerido > margen libre). Se descarta el setup aquí en vez de dejar
+   // que el bróker rechace la orden en OnTradeTransaction, que además consumía
+   // igualmente el hueco de la sesión sin dejar ninguna operación real.
+   double margenRequerido;
+   ENUM_ORDER_TYPE tipoOrdenMargen = g_setup.esLong ? ORDER_TYPE_BUY : ORDER_TYPE_SELL;
+   if(!OrderCalcMargin(tipoOrdenMargen, _Symbol, lotes, g_setup.entradaObjetivo, margenRequerido))
+     {
+      Print("[DIAG] Setup descartado: no se pudo calcular el margen requerido para la orden.");
+      ResetearSetup();
+      return;
+     }
+   double margenLibre = AccountInfoDouble(ACCOUNT_FREEMARGIN);
+   if(margenRequerido > margenLibre)
+     {
+      PrintFormat("[DIAG] Setup descartado: margen insuficiente para el lotaje calculado (lotes=%.2f, margen requerido=%.2f, margen libre=%.2f). SL demasiado cercano al entry para el %% de riesgo configurado.",
+                  lotes, margenRequerido, margenLibre);
+      ResetearSetup();
+      return;
+     }
+
    datetime expiracion = TimeCurrent() + InpSetupMaxBarras * PeriodSeconds(InpTimeframeEntrada);
    trade.SetExpertMagicNumber(InpMagicNumber);
    bool enviado;

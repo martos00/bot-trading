@@ -109,6 +109,12 @@ existido todavía en la otra temporalidad.
   0.25/0.50/0.75/1.00, **0.50% por defecto**), vía `CalcularLotaje()` +
   `OrderCalcProfit()` (sin martingala: el riesgo nunca cambia tras una
   pérdida).
+- Antes de enviar la orden límite se comprueba con `OrderCalcMargin()` que
+  el margen requerido para el lotaje calculado no supere el margen libre
+  de la cuenta; si lo supera (SL anormalmente cerca del entry en momentos
+  de ATR muy bajo, lo que dispara el lotaje según el % de riesgo) se
+  descarta el setup en vez de enviar una orden que el bróker rechazaría
+  igualmente por "not enough money".
 - Máximo `InpMaxOperacionesPorSesion` operaciones por sesión (sesión =
   día de trading del servidor, 2 por defecto).
 - Una única posición gestionada a la vez (no se buscan setups nuevos con
