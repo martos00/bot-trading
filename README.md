@@ -66,6 +66,9 @@ existido todavía en la otra temporalidad.
    distancia limitada (≤ `InpMaxSweepDistanceATRMult`×ATR(`InpATRPeriod`))
    y cuyo **cierre** vuelve a quedar del lado seguro de la zona. Exige
    interacción real con una zona ya identificada, no cualquier mecha.
+   Solo se consideran zonas con importancia ≥ `InpImportanciaMinimaZona`
+   (2=Swing High/Low, 3=Asia High/Low, 4=Equal High/Low y PDH/PDL,
+   5=PWH/PWL); por defecto vale 2, es decir, no filtra ninguna.
 
 4. **Market Structure Shift (MSS)** — `ComprobarMSS()`: tras el sweep, se
    localiza el último swing significativo confirmado **antes** del sweep

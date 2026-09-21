@@ -38,6 +38,7 @@ input int    InpSwingHistorialBarras    = 300;        // Velas M15 escaneadas ha
 input group "=== Liquidity Sweep ==="
 input int    InpATRPeriod               = 14;         // Período del ATR (en InpTimeframeEntrada)
 input double InpMaxSweepDistanceATRMult = 0.5;        // Penetración máxima permitida, en múltiplos de ATR
+input int    InpImportanciaMinimaZona   = 2;          // Importancia mínima de zona para considerar el sweep (2=Swing, 3=Asia, 4=Equal/PDH-PDL, 5=PWH/PWL)
 
 input group "=== Market Structure Shift (MSS) / Timeout del Setup ==="
 input int    InpSetupMaxBarras          = 48;         // Velas máximas para completar sweep -> MSS -> FVG -> retest
@@ -562,6 +563,8 @@ bool BuscarSweepSellSide(double &precioSweep, double &distancia, ENUM_TIPO_ZONA 
    int n = ArraySize(g_zonasSellSide);
    for(int i = 0; i < n; i++)
      {
+      if(g_zonasSellSide[i].importancia < InpImportanciaMinimaZona)
+         continue;
       double nivel = g_zonasSellSide[i].nivel;
       if(low1 < nivel && close1 > nivel)
         {
@@ -593,6 +596,8 @@ bool BuscarSweepBuySide(double &precioSweep, double &distancia, ENUM_TIPO_ZONA &
    int n = ArraySize(g_zonasBuySide);
    for(int i = 0; i < n; i++)
      {
+      if(g_zonasBuySide[i].importancia < InpImportanciaMinimaZona)
+         continue;
       double nivel = g_zonasBuySide[i].nivel;
       if(high1 > nivel && close1 < nivel)
         {
