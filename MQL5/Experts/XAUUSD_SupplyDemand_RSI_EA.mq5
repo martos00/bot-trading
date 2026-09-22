@@ -1116,7 +1116,7 @@ void BuscarFVG()
       ResetearSetup();
       return;
      }
-   double margenLibre = AccountInfoDouble(ACCOUNT_FREEMARGIN);
+   double margenLibre = AccountInfoDouble(ACCOUNT_MARGIN_FREE);
    if(margenRequerido > margenLibre)
      {
       PrintFormat("[DIAG] Setup descartado: margen insuficiente para el lotaje calculado (lotes=%.2f, margen requerido=%.2f, margen libre=%.2f). SL demasiado cercano al entry para el %% de riesgo configurado.",
