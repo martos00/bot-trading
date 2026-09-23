@@ -21,6 +21,7 @@ input ENUM_TIMEFRAMES InpTimeframeEntrada = PERIOD_M15; // Temporalidad de detec
 input ENUM_TIMEFRAMES InpTimeframeRegimen = PERIOD_H4;  // Temporalidad del régimen de tendencia principal
 
 input group "=== Régimen de Mercado (H4) ==="
+input bool   InpUsarFiltroRegimen      = true;        // Exigir régimen H4 definido y coherente con la dirección del sweep (para pruebas A/B)
 input int    InpEMARegimenPeriod        = 200;        // Período de la EMA de régimen en H4
 input int    InpRegimenSwingBars        = 2;          // Velas a cada lado para confirmar swings de estructura en H4
 input int    InpRegimenSwingsAConfirmar = 2;          // Nº de HH/HL (o LH/LL) consecutivos exigidos
@@ -981,7 +982,7 @@ string NombreZona(const ENUM_TIPO_ZONA t); // definida en el módulo de log CSV,
 //--- Paso 1: buscar un sweep nuevo (sólo si no hay setup ni posición/orden en curso)
 void BuscarNuevoSweep()
   {
-   if(g_regimenActual == REGIMEN_INDEFINIDO)
+   if(InpUsarFiltroRegimen && g_regimenActual == REGIMEN_INDEFINIDO)
       return;
    if(!SesionPermiteOperar())
       return;
@@ -992,7 +993,14 @@ void BuscarNuevoSweep()
    ENUM_TIPO_ZONA tipoZona;
    int importanciaZona;
 
-   if(g_regimenActual == REGIMEN_ALCISTA &&
+   // Con InpUsarFiltroRegimen=false se buscan sweeps LONG y SHORT sin exigir que
+   // el régimen H4 esté definido ni que coincida con la dirección del sweep --
+   // sirve para medir, por comparación A/B, cuánto aporta realmente este filtro
+   // (ver README, sección de pruebas de ablación de filtros).
+   bool permiteLong  = !InpUsarFiltroRegimen || g_regimenActual == REGIMEN_ALCISTA;
+   bool permiteShort = !InpUsarFiltroRegimen || g_regimenActual == REGIMEN_BAJISTA;
+
+   if(permiteLong &&
       BuscarSweepSellSide(precioSweep, distancia, tipoZona, nivelZona, importanciaZona))
      {
       g_setup.estado               = SETUP_SWEEP_DETECTADO;
@@ -1009,7 +1017,7 @@ void BuscarNuevoSweep()
       return;
      }
 
-   if(g_regimenActual == REGIMEN_BAJISTA &&
+   if(permiteShort &&
       BuscarSweepBuySide(precioSweep, distancia, tipoZona, nivelZona, importanciaZona))
      {
       g_setup.estado               = SETUP_SWEEP_DETECTADO;

@@ -192,6 +192,31 @@ alguno de los parámetros listados más abajo.
 `InpFVGEntryPercent`, `InpMinimumRR`, `InpRiskPercent`,
 `InpUsarFiltroSesion`/`InpSesionInicioHoraNY`/`InpSesionFinHoraNY`.
 
+## Pruebas de ablación de filtros (¿aporta este filtro, o solo resta operaciones?)
+
+Para saber si un filtro concreto realmente mejora el resultado o solo
+reduce la frecuencia de operaciones sin ninguna mejora a cambio,
+desactívalo y compara contra el backtest base (mismo rango de fechas,
+mismos parámetros, todo lo demás igual):
+
+- `InpUsarFiltroRegimen = false` — el EA busca sweeps LONG y SHORT sin
+  exigir que el régimen H4 esté definido ni que coincida con la
+  dirección del sweep. **Este es el filtro que más operaciones
+  descarta** (con datos reales del primer backtest, el régimen solo
+  estuvo definido en 44 ventanas a lo largo de ~20 meses).
+- `InpUsarFiltroSesion = false` — se buscan sweeps a cualquier hora,
+  no solo en `InpSesionInicioHoraNY`–`InpSesionFinHoraNY`.
+- `InpUsarFiltroFVGMinimo = false` — se aceptan FVG de cualquier
+  tamaño, sin el mínimo de `InpFVGMinSizeATRMult`×ATR.
+
+Compara siempre nº de operaciones, Net Profit, Profit Factor y Win
+Rate (con `analizar_backtest.py`) entre el test base y cada variante
+con un filtro desactivado — no solo el balance final, que con pocas
+operaciones puede ser engañoso. Si desactivar un filtro sube el número
+de operaciones pero hunde el Profit Factor, el filtro estaba haciendo
+su trabajo; si el Profit Factor se mantiene o mejora, ese filtro era
+prescindible.
+
 ## Objetivos de investigación (no garantizados)
 
 CAGR ≥ 25%, Max Drawdown ≤ 20%, Profit Factor ≥ 1.5, Sharpe ≥ 1.0 sobre
