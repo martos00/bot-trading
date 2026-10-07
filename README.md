@@ -1,4 +1,17 @@
-# XAUUSD Liquidity Sweep -> MSS -> FVG Retest EA
+# XAUUSD Liquidity Sweep -> MSS -> FVG Retest EA — Baseline 1 (cerrado como candidato de trading)
+
+> **Estado: archivado como baseline de referencia, no como candidato activo
+> de trading (octubre 2026).** Tras un proceso de validación en 3 fases
+> (ablación de filtros estructurales, barrido de 2 ejes de parámetros
+> numéricos, train/validación/out-of-sample separados correctamente) esta
+> implementación de la hipótesis Sweep → MSS → FVG no mostró ventaja
+> estadística convincente. Ver la sección **"Baseline 1: resultados y
+> cierre de la rama"** más abajo para el detalle completo y el
+> razonamiento. El código, la gestión de riesgo y el motor de logging se
+> conservan intactos como punto de comparación obligatorio para cualquier
+> estrategia futura: una hipótesis nueva solo se considera mejor si supera
+> a este baseline bajo el mismo protocolo (mismos tramos de fechas, mismo
+> criterio de descarte fijado de antemano).
 
 Expert Advisor para MetaTrader 5, diseñado para operar **XAUUSD (Oro)**
 combinando un régimen de tendencia en H4 con una secuencia de entrada
@@ -216,6 +229,124 @@ operaciones puede ser engañoso. Si desactivar un filtro sube el número
 de operaciones pero hunde el Profit Factor, el filtro estaba haciendo
 su trabajo; si el Profit Factor se mantiene o mejora, ese filtro era
 prescindible.
+
+## Baseline 1: resultados y cierre de la rama
+
+Esta sección documenta el proceso completo de validación que llevó a
+archivar esta implementación de Sweep → MSS → FVG como **Baseline 1** en
+vez de seguir iterando sobre ella. El objetivo de dejarlo por escrito no
+es decir "esto no sirve", sino dejar un punto de comparación reproducible:
+cualquier estrategia futura sobre XAUUSD M15 debería, como mínimo, igualar
+estos números bajo el mismo protocolo (mismos tramos de fechas, mismo
+criterio de descarte fijado de antemano) antes de considerarse una mejora
+real.
+
+**Protocolo usado:** split temporal fijo, nunca reajustado a posteriori —
+`train` = 2025 completo, `val` = 2026 H1, `OOS` (out-of-sample) = 2026
+jul-sep. Los criterios de descarte se fijaron antes de ver los resultados
+de cada fase. Todas las métricas de esta sección están extraídas de los
+logs del Journal del Tester (no del CSV estructurado del EA), por lo que
+el Win Rate es aproximado — ver la cabecera de
+`analysis/extraer_metricas.py`-equivalente usado para el cálculo.
+
+### Fase A — Ablación de filtros estructurales (V0–V5)
+
+Variantes probadas (cada una desactivando uno o varios filtros respecto a
+V0, la configuración base con todos los filtros activos):
+
+- **V0** — baseline, todos los filtros activos.
+- **V1** — `InpUsarFiltroRegimen = false`.
+- **V2** — `InpUsarFiltroSesion = false`.
+- **V3** — `InpUsarFiltroFVGMinimo = false`.
+- **V4** — `InpUsarFiltroRegimen = false` + `InpUsarFiltroSesion = false`.
+- **V5** — `InpImportanciaMinimaZona` subido respecto a V0 (filtro más
+  estricto, no más laxo, usado como contraste).
+
+| Variante | Trades (train+val+OOS) | Net Profit total | Max DD (peor tramo) | Trades OOS | Net Profit OOS |
+|---|---|---|---|---|---|
+| V0 | 27  | -4378.54 | 11.16% | 3  | -1283.37 |
+| V1 | 149 | -4608.78 | 19.96% | 18 | -2120.61 |
+| V2 | 187 | -2578.60 | 25.36% | 12 | -719.50  |
+| V3 | 167 | -4431.58 | 18.69% | 23 | -1540.82 |
+| V4 | 206 | -3641.60 | 32.05% | 13 | -673.07  |
+| V5 | 42  | -210.83  | 14.43% | 4  | -1643.82 |
+
+Criterios de descarte pre-registrados (una variante se consideraba viable
+sólo si cumplía los tres a la vez): Net Profit total > 0, Max Drawdown en
+el peor tramo ≤ 20%, y Net Profit en OOS ≥ 0 (no solo positivo en
+train/val).
+
+**Resultado: ninguna de las 6 variantes cumple los tres criterios a la
+vez.** Quitar filtros (V1-V4) multiplica el número de operaciones por 5-8x
+respecto a V0, pero en ningún caso convierte el resultado en rentable de
+forma consistente en los tres tramos — de hecho empeora el drawdown
+sustancialmente (V4 llega a 32% frente al 11% de V0). Apretar el filtro de
+importancia de zona (V5) mejora el Net Profit total frente a V0 pero sigue
+siendo negativo y con muy pocas operaciones (42 en ~20 meses) para sacar
+conclusiones robustas. No hay ninguna variante donde "menos filtros, más
+operaciones" se traduzca en una ventaja estadística real.
+
+### Fase B — Barrido de sensibilidad en 2 ejes numéricos (solo tramo train)
+
+Realizado únicamente sobre `train`, sin tocar `val` ni `OOS`, para buscar
+si existía una **región de estabilidad** (varios valores vecinos
+positivos o con tendencia clara) en vez de limitarse a optimizar un único
+valor puntual.
+
+**Eje 1 — Ratio Riesgo:Recompensa (`InpFixedRR` / `InpMinimumRR`):**
+
+| RR | Trades | Net Profit | Max DD% | Win Rate~% |
+|---|---|---|---|---|
+| 1.2 | 16 | -1733.67 | 9.29%  | 31.2% |
+| 1.4 | 16 | -2320.90 | 11.91% | 25.0% |
+| 1.6 | 16 | -2563.53 | 11.59% | 18.8% |
+| 1.8 | 16 | -2400.38 | 11.44% | 18.8% |
+| 2.0 | 16 | -2199.80 | 11.16% | 18.8% |
+| 2.2 | 15 | -1665.15 | 10.90% | 20.0% |
+| 2.5 | 15 | -2138.60 | 10.48% | 13.3% |
+| 3.0 | 15 | -1928.95 | 10.13% |  0.0% |
+
+**Eje 2 — Colchón del stop loss (`InpSLBufferATRMult`):**
+
+| SL buffer | Trades | Net Profit | Max DD% | Win Rate~% |
+|---|---|---|---|---|
+| 0.05 | 16 | -2190.97 | 11.25% | 18.8% |
+| 0.10 | 16 | -2177.88 | 11.25% | 18.8% |
+| 0.15 | 16 | -2251.88 | 11.31% | 18.8% |
+| 0.20 | 16 | -2199.80 | 11.16% | 18.8% |
+| 0.30 | 15 | -1905.14 | 11.37% | 20.0% |
+| 0.40 | 15 | -1930.37 | 11.50% | 20.0% |
+| 0.50 | 15 | -856.40  | 8.62%  | 26.7% |
+| 0.60 | 15 | -1178.23 | 8.58%  | 26.7% |
+
+**Resultado: en ninguno de los dos ejes aparece una región de
+estabilidad ni un cruce a positivo.** Los 16 valores probados (8 por eje)
+son negativos en train. Hay una mejora leve y gradual al final de cada
+rango (RR alto, SL buffer alto) pero ninguna se acerca a Net Profit
+positivo, y el patrón es consistente con ruido / achicamiento de muestra
+(menos trades al ser más estricto) más que con una señal real. No se
+encontró ningún valor ni combinación que justificara pasar a validar en
+`val`/`OOS`.
+
+### Veredicto y qué queda probado (y qué no)
+
+- **No queda probado** que la secuencia Liquidity Sweep → MSS → FVG sea
+  estructuralmente inviable en XAUUSD M15.
+- **Sí queda probado** que *esta implementación concreta* — estas
+  definiciones exactas de sweep, MSS, FVG, estos filtros y estos rangos
+  de parámetros — no muestra una ventaja estadística convincente frente
+  al protocolo de validación aplicado (34 pruebas en total: 18 de
+  ablación + 16 de sensibilidad numérica), y que no hay indicios de que
+  afinar más los parámetros vaya a cambiar esa conclusión: no apareció
+  ninguna región de estabilidad, solo valores puntuales negativos.
+- Seguir buscando una combinación ganadora dentro de esta misma
+  arquitectura a base de más pruebas tiene alto riesgo de terminar en
+  overfitting por pura casualidad estadística, no en una ventaja real.
+- Por eso se archiva como **Baseline 1**: el código, la gestión de
+  riesgo y el motor de logging se conservan intactos (no se borra nada),
+  y cualquier estrategia nueva que se diseñe a partir de aquí debe
+  compararse contra estos mismos números bajo el mismo protocolo antes
+  de reemplazarla.
 
 ## Objetivos de investigación (no garantizados)
 
