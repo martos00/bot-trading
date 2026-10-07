@@ -159,6 +159,22 @@ int    g_diagCoincidenciasCompraBloqTendencia   = 0;
 int    g_diagCoincidenciasCompraBloqSesion      = 0;
 int    g_diagCoincidenciasCompraBloqZonaFresca  = 0;
 
+// --- Desglose MUTUAMENTE EXCLUYENTE de las coincidencias (zona+breakout) según
+//     tendencia/zona fresca, para separar el solapamiento del desglose anterior.
+//     Por construcción: sobrevivenAmbos + bloqSoloTendencia + bloqSoloZonaFresca
+//     + bloqAmbos == g_diagCoincidenciasVenta (o Compra) ---
+int    g_diagVentaSobrevivenAmbosFiltros   = 0; // tendencia OK y zona fresca OK
+int    g_diagVentaBloqSoloTendencia        = 0; // sólo bloqueada por tendencia
+int    g_diagVentaBloqSoloZonaFresca       = 0; // sólo bloqueada por zona fresca
+int    g_diagVentaBloqAmbosFiltros         = 0; // bloqueada por los dos a la vez
+int    g_diagVentaCoincideConPosAbierta    = 0; // de las coincidencias, cuántas ocurrieron con una posición ya abierta
+
+int    g_diagCompraSobrevivenAmbosFiltros  = 0;
+int    g_diagCompraBloqSoloTendencia       = 0;
+int    g_diagCompraBloqSoloZonaFresca      = 0;
+int    g_diagCompraBloqAmbosFiltros        = 0;
+int    g_diagCompraCoincideConPosAbierta   = 0;
+
 int    g_diagVentasEjecutadas  = 0; // nº de ventas que finalmente se enviaron (mismo evento que el Print "VENTA ejecutada")
 int    g_diagComprasEjecutadas = 0; // nº de compras que finalmente se enviaron (mismo evento que el Print "COMPRA ejecutada")
 
@@ -855,6 +871,22 @@ void ActualizarContadoresDiagnostico()
          g_diagCoincidenciasVentaBloqSesion++;
       if(InpUsarFiltroZonaFresca && g_zonaSupply.tocada)
          g_diagCoincidenciasVentaBloqZonaFresca++;
+
+      // Desglose MUTUAMENTE EXCLUYENTE tendencia vs zona fresca (sin solape)
+      bool bloqTendencia  = !tendenciaOkVenta;
+      bool bloqZonaFresca = (InpUsarFiltroZonaFresca && g_zonaSupply.tocada);
+      if(bloqTendencia && bloqZonaFresca)
+         g_diagVentaBloqAmbosFiltros++;
+      else if(bloqTendencia)
+         g_diagVentaBloqSoloTendencia++;
+      else if(bloqZonaFresca)
+         g_diagVentaBloqSoloZonaFresca++;
+      else
+         g_diagVentaSobrevivenAmbosFiltros++;
+
+      // Posible cuello de botella oculto: ¿ya había una posición abierta en ese instante?
+      if(HayPosicionAbierta())
+         g_diagVentaCoincideConPosAbierta++;
      }
 
    bool coincideCompraAhora = dentroDemandAhora && breakoutAlcistaVigenteAhora;
@@ -867,6 +899,20 @@ void ActualizarContadoresDiagnostico()
          g_diagCoincidenciasCompraBloqSesion++;
       if(InpUsarFiltroZonaFresca && g_zonaDemand.tocada)
          g_diagCoincidenciasCompraBloqZonaFresca++;
+
+      bool bloqTendencia  = !tendenciaOkCompra;
+      bool bloqZonaFresca = (InpUsarFiltroZonaFresca && g_zonaDemand.tocada);
+      if(bloqTendencia && bloqZonaFresca)
+         g_diagCompraBloqAmbosFiltros++;
+      else if(bloqTendencia)
+         g_diagCompraBloqSoloTendencia++;
+      else if(bloqZonaFresca)
+         g_diagCompraBloqSoloZonaFresca++;
+      else
+         g_diagCompraSobrevivenAmbosFiltros++;
+
+      if(HayPosicionAbierta())
+         g_diagCompraCoincideConPosAbierta++;
      }
 
    g_diagDentroSupplyAnterior  = dentroSupplyAhora;
@@ -918,6 +964,15 @@ void ImprimirResumenDiagnostico()
    PrintFormat("    - de esas coincidencias, bloqueadas por tendencia:   %d", g_diagCoincidenciasVentaBloqTendencia);
    PrintFormat("    - de esas coincidencias, bloqueadas por sesión:      %d", g_diagCoincidenciasVentaBloqSesion);
    PrintFormat("    - de esas coincidencias, bloqueadas por zona fresca: %d", g_diagCoincidenciasVentaBloqZonaFresca);
+   PrintFormat("  [desglose excluyente tendencia/zona fresca sobre %d coincidencias, sin solape]", g_diagCoincidenciasVenta);
+   PrintFormat("    - sobreviven tendencia (bloq. o no por zona fresca): %d", g_diagVentaSobrevivenAmbosFiltros + g_diagVentaBloqSoloZonaFresca);
+   PrintFormat("    - sobreviven zona fresca (bloq. o no por tendencia): %d", g_diagVentaSobrevivenAmbosFiltros + g_diagVentaBloqSoloTendencia);
+   PrintFormat("    - bloqueadas SOLO por tendencia:                     %d", g_diagVentaBloqSoloTendencia);
+   PrintFormat("    - bloqueadas SOLO por zona fresca:                   %d", g_diagVentaBloqSoloZonaFresca);
+   PrintFormat("    - bloqueadas por AMBOS filtros a la vez:             %d", g_diagVentaBloqAmbosFiltros);
+   PrintFormat("    - sobreviven AMBOS filtros:                          %d", g_diagVentaSobrevivenAmbosFiltros);
+   PrintFormat("    - [check suma = coincidencias]: %d", g_diagVentaSobrevivenAmbosFiltros + g_diagVentaBloqSoloTendencia + g_diagVentaBloqSoloZonaFresca + g_diagVentaBloqAmbosFiltros);
+   PrintFormat("  Coincidencias con una posición ya abierta:           %d", g_diagVentaCoincideConPosAbierta);
    PrintFormat("  Ventas finalmente ejecutadas:                  %d", g_diagVentasEjecutadas);
    Print("--- Lado COMPRA (zona Demanda / breakout alcista) ---");
    PrintFormat("  Breakouts alcistas detectados:                 %d", g_diagBreakoutAlcistaDetectado);
@@ -928,6 +983,15 @@ void ImprimirResumenDiagnostico()
    PrintFormat("    - de esas coincidencias, bloqueadas por tendencia:   %d", g_diagCoincidenciasCompraBloqTendencia);
    PrintFormat("    - de esas coincidencias, bloqueadas por sesión:      %d", g_diagCoincidenciasCompraBloqSesion);
    PrintFormat("    - de esas coincidencias, bloqueadas por zona fresca: %d", g_diagCoincidenciasCompraBloqZonaFresca);
+   PrintFormat("  [desglose excluyente tendencia/zona fresca sobre %d coincidencias, sin solape]", g_diagCoincidenciasCompra);
+   PrintFormat("    - sobreviven tendencia (bloq. o no por zona fresca): %d", g_diagCompraSobrevivenAmbosFiltros + g_diagCompraBloqSoloZonaFresca);
+   PrintFormat("    - sobreviven zona fresca (bloq. o no por tendencia): %d", g_diagCompraSobrevivenAmbosFiltros + g_diagCompraBloqSoloTendencia);
+   PrintFormat("    - bloqueadas SOLO por tendencia:                     %d", g_diagCompraBloqSoloTendencia);
+   PrintFormat("    - bloqueadas SOLO por zona fresca:                   %d", g_diagCompraBloqSoloZonaFresca);
+   PrintFormat("    - bloqueadas por AMBOS filtros a la vez:             %d", g_diagCompraBloqAmbosFiltros);
+   PrintFormat("    - sobreviven AMBOS filtros:                          %d", g_diagCompraSobrevivenAmbosFiltros);
+   PrintFormat("    - [check suma = coincidencias]: %d", g_diagCompraSobrevivenAmbosFiltros + g_diagCompraBloqSoloTendencia + g_diagCompraBloqSoloZonaFresca + g_diagCompraBloqAmbosFiltros);
+   PrintFormat("  Coincidencias con una posición ya abierta:           %d", g_diagCompraCoincideConPosAbierta);
    PrintFormat("  Compras finalmente ejecutadas:                 %d", g_diagComprasEjecutadas);
    Print("=========================================================================================");
   }
