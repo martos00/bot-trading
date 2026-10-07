@@ -417,9 +417,56 @@ Baseline 1, para que la comparación sea justa):**
    buscando región de estabilidad, nunca tocar `val`/`OOS` para elegir
    valores).
 
-Todavía no se ha ejecutado ningún backtest de esta hipótesis en este
-repositorio — esta sección se actualizará con la tabla de resultados y
-el veredicto en cuanto estén disponibles los backtests de `train`.
+**Resultados obtenidos (Train 2025 → Validation H1 2026 → OOS jul-sep 2026):**
+
+| Tramo | Operaciones | Resultado |
+|---|---|---|
+| Train 2025 | 7 | +1,28% |
+| Validation H1 2026 | 1 | +4,39% |
+| OOS jul-sep 2026 | 2 | -1,38% |
+| **Total** | **10** | **≈ +4,3%** |
+
+El +4,3% acumulado no es fiable como evidencia de ventaja: son sólo 10
+operaciones en ~21 meses de histórico, una muestra demasiado pequeña
+para afirmar nada estadísticamente. El OOS tampoco falla de forma
+contundente (no hay un drawdown catastrófico) — el problema real es que
+la estrategia **apenas encuentra ocasiones para operar** (2 operaciones
+en casi 3 meses de OOS). Por tanto, de momento:
+
+- No hay evidencia de edge.
+- No hay frecuencia suficiente para evaluarlo con rigor estadístico.
+- No tiene sentido optimizar RR/SL/etc. sobre esta muestra.
+- Tampoco se puede concluir que la idea de Oferta/Demanda + RSI
+  Trendlines sea mala en sí misma — sólo que *esta implementación* está
+  demasiado restringida.
+
+**Instrumentación de diagnóstico añadida (no afecta a ninguna regla de
+trading, sólo cuenta):** antes de tocar ningún parámetro, se añadió un
+embudo de contadores para medir, con datos, qué condición elimina más
+oportunidades en vez de asumirlo:
+
+- Ancho en $ de cada zona de Oferta/Demanda calculada (media y mediana)
+  — la zona se define como el rango entre el extremo y el cierre de una
+  sola vela de `Temporalidad_Liquidez`, así que puede ser muy estrecha.
+- Nº de "toques" de cada zona (flanco de entrada, no cada tick dentro),
+  y de esos toques, cuántos ocurrieron en horario de sesión válido y
+  cuántos con un breakout de RSI ya vigente.
+- Nº de breakouts de RSI detectados (bajista/alcista) por separado.
+- Nº de veces que zona y breakout coinciden a la vez, y de esas
+  coincidencias, cuántas se pierden por el filtro de tendencia, por el
+  de sesión o por el de zona fresca.
+- Nº de ventas/compras finalmente ejecutadas.
+
+El resumen se imprime una única vez al final del backtest (`OnDeinit`),
+con media/mediana del ancho de zona y el desglose completo separado
+para el lado de venta y el de compra. No cambia ninguna condición de
+entrada, salida ni gestión de posición — es sólo instrumentación de
+lectura.
+
+**Pendiente:** ejecutar un backtest en `train` (2025) con esta
+instrumentación y usar el embudo resultante para decidir, con datos, si
+el problema es que la estrategia es demasiado restrictiva (y en qué
+punto exacto) o si la señal en sí apenas se da en la práctica.
 
 ## Objetivos de investigación (no garantizados)
 

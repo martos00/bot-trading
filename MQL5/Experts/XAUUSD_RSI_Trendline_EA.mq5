@@ -129,6 +129,43 @@ bool           g_trailingActivado     = false; // true en cuanto se libera el TP
 bool           g_cierreParcialAplicado = false; // true en cuanto se ejecuta el cierre parcial de la posición
 
 //======================================================================
+// DIAGNÓSTICO (instrumentación pura: no afecta a ninguna regla de trading,
+// sólo cuenta cuántas veces se cumple cada condición del embudo de entrada
+// para poder medir, con datos, qué filtro elimina más oportunidades).
+//======================================================================
+bool   g_diagDentroSupplyAnterior = false; // estado anterior de PrecioEnZona(bid, Supply), para detectar el flanco de entrada ("toque")
+bool   g_diagDentroDemandAnterior = false; // estado anterior de PrecioEnZona(ask, Demand)
+bool   g_diagCoincideVentaAnterior  = false; // estado anterior de (dentro de Supply) AND (breakout bajista vigente)
+bool   g_diagCoincideCompraAnterior = false; // estado anterior de (dentro de Demand) AND (breakout alcista vigente)
+
+int    g_diagBreakoutBajistaDetectado = 0; // nº de veces que se confirmó un breakout bajista del RSI (línea de picos)
+int    g_diagBreakoutAlcistaDetectado = 0; // nº de veces que se confirmó un breakout alcista del RSI (línea de valles)
+
+int    g_diagContactosSupply            = 0; // nº de "toques" distintos de la zona de Oferta (flanco de entrada)
+int    g_diagContactosSupplyEnSesion     = 0; // de esos toques, cuántos ocurrieron dentro del horario de sesión permitido
+int    g_diagContactosSupplyConBreakout  = 0; // de esos toques, cuántos ocurrieron con un breakout bajista ya vigente
+
+int    g_diagContactosDemand             = 0; // nº de "toques" distintos de la zona de Demanda (flanco de entrada)
+int    g_diagContactosDemandEnSesion     = 0;
+int    g_diagContactosDemandConBreakout  = 0;
+
+int    g_diagCoincidenciasVenta               = 0; // nº de veces que (dentro de zona) y (breakout vigente) coincidieron a la vez (flanco)
+int    g_diagCoincidenciasVentaBloqTendencia   = 0; // de esas coincidencias, cuántas fueron bloqueadas por el filtro de tendencia
+int    g_diagCoincidenciasVentaBloqSesion      = 0; // ... por el filtro de horario de sesión
+int    g_diagCoincidenciasVentaBloqZonaFresca  = 0; // ... por el filtro de zona fresca
+
+int    g_diagCoincidenciasCompra               = 0;
+int    g_diagCoincidenciasCompraBloqTendencia   = 0;
+int    g_diagCoincidenciasCompraBloqSesion      = 0;
+int    g_diagCoincidenciasCompraBloqZonaFresca  = 0;
+
+int    g_diagVentasEjecutadas  = 0; // nº de ventas que finalmente se enviaron (mismo evento que el Print "VENTA ejecutada")
+int    g_diagComprasEjecutadas = 0; // nº de compras que finalmente se enviaron (mismo evento que el Print "COMPRA ejecutada")
+
+double g_diagAnchosZonaSupply[]; // tamaño en $ (superior - inferior) de cada zona de Oferta calculada, para media/mediana
+double g_diagAnchosZonaDemand[]; // ídem para la zona de Demanda
+
+//======================================================================
 // UTILIDADES
 //======================================================================
 
@@ -217,6 +254,16 @@ void ActualizarZonasOfertaDemanda()
    g_zonaDemand.activa      = true;
    g_zonaDemand.huboEntrada = false;
    g_zonaDemand.tocada      = false;
+
+   // --- Diagnóstico: registrar el ancho en $ de cada zona recién calculada,
+   //     para poder sacar media/mediana al final del backtest (no afecta al trading) ---
+   int nSupply = ArraySize(g_diagAnchosZonaSupply);
+   ArrayResize(g_diagAnchosZonaSupply, nSupply + 1);
+   g_diagAnchosZonaSupply[nSupply] = g_zonaSupply.superior - g_zonaSupply.inferior;
+
+   int nDemand = ArraySize(g_diagAnchosZonaDemand);
+   ArrayResize(g_diagAnchosZonaDemand, nDemand + 1);
+   g_diagAnchosZonaDemand[nDemand] = g_zonaDemand.superior - g_zonaDemand.inferior;
   }
 
 //--- Comprueba si un precio dado se encuentra dentro de una zona
@@ -414,6 +461,7 @@ void ActualizarRSITrendlinesYBreakouts()
         {
          g_breakoutBajistaArmado = true;
          g_breakoutBajistaTime   = TimeCurrent();
+         g_diagBreakoutBajistaDetectado++; // diagnóstico: no afecta al trading
         }
      }
 
@@ -428,6 +476,7 @@ void ActualizarRSITrendlinesYBreakouts()
         {
          g_breakoutAlcistaArmado = true;
          g_breakoutAlcistaTime   = TimeCurrent();
+         g_diagBreakoutAlcistaDetectado++; // diagnóstico: no afecta al trading
         }
      }
   }
@@ -754,6 +803,136 @@ bool FiltroTendenciaPermiteCompra()
   }
 
 //======================================================================
+// DIAGNÓSTICO: EMBUDO DE CONDICIONES DE ENTRADA
+//======================================================================
+// Mide, sin tocar ninguna regla de trading, cuántas veces se cumple cada
+// condición de EvaluarSenalDeVenta()/EvaluarSenalDeCompra() por separado,
+// para poder saber qué filtro elimina más oportunidades en vez de
+// adivinarlo. Todo lo que hace esta función es LEER estado y contar
+// "flancos" (la primera vez que una condición pasa a ser verdadera, no
+// cada tick mientras se mantiene verdadera) -- no abre, cierra ni
+// modifica ninguna operación, ni cambia ninguna variable que use la
+// lógica de entrada/salida real.
+void ActualizarContadoresDiagnostico()
+  {
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+
+   bool dentroSupplyAhora = PrecioEnZona(bid, g_zonaSupply);
+   bool dentroDemandAhora = PrecioEnZona(ask, g_zonaDemand);
+   bool breakoutBajistaVigenteAhora = BreakoutBajistaVigente();
+   bool breakoutAlcistaVigenteAhora = BreakoutAlcistaVigente();
+   bool sesionOkAhora    = SesionPermiteOperar();
+   bool tendenciaOkVenta  = FiltroTendenciaPermiteVenta();
+   bool tendenciaOkCompra = FiltroTendenciaPermiteCompra();
+
+   // --- Toques de zona (flanco: primera vez que entra, no cada tick dentro) ---
+   if(dentroSupplyAhora && !g_diagDentroSupplyAnterior)
+     {
+      g_diagContactosSupply++;
+      if(sesionOkAhora)
+         g_diagContactosSupplyEnSesion++;
+      if(breakoutBajistaVigenteAhora)
+         g_diagContactosSupplyConBreakout++;
+     }
+   if(dentroDemandAhora && !g_diagDentroDemandAnterior)
+     {
+      g_diagContactosDemand++;
+      if(sesionOkAhora)
+         g_diagContactosDemandEnSesion++;
+      if(breakoutAlcistaVigenteAhora)
+         g_diagContactosDemandConBreakout++;
+     }
+
+   // --- Coincidencia zona + breakout (flanco), y por qué se perdería si se perdiera ---
+   bool coincideVentaAhora  = dentroSupplyAhora && breakoutBajistaVigenteAhora;
+   if(coincideVentaAhora && !g_diagCoincideVentaAnterior)
+     {
+      g_diagCoincidenciasVenta++;
+      if(!tendenciaOkVenta)
+         g_diagCoincidenciasVentaBloqTendencia++;
+      if(!sesionOkAhora)
+         g_diagCoincidenciasVentaBloqSesion++;
+      if(InpUsarFiltroZonaFresca && g_zonaSupply.tocada)
+         g_diagCoincidenciasVentaBloqZonaFresca++;
+     }
+
+   bool coincideCompraAhora = dentroDemandAhora && breakoutAlcistaVigenteAhora;
+   if(coincideCompraAhora && !g_diagCoincideCompraAnterior)
+     {
+      g_diagCoincidenciasCompra++;
+      if(!tendenciaOkCompra)
+         g_diagCoincidenciasCompraBloqTendencia++;
+      if(!sesionOkAhora)
+         g_diagCoincidenciasCompraBloqSesion++;
+      if(InpUsarFiltroZonaFresca && g_zonaDemand.tocada)
+         g_diagCoincidenciasCompraBloqZonaFresca++;
+     }
+
+   g_diagDentroSupplyAnterior  = dentroSupplyAhora;
+   g_diagDentroDemandAnterior  = dentroDemandAhora;
+   g_diagCoincideVentaAnterior  = coincideVentaAhora;
+   g_diagCoincideCompraAnterior = coincideCompraAhora;
+  }
+
+//--- Calcula media y mediana de un array de doubles (usado sólo para el resumen de diagnóstico)
+void CalcularMediaYMediana(double &valores[], double &media, double &mediana)
+  {
+   int n = ArraySize(valores);
+   media = 0.0;
+   mediana = 0.0;
+   if(n == 0)
+      return;
+
+   double suma = 0.0;
+   for(int i = 0; i < n; i++)
+      suma += valores[i];
+   media = suma / n;
+
+   double ordenado[];
+   ArrayResize(ordenado, n);
+   ArrayCopy(ordenado, valores);
+   ArraySort(ordenado);
+   if(n % 2 == 1)
+      mediana = ordenado[n / 2];
+   else
+      mediana = (ordenado[n / 2 - 1] + ordenado[n / 2]) / 2.0;
+  }
+
+//--- Imprime el resumen completo del embudo de diagnóstico (se llama una vez, en OnDeinit)
+void ImprimirResumenDiagnostico()
+  {
+   double mediaSupply, medianaSupply, mediaDemand, medianaDemand;
+   CalcularMediaYMediana(g_diagAnchosZonaSupply, mediaSupply, medianaSupply);
+   CalcularMediaYMediana(g_diagAnchosZonaDemand, mediaDemand, medianaDemand);
+
+   Print("================ DIAGNÓSTICO: EMBUDO DE ENTRADA (no afecta al trading) ================");
+   PrintFormat("Ancho de zona Oferta  ($): media=%.2f  mediana=%.2f  (muestras=%d)", mediaSupply, medianaSupply, ArraySize(g_diagAnchosZonaSupply));
+   PrintFormat("Ancho de zona Demanda ($): media=%.2f  mediana=%.2f  (muestras=%d)", mediaDemand, medianaDemand, ArraySize(g_diagAnchosZonaDemand));
+   Print("--- Lado VENTA (zona Oferta / breakout bajista) ---");
+   PrintFormat("  Breakouts bajistas detectados:                 %d", g_diagBreakoutBajistaDetectado);
+   PrintFormat("  Toques de zona Oferta:                         %d", g_diagContactosSupply);
+   PrintFormat("    - de esos, en horario de sesión válido:      %d", g_diagContactosSupplyEnSesion);
+   PrintFormat("    - de esos, con breakout bajista ya vigente:  %d", g_diagContactosSupplyConBreakout);
+   PrintFormat("  Zona + breakout coinciden a la vez:            %d", g_diagCoincidenciasVenta);
+   PrintFormat("    - de esas coincidencias, bloqueadas por tendencia:   %d", g_diagCoincidenciasVentaBloqTendencia);
+   PrintFormat("    - de esas coincidencias, bloqueadas por sesión:      %d", g_diagCoincidenciasVentaBloqSesion);
+   PrintFormat("    - de esas coincidencias, bloqueadas por zona fresca: %d", g_diagCoincidenciasVentaBloqZonaFresca);
+   PrintFormat("  Ventas finalmente ejecutadas:                  %d", g_diagVentasEjecutadas);
+   Print("--- Lado COMPRA (zona Demanda / breakout alcista) ---");
+   PrintFormat("  Breakouts alcistas detectados:                 %d", g_diagBreakoutAlcistaDetectado);
+   PrintFormat("  Toques de zona Demanda:                        %d", g_diagContactosDemand);
+   PrintFormat("    - de esos, en horario de sesión válido:      %d", g_diagContactosDemandEnSesion);
+   PrintFormat("    - de esos, con breakout alcista ya vigente:  %d", g_diagContactosDemandConBreakout);
+   PrintFormat("  Zona + breakout coinciden a la vez:            %d", g_diagCoincidenciasCompra);
+   PrintFormat("    - de esas coincidencias, bloqueadas por tendencia:   %d", g_diagCoincidenciasCompraBloqTendencia);
+   PrintFormat("    - de esas coincidencias, bloqueadas por sesión:      %d", g_diagCoincidenciasCompraBloqSesion);
+   PrintFormat("    - de esas coincidencias, bloqueadas por zona fresca: %d", g_diagCoincidenciasCompraBloqZonaFresca);
+   PrintFormat("  Compras finalmente ejecutadas:                 %d", g_diagComprasEjecutadas);
+   Print("=========================================================================================");
+  }
+
+//======================================================================
 // MÓDULO 4: LÓGICA DE ENTRADA Y SALIDA
 //======================================================================
 
@@ -840,6 +1019,7 @@ void EvaluarSenalDeVenta()
       g_breakevenAplicado = false;
       g_trailingActivado = false;
       g_cierreParcialAplicado = false;
+      g_diagVentasEjecutadas++; // diagnóstico: no afecta al trading
       PrintFormat("VENTA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
      }
   }
@@ -909,6 +1089,7 @@ void EvaluarSenalDeCompra()
       g_breakevenAplicado = false;
       g_trailingActivado = false;
       g_cierreParcialAplicado = false;
+      g_diagComprasEjecutadas++; // diagnóstico: no afecta al trading
       PrintFormat("COMPRA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
      }
   }
@@ -1135,6 +1316,8 @@ int OnInit()
 
 void OnDeinit(const int reason)
   {
+   ImprimirResumenDiagnostico();
+
    if(g_handleRSI != INVALID_HANDLE)
       IndicatorRelease(g_handleRSI);
    if(g_handleTendenciaMA != INVALID_HANDLE)
@@ -1274,6 +1457,9 @@ void OnTick()
 
    // 4c) Registrar si el precio ha entrado/salido de alguna zona, para el filtro de zona fresca
    MarcarZonasTocadas();
+
+   // 4d) Diagnóstico: solo cuenta condiciones del embudo de entrada, no decide nada
+   ActualizarContadoresDiagnostico();
 
    // 5) Filtro de spread: prohíbe abrir operaciones si el spread es excesivo
    if(!SpreadPermitido())
