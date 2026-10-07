@@ -30,6 +30,14 @@ nombre del archivo es un resto de la versión anterior; se mantuvo para
 no romper referencias/despliegues existentes — puede renombrarse sin
 problema si se prefiere).
 
+> **Hipótesis 2 en curso:** se ha recuperado la estrategia anterior
+> (zonas de Oferta/Demanda + rupturas de líneas de tendencia sobre el
+> RSI) en `MQL5/Experts/XAUUSD_RSI_Trendline_EA.mq5`, para someterla al
+> mismo protocolo de validación que este Baseline 1 antes de decidir si
+> reemplaza o complementa la búsqueda de una nueva hipótesis de entrada.
+> Ver la sección **"Hipótesis 2: Oferta/Demanda + RSI Trendlines
+> (recuperada, pendiente de validar)"** más abajo.
+
 ## Instalación
 
 1. Copia el archivo `.mq5` dentro de `MQL5/Experts/` de tu terminal MetaTrader 5
@@ -347,6 +355,71 @@ encontró ningún valor ni combinación que justificara pasar a validar en
   y cualquier estrategia nueva que se diseñe a partir de aquí debe
   compararse contra estos mismos números bajo el mismo protocolo antes
   de reemplazarla.
+
+## Hipótesis 2: Oferta/Demanda + RSI Trendlines (recuperada, pendiente de validar)
+
+Esta no es una hipótesis de entrada nueva: es la estrategia que este
+repositorio usaba **antes** de la reescritura a Sweep → MSS → FVG,
+recuperada del historial de git (commit `a9252a4`, el último antes de
+`7bd8fb6` "Sustituir la estrategia de señal por Liquidity Sweep -> MSS ->
+FVG Retest"). Se recupera porque, a diferencia de Sweep→MSS→FVG, nunca
+pasó por el protocolo riguroso train/validación/OOS — se abandonó sin
+haberse evaluado correctamente, así que es candidata legítima antes de
+diseñar una hipótesis completamente distinta.
+
+**Archivo:** `MQL5/Experts/XAUUSD_RSI_Trendline_EA.mq5`.
+
+**Lógica de la señal:** zonas de Oferta/Demanda en una temporalidad macro
+(`Temporalidad_Liquidez`, H1 por defecto) como contexto, con gatillo de
+entrada por ruptura (breakout) de líneas de tendencia dibujadas sobre
+pivotes del RSI en la temporalidad de ejecución (M5 por defecto) — un
+enfoque de momentum/ruptura sobre un oscilador, conceptualmente distinto
+de los conceptos de price-action puro (ICT/SMC) usados en Baseline 1.
+Toda la detección de pivotes y rupturas usa velas cerradas (sin
+repintado).
+
+**Qué se cambió respecto a la versión original (`a9252a4`), y por qué:**
+
+- **Se eliminó el módulo de auto-optimización semanal walk-forward**
+  (`EjecutarOptimizacionSemanal`), que recalibraba en caliente el
+  lookback de las zonas y el período del RSI cada semana según la
+  volatilidad reciente. Ese ajuste dinámico de parámetros *dentro* del
+  propio backtest hace que un split train/validación/OOS no mida lo que
+  debería (el EA se reoptimiza solo según lo que ve en cada tramo, en
+  vez de usarse con parámetros fijados de antemano). `InpZonaLookbackMacro`
+  e `InpRSIPeriod` vuelven a ser inputs fijos normales (100 y 14 por
+  defecto, los mismos valores con los que arrancaba el módulo antes de
+  su primera recalibración).
+- **Se añadió la misma comprobación de margen (`OrderCalcMargin` +
+  `ACCOUNT_MARGIN_FREE`) que en Baseline 1**, antes de enviar la orden de
+  venta o de compra, para descartar con un mensaje `[DIAG]`-equivalente
+  cualquier operación cuyo lotaje por riesgo% exija más margen del
+  disponible, en vez de dejar que el bróker la rechace en silencio.
+- El resto (gestión de riesgo, Kill Switch, filtro de spread, cierre de
+  fin de semana, circuito de pérdidas consecutivas, breakeven, trailing
+  stop, cierre parcial, filtro de sesión, filtro de tendencia macro,
+  filtro de zona fresca) se mantiene exactamente igual que en la versión
+  original — no se ha tocado ninguna regla de gestión de posición.
+
+**Protocolo de validación pendiente de ejecutar (idéntico al de
+Baseline 1, para que la comparación sea justa):**
+
+1. Backtest en `train` (2025 completo) con los parámetros por defecto, sin
+   tocar nada todavía.
+2. Si `train` muestra algo mínimamente prometedor, backtest en `val`
+   (2026 H1) con los mismos parámetros exactos.
+3. Sólo si ambos tramos son razonables, backtest final en `OOS` (2026
+   jul-sep), una única vez, sin ajustar nada después de verlo.
+4. Mismos criterios de descarte que en Baseline 1: Net Profit total > 0,
+   Max Drawdown en el peor tramo ≤ 20%, Net Profit en OOS ≥ 0.
+5. Si se quiere explorar sensibilidad de parámetros, aplicar la misma
+   disciplina de Fase B de Baseline 1 (barrido en `train` únicamente,
+   buscando región de estabilidad, nunca tocar `val`/`OOS` para elegir
+   valores).
+
+Todavía no se ha ejecutado ningún backtest de esta hipótesis en este
+repositorio — esta sección se actualizará con la tabla de resultados y
+el veredicto en cuanto estén disponibles los backtests de `train`.
 
 ## Objetivos de investigación (no garantizados)
 
