@@ -181,6 +181,10 @@ int    g_diagComprasEjecutadas = 0; // nº de compras que finalmente se enviaron
 double g_diagAnchosZonaSupply[]; // tamaño en $ (superior - inferior) de cada zona de Oferta calculada, para media/mediana
 double g_diagAnchosZonaDemand[]; // ídem para la zona de Demanda
 
+// --- Seguimiento de cierre de posición para el estudio "qué selecciona el filtro de tendencia" ---
+bool  g_diagHabiaPosicionAbiertaAnterior = false; // estado anterior de TicketPosicionPropiaActual() != 0
+ulong g_diagTicketPosicionAnterior       = 0;     // ticket de la posición que se venía trackeando
+
 //======================================================================
 // UTILIDADES
 //======================================================================
@@ -1013,6 +1017,50 @@ bool HayPosicionAbierta()
    return false;
   }
 
+//--- Diagnóstico: devuelve el ticket de la posición propia actualmente abierta (0 si no hay ninguna)
+ulong TicketPosicionPropiaActual()
+  {
+   for(int i = 0; i < PositionsTotal(); i++)
+     {
+      ulong ticket = PositionGetTicket(i);
+      if(ticket == 0) continue;
+      if(PositionGetString(POSITION_SYMBOL) != _Symbol) continue;
+      if(PositionGetInteger(POSITION_MAGIC) != (long)InpMagicNumber) continue;
+      return ticket;
+     }
+   return 0;
+  }
+
+//--- Diagnóstico: detecta cuándo se cierra la posición que se venía trackeando y
+//    busca su resultado neto real (profit + swap + comisión) en el histórico, para
+//    poder cruzarlo más tarde con el estado de tendencia registrado al abrirla.
+//    Sólo lee el histórico de operaciones -- no modifica ninguna posición ni orden.
+void ActualizarDiagnosticoCierrePosicion()
+  {
+   ulong ticketAhora = TicketPosicionPropiaActual();
+   bool  hayAhora    = (ticketAhora != 0);
+
+   if(g_diagHabiaPosicionAbiertaAnterior && !hayAhora)
+     {
+      if(HistorySelectByPosition(g_diagTicketPosicionAnterior))
+        {
+         double resultadoNeto = 0.0;
+         int totalDeals = HistoryDealsTotal();
+         for(int i = 0; i < totalDeals; i++)
+           {
+            ulong dealTicket = HistoryDealGetTicket(i);
+            resultadoNeto += HistoryDealGetDouble(dealTicket, DEAL_PROFIT)
+                           + HistoryDealGetDouble(dealTicket, DEAL_SWAP)
+                           + HistoryDealGetDouble(dealTicket, DEAL_COMMISSION);
+           }
+         PrintFormat("[DIAG-RESULTADO] ticket=%I64u resultado_neto=%.2f", g_diagTicketPosicionAnterior, resultadoNeto);
+        }
+     }
+
+   g_diagHabiaPosicionAbiertaAnterior = hayAhora;
+   g_diagTicketPosicionAnterior       = ticketAhora;
+  }
+
 //--- Intenta ejecutar una venta cuando el precio está en zona de Oferta y hay breakout bajista del RSI
 void EvaluarSenalDeVenta()
   {
@@ -1085,6 +1133,23 @@ void EvaluarSenalDeVenta()
       g_cierreParcialAplicado = false;
       g_diagVentasEjecutadas++; // diagnóstico: no afecta al trading
       PrintFormat("VENTA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
+
+      // --- Diagnóstico: registrar el estado de tendencia en el momento exacto de la
+      //     entrada (independientemente de si InpUsarFiltroTendencia está activo o no),
+      //     para poder clasificar después cada operación como a favor/en contra de
+      //     tendencia y cruzarlo con su resultado real ---
+      double maBufferDiag[];
+      ArraySetAsSeries(maBufferDiag, true);
+      if(CopyBuffer(g_handleTendenciaMA, 0, 1, 1, maBufferDiag) >= 1)
+        {
+         double maValorDiag       = maBufferDiag[0];
+         double cierreMacroDiag   = iClose(_Symbol, Temporalidad_Liquidez, 1);
+         double distanciaDiag     = cierreMacroDiag - maValorDiag; // >0 = precio sobre la MA (régimen alcista)
+         bool   favorableTendenciaDiag = (cierreMacroDiag < maValorDiag); // lo que exige FiltroTendenciaPermiteVenta()
+         ulong  ticketDiag = TicketPosicionPropiaActual();
+         PrintFormat("[DIAG-TENDENCIA] ticket=%I64u lado=VENTA cierreMacro=%.2f MA200=%.2f distancia=%.2f favorable_tendencia=%s",
+                     ticketDiag, cierreMacroDiag, maValorDiag, distanciaDiag, favorableTendenciaDiag ? "SI" : "NO");
+        }
      }
   }
 
@@ -1155,6 +1220,20 @@ void EvaluarSenalDeCompra()
       g_cierreParcialAplicado = false;
       g_diagComprasEjecutadas++; // diagnóstico: no afecta al trading
       PrintFormat("COMPRA ejecutada: lotes=%.2f entrada=%.2f SL=%.2f TP=%.2f", lotes, entrada, sl, tp);
+
+      // --- Diagnóstico: mismo registro de tendencia que en EvaluarSenalDeVenta() ---
+      double maBufferDiag[];
+      ArraySetAsSeries(maBufferDiag, true);
+      if(CopyBuffer(g_handleTendenciaMA, 0, 1, 1, maBufferDiag) >= 1)
+        {
+         double maValorDiag       = maBufferDiag[0];
+         double cierreMacroDiag   = iClose(_Symbol, Temporalidad_Liquidez, 1);
+         double distanciaDiag     = cierreMacroDiag - maValorDiag;
+         bool   favorableTendenciaDiag = (cierreMacroDiag > maValorDiag); // lo que exige FiltroTendenciaPermiteCompra()
+         ulong  ticketDiag = TicketPosicionPropiaActual();
+         PrintFormat("[DIAG-TENDENCIA] ticket=%I64u lado=COMPRA cierreMacro=%.2f MA200=%.2f distancia=%.2f favorable_tendencia=%s",
+                     ticketDiag, cierreMacroDiag, maValorDiag, distanciaDiag, favorableTendenciaDiag ? "SI" : "NO");
+        }
      }
   }
 
@@ -1524,6 +1603,7 @@ void OnTick()
 
    // 4d) Diagnóstico: solo cuenta condiciones del embudo de entrada, no decide nada
    ActualizarContadoresDiagnostico();
+   ActualizarDiagnosticoCierrePosicion();
 
    // 5) Filtro de spread: prohíbe abrir operaciones si el spread es excesivo
    if(!SpreadPermitido())
