@@ -35,7 +35,7 @@ input group "=== Filtro de Zona Fresca ==="
 input bool   InpUsarFiltroZonaFresca = true;       // Sólo operar el primer toque de cada zona (bloquea retests)
 
 input group "=== Filtro de Tendencia Macro ==="
-input bool   InpUsarFiltroTendencia = true;        // Activar filtro de tendencia (evita operar contra la tendencia de fondo)
+input bool   InpUsarFiltroTendencia = false;       // Activar filtro de tendencia (NO pertenece a los indicadores originales, ver nota más abajo)
 input int    InpTrendMAPeriod       = 200;         // Período de la media móvil de tendencia (en Temporalidad_Liquidez)
 input ENUM_MA_METHOD InpTrendMAMethod = MODE_SMA;  // Método de la media móvil de tendencia
 
@@ -924,6 +924,20 @@ bool SesionPermiteOperar()
 //======================================================================
 // FILTRO DE TENDENCIA MACRO
 //======================================================================
+// NOTA DE PROCEDENCIA: este filtro NO forma parte de los indicadores
+// originales de TradingView (LuxAlgo Supply/Demand + HG RSI Trendlines).
+// Se añadió más tarde (commit 8ed41fc), mirando resultados de backtest,
+// con el objetivo explícito de "sitting out counter-trend reversals
+// that previously worked" -- es decir, para bloquear justo el tipo de
+// operación a contra-tendencia que esta estrategia de reversión en
+// zonas de Oferta/Demanda genera por diseño. Por eso se desactiva por
+// defecto (InpUsarFiltroTendencia=false) en la reconstrucción fiel: la
+// línea base debe medir la estrategia tal como la definen los dos
+// indicadores, no una variante ya filtrada por un ajuste posterior
+// basado en mirar el propio backtest. Se deja como toggle opcional por
+// si se quiere estudiar como variante aparte, nunca como parte de la
+// línea base inicial.
+//----------------------------------------------------------------------
 // Reduce las rachas de pérdidas seguidas en mercado lateral: sólo deja
 // operar a favor de la tendencia de fondo, medida con una media móvil
 // larga (InpTrendMAPeriod) calculada en la misma temporalidad macro que

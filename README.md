@@ -579,32 +579,44 @@ bloqueadas por el filtro de tendencia** en ambos lados (7.369 en venta,
 más restrictivo que Hipótesis 2 (que sí tenía 7 operaciones/año con el
 mismo filtro de tendencia sin tocar).
 
-Antes de asumir que esto es "sólo que el filtro de tendencia es muy
-estricto", se revisó el código de `FiltroTendenciaPermiteVenta()` /
-`FiltroTendenciaPermiteCompra()` y el cálculo de zonas: ambos son
-idénticos en timeframe/lógica a Hipótesis 2 (misma MA200 sobre
-`Temporalidad_Liquidez`, mismo criterio precio-vs-MA), así que no hay un
-bug de signo o de timeframe nuevo introducido por la reconstrucción
-fiel. La explicación más probable es estructural: Hipótesis 2 ya había
-mostrado que las pocas operaciones que sobreviven el filtro de
-tendencia ocurren muy cerca de la MA200 (media 6,33$ frente a 64,26$ en
-las bloqueadas) — es decir, el filtro deja pasar sólo un margen muy
-estrecho de casos "casi en la media". La reconstrucción fiel genera
-señales de ruptura más exigentes (pivotes asimétricos 1/N con filtro de
-coherencia direccional + margen fijo de RSI + señal persistente en vez
-de expirar), por lo que son menos frecuentes pero más "decisivas" —
-plausiblemente desplazadas fuera de esa franja estrecha cerca de la
-MA200 donde antes sobrevivían algunas. Se ha añadido instrumentación
-(`g_diagDistMAVentaSobrevive/Bloqueada`, `g_diagDistMACompraSobrevive/Bloqueada`
-en el resumen de diagnóstico) que mide la distancia ($) entre el cierre
-macro y la MA200 en el instante exacto de CADA coincidencia
-zona+breakout, separada en "habría sobrevivido" vs "bloqueada por
-tendencia" — **pendiente**: re-ejecutar Train 2025 con esta build y
-comprobar si la media/mediana de las coincidencias bloqueadas está muy
-alejada de 0 (confirmaría la explicación estructural) o si hay alguna
-agrupada muy cerca de 0 que aun así se bloquea (indicaría que queda
-algo por investigar, p.ej. un desfase de una vela entre el momento de
-la coincidencia y el de la lectura de la MA).
+**Causa raíz identificada: el filtro de tendencia macro no pertenece a
+los indicadores originales de TradingView.** Revisando el historial de
+git, el filtro (`FiltroTendenciaPermiteVenta()`/`Compra()`, MA200 sobre
+`Temporalidad_Liquidez`) se añadió en el commit `8ed41fc` ("Add macro
+trend filter to reduce counter-trend whipsaws"), **después** de que la
+estrategia original ya existiera, y con el objetivo explícito (cita
+textual del commit) de "sitting out counter-trend reversals that
+previously worked" — es decir, se diseñó específicamente para bloquear
+operaciones a contra-tendencia, mirando resultados de un backtest
+anterior. La estrategia de Oferta/Demanda + ruptura de RSI es, por
+construcción, una estrategia de **reversión** (se opera cuando el
+precio toca una zona y el momentum del RSI rompe en el sentido
+contrario al movimiento reciente) — casi siempre a contra-tendencia
+macro. Un filtro diseñado para eliminar justo ese tipo de operación,
+aplicado a una señal que es aún más "reversión pura" tras la
+reconstrucción fiel (pivotes asimétricos + filtro de coherencia +
+margen de RSI, menos señales pero más nítidas), explica sin necesidad
+de ningún bug por qué el bloqueo llega al 100%.
+
+Más importante: este filtro nunca debió formar parte de la línea base
+de esta hipótesis — no es de LuxAlgo ni de HG, es un ajuste posterior
+hecho mirando el backtest de una versión anterior y distinta del bot,
+justo lo que el protocolo de este repositorio pretende evitar antes de
+medir una línea base limpia. **Se ha desactivado por defecto**
+(`InpUsarFiltroTendencia = false`) en `XAUUSD_RSI_Trendline_Fiel_EA.mq5`
+para que el Train 2025 mida la estrategia tal como la definen los dos
+indicadores, sin overlays añadidos después. Se mantiene el input como
+toggle opcional por si se quiere estudiar como variante aparte, nunca
+como parte del baseline inicial.
+
+Se mantiene también la instrumentación añadida
+(`g_diagDistMAVentaSobrevive/Bloqueada`, `g_diagDistMACompraSobrevive/Bloqueada`)
+por si se retoma el filtro como variante más adelante, aunque ya no es
+necesaria para explicar el resultado de 0 operaciones.
+
+**Pendiente:** recompilar y volver a correr Train 2025 completo con
+`InpUsarFiltroTendencia = false` (valor por defecto ya actualizado) para
+obtener la primera medición real de la estrategia sin este filtro.
 
 Todavía no se ha completado la verificación manual de 10-20 señales
 (paso 2) con rigor total — se hizo una verificación más ligera (3
