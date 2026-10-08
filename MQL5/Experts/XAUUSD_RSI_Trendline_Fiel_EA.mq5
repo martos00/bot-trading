@@ -198,6 +198,16 @@ int    g_diagComprasEjecutadas = 0; // nº de compras que finalmente se enviaron
 double g_diagAnchosZonaSupply[]; // tamaño en $ (superior - inferior) de cada zona de Oferta calculada, para media/mediana
 double g_diagAnchosZonaDemand[]; // ídem para la zona de Demanda
 
+// --- Distancia (cierre macro - MA200), en $, en el momento de CADA coincidencia zona+breakout
+//     (no sólo de las que sobreviven el filtro de tendencia), separada en "habría sobrevivido"
+//     vs "habría sido bloqueada" -- para comprobar con datos si el filtro de tendencia reduce
+//     los supervivientes a cero porque la señal fiel simplemente ya no ocurre cerca de la MA,
+//     o si hay algo más raro pasando.
+double g_diagDistMAVentaSobrevive[];
+double g_diagDistMAVentaBloqueada[];
+double g_diagDistMACompraSobrevive[];
+double g_diagDistMACompraBloqueada[];
+
 // --- Seguimiento de cierre de posición para el estudio "qué selecciona el filtro de tendencia" ---
 bool  g_diagHabiaPosicionAbiertaAnterior = false; // estado anterior de TicketPosicionPropiaActual() != 0
 ulong g_diagTicketPosicionAnterior       = 0;     // ticket de la posición que se venía trackeando
@@ -998,6 +1008,29 @@ void ActualizarContadoresDiagnostico()
    if(coincideVentaAhora && !g_diagCoincideVentaAnterior)
      {
       g_diagCoincidenciasVenta++;
+
+      // Distancia a la MA200 (en $) en el instante EXACTO de esta coincidencia,
+      // sobreviva o no al filtro de tendencia -- sólo lectura, no decide nada.
+      double maDiagVenta[];
+      ArraySetAsSeries(maDiagVenta, true);
+      if(CopyBuffer(g_handleTendenciaMA, 0, 1, 1, maDiagVenta) >= 1)
+        {
+         double distMADiagVenta = iClose(_Symbol, Temporalidad_Liquidez, 1) - maDiagVenta[0];
+         int nDistVenta;
+         if(tendenciaOkVenta)
+           {
+            nDistVenta = ArraySize(g_diagDistMAVentaSobrevive);
+            ArrayResize(g_diagDistMAVentaSobrevive, nDistVenta + 1);
+            g_diagDistMAVentaSobrevive[nDistVenta] = distMADiagVenta;
+           }
+         else
+           {
+            nDistVenta = ArraySize(g_diagDistMAVentaBloqueada);
+            ArrayResize(g_diagDistMAVentaBloqueada, nDistVenta + 1);
+            g_diagDistMAVentaBloqueada[nDistVenta] = distMADiagVenta;
+           }
+        }
+
       if(!tendenciaOkVenta)
          g_diagCoincidenciasVentaBloqTendencia++;
       if(!sesionOkAhora)
@@ -1026,6 +1059,27 @@ void ActualizarContadoresDiagnostico()
    if(coincideCompraAhora && !g_diagCoincideCompraAnterior)
      {
       g_diagCoincidenciasCompra++;
+
+      double maDiagCompra[];
+      ArraySetAsSeries(maDiagCompra, true);
+      if(CopyBuffer(g_handleTendenciaMA, 0, 1, 1, maDiagCompra) >= 1)
+        {
+         double distMADiagCompra = iClose(_Symbol, Temporalidad_Liquidez, 1) - maDiagCompra[0];
+         int nDistCompra;
+         if(tendenciaOkCompra)
+           {
+            nDistCompra = ArraySize(g_diagDistMACompraSobrevive);
+            ArrayResize(g_diagDistMACompraSobrevive, nDistCompra + 1);
+            g_diagDistMACompraSobrevive[nDistCompra] = distMADiagCompra;
+           }
+         else
+           {
+            nDistCompra = ArraySize(g_diagDistMACompraBloqueada);
+            ArrayResize(g_diagDistMACompraBloqueada, nDistCompra + 1);
+            g_diagDistMACompraBloqueada[nDistCompra] = distMADiagCompra;
+           }
+        }
+
       if(!tendenciaOkCompra)
          g_diagCoincidenciasCompraBloqTendencia++;
       if(!sesionOkAhora)
@@ -1085,9 +1139,21 @@ void ImprimirResumenDiagnostico()
    CalcularMediaYMediana(g_diagAnchosZonaSupply, mediaSupply, medianaSupply);
    CalcularMediaYMediana(g_diagAnchosZonaDemand, mediaDemand, medianaDemand);
 
+   double mediaVentaSobrevive, medianaVentaSobrevive, mediaVentaBloqueada, medianaVentaBloqueada;
+   double mediaCompraSobrevive, medianaCompraSobrevive, mediaCompraBloqueada, medianaCompraBloqueada;
+   CalcularMediaYMediana(g_diagDistMAVentaSobrevive, mediaVentaSobrevive, medianaVentaSobrevive);
+   CalcularMediaYMediana(g_diagDistMAVentaBloqueada, mediaVentaBloqueada, medianaVentaBloqueada);
+   CalcularMediaYMediana(g_diagDistMACompraSobrevive, mediaCompraSobrevive, medianaCompraSobrevive);
+   CalcularMediaYMediana(g_diagDistMACompraBloqueada, mediaCompraBloqueada, medianaCompraBloqueada);
+
    Print("================ DIAGNÓSTICO: EMBUDO DE ENTRADA (no afecta al trading) ================");
    PrintFormat("Ancho de zona Oferta  ($): media=%.2f  mediana=%.2f  (muestras=%d)", mediaSupply, medianaSupply, ArraySize(g_diagAnchosZonaSupply));
    PrintFormat("Ancho de zona Demanda ($): media=%.2f  mediana=%.2f  (muestras=%d)", mediaDemand, medianaDemand, ArraySize(g_diagAnchosZonaDemand));
+   Print("--- Distancia (cierre macro - MA200, en $) en cada coincidencia zona+breakout, sobreviva o no al filtro de tendencia ---");
+   PrintFormat("  VENTA  - habrían sobrevivido tendencia (dist<0 esperado): media=%.2f  mediana=%.2f  (muestras=%d)", mediaVentaSobrevive, medianaVentaSobrevive, ArraySize(g_diagDistMAVentaSobrevive));
+   PrintFormat("  VENTA  - bloqueadas por tendencia       (dist>0 esperado): media=%.2f  mediana=%.2f  (muestras=%d)", mediaVentaBloqueada, medianaVentaBloqueada, ArraySize(g_diagDistMAVentaBloqueada));
+   PrintFormat("  COMPRA - habrían sobrevivido tendencia (dist>0 esperado): media=%.2f  mediana=%.2f  (muestras=%d)", mediaCompraSobrevive, medianaCompraSobrevive, ArraySize(g_diagDistMACompraSobrevive));
+   PrintFormat("  COMPRA - bloqueadas por tendencia       (dist<0 esperado): media=%.2f  mediana=%.2f  (muestras=%d)", mediaCompraBloqueada, medianaCompraBloqueada, ArraySize(g_diagDistMACompraBloqueada));
    Print("--- Lado VENTA (zona Oferta / breakout bajista) ---");
    PrintFormat("  Breakouts bajistas detectados:                 %d", g_diagBreakoutBajistaDetectado);
    PrintFormat("  Toques de zona Oferta:                         %d", g_diagContactosSupply);

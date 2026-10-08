@@ -571,7 +571,47 @@ iguales que en Hipótesis 2, sin tocar una sola línea.
    → Validation H1 2026 → OOS jul-sep 2026, con los mismos criterios de
    descarte pre-registrados que en Baseline 1.
 
-Todavía no se ha ejecutado ningún backtest de esta reconstrucción fiel.
+**Resultado del Train 2025 completo (bug de indexación por buffer ya
+corregido, ver más abajo):** **0 operaciones en todo el año** (0 ventas,
+0 compras), con **el 100% de las 8.551 coincidencias zona+breakout
+bloqueadas por el filtro de tendencia** en ambos lados (7.369 en venta,
+1.182 en compra; "sobreviven AMBOS filtros" = 0 en los dos). Esto es
+más restrictivo que Hipótesis 2 (que sí tenía 7 operaciones/año con el
+mismo filtro de tendencia sin tocar).
+
+Antes de asumir que esto es "sólo que el filtro de tendencia es muy
+estricto", se revisó el código de `FiltroTendenciaPermiteVenta()` /
+`FiltroTendenciaPermiteCompra()` y el cálculo de zonas: ambos son
+idénticos en timeframe/lógica a Hipótesis 2 (misma MA200 sobre
+`Temporalidad_Liquidez`, mismo criterio precio-vs-MA), así que no hay un
+bug de signo o de timeframe nuevo introducido por la reconstrucción
+fiel. La explicación más probable es estructural: Hipótesis 2 ya había
+mostrado que las pocas operaciones que sobreviven el filtro de
+tendencia ocurren muy cerca de la MA200 (media 6,33$ frente a 64,26$ en
+las bloqueadas) — es decir, el filtro deja pasar sólo un margen muy
+estrecho de casos "casi en la media". La reconstrucción fiel genera
+señales de ruptura más exigentes (pivotes asimétricos 1/N con filtro de
+coherencia direccional + margen fijo de RSI + señal persistente en vez
+de expirar), por lo que son menos frecuentes pero más "decisivas" —
+plausiblemente desplazadas fuera de esa franja estrecha cerca de la
+MA200 donde antes sobrevivían algunas. Se ha añadido instrumentación
+(`g_diagDistMAVentaSobrevive/Bloqueada`, `g_diagDistMACompraSobrevive/Bloqueada`
+en el resumen de diagnóstico) que mide la distancia ($) entre el cierre
+macro y la MA200 en el instante exacto de CADA coincidencia
+zona+breakout, separada en "habría sobrevivido" vs "bloqueada por
+tendencia" — **pendiente**: re-ejecutar Train 2025 con esta build y
+comprobar si la media/mediana de las coincidencias bloqueadas está muy
+alejada de 0 (confirmaría la explicación estructural) o si hay alguna
+agrupada muy cerca de 0 que aun así se bloquea (indicaría que queda
+algo por investigar, p.ej. un desfase de una vela entre el momento de
+la coincidencia y el de la lectura de la MA).
+
+Todavía no se ha completado la verificación manual de 10-20 señales
+(paso 2) con rigor total — se hizo una verificación más ligera (3
+rupturas de RSI comprobadas a mano contra TradingView) que encajó
+razonablemente bien, con algo más de rupturas en el log que en
+TradingView (atribuible a los límites de `max_bars_back` de Pine en
+fechas antiguas, no investigado más a fondo).
 
 ## Objetivos de investigación (no garantizados)
 
