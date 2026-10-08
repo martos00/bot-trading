@@ -1017,6 +1017,54 @@ bool HayPosicionAbierta()
    return false;
   }
 
+//--- Diagnóstico: ¿hubo un cambio de signo de (cierre - MA) en alguna de las últimas
+//    "n" transiciones entre velas consecutivas? closeBuf/maBuf deben venir indexados
+//    como serie (0 = vela más reciente) y tener al menos n+1 elementos cada uno.
+bool HuboCruceRecienteMA(const double &closeBuf[], const double &maBuf[], const int n)
+  {
+   int signoAnterior = 0;
+   for(int k = 0; k <= n; k++)
+     {
+      int signoActual = (closeBuf[k] > maBuf[k]) ? 1 : -1;
+      if(k > 0 && signoActual != signoAnterior)
+         return true;
+      signoAnterior = signoActual;
+     }
+   return false;
+  }
+
+//--- Diagnóstico: imprime, para la operación recién abierta (identificada por ticket),
+//    la estructura completa de su relación con la MA200 -- distancia absoluta, lado,
+//    pendiente, cuánto se ha movido la MA en 1/5/20 velas, y si hubo un cruce de
+//    cierre/MA en las últimas 5/10/20 velas. Sólo lee indicadores, no decide nada.
+void ImprimirDiagnosticoTendenciaExtendido(const ulong ticket, const string lado)
+  {
+   int velasNecesarias = 21; // shift 1 (última cerrada) .. shift 21 (20 velas atrás)
+   double maBuf[], closeBuf[];
+   ArraySetAsSeries(maBuf, true);
+   ArraySetAsSeries(closeBuf, true);
+   if(CopyBuffer(g_handleTendenciaMA, 0, 1, velasNecesarias, maBuf) < velasNecesarias)
+      return;
+   if(CopyClose(_Symbol, Temporalidad_Liquidez, 1, velasNecesarias, closeBuf) < velasNecesarias)
+      return;
+
+   double distanciaAbs   = MathAbs(closeBuf[0] - maBuf[0]);
+   string ladoPrecio     = (closeBuf[0] > maBuf[0]) ? "ENCIMA" : "DEBAJO";
+   double pendiente20    = (maBuf[0] - maBuf[20]) / 20.0;
+   double maDelta1       = maBuf[0] - maBuf[1];
+   double maDelta5       = maBuf[0] - maBuf[5];
+   double maDelta20      = maBuf[0] - maBuf[20];
+   bool   cruce5         = HuboCruceRecienteMA(closeBuf, maBuf, 5);
+   bool   cruce10        = HuboCruceRecienteMA(closeBuf, maBuf, 10);
+   bool   cruce20        = HuboCruceRecienteMA(closeBuf, maBuf, 20);
+
+   PrintFormat("[DIAG-TENDENCIA-EXT] ticket=%I64u lado=%s distAbsMA200=%.2f ladoPrecio=%s pendienteMA_20v=%.4f "
+               "maDelta1v=%.2f maDelta5v=%.2f maDelta20v=%.2f cruceUlt5=%s cruceUlt10=%s cruceUlt20=%s",
+               ticket, lado, distanciaAbs, ladoPrecio, pendiente20,
+               maDelta1, maDelta5, maDelta20,
+               cruce5 ? "SI" : "NO", cruce10 ? "SI" : "NO", cruce20 ? "SI" : "NO");
+  }
+
 //--- Diagnóstico: devuelve el ticket de la posición propia actualmente abierta (0 si no hay ninguna)
 ulong TicketPosicionPropiaActual()
   {
@@ -1149,6 +1197,7 @@ void EvaluarSenalDeVenta()
          ulong  ticketDiag = TicketPosicionPropiaActual();
          PrintFormat("[DIAG-TENDENCIA] ticket=%I64u lado=VENTA cierreMacro=%.2f MA200=%.2f distancia=%.2f favorable_tendencia=%s",
                      ticketDiag, cierreMacroDiag, maValorDiag, distanciaDiag, favorableTendenciaDiag ? "SI" : "NO");
+         ImprimirDiagnosticoTendenciaExtendido(ticketDiag, "VENTA");
         }
      }
   }
@@ -1233,6 +1282,7 @@ void EvaluarSenalDeCompra()
          ulong  ticketDiag = TicketPosicionPropiaActual();
          PrintFormat("[DIAG-TENDENCIA] ticket=%I64u lado=COMPRA cierreMacro=%.2f MA200=%.2f distancia=%.2f favorable_tendencia=%s",
                      ticketDiag, cierreMacroDiag, maValorDiag, distanciaDiag, favorableTendenciaDiag ? "SI" : "NO");
+         ImprimirDiagnosticoTendenciaExtendido(ticketDiag, "COMPRA");
         }
      }
   }
