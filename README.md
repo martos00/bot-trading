@@ -50,6 +50,15 @@ problema si se prefiere).
 > distancia a MA200) siguen siendo válidos como hechos sobre *esa
 > implementación concreta*, pero ya no pueden usarse para afirmar nada
 > sobre los indicadores originales de LuxAlgo/HoanGhetti.
+>
+> **Hipótesis 2 cerrada (octubre 2026):** ninguna de las cuatro
+> configuraciones probadas (aproximada/fiel, con/sin filtro de
+> tendencia) mostró ventaja — ver la sección **"Cierre de Hipótesis 2
+> (ambas variantes: aproximada y fiel)"** para la tabla completa de
+> resultados. Se pasa a una hipótesis de **continuación de tendencia**
+> (Tendencia H1 + Pullback + confirmación en M15, sólo a favor de
+> tendencia), en diseño — ver la sección **"Hipótesis 3: Tendencia
+> (H1) + Pullback + confirmación de continuación (M15)"**.
 
 ## Instalación
 
@@ -653,6 +662,84 @@ rupturas de RSI comprobadas a mano contra TradingView) que encajó
 razonablemente bien, con algo más de rupturas en el log que en
 TradingView (atribuible a los límites de `max_bars_back` de Pine en
 fechas antiguas, no investigado más a fondo).
+
+## Cierre de Hipótesis 2 (ambas variantes: aproximada y fiel)
+
+Ambas implementaciones de Oferta/Demanda + RSI Trendlines (`XAUUSD_RSI_Trendline_EA.mq5`
+y `XAUUSD_RSI_Trendline_Fiel_EA.mq5`) se archivan sin continuar a
+Validación/OOS. Resumen de todas las mediciones hechas en Train 2025:
+
+| Configuración | Operaciones | Resultado Train 2025 |
+|---|---|---|
+| Aproximada, ambos filtros activos | 7 | +1,28% |
+| Aproximada, sin filtro de tendencia | 81 | -27,33% (drawdown 28,40%) |
+| Fiel, con filtro de tendencia | 0 | no evaluable |
+| Fiel, sin filtro de tendencia | 167 | -35,36% |
+
+**Veredicto:** con el filtro de tendencia puesto, la estrategia apenas
+encuentra ocasión de operar; sin él, opera con frecuencia pero pierde
+dinero de forma consistente (no por mala suerte en un tramo concreto:
+las pérdidas llegan en rachas marcadas por disparos repetidos del kill
+switch y del circuito de pérdidas consecutivas). Ninguna de las cuatro
+configuraciones probadas muestra evidencia de ventaja. Esto demuestra
+que **estas implementaciones concretas** no superan una prueba inicial
+razonable — no se puede concluir que la idea de Oferta/Demanda + RSI
+Trendlines de LuxAlgo/HoanGhetti sea en sí misma mala, sólo que no se
+ha conseguido traducir a una regla de entrada rentable en MT5 con la
+gestión de posición de este repositorio.
+
+No se investiga más esta hipótesis (no se ajustan RSI, SL/TP ni
+parámetros de zona buscando que 2025 salga rentable — sería la misma
+búsqueda de parámetros que el proyecto evita). Se pasa a una familia de
+estrategias distinta.
+
+## Hipótesis 3: Tendencia (H1) + Pullback + confirmación de continuación (M15)
+
+**Estado: en diseño, pendiente de implementar.**
+
+Se abandona la dependencia de dos indicadores de reversión/momentum
+que, en las pruebas de Hipótesis 2, no demostraron ventaja. La nueva
+hipótesis es de **continuación de tendencia**, no de reversión:
+
+- **Tendencia principal:** determinada en H1 (estructura de precio +
+  media móvil), igual que el filtro de tendencia usado en Hipótesis 2
+  pero aquí como núcleo de la señal, no como overlay añadido después.
+- **Pullback:** retroceso dentro de esa tendencia sin invalidar la
+  estructura.
+- **Confirmación:** señal objetiva de reanudación del movimiento en
+  M15, sin anticiparse al pullback.
+- **Dirección de las operaciones:** **solo a favor de la tendencia
+  H1** — decisión explícita para no mezclar dos hipótesis distintas
+  (continuación vs reversión) en la misma medición inicial. Se podrá
+  explorar contra-tendencia más adelante como variante separada, nunca
+  como parte de la línea base.
+- **Objetivo de frecuencia** (de diseño, no demostrado): en torno a 2
+  operaciones/semana de media — un objetivo que orienta el diseño de
+  las reglas, no un mínimo que se fuerce ajustando las reglas después
+  de ver que no se alcanza.
+
+**Disciplina a seguir desde el principio** (acordada para evitar los
+problemas de Hipótesis 2):
+
+1. Reglas de entrada inequívocas, sin conceptos visuales que se
+   traduzcan de forma distinta al código.
+2. Verificar la ejecución real (señales, entradas/salidas, spread,
+   gestión de riesgo) antes de sacar conclusiones del backtest.
+3. Criterios de evaluación fijados antes de correr el backtest.
+4. Train 2025 / Validación H1 2026 / OOS jul-sep 2026 sin reutilizar
+   OOS para ajustar nada.
+5. Evaluar rentabilidad y riesgo juntos (profit neto, drawdown, nº de
+   operaciones, expectativa por operación, estabilidad temporal), no
+   sólo si Train sale en positivo.
+6. Revisar cómo afectan el kill switch y el circuito de pérdidas
+   consecutivas a la distribución de resultados (en Hipótesis 2
+   dispararon con mucha frecuencia y claramente dieron forma a las
+   rachas de pérdida).
+
+**Pendiente:** definir con precisión (antes de programar) qué media
+móvil y qué criterio de estructura determinan la tendencia en H1, y
+qué señal objetiva en M15 cuenta como "confirmación de continuación"
+del pullback.
 
 ## Objetivos de investigación (no garantizados)
 
