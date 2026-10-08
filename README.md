@@ -614,9 +614,38 @@ Se mantiene también la instrumentación añadida
 por si se retoma el filtro como variante más adelante, aunque ya no es
 necesaria para explicar el resultado de 0 operaciones.
 
-**Pendiente:** recompilar y volver a correr Train 2025 completo con
-`InpUsarFiltroTendencia = false` (valor por defecto ya actualizado) para
-obtener la primera medición real de la estrategia sin este filtro.
+**Resultado real del Train 2025 sin el filtro de tendencia (primera
+medición limpia de la estrategia tal cual la definen los dos
+indicadores):** **167 operaciones** (148 ventas + 19 compras),
+**balance final 16.159,03 € desde 25.000 € de partida (-35,36%)**. El
+log muestra el `KILL SWITCH` (pérdida diaria ≥4%) y el circuito de 3
+pérdidas consecutivas disparándose repetidamente durante casi todo el
+año — las pérdidas llegan en rachas, no aisladas. Con el filtro de
+tendencia desactivado, el filtro que ahora domina el bloqueo de
+entradas es el de **zona fresca** (86% de las coincidencias en venta y
+84% en compra se pierden por zona ya tocada), no la tendencia.
+
+Esto confirma, con una muestra mucho mayor, lo que ya apuntaba
+Hipótesis 2 (quitar el filtro de tendencia daba 81 operaciones pero
+-27,33% y 28,40% de drawdown): la señal de zona + ruptura de RSI, sin
+el filtro de tendencia que la bloquea casi por completo, **no tiene
+ventaja real — pierde dinero de forma consistente**, no de forma
+aislada o por mala suerte en un tramo concreto. Con el filtro puesto,
+la estrategia casi no encuentra ocasión de operar (0 operaciones en
+todo 2025); sin él, opera con frecuencia pero pierde. Ninguno de los
+dos extremos muestra evidencia de edge.
+
+**Conclusión sobre el criterio de descarte pre-registrado:** Net
+Profit > 0 en Train falla de forma contundente (-35,36%), así que no
+tiene sentido continuar a Validación H1 2026 ni a OOS jul-sep 2026 con
+esta hipótesis — el resultado ya es lo bastante claro en Train. Queda
+pendiente decidir si se abandona definitivamente la idea de
+Oferta/Demanda + RSI Trendlines (en cualquiera de sus dos variantes,
+aproximada o fiel) y se pasa a explorar una hipótesis de entrada
+distinta del menú original (tendencia+pullback, breakout+retest,
+momentum tras expansión de volatilidad, reversión a la media,
+apertura/sesión+expansión, estructura de volatilidad+continuación,
+enfoque cuantitativo puro).
 
 Todavía no se ha completado la verificación manual de 10-20 señales
 (paso 2) con rigor total — se hizo una verificación más ligera (3
