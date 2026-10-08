@@ -104,17 +104,24 @@ SZona          g_zonaSupply;
 SZona          g_zonaDemand;
 
 // --- Estado de las líneas de tendencia del RSI ---
+// Todo el anclaje se guarda en tiempo absoluto (datetime), no en índices de
+// buffer: el buffer se vuelve a copiar en cada llamada con shift=1 como
+// referencia, así que la posición de una MISMA vela dentro del buffer
+// decrece en 1 en cada vela nueva aunque la vela no cambie -- si se ancla
+// con índices de buffer, tanto la detección de "¿cambió la línea?" como la
+// extrapolación de su valor quedan mal en cuanto pasa más de una vela sin
+// un nuevo pivote aceptado.
 bool           g_lineaPicosValida  = false;   // Línea sobre picos (máximos locales) del RSI
-double         g_picosPendiente    = 0.0;
-double         g_picosValorBase    = 0.0;
-int            g_picosBarraBase    = 0;
-int            g_picosUltimoIdxUsado = -1;    // índice (en el buffer) del pivote más reciente ya incorporado a la línea activa
+double         g_picosPendiente    = 0.0;     // pendiente en puntos de RSI por vela (invariante en el tiempo)
+double         g_picosValorBase    = 0.0;     // valor de RSI en el pivote-ancla (el más antiguo del par)
+datetime       g_picosAnchorTime   = 0;       // hora de la vela del pivote-ancla
+datetime       g_picosUltimoTiempoUsado = 0;  // hora del pivote más reciente ya incorporado a la línea activa
 
 bool           g_lineaVallesValida = false;   // Línea sobre valles (mínimos locales) del RSI
 double         g_vallesPendiente   = 0.0;
 double         g_vallesValorBase   = 0.0;
-int            g_vallesBarraBase   = 0;
-int            g_vallesUltimoIdxUsado = -1;
+datetime       g_vallesAnchorTime  = 0;
+datetime       g_vallesUltimoTiempoUsado = 0;
 
 // --- Señales de ruptura (breakout) del RSI, con "armado" temporal ---
 bool           g_breakoutBajistaArmado = false;
@@ -548,17 +555,18 @@ void ActualizarRSITrendlinesYBreakouts()
      {
       g_picosPendiente = (val2p - val1p) / (double)(idx2p - idx1p);
       g_picosValorBase = val1p;
-      g_picosBarraBase = idx1p;
-      if(!g_lineaPicosValida || idx2p != g_picosUltimoIdxUsado)
+      g_picosAnchorTime = iTime(_Symbol, InpTimeframe, total - idx1p);
+      datetime tiempoPivote2p = iTime(_Symbol, InpTimeframe, total - idx2p);
+      if(!g_lineaPicosValida || tiempoPivote2p != g_picosUltimoTiempoUsado)
         {
          g_breakoutBajistaArmado = false; // la línea activa cambió: resetea el "hasCrossed"
          if(InpLogVerificacionManual)
             PrintFormat("[DIAG-VERIF-PIVOTE] tipo=PICO vela1=%s rsi1=%.2f vela2=%s rsi2=%.2f",
                         TimeToString(iTime(_Symbol, InpTimeframe, total - idx1p), TIME_DATE|TIME_MINUTES), val1p,
-                        TimeToString(iTime(_Symbol, InpTimeframe, total - idx2p), TIME_DATE|TIME_MINUTES), val2p);
+                        TimeToString(tiempoPivote2p, TIME_DATE|TIME_MINUTES), val2p);
         }
       g_lineaPicosValida = true;
-      g_picosUltimoIdxUsado = idx2p;
+      g_picosUltimoTiempoUsado = tiempoPivote2p;
      }
 
 // --- Línea de tendencia sobre VALLES (para detectar breakout alcista / compra) ---
@@ -572,28 +580,34 @@ void ActualizarRSITrendlinesYBreakouts()
      {
       g_vallesPendiente = (val2v - val1v) / (double)(idx2v - idx1v);
       g_vallesValorBase = val1v;
-      g_vallesBarraBase = idx1v;
-      if(!g_lineaVallesValida || idx2v != g_vallesUltimoIdxUsado)
+      g_vallesAnchorTime = iTime(_Symbol, InpTimeframe, total - idx1v);
+      datetime tiempoPivote2v = iTime(_Symbol, InpTimeframe, total - idx2v);
+      if(!g_lineaVallesValida || tiempoPivote2v != g_vallesUltimoTiempoUsado)
         {
          g_breakoutAlcistaArmado = false; // la línea activa cambió: resetea el "hasCrossed"
          if(InpLogVerificacionManual)
             PrintFormat("[DIAG-VERIF-PIVOTE] tipo=VALLE vela1=%s rsi1=%.2f vela2=%s rsi2=%.2f",
                         TimeToString(iTime(_Symbol, InpTimeframe, total - idx1v), TIME_DATE|TIME_MINUTES), val1v,
-                        TimeToString(iTime(_Symbol, InpTimeframe, total - idx2v), TIME_DATE|TIME_MINUTES), val2v);
+                        TimeToString(tiempoPivote2v, TIME_DATE|TIME_MINUTES), val2v);
         }
       g_lineaVallesValida = true;
-      g_vallesUltimoIdxUsado = idx2v;
+      g_vallesUltimoTiempoUsado = tiempoPivote2v;
      }
 
-// Índice de la última vela cerrada (valor actual del RSI a comparar contra la línea)
+// Valor actual del RSI (última vela cerrada) y su hora, para extrapolar las
+// líneas activas por TIEMPO transcurrido desde su ancla, no por índice de
+// buffer (ver nota en la declaración de las variables globales de estado).
    int iActual = total - 1;
    double rsiActual = rsiBuffer[iActual];
+   datetime tiempoActual = iTime(_Symbol, InpTimeframe, 1);
+   double segundosVela = (double)PeriodSeconds(InpTimeframe);
 
 // --- Comprobar ruptura BAJISTA sobre la línea de picos: RSI por debajo de la
 //     línea en al menos InpRSIBreakoutMargin puntos, y aún no "latcheada" ---
    if(g_lineaPicosValida && !g_breakoutBajistaArmado)
      {
-      double lineaActual = g_picosValorBase + g_picosPendiente * (iActual - g_picosBarraBase);
+      double velasDesdeAncla = (double)(tiempoActual - g_picosAnchorTime) / segundosVela;
+      double lineaActual = g_picosValorBase + g_picosPendiente * velasDesdeAncla;
       if(rsiActual < lineaActual - InpRSIBreakoutMargin)
         {
          g_breakoutBajistaArmado = true;
@@ -608,7 +622,8 @@ void ActualizarRSITrendlinesYBreakouts()
 // --- Comprobar ruptura ALCISTA sobre la línea de valles ---
    if(g_lineaVallesValida && !g_breakoutAlcistaArmado)
      {
-      double lineaActual = g_vallesValorBase + g_vallesPendiente * (iActual - g_vallesBarraBase);
+      double velasDesdeAncla = (double)(tiempoActual - g_vallesAnchorTime) / segundosVela;
+      double lineaActual = g_vallesValorBase + g_vallesPendiente * velasDesdeAncla;
       if(rsiActual > lineaActual + InpRSIBreakoutMargin)
         {
          g_breakoutAlcistaArmado = true;
