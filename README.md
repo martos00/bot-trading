@@ -37,6 +37,19 @@ problema si se prefiere).
 > reemplaza o complementa la búsqueda de una nueva hipótesis de entrada.
 > Ver la sección **"Hipótesis 2: Oferta/Demanda + RSI Trendlines
 > (recuperada, pendiente de validar)"** más abajo.
+>
+> **Corrección importante (octubre 2026):** el diagnóstico forense de
+> Hipótesis 2 reveló que su lógica de señal era una aproximación propia
+> inspirada en dos indicadores de TradingView, no una réplica fiel de
+> ellos. Se ha creado `MQL5/Experts/XAUUSD_RSI_Trendline_Fiel_EA.mq5`
+> con una reconstrucción fiel de ambos indicadores ("Supply and Demand
+> Visible Range [LuxAlgo]" y "RSI Trendlines with Breakouts [HG]" de
+> HoanGhetti). Ver la sección **"Hipótesis 2 Fiel: reconstrucción exacta
+> de los indicadores de TradingView"** más abajo. Todos los resultados
+> previos de Hipótesis 2 (embudo de entrada, filtro de tendencia,
+> distancia a MA200) siguen siendo válidos como hechos sobre *esa
+> implementación concreta*, pero ya no pueden usarse para afirmar nada
+> sobre los indicadores originales de LuxAlgo/HoanGhetti.
 
 ## Instalación
 
@@ -467,6 +480,98 @@ lectura.
 instrumentación y usar el embudo resultante para decidir, con datos, si
 el problema es que la estrategia es demasiado restrictiva (y en qué
 punto exacto) o si la señal en sí apenas se da en la práctica.
+
+**Resultado de esta investigación (resumen, ver detalle completo en
+`XAUUSD_RSI_Trendline_Fiel_EA.mq5` más abajo):** la instrumentación
+descartó la hipótesis del ancho de zona (se tocan miles de veces al
+año) y mostró que el filtro de tendencia es imprescindible (quitarlo
+da 81 operaciones pero -27,33% y 28,40% de drawdown), mientras que la
+zona fresca apenas influye (quitarla sólo añade 2 operaciones). El
+análisis de las operaciones que sobreviven mostró que ocurren muy
+cerca de la MA200 (media 6,33$ en el Train original, frente a 64,26$
+en las descartadas), aunque sin relación clara con cruces recientes de
+la media. **En paralelo, al revisar el código fuente real de los
+indicadores de TradingView en los que se basa esta hipótesis, se
+descubrió que la implementación de este archivo es una aproximación
+propia, no una réplica fiel** — ver la siguiente sección.
+
+## Hipótesis 2 Fiel: reconstrucción exacta de los indicadores de TradingView
+
+Al pedir el código fuente (Pine Script) de los dos indicadores en los
+que se basa Hipótesis 2, se encontraron diferencias estructurales
+importantes respecto a la implementación de
+`XAUUSD_RSI_Trendline_EA.mq5`. Esta sección documenta esas diferencias
+y la reconstrucción fiel, en
+`MQL5/Experts/XAUUSD_RSI_Trendline_Fiel_EA.mq5` — un archivo hermano
+que **no sustituye** al anterior (que se conserva intacto como
+referencia de "nuestra propia aproximación"), sino que representa la
+misma hipótesis implementada fielmente a los indicadores originales.
+
+### Diferencias encontradas
+
+**"Supply and Demand Visible Range [LuxAlgo]"** (zonas de Oferta/Demanda):
+
+- El indicador real NO define la zona como "rango entre el extremo y el
+  cierre de una vela" — eso era una simplificación propia. Calcula un
+  **umbral de volumen acumulado**: divide el rango de precios en
+  `Resolution` niveles (por defecto 50) y usa datos **intrabar** (de una
+  temporalidad inferior) para acumular el volumen cuyo high/low cae en
+  cada nivel, hasta que el acumulado supera `Threshold %` (por defecto
+  10%) del volumen total.
+- El indicador real opera sobre el **rango visible del gráfico**
+  (`chart.left_visible_bar_time`/`right_visible_bar_time`), un concepto
+  interactivo/manual sin equivalente automático — se sustituye por una
+  ventana fija de `InpSDLookbackVelas` velas (300 por defecto), dejando
+  el cálculo de umbral de volumen en sí fiel al original.
+- Nota sobre el volumen: XAUUSD (como la mayoría de CFDs/Forex) no tiene
+  volumen real centralizado — se usa `tick_volume` como proxy, igual que
+  haría el feed del bróker del lado de TradingView para el mismo
+  símbolo. No es una debilidad de esta réplica en particular.
+
+**"RSI Trendlines with Breakouts [HG]"** (de HoanGhetti):
+
+- Pivotes **asimétricos**: el original usa siempre 1 barra a la
+  izquierda (fijo) y `Lookback Range` barras a la derecha (por defecto
+  4) — no un mismo valor configurable para ambos lados como en
+  Hipótesis 2 (que usaba 3/3 simétrico).
+- La línea de tendencia sólo se **redefine** cuando dos pivotes
+  consecutivos del mismo tipo mantienen la estructura esperada (valles
+  cada vez más altos / picos cada vez más bajos); si el pivote más
+  reciente rompe ese patrón, la línea activa no cambia y sigue
+  extrapolándose desde el último par válido. Hipótesis 2 conectaba
+  simplemente los dos pivotes más recientes, sin este filtro de
+  coherencia direccional.
+- La ruptura exige que el RSI supere la línea por un margen
+  (`RSI Difference`, por defecto 3 puntos) — no un cruce marginal
+  cualquiera como en Hipótesis 2 (margen cero).
+- No hay ventana de validez temporal: una vez armada, la ruptura
+  permanece válida hasta que la línea se redefine o una operación la
+  consume — Hipótesis 2 inventó una caducidad de `InpSignalValidityBars`
+  velas que no existe en el indicador original.
+
+### Qué se mantiene igual
+
+Toda la gestión de riesgo y posición (Kill Switch, filtro de spread,
+cierre de fin de semana, circuito de pérdidas consecutivas, breakeven,
+trailing stop, cierre parcial, filtro de sesión, filtro de tendencia
+macro, filtro de zona fresca, comprobación de margen) y toda la
+instrumentación de diagnóstico (embudo de entrada, estado de tendencia
+por operación, resultado real por operación) se mantienen exactamente
+iguales que en Hipótesis 2, sin tocar una sola línea.
+
+### Protocolo pendiente (en orden, sin optimizar todavía)
+
+1. **Compilar** `XAUUSD_RSI_Trendline_Fiel_EA.mq5` en MetaEditor.
+2. **Verificar visualmente** 10-20 señales: comparar fecha/hora de
+   zonas y rupturas de RSI generadas por el EA en el log contra el
+   mismo símbolo/rango de fechas en TradingView con los dos indicadores
+   originales cargados. Si no coinciden, seguir corrigiendo la
+   implementación antes de continuar.
+3. Sólo entonces, repetir el protocolo completo desde cero: Train 2025
+   → Validation H1 2026 → OOS jul-sep 2026, con los mismos criterios de
+   descarte pre-registrados que en Baseline 1.
+
+Todavía no se ha ejecutado ningún backtest de esta reconstrucción fiel.
 
 ## Objetivos de investigación (no garantizados)
 
