@@ -74,6 +74,9 @@ input bool   InpCerrarViernes       = true;        // Activar cierre obligatorio
 input int    InpFridayCloseHourNY   = 21;          // Hora de Nueva York para liquidar (21:00)
 input int    InpBrokerGMTOffsetHrs  = 2;           // Offset del servidor del bróker respecto a UTC (ajustar según bróker)
 
+input group "=== Diagnóstico: verificación manual contra TradingView ==="
+input bool   InpLogVerificacionManual = false;     // Imprime cada zona/pivote/ruptura con fecha y valor exactos (sólo para tramos cortos: genera mucho log)
+
 //======================================================================
 // VARIABLES GLOBALES
 //======================================================================
@@ -366,6 +369,15 @@ void ActualizarZonasOfertaDemanda()
    g_zonaDemand.huboEntrada = false;
    g_zonaDemand.tocada      = false;
 
+   if(InpLogVerificacionManual)
+      PrintFormat("[DIAG-VERIF-ZONA] velaMacro=%s Oferta[%.2f, %.2f] Demanda[%.2f, %.2f] (ventana %s-%s, max=%.2f min=%.2f)",
+                  TimeToString(iTime(_Symbol, Temporalidad_Liquidez, 1), TIME_DATE|TIME_MINUTES),
+                  g_zonaSupply.inferior, g_zonaSupply.superior,
+                  g_zonaDemand.inferior, g_zonaDemand.superior,
+                  TimeToString(horaInicioVentana, TIME_DATE|TIME_MINUTES),
+                  TimeToString(horaFinVentana, TIME_DATE|TIME_MINUTES),
+                  max, min);
+
    // --- Diagnóstico: registrar el ancho en $ de cada zona recién calculada,
    //     para poder sacar media/mediana al final del backtest (no afecta al trading) ---
    int nSupply = ArraySize(g_diagAnchosZonaSupply);
@@ -538,7 +550,13 @@ void ActualizarRSITrendlinesYBreakouts()
       g_picosValorBase = val1p;
       g_picosBarraBase = idx1p;
       if(!g_lineaPicosValida || idx2p != g_picosUltimoIdxUsado)
+        {
          g_breakoutBajistaArmado = false; // la línea activa cambió: resetea el "hasCrossed"
+         if(InpLogVerificacionManual)
+            PrintFormat("[DIAG-VERIF-PIVOTE] tipo=PICO vela1=%s rsi1=%.2f vela2=%s rsi2=%.2f",
+                        TimeToString(iTime(_Symbol, InpTimeframe, total - idx1p), TIME_DATE|TIME_MINUTES), val1p,
+                        TimeToString(iTime(_Symbol, InpTimeframe, total - idx2p), TIME_DATE|TIME_MINUTES), val2p);
+        }
       g_lineaPicosValida = true;
       g_picosUltimoIdxUsado = idx2p;
      }
@@ -556,7 +574,13 @@ void ActualizarRSITrendlinesYBreakouts()
       g_vallesValorBase = val1v;
       g_vallesBarraBase = idx1v;
       if(!g_lineaVallesValida || idx2v != g_vallesUltimoIdxUsado)
+        {
          g_breakoutAlcistaArmado = false; // la línea activa cambió: resetea el "hasCrossed"
+         if(InpLogVerificacionManual)
+            PrintFormat("[DIAG-VERIF-PIVOTE] tipo=VALLE vela1=%s rsi1=%.2f vela2=%s rsi2=%.2f",
+                        TimeToString(iTime(_Symbol, InpTimeframe, total - idx1v), TIME_DATE|TIME_MINUTES), val1v,
+                        TimeToString(iTime(_Symbol, InpTimeframe, total - idx2v), TIME_DATE|TIME_MINUTES), val2v);
+        }
       g_lineaVallesValida = true;
       g_vallesUltimoIdxUsado = idx2v;
      }
@@ -575,6 +599,9 @@ void ActualizarRSITrendlinesYBreakouts()
          g_breakoutBajistaArmado = true;
          g_breakoutBajistaTime   = TimeCurrent();
          g_diagBreakoutBajistaDetectado++; // diagnóstico: no afecta al trading
+         if(InpLogVerificacionManual)
+            PrintFormat("[DIAG-VERIF-RUPTURA] tipo=BAJISTA vela=%s rsi=%.2f linea=%.2f margen=%.2f",
+                        TimeToString(iTime(_Symbol, InpTimeframe, 1), TIME_DATE|TIME_MINUTES), rsiActual, lineaActual, InpRSIBreakoutMargin);
         }
      }
 
@@ -587,6 +614,9 @@ void ActualizarRSITrendlinesYBreakouts()
          g_breakoutAlcistaArmado = true;
          g_breakoutAlcistaTime   = TimeCurrent();
          g_diagBreakoutAlcistaDetectado++; // diagnóstico: no afecta al trading
+         if(InpLogVerificacionManual)
+            PrintFormat("[DIAG-VERIF-RUPTURA] tipo=ALCISTA vela=%s rsi=%.2f linea=%.2f margen=%.2f",
+                        TimeToString(iTime(_Symbol, InpTimeframe, 1), TIME_DATE|TIME_MINUTES), rsiActual, lineaActual, InpRSIBreakoutMargin);
         }
      }
   }
