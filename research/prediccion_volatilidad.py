@@ -82,9 +82,12 @@ def preparar_datos(df, categoria_hueco):
     log_ret = np.log(df['Close'] / df['Close'].shift(1)).values
     abs_ret = np.abs(log_ret)
     es_salto = (categoria_hueco != 'intrasesion').values
+    cat_hueco_arr = categoria_hueco.values
     hora = df['TimestampServidor'].dt.hour.values
+    dow = df['TimestampServidor'].dt.dayofweek.values  # 0=lunes .. 6=domingo
 
     # EWMA causal de |log-retorno|, lambda fijo, recursion pura hacia atras
+    # -- FORMULA, SIN CAMBIOS respecto a la version ya auditada --
     ewma = np.full(n, np.nan)
     primer_valido = np.nanargmax(~np.isnan(abs_ret))
     ewma[primer_valido] = abs_ret[primer_valido]
@@ -92,24 +95,59 @@ def preparar_datos(df, categoria_hueco):
         prev = ewma[i - 1] if not np.isnan(ewma[i - 1]) else abs_ret[i]
         ewma[i] = LAMBDA_EWMA * prev + (1 - LAMBDA_EWMA) * abs_ret[i]
 
-    datos = dict(log_ret=log_ret, abs_ret=abs_ret, es_salto=es_salto, hora=hora, ewma=ewma)
+    # NUEVO (punto 3): referencia adicional fijada de antemano -- SMA de
+    # 20 |log-retorno| pasados, escalada por el horizonte. Ventana=20 NO
+    # se ajusta ni se compara con otras longitudes.
+    VENTANA_SMA = 20
+    sma20 = np.full(n, np.nan)
+    for i in range(VENTANA_SMA - 1, n):
+        sma20[i] = np.nanmean(abs_ret[i - VENTANA_SMA + 1:i + 1])
+
+    datos = dict(log_ret=log_ret, abs_ret=abs_ret, es_salto=es_salto, hora=hora,
+                 dow=dow, ewma=ewma, sma20=sma20, cat_hueco=cat_hueco_arr)
 
     for h in HORIZONTES:
         y = np.full(n, np.nan)
         salto_fwd = np.zeros(n, dtype=bool)
+        categoria_fwd = np.full(n, 'intrasesion', dtype=object)
         base = np.full(n, np.nan)
         salto_bwd = np.zeros(n, dtype=bool)
         for i in range(n):
             if i + h < n:
                 y[i] = np.nansum(abs_ret[i + 1:i + h + 1])
+                ventana_cat = cat_hueco_arr[i + 1:i + h + 1]
                 salto_fwd[i] = es_salto[i + 1:i + h + 1].any()
+                # categoria mas severa presente en la ventana futura, por
+                # prioridad: festivo > fin_de_semana > cierre_diario
+                if (ventana_cat == 'festivo_extendido').any():
+                    categoria_fwd[i] = 'festivo_extendido'
+                elif (ventana_cat == 'fin_de_semana').any():
+                    categoria_fwd[i] = 'fin_de_semana'
+                elif (ventana_cat == 'cierre_diario').any():
+                    categoria_fwd[i] = 'cierre_diario'
             if i - h + 1 >= 0:
                 base[i] = np.nansum(abs_ret[i - h + 1:i + 1])
                 salto_bwd[i] = es_salto[i - h + 1:i + 1].any()
         datos[f'Y_{h}'] = y
         datos[f'salto_fwd_{h}'] = salto_fwd
+        datos[f'categoria_fwd_{h}'] = categoria_fwd
         datos[f'base_{h}'] = base
         datos[f'salto_bwd_{h}'] = salto_bwd
+        datos[f'yhat_sma20_{h}'] = h * sma20
+        # NUEVO (punto 5): "¿se podia anticipar un cierre/fin de semana en
+        # la ventana futura usando SOLO calendario (dia+hora de t), sin
+        # conocer el salto real?" -- cierre diario tipico ~22:45-23:45,
+        # cierre de fin de semana viernes tarde. Regla simple, causal,
+        # fijada ahora, NO ajustada para maximizar aciertos.
+        anticipable = np.zeros(n, dtype=bool)
+        for i in range(n):
+            if i + h >= n:
+                continue
+            d, hh = dow[i], hora[i]
+            cerca_cierre_diario = hh >= 21  # ultimas ~3h antes del cierre tipico
+            cerca_cierre_finde = (d == 4 and hh >= 18)  # viernes tarde
+            anticipable[i] = cerca_cierre_diario or cerca_cierre_finde
+        datos[f'anticipable_{h}'] = anticipable
 
     return datos
 
@@ -130,6 +168,15 @@ def verificar_causalidad_targets(df, datos):
             assert np.isclose(base_manual, datos[f'base_{h}'][i], equal_nan=True), \
                 f"ERROR GRAVE: base_{h} no coincide en idx {i}"
     print(f"[OK] Y_h y base_h verificados manualmente en 15 indices aleatorios x {len(HORIZONTES)} horizontes")
+
+    # Verificacion de SMA20 (punto 3): ventana fija de 20, solo pasado
+    for i in muestra:
+        if i < 19:
+            continue
+        sma_manual = np.mean(abs_ret[i - 19:i + 1])
+        assert np.isclose(sma_manual, datos['sma20'][i], equal_nan=True), \
+            f"ERROR GRAVE: sma20 no coincide en idx {i}"
+    print("[OK] SMA20 verificado manualmente en los mismos 15 indices (ventana [i-19, i], solo pasado)")
 
 
 # ----------------------------------------------------------------------------
@@ -211,12 +258,16 @@ def ejecutar_walk_forward(df, datos, categoria_hueco):
 
             yhat_ingenuo = base
             yhat_ewma = h * ewma_bloque
+            yhat_sma20 = datos[f'yhat_sma20_{h}'][ini:fin]
+            categoria_fwd = datos[f'categoria_fwd_{h}'][ini:fin]
+            anticipable = datos[f'anticipable_{h}'][ini:fin]
 
             resultados.append(pd.DataFrame({
                 'idx': np.arange(ini, fin), 'h': h, 'trimestre': str(trimestre_serie.iloc[ini]),
                 'anio': df['TimestampServidor'].iloc[ini:fin].dt.year.values,
                 'Y': y, 'salto_fwd': salto_fwd, 'salto_bwd': salto_bwd,
-                'yhat_ingenuo': yhat_ingenuo, 'yhat_ewma': yhat_ewma,
+                'categoria_fwd': categoria_fwd, 'anticipable': anticipable,
+                'yhat_ingenuo': yhat_ingenuo, 'yhat_ewma': yhat_ewma, 'yhat_sma20': yhat_sma20,
                 'yhat_hora': yhat_hora, 'yhat_combinado': yhat_comb,
                 'vol_reciente': base,
             }))
@@ -229,9 +280,68 @@ def ejecutar_walk_forward(df, datos, categoria_hueco):
 # ----------------------------------------------------------------------------
 # Metricas: error, calibracion, incertidumbre, estabilidad
 # ----------------------------------------------------------------------------
-MODELOS = ['yhat_ingenuo', 'yhat_ewma', 'yhat_hora', 'yhat_combinado']
+MODELOS = ['yhat_ingenuo', 'yhat_ewma', 'yhat_sma20', 'yhat_hora', 'yhat_combinado']
 NOMBRES = {'yhat_ingenuo': 'Ingenuo (persistencia)', 'yhat_ewma': f'EWMA(lambda={LAMBDA_EWMA})',
+           'yhat_sma20': 'SMA20 (media movil 20, fija)',
            'yhat_hora': 'Solo-hora', 'yhat_combinado': 'Combinado (persistencia x estacionalidad)'}
+
+
+def comparacion_pareada(res, modelo_a, modelo_b, nombre_corte):
+    """Diferencia de error absoluto entre dos modelos especificos (no contra
+    el ingenuo), con IC por bootstrap de bloques -- respeta dependencia
+    temporal, no asume observaciones independientes."""
+    sub = res.dropna(subset=[modelo_a, modelo_b, 'Y'])
+    if len(sub) < 50:
+        print(f"    {nombre_corte}: datos insuficientes")
+        return
+    err_a = (sub[modelo_a] - sub['Y']).abs()
+    err_b = (sub[modelo_b] - sub['Y']).abs()
+    d = (err_a - err_b).values  # negativo = A mejor que B
+    ic10 = bootstrap_bloques_ic(d, 10)
+    ic20 = bootstrap_bloques_ic(d, 20)
+    print(f"    {nombre_corte}: n={len(sub)}  MAE_{modelo_a}={err_a.mean():.5f}  "
+          f"MAE_{modelo_b}={err_b.mean():.5f}  diff={d.mean():+.5f}  "
+          f"IC95%(bloque10)=[{ic10[0]:+.5f},{ic10[1]:+.5f}]  IC95%(bloque20)=[{ic20[0]:+.5f},{ic20[1]:+.5f}]")
+
+
+def auditoria_categorias_hueco(res, h):
+    """Punto 4: desglose fino por tipo de cierre (no solo booleano salto_fwd)."""
+    sub = res[res['h'] == h]
+    print(f"\n  -- Auditoria por categoria de hueco en la ventana futura (h={h}) --")
+    for cat in ['intrasesion', 'cierre_diario', 'fin_de_semana', 'festivo_extendido']:
+        g = sub[sub['categoria_fwd'] == cat]
+        if len(g) == 0:
+            print(f"    {cat:<18} n=0")
+            continue
+        mae_ing = (g['yhat_ingenuo'] - g['Y']).abs().mean()
+        mae_ewma = (g['yhat_ewma'] - g['Y']).abs().mean()
+        mae_sma = (g['yhat_sma20'] - g['Y']).abs().mean()
+        mae_comb = (g['yhat_combinado'] - g['Y']).abs().mean()
+        print(f"    {cat:<18} n={len(g):>6}  MAE_ingenuo={mae_ing:.5f}  MAE_ewma={mae_ewma:.5f}  "
+              f"MAE_sma20={mae_sma:.5f}  MAE_combinado={mae_comb:.5f}  "
+              f"(EWMA vs ingenuo: {mae_ewma/mae_ing:+.3f}x  Combinado vs ingenuo: {mae_comb/mae_ing:+.3f}x)")
+
+
+def verificar_anticipabilidad(res, h):
+    """Punto 5: ¿la categoria de hueco futura se podia anticipar con
+    informacion de calendario disponible ANTES de la prediccion (dia+hora
+    de t), sin conocer el salto real?"""
+    sub = res[res['h'] == h]
+    print(f"\n  -- Verificacion de anticipabilidad causal (h={h}) --")
+    tabla = pd.crosstab(sub['anticipable'], sub['categoria_fwd'])
+    print(tabla)
+    for cat in ['cierre_diario', 'fin_de_semana', 'festivo_extendido']:
+        if cat not in tabla.columns:
+            continue
+        total_cat = tabla[cat].sum()
+        anticipado = tabla.loc[True, cat] if True in tabla.index else 0
+        pct = anticipado / total_cat * 100 if total_cat > 0 else float('nan')
+        print(f"    {cat}: {anticipado}/{total_cat} ({pct:.1f}%) anticipables solo con calendario (dia+hora)")
+    print("    NOTA: 'festivo_extendido' no sigue un patron fijo de dia de la semana (depende del "
+          "calendario de festivos reales), por lo que una regla de calendario simple como esta NO "
+          "puede anticiparlo de forma fiable sin incorporar un calendario de festivos explicito -- "
+          "cualquier eleccion de modelo condicionada a 'viene un festivo' NO seria causalmente valida "
+          "hoy con la informacion que usa este script.")
 
 
 def resumen_modelos(res, nombre_corte):
@@ -317,6 +427,16 @@ def main(path):
         print("\n  -- Calibracion (deciles de prediccion) --")
         for m in MODELOS:
             calibracion(sub, m, h)
+
+        auditoria_categorias_hueco(res, h)
+        verificar_anticipabilidad(res, h)
+
+        print(f"\n  -- EWMA vs SMA20 (comparacion directa, punto 6) -- h={h} --")
+        comparacion_pareada(sub, 'yhat_ewma', 'yhat_sma20', f"TODAS h={h}")
+        for anio, g in sub.groupby('anio'):
+            comparacion_pareada(g, 'yhat_ewma', 'yhat_sma20', f"Año {anio} h={h}")
+        comparacion_pareada(sub[~sub['salto_fwd']], 'yhat_ewma', 'yhat_sma20', f"  Ventana SIN salto h={h}")
+        comparacion_pareada(sub[sub['salto_fwd']], 'yhat_ewma', 'yhat_sma20', f"  Ventana CON salto h={h}")
 
     print("\n\n### NOTA METODOLOGICA FINAL ###")
     print("2023-2026 es historico de investigacion ya usado en Hipotesis A, B y los Bloques 1-5; "
