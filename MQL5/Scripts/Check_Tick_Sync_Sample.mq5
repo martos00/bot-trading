@@ -69,7 +69,12 @@ void OnStart()
                continue;
 
             MqlTick ticks[];
-            int n = CopyTicksRange(simbolo, inicioVentana, finVentana, COPY_TICKS_ALL, ticks);
+            // CopyTicksRange(symbol, ticks[], flags, from_msc, to_msc) -- el orden de
+            // parametros es simbolo, ARRAY, flags, desde, hasta; y desde/hasta son
+            // MILISEGUNDOS desde epoch, no datetime en segundos (bug corregido).
+            ulong desde_msc = (ulong)inicioVentana * 1000;
+            ulong hasta_msc = (ulong)finVentana * 1000;
+            int n = CopyTicksRange(simbolo, ticks, COPY_TICKS_ALL, desde_msc, hasta_msc);
             totalVentanas++;
 
             if(n <= 0)
