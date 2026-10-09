@@ -146,6 +146,7 @@ def main(ruta_oro, rutas_pares, ruta_tick_sync=None):
     if ruta_tick_sync:
         print("\n\n### Muestra de sincronizacion a nivel de tick ###")
         ts = pd.read_csv(ruta_tick_sync, sep=';')
+        ts['SinDatos'] = ts['SinDatos'].fillna('')  # CSV vacio -> NaN al leer, no ''; sin esto el filtro fallaba
         sin_datos = ts[ts['SinDatos'] != '']
         print(f"  Ventanas totales: {len(ts)}  Sin ticks disponibles: {len(sin_datos)} "
               f"({len(sin_datos)/len(ts)*100:.1f}%)")
