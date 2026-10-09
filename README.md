@@ -57,8 +57,11 @@ problema si se prefiere).
 > (ambas variantes: aproximada y fiel)"** para la tabla completa de
 > resultados. Se pasa a una hipótesis de **continuación de tendencia**
 > (Tendencia H1 + Pullback + confirmación en M15, sólo a favor de
-> tendencia), en diseño — ver la sección **"Hipótesis 3: Tendencia
-> (H1) + Pullback + confirmación de continuación (M15)"**.
+> tendencia), ya **implementada** en
+> `MQL5/Experts/XAUUSD_Trend_Pullback_EA.mq5` tras 4 rondas de revisión
+> de la especificación — pendiente de compilar y del primer Train
+> 2025. Ver la sección **"Hipótesis 3: Tendencia (H1) + Pullback +
+> confirmación de continuación (M15)"**.
 
 ## Instalación
 
@@ -695,7 +698,11 @@ estrategias distinta.
 
 ## Hipótesis 3: Tendencia (H1) + Pullback + confirmación de continuación (M15)
 
-**Estado: en diseño, pendiente de implementar.**
+**Estado: implementada en `MQL5/Experts/XAUUSD_Trend_Pullback_EA.mq5`,
+pendiente de compilar en MetaEditor y ejecutar el primer Train 2025.**
+Archivo independiente — no comparte código con ningún otro EA del
+repositorio (toda la infraestructura de riesgo/ejecución se copió, no
+se importó ni se modificó ninguno de los otros archivos).
 
 Se abandona la dependencia de dos indicadores de reversión/momentum
 que, en las pruebas de Hipótesis 2, no demostraron ventaja. La nueva
@@ -736,10 +743,68 @@ problemas de Hipótesis 2):
    dispararon con mucha frecuencia y claramente dieron forma a las
    rachas de pérdida).
 
-**Pendiente:** definir con precisión (antes de programar) qué media
-móvil y qué criterio de estructura determinan la tendencia en H1, y
-qué señal objetiva en M15 cuenta como "confirmación de continuación"
-del pullback.
+### Especificación final (tras 4 rondas de revisión)
+
+- **Tendencia H1:** EMA200 + estructura (últimos 2 swing highs/lows
+  confirmados crecientes/decrecientes, swings 3/3). Idéntico patrón al
+  "régimen H4" de Baseline 1, retimetrizado a H1.
+- **Secuencia de pivotes M15** (swings 2/2), compra: `Lo` (origen) →
+  `HiImp` (impulso, ≥1,0×ATR(14) M15) → `LoPb` (retroceso, por encima
+  de `Lo`) → `HiPb` (extremo relevante, máximo decreciente por debajo
+  de `HiImp`) → cierre M15 > `HiPb`. Venta: secuencia espejo exacta.
+  Cada pivote se re-ancla al candidato confirmado más reciente
+  disponible en cada vela (evita quedarse enganchado al primer
+  candidato si aparece uno mejor).
+- **Cancelación:** cambio de régimen H1, cierre que rompe el nivel de
+  origen, o caducidad de 48 velas M15 **contadas desde la confirmación
+  del extremo relevante** (no desde su pivote ni desde el impulso).
+- **Entrada:** intento único al confirmarse la ruptura — si se bloquea
+  por spread, riesgo, distancia al SL/TP, margen o rechazo del
+  servidor, la configuración se consume (no se reintenta en velas
+  posteriores a un precio distinto).
+- **SL:** extremo del propio retroceso (`LoPb`/`HiPb`) ∓ `max(spread
+  actual, 0,1×ATR(14) M15)`. **TP:** RR=1,5 fijo. **Riesgo:** 0,5%,
+  con redondeo de volumen **sólo hacia abajo** — si el volumen mínimo
+  del bróker ya excede el riesgo autorizado, se rechaza la operación
+  (nunca se sube el riesgo para poder ejecutar la señal).
+- **Registro:** CSV con timestamps de pivote y de confirmación por
+  separado para cada swing, velas entre impulso y ruptura, Bid/Ask
+  antes del envío, precio solicitado vs. precio real de ejecución
+  confirmado por MT5, riesgo estimado antes de ejecutar vs. riesgo real
+  recalculado con el precio de ejecución, y el motivo exacto de
+  cualquier intento rechazado.
+- **Sin filtros nuevos:** no se añadió RSI, MACD, ATR como filtro de
+  entrada, ni filtro horario — sólo la secuencia de tendencia+pullback.
+
+### Protocolo de evaluación
+
+Entrenamiento: 2025 completo. Validación: enero-junio 2026.
+**Julio-septiembre de 2026 se trata como exploratorio, no como OOS
+independiente** — ese tramo ya se miró en el cierre de Baseline 1 y en
+la configuración por defecto de Hipótesis 2 aproximada, así que no es
+una prueba intacta para esta hipótesis. Queda pendiente reservar un
+tramo posterior aún no utilizado por ninguna hipótesis anterior como
+evaluación fuera de muestra real — hay que comprobar en el terminal
+MT5, en el momento de ejecutar cada test, hasta qué fecha llega el
+histórico disponible (el Journal muestra las líneas `history
+synchronized from ... to ...` / `ticks synchronized from ... to ...`).
+En corridas anteriores de este repositorio, los ticks reales del
+bróker demo empezaban el 2025-05-27 (antes de eso, Train 2025
+enero-mayo se genera sintéticamente a partir de velas OHLC) — hay que
+reconfirmar ambos límites antes de interpretar cualquier resultado,
+porque el histórico del bróker demo puede haberse ampliado desde
+entonces.
+
+### Pendiente antes de confiar en cualquier resultado
+
+1. Compilar en MetaEditor y corregir cualquier error (no se ha podido
+   compilar desde este entorno).
+2. Verificar manualmente contra el gráfico (M15 + H1) al menos un
+   puñado de configuraciones de cada tipo: compra válida, venta
+   válida, y una cancelada por invalidación de estructura.
+3. Sólo entonces, Train 2025 → Validación H1 2026 → jul-sep 2026
+   (exploratorio) → tramo futuro reservado, con los mismos criterios de
+   descarte pre-registrados que en Baseline 1 e Hipótesis 2.
 
 ## Objetivos de investigación (no garantizados)
 
