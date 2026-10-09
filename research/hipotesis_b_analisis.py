@@ -366,6 +366,13 @@ def aplicar_escenarios_coste(df_retornos, prefijo='retorno_precio_'):
             col_bruto = f'{prefijo}{k}'
             if col_bruto in df_retornos.columns:
                 df_retornos[f'neto_{nombre}_{k}'] = df_retornos[col_bruto] - coste
+                if nombre != 'bruto' and 'atr' in df_retornos.columns:
+                    # neto normalizado por ATR: mismo coste en $ dividido por el ATR
+                    # de cada señal -- permite comparar el coste neto entre 2023 y
+                    # 2026 sin que el cambio de precio/volatilidad del oro distorsione.
+                    df_retornos[f'neto_atr_{nombre}_{k}'] = (
+                        df_retornos[col_bruto] - coste
+                    ) / df_retornos['atr']
     return df_retornos
 
 
@@ -390,11 +397,18 @@ def resumen(nombre, sub, control_a=None, control_b=None):
                 continue
             coste = ESCENARIOS_COSTE[nombre_esc]
             colneto = f'neto_{nombre_esc}_{k}'
+            colnetoatr = f'neto_atr_{nombre_esc}_{k}'
             if colneto in sub.columns:
                 valsneto = sub[colneto].dropna()
                 pos_neto = (valsneto > 0).mean() * 100
+                extra_atr = ""
+                if colnetoatr in sub.columns:
+                    valsnetoatr = sub[colnetoatr].dropna()
+                    if len(valsnetoatr):
+                        extra_atr = (f"  |  neto_ATR: media={valsnetoatr.mean():6.3f}  "
+                                     f"mediana={valsnetoatr.median():6.3f}")
                 print(f"         neto[{nombre_esc:<28}]: %positivos={pos_neto:5.1f}%  "
-                      f"media={valsneto.mean():7.3f}  mediana={valsneto.median():7.3f}")
+                      f"media=${valsneto.mean():7.3f}  mediana=${valsneto.median():7.3f}{extra_atr}")
 
         for etiqueta, ctrl in (("CONTROL A (hora+ATR)", control_a), ("CONTROL B (hora+ATR+momentum)", control_b)):
             if ctrl is not None and len(ctrl) and colatr in ctrl.columns:
