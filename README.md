@@ -960,6 +960,77 @@ búsqueda de parámetros que el proyecto evita en cada hipótesis. Se
 pasa a investigar la Hipótesis B (reversión a la media tras
 sobreextensión) como señal candidata independiente.
 
+## Hipótesis B: reversión a la media tras sobreextensión
+
+**Estado: CERRADA — sin ventaja estadística demostrada, archivada sin
+modificar EMA20, ATR14, el umbral de 2 ATR ni los horizontes.**
+
+Script independiente `research/hipotesis_b_analisis.py` (no EA, no
+modifica ningún EA). Reutiliza el mismo histórico M15 verificado que
+Hipótesis A.
+
+**Señal:** sobreextensión alcista/bajista = cruce (no estado sostenido)
+de `desviacion(t) = (Close[t] - EMA20[t]) / ATR14[t]` por encima de
++2,0 o por debajo de −2,0, umbral fijo pre-registrado. **Dirección
+operada: contraria** a la extensión (hipótesis de reversión) —
+sobreextensión alcista → corto; bajista → largo. Entrada en
+`Open[t+1]`. Horizontes 4/8/16 velas, cooldown global de 16 velas.
+Métrica principal: retorno real de precio desde la entrada, nunca
+"acercamiento a la EMA" (la EMA también se mueve, así que esa
+distancia no es rentabilidad).
+
+**Controles:** dos, nunca elegidos a posteriori — Control A (misma
+hora de servidor + ATR comparable ±25%) y Control B (A + mismo signo
+de momentum causal, `Close[t]-Close[t-8]` normalizado por ATR). El
+régimen H1 se reportó de forma descriptiva, no como filtro de
+emparejamiento. Incertidumbre calculada con **bootstrap de bloques**
+(bloques de 10 señales consecutivas, 2.000 repeticiones) para no
+subestimar la dependencia temporal entre señales.
+
+**Cómputo:** 11.470 cruces crudos → **2.284 señales retenidas** tras
+cooldown (665 cortos + 542 largos en 2023-24; 604 cortos + 473 largos
+en 2025-26).
+
+| Período / grupo | n | Bruto ATR (media, IC95% bootstrap) | Neto ATR (conservador+slippage) |
+|---|---|---|---|
+| Robustez 2023-24, TODAS | 1.207 | +0,018 [−0,181, +0,208] | −0,184 |
+| Robustez 2023-24, cortos tras alcista | 665 | −0,017 [−0,274, +0,251] | −0,221 |
+| Robustez 2023-24, largos tras bajista | 542 | +0,062 [−0,225, +0,337] | −0,138 |
+| Exploratorio 2025-26, TODAS | 1.077 | **−0,235 [−0,415, −0,034]** | −0,310 |
+| Exploratorio 2025-26, cortos tras alcista | 604 | **−0,456 [−0,723, −0,216]** | −0,537 |
+| Exploratorio 2025-26, largos tras bajista | 473 | +0,048 [−0,217, +0,325] | −0,021 |
+
+**Por año (combinado, k=16, bruto ATR):** 2023 +0,030 → 2024 +0,007 →
+2025 −0,208 → 2026 −0,274. Tendencia de casi-cero a claramente
+negativo, lo contrario de lo esperable en una ventaja real y estable.
+
+**El único resultado estadísticamente distinguible de cero (IC95% sin
+cruzar el cero) es negativo**: cortos tras sobreextensión alcista en
+2025-2026, en los tres horizontes. Es explicable por ir contra la
+tendencia secular alcista del oro en ese tramo, no por un fallo
+específico de la lógica de reversión — el control B (momentum-matched)
+también pierde fuerte ahí. El lado "prometedor" (largos tras
+sobreextensión bajista) nunca tiene el IC95% fuera de cero en ningún
+periodo, y su neto ATR en 2025-26 es prácticamente nulo (−0,021); por
+instrucción explícita, no se trata como el hallazgo ganador solo
+porque su signo apunte en la dirección deseada.
+
+**Ventanas con hueco de sesión de por medio** (minoría: 102-118 de
+~1.100 señales por periodo) reportadas aparte, sin ocultar resultados
+desfavorables: si acaso, algo peores que las ventanas sin interrupción
+en el periodo exploratorio (k=8 IC95%=[−0,844, −0,077], también
+negativo y significativo).
+
+**Distinción explícita (propiedad estadística vs. ventaja explotable):**
+no hay aquí ni una propiedad estadística de mercado consistente entre
+periodos, ni mucho menos una ventaja que sobreviva a costes — ambas
+faltan. **Validación prospectiva: no disponible**, igual que en
+Hipótesis A.
+
+**Decisión:** se archiva sin ajustar EMA20, ATR14, el umbral de 2,0 ni
+los horizontes 4/8/16 buscando mejorar la cifra — sería la misma
+búsqueda de parámetros que el proyecto evita en cada hipótesis.
+
 ## Objetivos de investigación (no garantizados)
 
 CAGR ≥ 25%, Max Drawdown ≤ 20%, Profit Factor ≥ 1.5, Sharpe ≥ 1.0 sobre
