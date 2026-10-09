@@ -110,6 +110,57 @@ def main(ruta_oro, rutas_pares, ruta_tick_sync=None):
         print(f"  De esos, cuantos pierde USDSEK (no tiene vela): {perdido_por_sek} "
               f"({perdido_por_sek/max(len(comunes_sin_sek),1)*100:.2f}%)")
 
+    # --- Punto 1: muestra conjunta REAL (oro + 6 pares), no solo los 6 pares entre si ---
+    print("\n\n### Muestra conjunta real: XAUUSD + 6 pares simultaneamente disponibles ###")
+    comun_6pares = set.intersection(*[sets_tiempo[p] for p in PARES])
+    comun_con_oro = comun_6pares & sets_tiempo['XAUUSD']
+    print(f"  Timestamps con los 6 pares a la vez (sin exigir oro): {len(comun_6pares)}")
+    print(f"  Timestamps con los 6 pares Y XAUUSD a la vez (muestra REAL utilizable): {len(comun_con_oro)}")
+    print(f"  Diferencia (DXY calculable pero SIN vela de oro en ese instante): "
+          f"{len(comun_6pares) - len(comun_con_oro)} "
+          f"({(len(comun_6pares)-len(comun_con_oro))/len(comun_6pares)*100:.2f}%) "
+          f"-- este es el numero correcto de observaciones para cualquier estudio XAUUSD~DXY, "
+          f"no los {len(comun_6pares)} de la reconstruccion del indice en si.")
+
+    # --- Punto 2: cobertura durante horas negociables de XAUUSD, normal vs anomalo ---
+    print("\n\n### Cobertura de los 6 pares DURANTE las horas en que XAUUSD cotiza ###")
+    cat_oro = gaps_por_simbolo['XAUUSD']
+    oro_df = datos['XAUUSD']
+    oro_intrasesion_ts = set(oro_df.loc[cat_oro == 'intrasesion', 'TimestampServidor'])
+    print(f"  Velas de XAUUSD clasificadas como intrasesion (horas negociables normales): "
+          f"{len(oro_intrasesion_ts)} de {len(oro_df)}")
+
+    faltantes_por_par = {}
+    for p in PARES:
+        faltantes = sorted(oro_intrasesion_ts - sets_tiempo[p])
+        faltantes_por_par[p] = faltantes
+        print(f"  {p}: le faltan {len(faltantes)} de las velas negociables de XAUUSD "
+              f"({len(faltantes)/len(oro_intrasesion_ts)*100:.3f}%)")
+
+    # Clasificar los faltantes: ¿caen junto a un hueco YA catalogado de ese par (normal,
+    # diferencia de calendario) o aparecen sueltos en medio de velas normales (anomalo)?
+    print("\n  Clasificacion de esos faltantes (normal = cerca de un hueco ya catalogado del par "
+          "propio; anomalo = vela suelta sin hueco adyacente que lo explique):")
+    for p in PARES:
+        faltantes = faltantes_por_par[p]
+        if not faltantes:
+            print(f"    {p}: 0 faltantes")
+            continue
+        ts_par_ordenado = datos[p]['TimestampServidor']
+        anomalos = []
+        for t in faltantes:
+            # ¿hay una vela del par justo 15 min antes Y justo 15 min despues? si las dos
+            # existen con normalidad, la ausencia de t no se explica por un hueco de ese par
+            antes = t - timedelta(minutes=15)
+            despues = t + timedelta(minutes=15)
+            if antes in sets_tiempo[p] and despues in sets_tiempo[p]:
+                anomalos.append(t)
+        print(f"    {p}: {len(faltantes)} faltantes totales, {len(anomalos)} ANOMALOS "
+              f"(vela suelta rodeada de velas normales del propio par)")
+        if anomalos:
+            ejemplos = anomalos[:5]
+            print(f"      Ejemplos: {ejemplos}")
+
     # --- Reconstruccion causal del DXY: solo en timestamps con los 6 pares presentes ---
     print("\n\n### Reconstruccion del DXY sintetico (solo donde los 6 pares coinciden) ###")
     pares_presentes = [p for p in PARES if p in datos]
