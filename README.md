@@ -872,6 +872,94 @@ aporta algo una vez aislado de la señal de entrada.
    (exploratorio) → tramo futuro reservado, con los mismos criterios de
    descarte pre-registrados que en Baseline 1 e Hipótesis 2.
 
+## Hipótesis A: continuación tras ruptura de rango M15(20)
+
+**Estado: CERRADA — sin ventaja predictiva robusta demostrada, archivada
+sin optimizar N, horizontes ni añadir filtros.**
+
+Tras el cierre de Hipótesis 3, se cambió de enfoque por sugerencia
+explícita del revisor externo (ChatGPT, usado como segunda opinión):
+en vez de construir otro EA completo con varios filtros combinados,
+investigar primero si existe una ventaja estadística simple y medible
+en XAUUSD, **antes** de programar cualquier EA operativo. Esta es la
+primera de tres hipótesis de entrada candidatas; no se programó ningún
+EA, SL, TP ni condición de entrada — solo un script de investigación
+estadística independiente, `research/hipotesis_a_analisis.py`, que no
+modifica ni depende de ningún EA del repositorio.
+
+**Señal (100% objetiva, sin lookahead):** al cierre de cada vela M15
+`t`, ruptura alcista si `Close[t] > max(High[t-20..t-1])`, bajista si
+`Close[t] < min(Low[t-20..t-1])` (ventana de 20 velas que excluye la
+propia vela de ruptura). Entrada en `Open[t+1]` (nunca en `Close[t]`).
+Horizontes de medición fijos y pre-registrados: 4, 8 y 16 velas
+(`Close[t+4]`, `Close[t+8]`, `Close[t+16]`), reportados siempre los
+tres, nunca elegido el mejor a posteriori. **Cooldown global de 16
+velas compartido entre ambas direcciones** (no uno independiente por
+dirección) para evitar pseudo-replicación de la misma racha.
+
+**Histórico usado:** M15 de XAUUSD exportado directamente desde MT5 vía
+un script MQL5 independiente (`MQL5/Scripts/Export_XAUUSD_M15.mq5`, no
+es un EA), 2023-01-03 a 2026-10-09 (88.567 velas). Verificado: sin
+duplicados, orden estrictamente creciente, 100% alineado a bloques de
+15 min, 0 inconsistencias OHLC, sin precios inválidos.
+
+**Huecos de sesión** (clasificados por duración, umbral empírico, no
+regla exacta de calendario): de 992 huecos >15 min, 656 son cierres
+diarios (≤2h), 330 fines de semana (≤60h) y 6 festivos extendidos
+(>60h). De las 3.205 señales finalmente usadas, 391 (12,2%) tienen su
+ventana de medición (horizonte 16) interrumpida por alguno de estos
+huecos, y 822 (25,6%) tienen su propio *lookback* de 20 velas
+contaminado por un hueco — en esos casos, las "20 velas previas" no
+representan 5 horas de mercado continuo sino un tramo más largo que
+mezcla precio de antes y después de un cierre. No se descartaron estas
+señales, solo se marcaron, y se reportó el tiempo real transcurrido
+junto al nominal (p. ej. a horizonte 16, media real ≈310-320 min frente
+a 240 min nominales).
+
+**Resultados — cómputo:** 9.754 rupturas crudas (5.675 alcistas +
+4.079 bajistas) → 6.549 descartadas por el cooldown global → **3.205
+señales retenidas**.
+
+| Período | n (alcistas/bajistas) | Alcistas: diff. señal-control (ATR, k=16) | Bajistas: diff. señal-control (ATR, k=16) |
+|---|---|---|---|
+| Robustez histórica 2023-2024 (nunca tocado antes) | 934 / 758 | −0,015 (sin ventaja) | −0,058 (peor que control) |
+| Exploratorio ya quemado 2025-2026 (usado por H1-H3) | 861 / 652 | +0,197 (con ventaja aparente) | −0,109 (peor que control) |
+
+El control se emparejó por dirección + hora de servidor (sin exigir
+ruptura activa), con semilla fija y tope de reutilización por punto —
+**no se seleccionaron controles favorables a posteriori**. Limitación
+reconocida: la hora de emparejamiento usa hora de servidor, no UTC
+calibrada (el *offset* exacto y el cambio de horario de verano no se
+resolvieron antes de este análisis), y la ventana de ±30 días no aísla
+completamente una tendencia secular de varios años.
+
+**Interpretación:** no hay ventaja consistente entre periodos. En
+2023-2024 ninguna dirección supera a su control a 16 velas. En
+2025-2026 los alcistas sí superan a su control, pero ese periodo
+coincide con la subida histórica más fuerte del oro de toda la muestra
+— el propio control (asumiendo solo "largo aleatorio") ya capturaba
+más de la mitad del movimiento bruto observado en la señal, así que el
+"extra" atribuible específicamente a la ruptura es mucho más modesto
+que la cifra bruta sugiere. Los bajistas rinden peor que su control en
+**ambos** periodos — el hallazgo más repetido de todo el estudio es,
+de hecho, negativo. Neto de costes estimados (escenarios de spread
+0,15 / 0,30 + un escenario adicional de slippage conservador — nunca
+se asumió el campo `Spread=0` como coste real de ejecución), la
+mediana es negativa en la mayoría de combinaciones período×dirección.
+
+**Validación prospectiva: no disponible.** 2023-2026 son, como mucho,
+robustez histórica y exploración ya quemada — no se usan para afirmar
+que la señal está validada; una validación real requeriría datos
+posteriores a congelar esta metodología.
+
+**Decisión:** se archiva esta definición de ruptura M15(20) sin
+ventaja predictiva robusta demostrada. No se optimiza N, no se prueban
+otros horizontes buscando uno favorable, no se añaden filtros de
+tendencia/volatilidad para intentar rescatarla — eso sería la misma
+búsqueda de parámetros que el proyecto evita en cada hipótesis. Se
+pasa a investigar la Hipótesis B (reversión a la media tras
+sobreextensión) como señal candidata independiente.
+
 ## Objetivos de investigación (no garantizados)
 
 CAGR ≥ 25%, Max Drawdown ≤ 20%, Profit Factor ≥ 1.5, Sharpe ≥ 1.0 sobre
