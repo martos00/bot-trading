@@ -55,13 +55,21 @@ problema si se prefiere).
 > configuraciones probadas (aproximada/fiel, con/sin filtro de
 > tendencia) mostró ventaja — ver la sección **"Cierre de Hipótesis 2
 > (ambas variantes: aproximada y fiel)"** para la tabla completa de
-> resultados. Se pasa a una hipótesis de **continuación de tendencia**
+> resultados. Se pasó a una hipótesis de **continuación de tendencia**
 > (Tendencia H1 + Pullback + confirmación en M15, sólo a favor de
-> tendencia), ya **implementada** en
+> tendencia), implementada en
 > `MQL5/Experts/XAUUSD_Trend_Pullback_EA.mq5` tras 4 rondas de revisión
-> de la especificación — pendiente de compilar y del primer Train
-> 2025. Ver la sección **"Hipótesis 3: Tendencia (H1) + Pullback +
-> confirmación de continuación (M15)"**.
+> de la especificación.
+>
+> **Hipótesis 3 también cerrada (octubre 2026):** Train 2025 pasó los
+> criterios de descarte de forma poco convincente (Profit Factor 1,11,
+> 92% de las operaciones en el lado de compra durante uno de los años
+> más alcistas del oro en la historia); la Validación H1 2026, con
+> 100% de datos reales, fue claramente perdedora en ambas direcciones
+> (Profit Factor 0,46, Win Rate 25%). Se descarta como candidata a
+> operar con dinero real — ver la sección **"Hipótesis 3: Tendencia
+> (H1) + Pullback + confirmación de continuación (M15)"**, apartado
+> "Cierre: resultados reales y decisión".
 
 ## Instalación
 
@@ -698,11 +706,12 @@ estrategias distinta.
 
 ## Hipótesis 3: Tendencia (H1) + Pullback + confirmación de continuación (M15)
 
-**Estado: implementada en `MQL5/Experts/XAUUSD_Trend_Pullback_EA.mq5`,
-pendiente de compilar en MetaEditor y ejecutar el primer Train 2025.**
-Archivo independiente — no comparte código con ningún otro EA del
-repositorio (toda la infraestructura de riesgo/ejecución se copió, no
-se importó ni se modificó ninguno de los otros archivos).
+**Estado: CERRADA — no supera la Validación H1 2026, se descarta como
+candidata a operar con dinero real (ver "Cierre" más abajo).**
+Implementada en `MQL5/Experts/XAUUSD_Trend_Pullback_EA.mq5`, archivo
+independiente — no comparte código con ningún otro EA del repositorio
+(toda la infraestructura de riesgo/ejecución se copió, no se importó
+ni se modificó ninguno de los otros archivos).
 
 Se abandona la dependencia de dos indicadores de reversión/momentum
 que, en las pruebas de Hipótesis 2, no demostraron ventaja. La nueva
@@ -795,7 +804,64 @@ reconfirmar ambos límites antes de interpretar cualquier resultado,
 porque el histórico del bróker demo puede haberse ampliado desde
 entonces.
 
-### Pendiente antes de confiar en cualquier resultado
+### Cierre: resultados reales y decisión
+
+| Métrica | Train 2025 | Validación H1 2026 |
+|---|---|---|
+| Rentabilidad | +0,85% | **−4,49%** |
+| Beneficio neto | +211,37 $ | **−1.121,99 $** |
+| Profit Factor | 1,11 | **0,46** |
+| Operaciones | 26 | 24 |
+| Win rate | 42,31% | **25,00%** |
+| Drawdown equity | 2,28% | 4,86% |
+| Compras ganadoras | 11/24 (45,83%) | 4/13 |
+| Ventas ganadoras | 0/2 | 2/11 |
+| Calidad del histórico | 60% ticks reales | 100% ticks reales |
+
+Train 2025 superó formalmente los criterios de descarte (Net Profit >
+0, Max DD ≤ 20%), pero de forma poco convincente: Profit Factor 1,11
+con sólo 26 operaciones, Z-Score de MT5 del 25,86% (la secuencia de
+ganancias/pérdidas no se distingue de ser azar), y 24 de las 26
+operaciones fueron compras — 2025 fue uno de los años más alcistas de
+la historia del oro (+70%), así que Train casi no probó el lado de
+venta ni ningún régimen distinto de tendencia alcista fuerte.
+
+La Validación H1 2026 (con 100% de datos reales, sin el sesgo de ticks
+sintéticos de Train) lo desmontó: pérdida clara, Profit Factor muy por
+debajo de 1, y el fallo **no se concentra en un solo lado** — compras
+4/13 y ventas 2/11, ambas direcciones perdiendo. Esto descarta que el
+problema de Train fuera sólo "no hay datos de venta": con datos reales
+de venta en Validación, tampoco funcionó.
+
+Se encontró además, durante el análisis del CSV de Train, una
+operación (2025-07-21) con un lotaje de **6,01 lotes** — un SL
+anormalmente estrecho (el retroceso casi pegado al nivel de ruptura)
+hizo que la fórmula de riesgo% calculara un volumen desproporcionado
+para una cuenta de 25.000 $. No llegó a causar una pérdida fuera de lo
+normal en ese caso, pero es un riesgo técnico latente (gaps o
+slippage en un SL tan ajustado podrían costar mucho más del 0,5%
+previsto) que quedaría pendiente de corregir si se retomara esta
+lógica de entrada en el futuro.
+
+**Decisión: se descarta Hipótesis 3 como candidata a operar con
+dinero real.** No porque esté demostrado que la idea de
+tendencia+pullback sea mala en sí misma, sino porque la evidencia
+disponible —Train apenas positivo y poco representativo, Validación
+claramente perdedora en ambas direcciones, muestra todavía pequeña—
+no respalda seguir. No se ajustan EMA, ATR, swings ni RR para intentar
+recuperar el resultado de Validación (eso la convertiría en otro tramo
+de optimización), ni se sube el riesgo del 0,5% para amplificar un
+sistema sin ventaja demostrada.
+
+**Líneas de investigación para una hipótesis futura** (no para
+rescatar ésta): si las rupturas del pullback llegan demasiado tarde
+(ver las columnas de latencia del CSV: `VelasImpulsoARuptura` y la
+diferencia entre `PrecioRupturaCierre` y `PrecioRealEjecucion`), si el
+SL está mal dimensionado respecto a la volatilidad real (más allá del
+caso de 6,01 lotes ya detectado), y si el filtro de tendencia H1
+aporta algo una vez aislado de la señal de entrada.
+
+### Pendiente antes de confiar en cualquier resultado (histórico, ya resuelto)
 
 1. Compilar en MetaEditor y corregir cualquier error (no se ha podido
    compilar desde este entorno).
