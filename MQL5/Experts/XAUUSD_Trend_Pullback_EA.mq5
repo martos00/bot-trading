@@ -944,11 +944,20 @@ void IntentarEntradaUnica(SConfigPullback &cfg)
    trade.SetExpertMagicNumber(InpMagicNumber);
    trade.SetDeviationInPoints(InpMaxDeviationPoints);
 
+   // IMPORTANTE: en el Strategy Tester, OnTradeTransaction() se dispara de forma
+   // SÍNCRONA durante la propia llamada a trade.Buy()/Sell() -- puede llegar antes
+   // de que esta función recupere el control. Por eso g_hayLogPendiente se marca
+   // ANTES de enviar la orden (no después, como en una primera versión que dejó
+   // el CSV completamente vacío: OnTradeTransaction veía siempre g_hayLogPendiente
+   // en false y se salía sin capturar nada, para cualquier operación).
+   g_hayLogPendiente = true;
+
    bool enviado = esCompra ? trade.Buy(rv.volumen, _Symbol, 0.0, SL, TP, "TrendPullback_Compra")
                             : trade.Sell(rv.volumen, _Symbol, 0.0, SL, TP, "TrendPullback_Venta");
 
    if(!enviado)
      {
+      g_hayLogPendiente = false;
       string desc = StringFormat("ORDEN_RECHAZADA_SERVIDOR:%d:%s", trade.ResultRetcode(), trade.ResultRetcodeDescription());
       EscribirFilaLog(false, desc);
       ConsumirConfig(cfg);
@@ -959,7 +968,6 @@ void IntentarEntradaUnica(SConfigPullback &cfg)
    // OnTradeTransaction (DEAL_ENTRY_IN), que es la fuente autorizada del
    // precio y volumen REALMENTE ejecutados -- nunca se registra como
    // ejecutada una orden que MT5 no haya confirmado por esa vía.
-   g_hayLogPendiente = true;
    ConsumirConfig(cfg);
   }
 
