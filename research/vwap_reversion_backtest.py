@@ -189,23 +189,42 @@ def ejecutar_vwap_reversion(df, categoria_hueco, regimenes_confiables, point):
 
         resultado_precio, motivo_salida, idx_salida = None, None, None
         peor_flotante_r = 0.0
+        mejor_flotante_r = 0.0
         for k in range(idx_entrada, idx_cierre + 1):
             if categoria_hueco.iloc[k] != 'intrasesion' and k != idx_entrada:
                 break
             off_k = k - idx_apertura
             vwap_k = vwap[off_k]
             hi, lo = df['High'].iloc[k], df['Low'].iloc[k]
+            # CORRECCION Bid/Ask (auditoria): el OHLC exportado es Bid. Cerrar un
+            # LARGO es vender a Bid (el propio High/Low ya es el precio correcto
+            # para comprobar su SL/TP, sin ajuste). Cerrar un CORTO exige COMPRAR
+            # a Ask=Bid+spread -- el SL/TP de un corto debe compararse con el
+            # nivel equivalente en Bid, es decir sl-spread_vela / tp-spread_vela
+            # (usando el spread REAL de cada vela, no solo el de entrada). Antes
+            # se comparaba sl/tp directamente contra Bid, lo que retrasaba el
+            # disparo del SL y adelantaba el del TP en cortos -- un sesgo
+            # optimista, pequeño pero real, acotado por el spread de cada vela.
+            spread_vela = df['Spread'].iloc[k] * point
             if direccion == 'largo':
                 flotante_r_vela = (lo - precio_entrada) / riesgo
+                favorable_r_vela = (hi - precio_entrada) / riesgo
                 toca_sl = lo <= sl
                 toca_tp = hi >= vwap_k
             else:
+                sl_bid_equiv = sl - spread_vela
+                tp_bid_equiv = vwap_k - spread_vela
                 flotante_r_vela = (precio_entrada - hi) / riesgo
-                toca_sl = hi >= sl
-                toca_tp = lo <= vwap_k
+                favorable_r_vela = (precio_entrada - lo) / riesgo
+                toca_sl = hi >= sl_bid_equiv
+                toca_tp = lo <= tp_bid_equiv
             if toca_sl:
                 flotante_r_vela = max(flotante_r_vela, -1.0)
             peor_flotante_r = min(peor_flotante_r, flotante_r_vela)
+            if toca_tp:
+                favorable_r_vela = min(favorable_r_vela, (vwap_k - precio_entrada) / riesgo if direccion == 'largo'
+                                        else (precio_entrada - vwap_k) / riesgo)
+            mejor_flotante_r = max(mejor_flotante_r, favorable_r_vela)
             if toca_sl:  # empate SL+TP en la misma vela -> gana SL (conservador, fijo)
                 resultado_precio, motivo_salida, idx_salida = sl, 'SL', k
                 break
@@ -224,6 +243,7 @@ def ejecutar_vwap_reversion(df, categoria_hueco, regimenes_confiables, point):
             resultado_precio=resultado_precio, motivo_salida=motivo_salida,
             ret_bruto_puntos=ret_bruto_puntos, riesgo_puntos=riesgo,
             spread_entrada_precio=spread_entrada, peor_flotante_r=peor_flotante_r,
+            mejor_flotante_r=mejor_flotante_r,
         ))
 
     return pd.DataFrame(operaciones), descartes
@@ -264,6 +284,11 @@ def resumen_instrumento(nombre, ops):
     print(f"  Spread medio en el momento de entrada (puntos de indice): {ops['spread_entrada_precio'].mean():.3f}")
     print(f"  Spread medio como fraccion del riesgo (cuanto 'come' el spread de cada 1R): "
           f"{(ops['spread_entrada_precio'] / ops['riesgo_puntos']).mean() * 100:.1f}%")
+    print(f"  MFE (excursion favorable maxima, equity intra-operacion): media={ops['mejor_flotante_r'].mean():.3f}R  "
+          f"mediana={ops['mejor_flotante_r'].median():.3f}R  max={ops['mejor_flotante_r'].max():.3f}R")
+    for motivo, g in ops.groupby('motivo_salida'):
+        print(f"    MFE por motivo de salida -- {motivo:12s} n={len(g):4d}  "
+              f"media MFE={g['mejor_flotante_r'].mean():.3f}R  media MAE={g['peor_flotante_r'].mean():.3f}R")
 
 
 def main(rutas):
