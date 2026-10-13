@@ -193,6 +193,14 @@ def ejecutar_orb(df, categoria_hueco, regimenes_confiables, digitos, point):
                 flotante_r_vela = (precio_entrada - hi) / riesgo
                 toca_sl = hi >= sl
                 toca_tp = lo <= tp
+            # CORRECCION (auditoria): si esta misma vela dispara el SL, la posicion
+            # nunca estuvo realmente expuesta a un precio peor que el propio stop --
+            # el modelo de ejecucion ya asume cierre instantaneo en `sl`. Sin este
+            # tope, una vela con rango grande que atraviesa el SL de largo inflaba
+            # el MAE muy por debajo de -1R (ej. -9,26R en una vela de 54 puntos
+            # tras un rango de apertura degenerado de 0,13 puntos en USTEC).
+            if toca_sl:
+                flotante_r_vela = max(flotante_r_vela, -1.0)
             peor_flotante_r = min(peor_flotante_r, flotante_r_vela)
             if toca_sl:  # empate SL+TP en la misma vela -> gana SL (conservador, fijo)
                 resultado_precio, motivo_salida, idx_salida = sl, 'SL', k
