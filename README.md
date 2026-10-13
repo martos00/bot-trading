@@ -1406,6 +1406,106 @@ notable, pero la regla de salida (reversión al VWAP) es exigente y
 domina el resultado agregado negativo — una distinción útil para el
 futuro, no un motivo para reabrir ahora la investigación.
 
+### Auditoría profunda de VWAP Mean Reversion (verificación del z-score)
+
+El resultado de la referencia aleatoria era llamativo (z=+6,66/+5,18),
+así que antes de aceptarlo se verificó específicamente si la
+comparación era justa, se corrigió un bug de ejecución real detectado
+en la auditoría general, y se añadió MFE (excursión favorable máxima).
+Ver `research/auditoria_vwap_profunda.py`. No se modificó ninguna regla
+de la estrategia ni se probó ningún TP/filtro nuevo.
+
+**1. Cómo se construyó la referencia original:** para cada operación
+real, mismo día y mismo riesgo en puntos, vela de entrada
+**uniformemente aleatoria dentro de TODA la sesión** (9:30-16:00 ET),
+dirección aleatoria 50/50, misma regla de salida (reversión al VWAP de
+ese día) y mismo spread real de esa vela — 100 repeticiones, z =
+(media real − media de las repeticiones) / desviación de las
+repeticiones.
+
+**2. La comparación original NO era justa — confirmado y corregido:**
+el 95-96% de las señales reales de VWAP ocurren entre 9:30 y 10:30 ET
+(mediana=10:00h), mientras que un sorteo uniforme en 6,5 horas de
+sesión solo pondría ~15% de las entradas ahí por azar. Entrar pronto
+deja mucho más tiempo para revertir al VWAP antes del cierre forzoso
+que entrar a media tarde, así que la referencia original estaba sesgada
+a favor de la estrategia real. Corrección: nueva referencia que
+preserva el offset EXACTO desde la apertura de sesión (misma hora ET,
+mismo tiempo restante hasta el cierre) y sortea el DÍA donante al azar
+— control real por horario y por tiempo disponible.
+
+| | z original (sesgado) | z emparejado (corregido) |
+|---|---|---|
+| USTEC | +6,21 (ya con fix Bid/Ask) | **+5,70** |
+| US500 | +4,89 (ya con fix Bid/Ask) | **+3,22** |
+
+El z-score baja al corregir el sesgo (como se esperaba), pero **se
+mantiene fuertemente significativo en ambos instrumentos** incluso bajo
+la comparación correctamente emparejada — la señal de entrada sigue
+mostrando información real, no es un artefacto del diseño de la
+referencia.
+
+**3. Corrección Bid/Ask aplicada (motor, no la estrategia):** el OHLC
+exportado es Bid; cerrar un corto exige comprar a Ask=Bid+spread. El
+disparo de SL/TP en cortos ahora se compara contra `sl-spread_vela` /
+`vwap-spread_vela` (spread real de cada vela) en vez de contra el nivel
+Bid puro. Efecto: USTEC media R real −0,1827R→**−0,1992R**; US500
+−0,3213R→**−0,3371R** — cambio pequeño y en la dirección esperada
+(ligeramente peor, como predecía el sesgo optimista ya descrito),
+confirma que el motor no estaba generando el resultado positivo por
+error de ejecución.
+
+**4. Stops muy pequeños frente al spread (solo diagnóstico, SIN
+filtro adoptado):**
+
+| | n excluidas (>10% spread/riesgo) | Media R excluyéndolas | Media R con todas |
+|---|---|---|---|
+| USTEC | 46 (15,5%) | −0,1319 | −0,1992 |
+| US500 | 61 (20,1%) | −0,3065 | −0,3371 |
+
+Quitar la cola de stops casi nulos mejora el resultado pero NO lo
+revierte a positivo — contribuye al resultado negativo, no lo explica
+por completo. No se adopta ningún filtro.
+
+**5. MFE/MAE tras la entrada (ya con el fix Bid/Ask, desglosado por
+motivo de salida):**
+
+| | MFE media | MAE media | n |
+|---|---|---|---|
+| USTEC — SL | **+1,320R** | −0,999R | 170 |
+| USTEC — TP_VWAP | +1,054R | −0,467R | 126 |
+| US500 — SL | **+1,163R** | −0,999R | 190 |
+| US500 — TP_VWAP | +1,010R | −0,352R | 112 |
+
+Hallazgo relevante: las operaciones que terminan paradas por SL habían
+alcanzado, de media, **más de +1,2R de beneficio flotante** antes de
+revertir del todo hasta el stop. Esto refuerza la lectura del z-score:
+la señal identifica movimientos de reversión reales y aprovechables en
+el corto plazo, pero la gestión de salida actual (esperar la reversión
+completa al VWAP, sin proteger beneficio ni mover a breakeven) devuelve
+gran parte de esa ventaja al mercado.
+
+### Conclusión cuantitativa: ¿merece la pena una nueva versión de VWAP?
+
+**Sí, con alcance acotado.** Tras corregir tanto el sesgo de horario en
+la referencia aleatoria como el bug de ejecución Bid/Ask, la señal de
+entrada de VWAP Mean Reversion sigue mostrando una ventaja
+estadísticamente real y notable (z=+5,70 USTEC, +3,22 US500) sobre
+entradas aleatorias correctamente emparejadas en horario, riesgo y
+regla de salida. El MFE confirma el mismo patrón de forma independiente
+(+1,2R de media alcanzado antes de los stops). La cola de stops casi
+nulos frente al spread contribuye al resultado negativo pero no lo
+explica por completo.
+
+Esto NO significa que la estrategia tal cual esté lista — el resultado
+agregado sigue siendo negativo (−0,20R USTEC, −0,34R US500) — pero sí
+justifica un siguiente paso acotado: **rediseñar únicamente la regla de
+salida** (gestión de riesgo/beneficio tras la entrada), manteniendo la
+señal de entrada exactamente igual, con una única versión pre-registrada
+(no una búsqueda de parámetros) y el mismo compromiso de cerrar si no
+funciona. No se ha tocado ningún TP ni filtro en esta sesión, conforme
+a lo pedido.
+
 ## Objetivos de investigación (no garantizados)
 
 CAGR ≥ 25%, Max Drawdown ≤ 20%, Profit Factor ≥ 1.5, Sharpe ≥ 1.0 sobre
