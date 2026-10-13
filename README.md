@@ -1122,6 +1122,48 @@ planas o negativas.
 variante ni optimización retrospectiva de la confirmación de rechazo,
 el SL o el TP.
 
+### VWAP Mean Reversion — cerrado: sin ventaja, resultado negativo
+
+**Aviso de datos (verificado antes de programar):** esta cuenta NO
+tiene volumen real de contratos — `RealVolume` es 0 en el 100% de las
+velas de ambos instrumentos. El VWAP se calculó ponderando por
+`TickVolume` (número de cambios de precio por vela), un **VWAP
+aproximado**, no necesariamente equivalente al VWAP de futuros ES/NQ
+(que usa volumen de contratos realmente negociado).
+
+Regla fija (ver `research/vwap_reversion_backtest.py`): VWAP reiniciado
+cada día en la sesión RTH (9:30-16:00 ET); bandas ±2 desviaciones
+estándar ponderadas por TickVolume, acumuladas causalmente; señal =
+primera vela cuyo High alcanza la banda superior o cuyo Low perfora la
+inferior; confirmación = la misma vela cierra de vuelta dentro de la
+banda; dirección opuesta a la banda tocada; entrada = Open de la vela
+siguiente; SL = extremo de la vela de señal; TP = reversión al propio
+VWAP vigente vela a vela (objetivo variable, no un R fijo — es la
+esencia de "mean reversion"); cierre forzoso a las 16:00 ET; empate
+SL/TP → gana SL; máximo una operación por día.
+
+**Nota de implementación (corregida antes de ejecutar, no tras ver
+resultados):** la primera vela de cada sesión se excluye como posible
+señal — con una sola vela de historial la varianza ponderada es
+exactamente 0, así que ambas bandas coinciden con el precio típico de
+esa misma vela y "tocarían" ambos lados de forma espuria en
+prácticamente cualquier vela de apertura. Es una necesidad estructural
+del cálculo (no hay una alternativa correcta distinta), no un ajuste de
+parámetro buscado por resultado.
+
+Resultado (solo spread real, sin estrés de costes): USTEC media
+-0,183R/operación (PF 0,71, %acierto 39,9%, n=296), US500 media
+-0,321R/operación (PF 0,53, %acierto 33,3%, n=303) — negativo en ambos
+instrumentos ya en el escenario optimista, y se deteriora con rapidez
+bajo estrés de costes (US500 llega a -1,34R/operación con solo 3 puntos
+extra, porque el riesgo medio por operación es muy pequeño en este
+instrumento, 5,79 puntos). Única combinación año/instrumento
+levemente positiva: USTEC-2026 (+0,036R/operación, n=37, incompleto).
+
+**Decisión:** cerrado sin ventaja demostrada, sin buscar variantes
+(otro múltiplo de desviación, otra confirmación, otro SL) para
+rescatarlo.
+
 ## Objetivos de investigación (no garantizados)
 
 CAGR ≥ 25%, Max Drawdown ≤ 20%, Profit Factor ≥ 1.5, Sharpe ≥ 1.0 sobre
