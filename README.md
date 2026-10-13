@@ -1031,6 +1031,97 @@ Hipótesis A.
 los horizontes 4/8/16 buscando mejorar la cifra — sería la misma
 búsqueda de parámetros que el proyecto evita en cada hipótesis.
 
+## Cambio de metodología: estrategias discrecionales conocidas (USTEC / US500)
+
+Tras agotar varias hipótesis de anomalías estadísticas en XAUUSD sin
+encontrar una ventaja robusta, y tras una comparación explícita de
+mercados alternativos (Nasdaq/NQ, S&P500/ES, EURUSD) y un estudio
+overnight-vs-intradía en US500/USTEC con resultado débil/inconsistente,
+el proyecto cambió de enfoque: en lugar de seguir buscando anomalías
+estadísticas, se traducen a reglas objetivas estrategias **realmente
+usadas por traders discrecionales** y se comprueban por backtest, con
+reglas fijadas por adelantado y sin optimización posterior.
+
+Ambas estrategias se evalúan en **USTEC y US500**, CFDs confirmados
+(no futuros) sobre el servidor MetaQuotes-Demo, con la correspondencia
+horaria servidor↔ET reconstruida semana a semana (salto semanal de
+mediana de TickVolume, proxy de la apertura de caja NYSE 9:30 ET),
+solo en días con offset **confirmado** (régimen ≥20 días). El hueco de
+datos ausentes 2025-07-16→2025-09-09 (55 días, idéntico en ambos
+instrumentos) queda excluido, nunca interpolado. Contabilidad en
+**R-múltiplos** (normaliza por el riesgo en puntos de índice de cada
+operación) — nunca en dólares, porque el valor real del tick/contrato
+de esta cuenta no está confirmado.
+
+### Opening Range Breakout (ORB) — cerrado: ventaja débil/insuficiente
+
+Regla fija: rango = vela M15 9:30-9:45 ET; señal = primer cierre
+posterior que rompe el rango; entrada = Open de la vela siguiente; SL =
+lado opuesto del rango; TP = 2R; cierre forzoso al Close de 16:00 ET;
+empate SL/TP en la misma vela → gana SL. Con solo el spread real
+verificado: USTEC media +0,044R/operación (PF 1,10, n=673), US500
++0,057R/operación (PF 1,12, n=796) — positivo pero débil, y ambos
+pasan a negativo con un estrés de costes de apenas +1 a +3 puntos de
+índice no confirmados; 2026 ya es negativo incluso en el escenario
+optimista en ambos instrumentos.
+
+**Auditoría de un bug de MAE (excursión flotante):** se detectó y
+corrigió un bug donde la excursión flotante por vela (MAE) no estaba
+acotada en -1R cuando la propia vela disparaba el stop, usando en su
+lugar el High/Low bruto de esa vela — producía lecturas imposibles
+(p.ej. -9,26R en USTEC) pese a que el modelo de ejecución ya asume
+cierre instantáneo en el SL. Corregido acotando a un suelo de -1,0R
+cuando la vela toca el stop (commit `fde1bd2`); verificado por diff que
+el fix solo afecta las métricas de MAE, no el P&L realizado, el
+Profit Factor, el %Acierto ni el drawdown de balance.
+
+**Dos limitaciones documentadas, sin reabrir la investigación:**
+1. Se verificó que la vela degenerada del 04/10/2024 (rango de 0,13
+   puntos en USTEC) corresponde realmente al bloque horario 9:30-9:45
+   ET — el régimen activo esa semana (slot servidor 16:30, abr-oct
+   2024) es el mismo que en fechas de control de otras estaciones
+   (feb-2023, jul-2023, ene-2024, jul-2024, feb-2025...), todas con el
+   salto de volumen esperado en ese slot. No es un error de conversión
+   horaria: es un artefacto genuino de datos (liquidez anómala/precio
+   plano en ese tramo del feed demo), aislado (1 de 673 operaciones
+   USTEC con rango de apertura <1 punto; 0 de 796 en US500).
+2. El tope de MAE en -1R asume **ejecución ideal del stop** (fill
+   exacto al precio nominal del SL). No garantiza una pérdida máxima
+   real de -1R ante gaps o slippage de ejecución reales — sigue siendo
+   un límite del modelo de backtest, no una garantía de la estrategia
+   en cuenta real.
+
+**Decisión:** cerrado como estrategia de ventaja débil/insuficientemente
+demostrada. No se modificaron las reglas de ORB en ningún momento de la
+auditoría.
+
+### Liquidity Sweep + Reversal — cerrado: sin ventaja, resultado negativo
+
+Regla fija (ver `research/liquidity_sweep_backtest.py` para el
+docstring completo, registrado antes de ejecutar el backtest): nivel
+de liquidez = High/Low de la sesión RTH completa (9:30-16:00 ET) del
+día hábil anterior (PDH/PDL; descartado si el día de referencia está a
+más de 3 días naturales, p.ej. tras un hueco u ocio extendido); barrido
+= primera vela de la sesión actual cuyo High supera el PDH o cuyo Low
+perfora el PDL (si ambos a la vez en la misma vela, se descarta el día
+— ambiguo); confirmación = la misma vela cierra de nuevo dentro del
+rango anterior; dirección opuesta al barrido; entrada = Open de la
+vela siguiente; SL = extremo de la vela de barrido; TP = 2R; cierre
+forzoso a las 16:00 ET; empate SL/TP → gana SL; máximo una operación
+por día.
+
+Resultado (solo spread real, sin estrés de costes): USTEC media
+-0,211R/operación (PF 0,70, %acierto 31,2%, n=176), US500 media
+-0,128R/operación (PF 0,82, %acierto 32,7%, n=208) — negativo en ambos
+instrumentos ya en el escenario optimista, y empeora con cualquier
+estrés de costes adicional. Solo US500-2024 es puntualmente positivo
+(+0,22R/operación); el resto de combinaciones año/instrumento son
+planas o negativas.
+
+**Decisión:** cerrado sin ventaja demostrada, sin intentar ninguna
+variante ni optimización retrospectiva de la confirmación de rechazo,
+el SL o el TP.
+
 ## Objetivos de investigación (no garantizados)
 
 CAGR ≥ 25%, Max Drawdown ≤ 20%, Profit Factor ≥ 1.5, Sharpe ≥ 1.0 sobre
