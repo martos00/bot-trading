@@ -1292,6 +1292,120 @@ positivo aislado no valida la estrategia).
 **Decisión:** se cierran las tres versiones (base + 2 variantes) sin
 ventaja demostrada, sin buscar variantes adicionales.
 
+## Auditoría diagnóstica del motor y de los resultados (4 familias)
+
+Tras cerrar ORB, Liquidity Sweep, VWAP Mean Reversion y Trend
+Continuation con resultado negativo/insuficiente, auditoría puntual
+(ver `research/auditoria_motor.py`) para distinguir "el motor o los
+datos distorsionan los resultados" de "las señales probadas no tienen
+ventaja". No modifica ninguna estrategia ni prueba parámetros nuevos.
+
+**1-2. Desglose por motivo de salida y distribución de R:** consistente
+en las 4 familias — SL ≈ −1,0 a −1,1R (coincide con el diseño), TP ≈
++1,95 a +2,0R en las estrategias de TP fijo (coincide con el 2R
+registrado), y CIERRE_SESION con media **positiva** (p.ej. ORB USTEC
++0,398R, US500 +0,422R) — indicio de que el movimiento de continuación
+tras el impulso inicial suele seguir a favor pero el TP fijo de 2R no
+siempre lo captura; una observación, no un hallazgo a explotar ahora.
+
+**Spread como fracción del riesgo — confirmado excesivo en una cola de
+operaciones:** la media es baja (1,1%-8,0% según estrategia), pero el
+máximo individual llega a ser extremo — hasta 209% del riesgo en Trend
+Continuation USTEC, 100% en Trend Continuation US500, 90,9%/66,7% en
+VWAP, 58,8%/40,0% en Liquidity Sweep. Esto ocurre en operaciones con un
+SL basado en el extremo de una vela casi sin mecha (riesgo_puntos muy
+pequeño) — no es un bug: la resta de spread real sigue siendo
+aritméticamente correcta, pero normalizar por un riesgo casi nulo
+infla el R resultante (de ahí R realizados de hasta −3,09 o −2,00 en la
+verificación de integridad, fuera del rango "esperado" de
+aproximadamente [−1,1, 2,1] que sí se cumple en la inmensa mayoría de
+operaciones). Entre 5,7% y 20,1% de operaciones según estrategia tienen
+spread>10% del riesgo — una proporción real, no despreciable, y una
+limitación de diseño del SL (vela de un solo toque) más que del motor
+de costes.
+
+**3. Mecánica Bid/Ask:** el OHLC exportado por MT5 son precios **Bid**
+(el broker no almacena un histórico de Ask separado; nuestra columna
+`Spread` es precisamente la herramienta para reconstruir Ask=Bid+spread).
+El modelo actual resta el spread real como un coste plano en puntos del
+R final, lo cual es correcto en el agregado del coste total por
+operación. Imprecisión real y acotada: el disparo de SL/TP en
+operaciones **cortas** se comprueba contra el High/Low en Bid, cuando
+técnicamente cerrar un corto exige comprar al Ask — un sesgo
+sistemático pero pequeño (acotado por el mismo ratio spread/riesgo ya
+medido, 1,1%-8,0% de media) que no cambia la dirección de ningún
+resultado agregado. No se encontró lookahead ni error de orden
+temporal en ninguna de las 4 familias (entrada siempre en el Open de
+la vela siguiente a la señal, señales siempre sobre velas ya
+cerradas, empate SL/TP resuelto siempre a favor de SL).
+
+**4. Concentración horaria:** sin patrón dominante que explique el
+resultado agregado — hay bloques horarios puntualmente peores (p.ej.
+Liquidity Sweep USTEC 14:30-16:00 media −0,984R, pero n=9, muestra
+demasiado pequeña para concluir nada), pero ninguna familia tiene su
+resultado negativo concentrado en una única franja con n grande; es
+una pérdida repartida a lo largo de la sesión. **No se ha usado esta
+información para añadir ningún filtro horario.**
+
+**5. Referencia de entradas aleatorias** (mismos días, mismo riesgo por
+operación, misma regla de salida y mismos costes que la estrategia
+real; 100 repeticiones) — resultado más revelador de la auditoría:
+
+| Estrategia | z (USTEC) | z (US500) | Lectura |
+|---|---|---|---|
+| ORB | +1,75 | +2,94 | señal con valor real modesto, por encima de lo aleatorio |
+| Liquidity Sweep | −1,21 | −0,22 | indistinguible de (o peor que) entrada aleatoria |
+| VWAP Mean Reversion | **+6,66** | **+5,18** | señal con valor real fuerte, muy por encima de lo aleatorio |
+| Trend Continuation | −1,58 | −0,29 | indistinguible de (o peor que) entrada aleatoria |
+
+Hallazgo importante sobre VWAP Mean Reversion: con la MISMA regla de
+salida (reversión al VWAP) y el mismo riesgo, las entradas aleatorias
+pierden mucho más (media ≈ −0,83R a −0,92R) que la señal real probada
+(−0,18R a −0,32R). Es decir, **la señal de entrada (toque de banda +
+rechazo) sí aporta información real** — el resultado agregado negativo
+se explica mejor por lo exigente del objetivo (revertir al VWAP, un
+nivel que se mueve) que por una señal sin valor. Esto no reabre la
+investigación (la regla ya se registró y cerró tal cual se probó), pero
+es una distinción relevante de cara al futuro: si se retoma un fade de
+VWAP, el objetivo de salida sería lo primero a repensar, no la señal.
+Liquidity Sweep y Trend Continuation, en cambio, no muestran evidencia
+de que su lógica de entrada aporte nada sobre el azar.
+
+**6. Limitaciones del feed CFD MetaQuotes-Demo vs. un backtest de
+futuros:**
+- *Específicas de este feed/cuenta:* ausencia de volumen real
+  (TickVolume como proxy, ya declarado en VWAP); artefactos de
+  liquidez del servidor demo (el tramo de precio plano del 04/10/2024
+  ya documentado en el cierre de ORB); necesidad de reconstruir la
+  correspondencia horaria servidor↔ET semana a semana por falta de
+  metadato directo de zona horaria (un futuro listado en un exchange
+  real trae timestamps UTC fiables, sin esa reconstrucción); swap
+  financiero de CFD en vez de rollover de contrato.
+- *Genéricas del motor, igual de presentes en un backtest con datos de
+  futuros a M15:* la ambigüedad de orden intravela entre SL y TP (sin
+  datos de tick no se puede saber cuál ocurrió primero — resuelto aquí
+  siempre a favor de SL, conservador); la aproximación Bid/Ask para
+  costes; la inflación de R en operaciones de riesgo casi nulo descrita
+  en el punto 2, que depende del diseño del SL, no del proveedor de
+  datos.
+
+### Conclusión de la auditoría
+
+**No hay indicios de que el motor o los datos estén distorsionando los
+resultados de forma que oculten una ventaja real.** No se encontró
+lookahead, ni error de ejecución direccional, ni un patrón horario
+dominante, ni un bug de cómputo (la única imprecisión real — Bid/Ask en
+cortos — está acotada y es demasiado pequeña para explicar los
+resultados). Lo que sí se confirma es una **imagen diferenciada por
+estrategia**: Liquidity Sweep y Trend Continuation no muestran ninguna
+ventaja sobre entradas aleatorias — su cierre como "sin ventaja" queda
+reforzado. ORB muestra una ventaja real pero modesta y fragil a costes
+— consistente con el cierre ya hecho. VWAP Mean Reversion es el caso
+más matizado: su señal de entrada sí tiene valor estadístico real y
+notable, pero la regla de salida (reversión al VWAP) es exigente y
+domina el resultado agregado negativo — una distinción útil para el
+futuro, no un motivo para reabrir ahora la investigación.
+
 ## Objetivos de investigación (no garantizados)
 
 CAGR ≥ 25%, Max Drawdown ≤ 20%, Profit Factor ≥ 1.5, Sharpe ≥ 1.0 sobre
