@@ -1164,6 +1164,134 @@ levemente positiva: USTEC-2026 (+0,036R/operación, n=37, incompleto).
 (otro múltiplo de desviación, otra confirmación, otro SL) para
 rescatarlo.
 
+### Revisión de método: ¿sin ventaja, o versión mecánica simplificada?
+
+Antes de seleccionar una cuarta estrategia, revisión explícita de en qué
+medida cada cierre anterior refleja "la estrategia no tiene ventaja" vs.
+"nuestra traducción mecánica es una versión simplificada de lo que usa
+un discrecional" — distinción importante porque un resultado negativo en
+una versión simplificada no cierra necesariamente la puerta a la
+estrategia completa.
+
+- **ORB:** versión de un solo filtro (rango M15 único, sin filtro de
+  tendencia de marco superior, sin confirmación de volumen, TP fijo en
+  2R en vez de objetivo por movimiento medido o trailing). Discrecionales
+  reales suelen combinar ORB con un sesgo de tendencia previo y gestión
+  de salida variable. **Conclusión:** descartamos la versión simple
+  probada, no "ORB en general".
+- **Liquidity Sweep + Reversal:** usamos únicamente el High/Low de la
+  sesión RTH del día anterior como nivel de liquidez, con una
+  confirmación de un solo cierre de vuelta dentro del rango. La práctica
+  discrecional (SMC/ICT) habitual añade estructura de mercado (MSS) y a
+  menudo una entrada de retroceso a un Fair Value Gap — exactamente el
+  esquema de Baseline 1 (cerrado en XAUUSD, también sin ventaja probada,
+  pero con una traducción más completa). **Conclusión:** nuestra versión
+  aquí es más simple que esa, así que el resultado negativo pesa menos
+  como evidencia contra "liquidity sweep" en general.
+- **VWAP Mean Reversion:** usamos TickVolume en vez de volumen real
+  (ya declarado), un único umbral de ±2σ sin escalado, y sobre todo
+  **sin filtro de día de tendencia vs. día de rango** — la salvedad más
+  repetida en la práctica discrecional de VWAP fade ("no hagas fade de
+  VWAP en un día de tendencia fuerte"), que aquí no se aplicó. **Esto
+  importa directamente para la estrategia de continuación que sigue**:
+  si VWAP mean reversion falla en parte porque opera también en días de
+  tendencia, cabe esperar que una estrategia de continuación de
+  tendencia capture precisamente esos días.
+
+Esta revisión no reabre ninguna de las tres investigaciones cerradas —
+se mantienen cerradas con el resultado obtenido para la versión
+efectivamente probada — pero deja constancia de que "sin ventaja
+demostrada en nuestra versión mecánica" no equivale a "la estrategia
+discrecional no funciona nunca".
+
+### Trend Continuation Pullback (EMA) — definición pre-registrada
+
+Estrategia reconocible: tras el impulso inicial de apertura, el precio
+se mantiene en tendencia y hace retrocesos poco profundos a una media
+móvil antes de continuar — la "pullback-to-the-moving-average" que usan
+numerosos traders intradía de tendencia (p.ej. EMA9/EMA20 en M15), el
+complemento natural de VWAP mean reversion: aquí se opera A FAVOR de la
+tendencia, no en contra.
+
+**Mercado principal de la comparación: USTEC. US500: comparación
+secundaria** (se reporta igual, con las mismas reglas, pero USTEC es la
+referencia para la decisión).
+
+**Versión base (fija, pre-registrada):**
+ - EMA: EMA20 de Close, calculada de forma CONTINUA sobre toda la serie
+   M15 (no se reinicia por sesión, igual que la usaría un discrecional
+   mirando su gráfico), causal (`ewm(adjust=False)`, sin look-ahead).
+ - Sesgo de tendencia del día: se fija UNA vez, en la propia vela de
+   apertura (9:30-9:45 ET) de la sesión RTH confirmada — Close de esa
+   vela >= EMA20 de esa vela → sesgo ALCISTA; si no, BAJISTA. No se
+   reevalúa el sesgo durante el día.
+ - Señal de pullback/continuación: la primera vela posterior (dentro de
+   la sesión RTH) cuyo Low toca o perfora la EMA20 Y cuyo Close cierra
+   de vuelta por encima de ella (sesgo alcista) — o, simétricamente,
+   cuyo High toca/supera la EMA20 y cuyo Close cierra de vuelta por
+   debajo (sesgo bajista).
+ - Dirección operada: LA MISMA que el sesgo del día (continuación, no
+   reversión).
+ - Entrada: Open de la vela siguiente a la señal (sin lookahead).
+ - Stop-loss: extremo de la propia vela de la señal (Low para largo,
+   High para corto).
+ - Take-profit: 2R, misma convención que ORB/Liquidity Sweep (permite
+   comparar entre estrategias).
+ - Cierre forzoso: Close de la vela de las 16:00 ET. Empate SL/TP en la
+   misma vela → gana SL. Máximo una operación por día.
+
+**Variantes estructurales (máximo 2, justificadas de antemano, NO
+elegidas mirando resultados):**
+ - **Variante A — EMA9:** mismo esquema exacto que la base, sustituyendo
+   EMA20 por EMA9 como única media de sesgo y de retroceso. Justificación
+   previa: EMA9 y EMA20 son los dos periodos más citados en la práctica
+   de "pullback a la media" intradía; probar ambos de antemano es una
+   alternativa estándar reconocida, no una búsqueda de parámetro tras
+   ver resultados.
+ - **Variante B — doble media (EMA9/EMA20):** el sesgo del día se define
+   por la alineación de las dos medias en la propia vela de apertura
+   (EMA9 >= EMA20 → alcista; si no, bajista) en vez de precio-vs-una-
+   media; el nivel de retroceso vigilado pasa a ser la media RÁPIDA
+   (EMA9). Justificación previa: filtro de tendencia por alineación de
+   dos medias (en vez de precio contra una sola media) es una variante
+   estructural clásica y distinta en mecanismo, no una repetición del
+   mismo filtro con otro número.
+
+Las tres versiones (base + A + B) se ejecutan y se reportan TODAS, sin
+descartar las que salgan negativas del informe. Un resultado positivo en
+una sola de las tres NO se considera validado — haría falta además
+verificar calidad de datos, mecánica de ejecución y un período
+prospectivo nuevo antes de considerarlo un hallazgo.
+
+### Cierre: las tres versiones, negativas en ambos instrumentos
+
+Resultado (solo spread real, sin estrés de costes adicional), USTEC
+como mercado principal:
+
+| Versión (USTEC) | n | Media R/op | PF | %Acierto |
+|---|---|---|---|---|
+| BASE (EMA20) | 578 | -0,170 | 0,76 | 31,5% |
+| Variante A (EMA9) | 668 | -0,092 | 0,86 | 33,2% |
+| Variante B (doble EMA9/EMA20) | 667 | -0,073 | 0,89 | 34,9% |
+
+| Versión (US500, comparación secundaria) | n | Media R/op | PF | %Acierto |
+|---|---|---|---|---|
+| BASE (EMA20) | 696 | -0,113 | 0,83 | 34,1% |
+| Variante A (EMA9) | 788 | -0,070 | 0,90 | 34,9% |
+| Variante B (doble EMA9/EMA20) | 786 | -0,065 | 0,90 | 35,2% |
+
+Las seis combinaciones (3 versiones × 2 instrumentos) son negativas ya
+con solo spread real, y se deterioran con rapidez bajo cualquier
+estrés de costes adicional (PF cae por debajo de 0,5 con +3 puntos de
+estrés en casi todas). Hay años puntualmente positivos (USTEC-2026 en
+BASE y Variante A; US500-2025/2026 en Variante B), pero ninguna versión
+es consistentemente positiva a través de años ni resiste el estrés de
+costes — no se trata como hallazgo, conforme a lo acordado (un resultado
+positivo aislado no valida la estrategia).
+
+**Decisión:** se cierran las tres versiones (base + 2 variantes) sin
+ventaja demostrada, sin buscar variantes adicionales.
+
 ## Objetivos de investigación (no garantizados)
 
 CAGR ≥ 25%, Max Drawdown ≤ 20%, Profit Factor ≥ 1.5, Sharpe ≥ 1.0 sobre
