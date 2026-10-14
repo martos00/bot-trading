@@ -1506,6 +1506,63 @@ señal de entrada exactamente igual, con una única versión pre-registrada
 funciona. No se ha tocado ningún TP ni filtro en esta sesión, conforme
 a lo pedido.
 
+### Corrección adicional: el MFE reportado arriba tenía el mismo tipo de bug que el MAE
+
+Antes de probar el TP fijo en +1R, verificación explícita de que el MFE
+no incluye movimiento posterior a la ejecución del SL (mismo criterio
+conservador exigido para el MAE). Se encontró que, efectivamente,
+`mejor_flotante_r` se actualizaba con el High/Low de la MISMA vela que
+dispara el SL sin excluirlo — igual que el bug de MAE ya corregido en
+ORB, pero esta vez en el lado favorable. **Corregido** en
+`research/vwap_reversion_backtest.py`: en la vela que dispara el SL no
+se acredita MFE (podría ser posterior a la ejecución del stop); en la
+que dispara el TP, se acota exactamente al R realizado. Verificado por
+diff que el fix solo afecta a MFE, no a ningún R realizado ni métrica
+de P&L.
+
+**MFE corregido (operaciones resueltas por SL, versión original de
+reversión al VWAP):** USTEC +1,320R→**+0,927R**; US500
++1,163R→**+0,714R**. Sigue siendo positivo en promedio (consistente con
+que la señal captura algo de movimiento real), pero notablemente menor
+de lo reportado antes de la corrección.
+
+### Hipótesis registrada: TP fijo en +1R en vez de reversión completa al VWAP
+
+**Hipótesis (basada en el MFE recién corregido sobre este MISMO
+histórico — por tanto NO es una validación fuera de muestra):** la
+señal de barrido de banda + confirmación podría capturar suficiente
+movimiento favorable para alcanzar +1R aunque no complete la reversión
+total hasta el VWAP. Único cambio frente a la versión original (ver
+`research/vwap_reversion_tp1r_backtest.py`): TP fijo en +1R desde la
+entrada. Señal, confirmación, SL inicial, horario operativo, corrección
+Bid/Ask y modelo de costes — todos idénticos a la versión original.
+
+**Resultado (solo spread real, sin estrés de costes):**
+
+| | n | Media R/op | PF | %Acierto | Drawdown balance |
+|---|---|---|---|---|---|
+| USTEC — TP+1R | 296 | −0,311 | 0,54 | 37,8% | 95,87R |
+| USTEC — original (revierte a VWAP) | 296 | −0,199 | 0,68 | 39,2% | 70,62R |
+| US500 — TP+1R | 303 | −0,434 | 0,41 | 32,3% | 132,33R |
+| US500 — original (revierte a VWAP) | 303 | −0,337 | 0,51 | 33,0% | 106,68R |
+
+**El TP fijo en +1R es PEOR que la versión original en ambos
+instrumentos**, no mejor — la hipótesis no se sostiene. Motivo visible:
+la tasa de acierto baja (de 126/296=42,6% de cierres por VWAP a
+112/296=37,8% de cierres por TP+1R en USTEC, patrón análogo en US500) —
+alcanzar un objetivo fijo de +1R exige, en una fracción relevante de
+operaciones, más recorrido que el que ofrecía el propio VWAP vigente en
+ese momento (un objetivo variable que a menudo estaba más cerca que 1R
+de distancia). Negativo también en los tres años completos y bajo los
+tres escenarios de coste, sin ninguna combinación año/instrumento
+consistentemente positiva.
+
+**Decisión:** se descarta el TP fijo en +1R. Conforme a lo acordado, no
+se prueban +0,5R, +1,5R, breakeven ni ninguna otra combinación para
+rescatarlo. La investigación de una nueva regla de salida para VWAP
+Mean Reversion queda cerrada sin éxito con esta única variante
+pre-registrada.
+
 ## Objetivos de investigación (no garantizados)
 
 CAGR ≥ 25%, Max Drawdown ≤ 20%, Profit Factor ≥ 1.5, Sharpe ≥ 1.0 sobre

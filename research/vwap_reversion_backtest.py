@@ -221,10 +221,19 @@ def ejecutar_vwap_reversion(df, categoria_hueco, regimenes_confiables, point):
             if toca_sl:
                 flotante_r_vela = max(flotante_r_vela, -1.0)
             peor_flotante_r = min(peor_flotante_r, flotante_r_vela)
+            # CORRECCION (auditoria, punto 1): no se conoce el orden intravela.
+            # Si esta vela dispara el SL, el criterio conservador asume que el
+            # movimiento adverso pudo ocurrir ANTES del favorable -- por tanto
+            # el MFE no se actualiza con el High/Low de esta misma vela (podria
+            # ser posterior a la ejecucion del stop). Si dispara el TP, el
+            # movimiento favorable SI esta confirmado (ejecucion al nivel del
+            # VWAP), asi que se acota exactamente al R realizado.
             if toca_tp:
                 favorable_r_vela = min(favorable_r_vela, (vwap_k - precio_entrada) / riesgo if direccion == 'largo'
                                         else (precio_entrada - vwap_k) / riesgo)
-            mejor_flotante_r = max(mejor_flotante_r, favorable_r_vela)
+                mejor_flotante_r = max(mejor_flotante_r, favorable_r_vela)
+            elif not toca_sl:
+                mejor_flotante_r = max(mejor_flotante_r, favorable_r_vela)
             if toca_sl:  # empate SL+TP en la misma vela -> gana SL (conservador, fijo)
                 resultado_precio, motivo_salida, idx_salida = sl, 'SL', k
                 break
