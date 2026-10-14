@@ -2047,3 +2047,64 @@ documentadas pero no probadas (requieren datos de calendario
 adicionales o tienen menos potencia estadística en nuestra ventana);
 no se descartan de forma permanente, solo no se investigan ahora salvo
 que el usuario lo pida explícitamente.
+
+## FASE 1 (candidata B) — Efecto de cambio de mes ("Turn-of-the-Month")
+
+### 1. Definición original (literatura, sin inventar reglas)
+
+**Ariel (1987):** el retorno medio positivo del índice se concentra en
+la primera mitad del mes de sesiones bursátiles; la segunda mitad no
+muestra retorno medio distinguible de cero. **Lakonishok & Smidt
+(1988)**, sobre el Dow Jones 1897-1986, concretan y popularizan la
+ventana usada aquí: el **último día de sesión del mes M + los tres
+primeros días de sesión del mes M+1** (4 sesiones).
+
+### 2. Ventana pre-registrada (sesiones bursátiles, no días naturales)
+
+Una sola ventana, fijada antes de ejecutar: tratamiento = {último día
+de sesión del mes M, días de sesión 1, 2 y 3 del mes M+1}; control =
+el resto de sesiones. Retorno por sesión: close-to-close (convención
+de la literatura original, incluye el hueco de cierre a cierre).
+
+### 4. XAUUSD — aclaración
+
+Se analiza para comprobar si el efecto se **extiende** a una materia
+prima, no para replicar el estudio original (específico de índices de
+acciones).
+
+### 3, 5, 6. Resultado (control de deriva general = comparación directa
+contra el resto de sesiones del mismo período; incertidumbre con
+bootstrap de CLUSTERS mensuales — cada cluster agrupa una ventana de
+tratamiento completa con sus días de control precedentes, para no
+tratar como independientes los 4 días de una misma ventana)
+
+| Mercado | Episodios | Media tratamiento | Media control | Efecto/sesión | IC95% diferencia |
+|---|---|---|---|---|---|
+| USTEC | 44 | +0,1524% | +0,1104% | +0,0420 pp | [−0,1391, +0,2436] cruza 0 |
+| US500 | 44 | +0,1136% | +0,0728% | +0,0408 pp | [−0,0998, +0,1956] cruza 0 |
+| XAUUSD | 45 | +0,1511% | +0,0787% | +0,0724 pp | [−0,1369, +0,2741] cruza 0 |
+
+**Sensibilidad a episodios extremos:** superada en los tres — quitar
+el mejor y el peor episodio apenas cambia la media (p.ej. USTEC
++0,1524%→+0,1497%). El efecto no depende de 1-2 meses excepcionales.
+
+**Por año:** dirección positiva en 2023/2025/2026 en los tres mercados,
+pero **2024 es negativo en USTEC y US500** (único año completo de los
+cuatro, señal de inconsistencia real, no solo de ruido de borde de
+muestra).
+
+**Limitación de tamaño de muestra (explícita):** solo 44-45 episodios
+independientes en 2023-2026 — el bootstrap de clusters da,
+correctamente, intervalos anchos; no se puede esperar significancia
+con esta ventana temporal aunque el efecto fuera real y del tamaño
+observado.
+
+### 7-8. Decisión
+
+Dirección positiva y consistente en los tres mercados (a diferencia
+del momentum intradía, que salió de signo contrario) — pero **ningún
+mercado alcanza significancia estadística**, el efecto por sesión es
+pequeño (0,04-0,07 pp), y 2024 contradice la hipótesis en ambos índices
+de acciones. **Evidencia débil — se descarta esta hipótesis, sin
+optimizar la ventana ni construir estrategia.** No se prueban ventanas
+alternativas (5 días, 2 días, etc.) para intentar rescatarlo.
