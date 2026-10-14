@@ -1871,3 +1871,47 @@ RSI, más un SL de protección basado en estructura (no probado todavía)
 — a definir y pre-registrar en Fase 3, con el mismo motor de costes en
 R-múltiplos ya auditado, y validada contra historial pre-2023 antes de
 considerarla seria.
+
+### Comprobación final antes de construir (solo RSI(2)<15, solo episodios independientes)
+
+Última comprobación, deliberadamente estrecha (sin nuevos umbrales, sin
+TP/SL): solo la PRIMERA señal de cada episodio (ver
+`research/hipotesis_rsi2_verificacion_final.py` para la definición
+exacta de episodio), solo horizontes +1/3/5d, solo RSI(2)<15.
+
+| | n episodios | +1d | +3d | +5d |
+|---|---|---|---|---|
+| USTEC — efecto (pp) | 57 | +0,286 (cruza 0) | +0,432 (cruza 0) | **+0,658 (excluye 0)** |
+| US500 — efecto (pp) | 59 | **+0,264 (excluye 0)** | **+0,429 (excluye 0)** | +0,348 (cruza 0) |
+
+**Punto 5 (sensibilidad a episodios extraordinarios): superado.**
+Quitar el mejor y el peor episodio de cada combinación apenas cambia la
+media (p.ej. USTEC +5d: +0,963%→+0,973%) — el efecto no depende de 1-2
+eventos extremos.
+
+**Punto 6 (¿sigue siendo positivo? ¿en qué horizontes hay evidencia
+suficiente?):** el efecto puntual es positivo en las 6 combinaciones
+(2 instrumentos × 3 horizontes), sin excepción, y la persistencia por
+año (2024/2025/2026) se mantiene positiva en ambos instrumentos. Pero
+la significancia estadística (IC95% de la diferencia excluyendo cero)
+**no coincide en el mismo horizonte entre los dos mercados**: USTEC
+solo es significativo a +5d; US500 solo a +1d y +3d (su +5d cruza
+cero). No hay un único horizonte robusto simultáneamente en ambos
+índices.
+
+**Punto 8 (recordatorio):** RSI(2)<15 se eligió después de ver los tres
+umbrales en el estudio anterior — esto sigue siendo exploratorio, no
+una validación fuera de muestra.
+
+**Decisión final:** el efecto NO desaparece (no se cumple el criterio
+de descarte tal cual se planteó), pero tampoco es "razonablemente
+consistente" en el sentido fuerte — no hay un horizonte que funcione de
+forma robusta en los dos mercados a la vez, que es justo el tipo de
+inconsistencia que ha cerrado otras hipótesis de este proyecto. **Mi
+recomendación es NO construir todavía una estrategia completa sobre
+esta señal tal como está medida** — la evidencia es demasiado frágil
+frente a la variación de horizonte/mercado para comprometer el esfuerzo
+de Fase 3 (filtros, SL/TP, validación pre-2023). Se deja documentada
+como pista débil, no como hipótesis cerrada de forma permanente: con
+datos distintos (pre-2023) o un rediseño posterior podría revisarse,
+pero no ahora.
