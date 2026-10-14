@@ -1563,6 +1563,28 @@ rescatarlo. La investigación de una nueva regla de salida para VWAP
 Mean Reversion queda cerrada sin éxito con esta única variante
 pre-registrada.
 
+### Cierre de VWAP Mean Reversion — matiz importante sobre lo que queda demostrado
+
+Resultado final negativo en ambas variantes de salida probadas
+(reversión al VWAP, TP fijo +1R), en USTEC y en US500. Se cierra la
+investigación de VWAP Mean Reversion.
+
+**Corrección deliberada de cómo se presentó la evidencia intermedia:**
+los z-scores frente a entradas aleatorias (incluso la versión
+emparejada por horario) y el MFE retrospectivo mostraron patrones
+estadísticamente llamativos, y en turnos anteriores se describieron
+como "ventaja real y robusta". Eso sobreinterpreta lo que esas pruebas
+pueden demostrar: ambas se calcularon sobre el mismo histórico ya usado
+para diseñar y cerrar la estrategia (ninguna es una validación fuera de
+muestra), ninguna corrige por las múltiples comparaciones realizadas a
+lo largo de todo el proyecto (4 estrategias × 2 instrumentos × varios
+escenarios), y el propio TP+1R —motivado directamente por ese MFE—
+resultó negativo y peor que la versión original. Son indicios
+compatibles con que la señal capture algo de información real, no una
+prueba de ventaja explotable. Se mantiene el hallazgo (z-scores, MFE)
+como lo que es: una observación diagnóstica interesante, no una
+conclusión validada.
+
 ## Objetivos de investigación (no garantizados)
 
 CAGR ≥ 25%, Max Drawdown ≤ 20%, Profit Factor ≥ 1.5, Sharpe ≥ 1.0 sobre
@@ -1579,3 +1601,124 @@ reales") y en cuenta demo. Verifica que `InpBrokerGMTOffsetHrs` esté
 correctamente calibrado (afecta al cierre de fin de semana, la sesión
 asiática y el filtro de horario de sesión) y que el símbolo `XAUUSD` de
 tu bróker coincide con el usado en el gráfico donde se adjunta el EA.
+
+## Propuesta: calidad de datos y validación antes de la siguiente estrategia
+
+Tras cerrar ORB, Liquidity Sweep, VWAP Mean Reversion y Trend
+Continuation (las cuatro con resultado negativo o insuficiente sobre
+los mismos datos M15 del servidor MetaQuotes-Demo), propuesta concreta
+para mejorar datos y validación ANTES de programar otra estrategia.
+Sin código todavía — es una decisión de qué datos usar, pendiente de
+que el usuario elija entre las opciones de abajo. Los precios/ofertas
+de terceros marcados "(a verificar)" no están confirmados en firme —
+mismo criterio del proyecto de no afirmar cifras no comprobadas;
+verificar en la web del proveedor antes de pagar nada.
+
+### 1. Qué datos necesitamos realmente
+
+Para un backtest de NQ/MNQ (futuro CME) o USTEC (CFD) con la precisión
+que nuestras propias auditorías han echado en falta:
+
+- **Resolución mínima: M1.** La mayoría de los problemas de ejecución
+  que hemos auditado (ambigüedad SL/TP intravela, aproximación Bid/Ask,
+  MAE/MFE contaminados) vienen de operar sobre M15. Pasar a M1 no los
+  elimina del todo, pero reduce muchísimo la ventana de ambigüedad por
+  vela.
+- **Tick-level Bid+Ask, si es asequible, para la validación final** (no
+  necesariamente para el desarrollo diario) — es la única forma de
+  conocer el orden real intravela y eliminar por completo la
+  convención conservadora "gana el SL en caso de empate".
+- **Volumen real de contratos** (no TickVolume) si queremos un VWAP
+  genuino en vez de la aproximación ya declarada.
+- **Timestamps de exchange fiables (UTC)** — evita la reconstrucción
+  horaria semana a semana que hemos tenido que hacer por falta de
+  metadato en el feed demo.
+- **Si se usa el futuro NQ/MNQ (no CFD): calendario de vencimientos y
+  método de rollover** (back-adjusted vs. sin ajustar, regla de fecha
+  de roll) — complejidad nueva que el CFD actual nos evitaba.
+- **Historial suficiente para dejar un tramo SIN TOCAR** (punto 4) —
+  idealmente varios años antes de 2023.
+
+### 2. Fuentes concretas
+
+| Fuente | Instrumento | Resolución | Coste aproximado | Notas |
+|---|---|---|---|---|
+| **El propio bróker/firma de fondeo objetivo (demo o real)** | USTEC/US500 CFD | M1, Bid+spread real | Gratis | Mejora de mayor impacto y menor coste para el camino CFD: sustituye el feed genérico MetaQuotes-Demo por el feed del VENUE donde realmente se operaría. Mismo exportador MQL5 que ya tenemos. |
+| **Dukascopy** (histórico tick gratuito, vía su propia herramienta o terceros como Tickstory/QuantDataManager) | Índices/CFD, FX | Tick Bid+Ask | Gratis, confirmado | Buena contrastación cruzada gratuita frente al feed demo. Verificar qué símbolo de índice Nasdaq tienen listado y desde qué fecha. |
+| **Interactive Brokers (API TWS)** | NQ/MNQ futuro | M1 (bars cortos limitados a historial reciente) | Gratis con cuenta (a verificar tarificación de datos en vivo vs. histórico) | Requiere abrir cuenta IBKR (soporta demo/paper). Límites conocidos: contratos vencidos >2 años no disponibles, paginación por tramos cortos. |
+| **Firstrate Data** | NQ desde 2008, MNQ desde 2019 | M1 y otras | ~$99,95/año tras el primer mes (a verificar vigencia del precio) | Historial largo, barato, pensado para backtesting retail — opción más directa si se quiere NQ/MNQ M1 de varios años sin montar infraestructura. |
+| **Databento** | CME (NQ/MNQ), incl. tick/MBO | Tick a M1 | Variable, por dataset/GB (a verificar en su web, no confirmado aquí) | Más flexible si luego se quiere tick-level para la validación final; conviene cotizar solo el tramo de fechas necesario, no el histórico completo. |
+| **Kibot** | Futuros incl. NQ | M1/tick | Precio inconsistente entre fuentes consultadas ($139/mes a varios cientos — NO confirmado) | No usar sin verificar directamente en kibot.com qué incluye el plan y si cubre NQ. |
+
+**Recomendación de orden:** (1) Dukascopy gratis para una contrastación
+rápida; (2) cambiar el feed CFD del broker demo genérico al demo del
+bróker/firma real objetivo (gratis, mayor fidelidad para el caso de uso
+real); (3) si se necesita NQ/MNQ de verdad (futuro, no CFD), Firstrate
+Data es la opción barata y acotada; dejar Databento/tick-level como
+mejora posterior solo para la validación final, no para el desarrollo
+diario.
+
+### 3. Reutilizar el motor actual sin rehacerlo
+
+El motor (`cargar_y_verificar`, `clasificar_huecos`, detección de
+régimen horario, contabilidad en R-múltiplos, escenarios de coste) solo
+exige un CSV con las columnas `TimestampServidor;Open;High;Low;Close;
+TickVolume;Spread;RealVolume`. Plan de reutilización:
+
+- Un script adaptador por fuente nueva (Dukascopy/Firstrate/Databento/
+  IBKR → ese mismo esquema de columnas) — cero cambios en
+  `orb_backtest.py`/`vwap_reversion_backtest.py`/etc.
+- Si la fuente trae Bid Y Ask reales: poblar `Spread` con el spread
+  real por vela en vez de la cifra autoreportada del bróker — mejora
+  de datos, no de reglas.
+- Pasar de M15 a M1 solo exige retocar la función de detección de
+  régimen (`slot = hora*4 + minuto//15`, 96 slots/día) a su equivalente
+  de 1.440 slots/día — cambio mecánico acotado, no una reescritura.
+- Tick-level, si se adopta, se trataría como una capa de ejecución
+  ADICIONAL y posterior (solo para la validación final de una
+  estrategia ya cerrada en M1), no como sustituto inmediato de todo el
+  motor actual.
+
+### 4. Separar desarrollo y validación (el período 2023-2026 ya está "quemado")
+
+Regla explícita a partir de ahora: **2023-2026 no se vuelve a usar para
+diseñar ni elegir una estrategia nueva** — se reserva como ventana de
+"desarrollo" donde se prueba una única versión pre-registrada (igual
+disciplina que hasta ahora), nunca para buscar entre variantes.
+
+- **Validación casi-inmediata y casi gratis:** historial ANTERIOR a
+  2023 (p.ej. 2018-2022 de NQ/MNQ, disponible en Firstrate/Databento) —
+  nunca tocado en este proyecto, sirve de primer filtro rápido antes de
+  invertir en nada más.
+- **Validación definitiva: forward/demo en tiempo real** — una vez una
+  estrategia pase el filtro anterior, demo-tradearla en vivo (o en el
+  Strategy Tester con datos que aún no existían al diseñarla) durante
+  un periodo pre-comprometido (p.ej. 2-3 meses) antes de arriesgar
+  capital de una cuenta de fondeo real. Es la única validación
+  realmente limpia; todo lo demás es un filtro previo más rápido y más
+  barato, no un sustituto.
+
+### 5. Modelar costes y reglas de una cuenta de fondeo real
+
+- Sustituir los escenarios de estrés genéricos (0/1/3 puntos) por la
+  tabla de spread/comisión/swap REAL de la firma y el bróker de
+  ejecución concretos, una vez elegidos (FTMO/FundedNext/The5ers u
+  otro) — dato verificable en sus condiciones publicadas, no inventado.
+- Reglas específicas de la firma a modelar explícitamente: pérdida
+  máxima diaria, drawdown máximo total, objetivo de beneficio, días
+  mínimos de trading, reglas de consistencia (algunas firmas penalizan
+  que un solo día aporte una fracción excesiva del beneficio total),
+  prohibición de mantener posiciones el fin de semana (encaja bien con
+  nuestro cierre forzoso diario ya existente), restricciones en
+  ventanas de noticias.
+- Dimensionar el riesgo como % de la equity de la TRANCHE de cuenta
+  real (p.ej. $10k/$25k/$50k/$100k) en vez del `EQUITY_INICIAL`
+  genérico de $25.000 usado hasta ahora — solo una vez se conozca el
+  valor real del tick/contrato de la firma elegida (pendiente desde el
+  inicio del proyecto, nunca confirmado para la cuenta demo genérica).
+- Utilidad separada (no mezclada con la lógica de señal) para que
+  cambiar de firma/tramo de cuenta no obligue a tocar ninguna
+  estrategia.
+
+**No se ha escrito código de esta propuesta** — pendiente de que el
+usuario decida qué fuente(s) de datos usar antes de implementar nada.
