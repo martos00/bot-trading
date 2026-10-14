@@ -2190,3 +2190,56 @@ investigada sobre este histórico: el siguiente paso es revisar
 metodología y necesidades de datos (ver la propuesta de fuentes de
 datos ya documentada más arriba) antes de seguir probando hipótesis
 nuevas sobre la misma ventana ya explorada repetidamente.
+
+## Nuevo proceso: construcción rápida de candidatas (desde aquí)
+
+Cambio deliberado de método: en vez de probar primero la ventaja en
+aislamiento (4 hipótesis, cada una varios turnos de pre-registro,
+bootstrap de clusters, episodios, multi-mercado) y recién después
+construir la estrategia, ahora se construye la versión completa
+directamente y se decide con el backtest con costes.
+
+**Embudo de 3 etapas:**
+1. **Filtro de entrada** (sin código): ¿fundamento económico/conductual
+   claro o evidencia documentada? Si no, se descarta sin tocar datos.
+2. **Construcción única + backtest**, reutilizando el motor ya
+   auditado (`cargar_y_verificar`/`agregar_diario`, reconstrucción
+   horaria, `calcular_r_multiplos`, `metricas_en_r`, los 3 escenarios
+   de coste, tope de MAE en −1R) — sin repetir las auditorías genéricas
+   ya hechas (Bid/Ask, spread/riesgo) salvo que la estrategia
+   introduzca un mecanismo de ejecución nuevo.
+3. **Puerta de decisión:** Media R≤0 o PF≤1 en el escenario de solo
+   spread real → se descarta sin optimizar. Solo si es razonablemente
+   consistente se invierte en robustez/validación independiente —
+   "candidata encontrada" no es lo mismo que "demostrada rentable en
+   real".
+
+### Primera candidata: Gap Fade de apertura
+
+Fundamento: los gaps de apertura reflejan desequilibrios de liquidez
+overnight que se corrigen parcialmente al volver la liquidez de
+sesión normal — patrón documentado en la práctica de trading de
+índices. Construido en barra DIARIA (reutilizando `agregar_diario`) para
+poder probar los 3 mercados sin depender de la reconstrucción horaria
+intradía (evita el problema ya conocido en XAUUSD). Reglas únicas, sin
+optimizar (ver `research/estrategia_gap_fade.py`): señal = |gap|>0,5
+ATR(14) diario; dirección contraria al gap; SL=1 ATR; TP=cierre
+anterior; cierre forzoso al Close del mismo día.
+
+| Mercado | n | Media R | PF | %Acierto | Drawdown |
+|---|---|---|---|---|---|
+| USTEC | 26 | +0,1056 | 1,41 | 57,7% | 2,61R |
+| US500 | 28 | +0,1635 | 1,81 | 57,1% | 1,53R |
+| XAUUSD | 10 | −0,2023 | 0,58 | 50,0% | 3,38R |
+
+**No pasa el corte de la Etapa 3 todavía** (no se invierte en
+robustez): muestra muy pequeña (10-28 operaciones en 3,75 años, el
+umbral de 0,5 ATR filtra casi todo); el resultado positivo de
+USTEC/US500 está concentrado casi en su totalidad en 2026 (PF>5, el año
+más corto y más reciente), con 2024/2025 planos o negativos — patrón
+típico de artefacto de régimen reciente, no de ventaja estable; oro
+negativo. No se descarta el concepto (el fundamento sigue siendo
+válido), pero el resultado actual no es "razonablemente prometedor" —
+pendiente de decidir con el usuario si se prueba una única versión con
+un umbral de gap menos estricto (más muestra) o se pasa a otra
+candidata.
