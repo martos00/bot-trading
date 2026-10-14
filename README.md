@@ -2108,3 +2108,85 @@ pequeño (0,04-0,07 pp), y 2024 contradice la hipótesis en ambos índices
 de acciones. **Evidencia débil — se descarta esta hipótesis, sin
 optimizar la ventana ni construir estrategia.** No se prueban ventanas
 alternativas (5 días, 2 días, etc.) para intentar rescatarlo.
+
+## FASE 1 (candidata C, última anomalía sobre este histórico) — Pre-FOMC Announcement Drift
+
+### 1. Calendario FOMC 2023-2026 (verificado, no inventado)
+
+Fechas del 2º día de cada reunión programada (día del comunicado),
+obtenidas por búsqueda web: 2023 y 2026 confirmadas directamente desde
+federalreserve.gov; 2024 y 2025 desde el calendario tentativo de la Fed
+citado por múltiples fuentes secundarias coincidentes (sin acceso
+directo a la página oficial para esos dos años en esta sesión — nivel
+de confianza alto pero no de primera mano). Hora de publicación: 14:00
+ET, política vigente desde 2013 (confirmada por búsqueda). 30 eventos
+dentro del rango de nuestros datos (2023-01 a 2026-10-13); los de
+2026-10-28 y 2026-12-09 quedan fuera de rango.
+
+### 2. Ventana pre-registrada (adaptada a los datos disponibles)
+
+Retorno desde el Close de la sesión RTH (16:00 ET) del día hábil
+anterior hasta el Close de la vela 13:45-14:00 ET del día del anuncio
+(justo antes de la publicación). Es una adaptación declarada de la
+ventana original de Lucca & Moench (~24h con datos de futuros casi
+continuos) a velas M15 — no una réplica exacta.
+
+### 4. USTEC/US500 con offset confirmado; XAUUSD excluido
+
+XAUUSD se excluye de esta prueba intradía: ya se comprobó (en la
+hipótesis de momentum intradía) que el método robusto de
+reconstrucción horaria solo cubre el 43,6% de los días en XAUUSD con
+regímenes inestables — no hay manera fiable de localizar las 14:00 ET
+en su histórico. No se fuerza el análisis con una reconstrucción que ya
+sabemos que no es confiable.
+
+### 3, 5, 6. Resultado (control = misma ventana en días sin FOMC;
+incertidumbre con bootstrap de clusters, un cluster por evento FOMC con
+sus días de control precedentes — cada evento aporta una sola
+observación, sin solapamiento dentro del propio evento)
+
+| Mercado | Eventos usables (de 30) | Media tratamiento | Media control | Efecto | IC95% diferencia |
+|---|---|---|---|---|---|
+| USTEC | 21 | +0,0064% | +0,1445% | **−0,1381 pp** | [−0,5054, +0,2687] cruza 0 |
+| US500 | 24 | −0,0050% | +0,0922% | **−0,0972 pp** | [−0,3280, +0,1679] cruza 0 |
+
+**El efecto es de signo CONTRARIO al predicho en ambos mercados** (la
+ventana pre-FOMC rinde menos que un día normal, no más), aunque no
+significativo (IC95% amplios, cruzan cero). Solo ~70-80% de los 30
+eventos del calendario son usables (resto descartado por offset no
+confirmado o falta de referencia del día anterior — limitación de
+tamaño de muestra explícita, 21-24 eventos). Sensibilidad: quitar el
+mejor y el peor evento no cambia el signo (USTEC: +0,0064%→−0,0661%;
+US500: −0,0050%→−0,0381%) — no depende de 1-2 eventos extremos. Por
+año: 2024 es el único año con efecto positivo en ambos mercados; 2023,
+2025 y 2026 son negativos — sin consistencia.
+
+### 7. Nuestro resultado vs. la evidencia académica original
+
+Lucca & Moench (2015) documentan una deriva alcista históricamente
+robusta en el S&P500 (futuros) antes de 2015, con estudios posteriores
+sugiriendo que el efecto se debilitó tras publicarse y ser ampliamente
+conocido. **Nuestro resultado en CFDs 2023-2026 no reproduce ese
+hallazgo** — ni en dirección ni en magnitud. Esto no invalida el
+estudio original (que usa datos, instrumento y período distintos); solo
+confirma que, en nuestra muestra, mercado y ventana concretos, la
+deriva no aparece.
+
+### 8. Decisión
+
+**Se descarta esta hipótesis.** Efecto de signo contrario al predicho,
+no significativo, muestra pequeña (21-24 eventos) y sin patrón por año.
+No se construye estrategia, no se prueban ventanas horarias
+alternativas.
+
+## Cierre del ciclo de 4 ventajas documentadas sobre 2023-2026
+
+Con esta se cierran las 3 candidatas propuestas (A: momentum intradía;
+B: cambio de mes; C: pre-FOMC drift) más la hipótesis RSI(2)+SMA200
+anterior — 4 hipótesis distintas, ninguna con evidencia suficiente para
+construir una estrategia en USTEC/US500/XAUUSD con el histórico
+2023-2026. Conforme a lo acordado, esta es la última anomalía
+investigada sobre este histórico: el siguiente paso es revisar
+metodología y necesidades de datos (ver la propuesta de fuentes de
+datos ya documentada más arriba) antes de seguir probando hipótesis
+nuevas sobre la misma ventana ya explorada repetidamente.
