@@ -1915,3 +1915,44 @@ de Fase 3 (filtros, SL/TP, validación pre-2023). Se deja documentada
 como pista débil, no como hipótesis cerrada de forma permanente: con
 datos distintos (pre-2023) o un rediseño posterior podría revisarse,
 pero no ahora.
+
+### Ampliación a más mercados (Nasdaq 100, S&P 500, Dow Jones, Russell 2000, DAX 40, oro)
+
+Mismo protocolo exacto, sin optimizar por mercado (RSI(2)<15, SMA200
+diaria, horizontes +1/3/5d, una señal por episodio, grupo control =
+mismo uptrend sin sobreventa, IC95% de la diferencia por bootstrap de
+bloques conjunto) — reutilizando
+`research/hipotesis_rsi2_verificacion_final.py` sin modificarlo,
+simplemente con más instrumentos.
+
+**Datos NO disponibles — no se inventa resultado:** este proyecto no
+tiene histórico exportado de **Dow Jones (US30/DJ30), Russell 2000
+(US2000) ni DAX 40 (GER40)** — ninguno de los exportadores MQL5 usados
+hasta ahora los ha generado. Solo se puede testear con lo ya exportado:
+**Nasdaq 100 (USTEC), S&P 500 (US500) y oro (XAUUSD)**. Para los otros
+tres habría que decidir fuente de datos (ver la propuesta ya
+documentada más abajo) antes de poder testearlos.
+
+**Resultado (9 combinaciones: 3 mercados × 3 horizontes):**
+
+| Mercado | +1d | +3d | +5d | Episodios |
+|---|---|---|---|---|
+| USTEC (Nasdaq 100) | +0,286pp (cruza 0) | +0,432pp (cruza 0) | **+0,658pp (excluye 0)** | 57 |
+| US500 (S&P 500) | **+0,264pp (excluye 0)** | **+0,429pp (excluye 0)** | +0,348pp (cruza 0) | 59 |
+| XAUUSD (oro) | −0,015pp (cruza 0) | +0,382pp (cruza 0) | +0,341pp (cruza 0) | 42 |
+
+**El oro debilita el caso en vez de reforzarlo:** ningún horizonte es
+significativo, y a +1d el efecto puntual es ligeramente NEGATIVO
+(−0,015pp) — dirección opuesta a la hipótesis. Por año, 2026 en oro
+también muestra el tratamiento peor que el control (−1,01% vs
++0,04%, n=7). De las 9 combinaciones totales entre los 3 mercados con
+datos, solo 3 son estadísticamente significativas, y ningún horizonte
+es significativo en los 3 mercados a la vez (ni siquiera en 2 de los
+3 de forma consistente con el patrón de los otros dos).
+
+**Decisión final (manteniendo el mismo veredicto, ahora con más
+apoyo):** la ventaja no se sostiene de forma convincente en los
+mercados disponibles. No se recomienda pasar a construir una
+estrategia sobre esta señal. Queda cerrada esta línea de investigación
+RSI(2)+SMA200 por ahora — no se reabre sin un cambio sustancial de
+datos (los tres mercados pendientes) o de diseño.
