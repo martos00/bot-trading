@@ -1722,3 +1722,99 @@ disciplina que hasta ahora), nunca para buscar entre variantes.
 
 **No se ha escrito código de esta propuesta** — pendiente de que el
 usuario decida qué fuente(s) de datos usar antes de implementar nada.
+
+## Cambio de metodología: identificar la ventaja antes de construir la estrategia
+
+A partir de aquí, nuevo protocolo de 4 fases para cada hipótesis: (1)
+identificar una ventaja con explicación económica/conductual, sin TP/SL
+ni filtros; (2) decisión — solo si hay evidencia razonable se diseña la
+estrategia; (3) construir filtros y gestión de riesgo; (4) forward
+testing/incubación antes de real. Las estrategias anteriores (ORB,
+Liquidity Sweep, VWAP, Trend Continuation) se construyeron completas
+desde el principio — este cambio invierte el orden.
+
+## FASE 1 — Reversión a la media de corto plazo (RSI(2) + SMA200) en tendencia alcista
+
+Hipótesis inspirada en el enfoque RSI(2)+SMA200 (Connors, difundido por
+Rubén Martínez): en índices en tendencia alcista, una sobreventa de
+corto plazo va seguida de una recuperación mayor que la de días
+equivalentes sin sobreventa. USTEC como mercado principal, US500 como
+comparación. Ver `research/hipotesis_rsi2_sma200.py` para el
+pre-registro completo (docstring) — ejecutado directamente, sin
+construir TP/SL/filtros.
+
+**Pre-registro (fijado antes de ejecutar):** barra diaria agregada
+desde M15 por fecha de calendario del servidor; tendencia = Close
+diario > SMA200 diaria; sobreventa = RSI(2) de Wilder por debajo de
+TRES umbrales fijos (5, 10, 15 — los tres se reportan siempre);
+horizontes futuros 1/3/5/10 días; retorno = Close[t+h]/Open[t+1]-1 (se
+entra en el Open del día siguiente a la señal, sin lookahead); grupo de
+CONTROL = mismos días en tendencia alcista pero SIN sobreventa (para no
+confundir la deriva media del uptrend con información incremental del
+RSI); incertidumbre con bootstrap de bloques de 10 señales consecutivas
+(misma convención que Hipótesis A/B), 2.000 repeticiones.
+
+**Resultado — el efecto (tratamiento−control) es positivo en las 24
+combinaciones probadas** (2 instrumentos × 3 umbrales × 4 horizontes),
+sin una sola excepción:
+
+| Horizonte +5d (el más citado en la literatura) | n tratamiento | Media tratamiento | Media control (mismo uptrend) | Efecto |
+|---|---|---|---|---|
+| USTEC, RSI(2)<5 | 25 | +1,374% | +0,396% | +0,978 pp |
+| USTEC, RSI(2)<10 | 58 | +1,005% | +0,378% | +0,626 pp |
+| USTEC, RSI(2)<15 | 96 | +1,202% | +0,304% | +0,898 pp |
+| US500, RSI(2)<5 | 24 | +1,537% | +0,283% | +1,254 pp |
+| US500, RSI(2)<10 | 56 | +1,168% | +0,252% | +0,917 pp |
+| US500, RSI(2)<15 | 93 | +0,789% | +0,254% | +0,535 pp |
+
+El IC95% bootstrap del grupo tratamiento excluye claramente el cero (y
+en la mayoría de casos tampoco solapa con el del grupo control) para
+RSI(2)<10 y <15 en ambos instrumentos y casi todos los horizontes —
+RSI(2)<5 tiene menos observaciones (24-25) y por tanto intervalos más
+anchos, ocasionalmente cruzando cero en el horizonte +10d. El
+tratamiento supera de forma consistente no solo a cero sino a la propia
+deriva del uptrend (grupo control) — la condición clave para no
+confundir "el índice sube en tendencia alcista" con "el RSI(2) aporta
+información".
+
+**Persistencia por año (RSI(2)<10, +5d):** positiva en todos los años
+con muestra informativa (2024: USTEC +1,12% vs control +0,41%; US500
++1,94% vs +0,28%. 2025: USTEC +0,54% vs +0,28%; US500 +0,49% vs +0,22%.
+2026: USTEC +1,78% vs +0,29%; US500 +0,94% vs +0,17%). 2023 tiene
+muestra demasiado pequeña (n=1-3, por el warm-up de SMA200 hasta
+acumular 200 velas diarias) para ser informativo por sí solo.
+
+**Limitaciones explícitas, sin forzar la conclusión:**
+- Las observaciones por horizonte se solapan en el tiempo (no son
+  independientes) — mitigado con bootstrap de bloques, no eliminado.
+- 24 combinaciones probadas sin corrección por comparaciones múltiples;
+  lo que compensa parcialmente es que el efecto es positivo en las 24,
+  no solo en unas pocas — un patrón más difícil de explicar por azar
+  puro que un hallazgo aislado, pero no es una prueba formal.
+- Todo el periodo 2023-2026 ha sido fuertemente alcista en ambos
+  índices — no se puede distinguir aquí si la ventaja persiste en un
+  régimen de mercado distinto (lateral o bajista); exactamente el tipo
+  de pregunta que corresponde a la validación fuera de muestra (Fase
+  3), no a esta fase.
+- **Este resultado usa el mismo periodo 2023-2026 ya explorado
+  repetidamente en el proyecto — se trata como investigación
+  exploratoria, NO como validación independiente.**
+
+### FASE 2 — Decisión
+
+**Hay evidencia razonable de una ventaja persistente** (consistencia
+direccional perfecta entre instrumentos/umbrales/horizontes, efecto
+económicamente significativo de varios puntos porcentuales por encima
+del control, persistencia a través de los años con muestra informativa)
+como para pasar a diseñar una estrategia — sin considerarlo todavía
+validado. Propuesta concreta para Fase 3 (pendiente de confirmación del
+usuario antes de programar nada): entrada en el Open del día siguiente
+a que RSI(2) cierre por debajo de un umbral (10 parece el mejor
+equilibrio muestra/efecto de los tres) en tendencia alcista (Close>SMA200),
+salida por: (a) un número fijo de días (p.ej. 3-5, el horizonte con
+mejor relación efecto/IC), o (b) una condición de reversión del propio
+RSI (p.ej. RSI(2)>70) con un límite máximo de días en el mercado, más
+un SL de protección basado en estructura (no probado todavía) — a
+definir y pre-registrar en Fase 3, con el mismo motor de costes en
+R-múltiplos ya auditado, y validada contra historial pre-2023 antes de
+considerarla seria.
