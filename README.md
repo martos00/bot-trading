@@ -2243,3 +2243,85 @@ válido), pero el resultado actual no es "razonablemente prometedor" —
 pendiente de decidir con el usuario si se prueba una única versión con
 un umbral de gap menos estricto (más muestra) o se pasa a otra
 candidata.
+
+### Verificación del gap de apertura — problema real de definición, no de parámetro
+
+Antes de tocar el umbral, verificación directa contra los datos de qué
+mide exactamente `(Open[t]-Close[t-1])`:
+
+1-2. Los precios usados (Close de la última vela M15 del día de
+calendario del SERVIDOR, Open de la primera del día siguiente) caen en
+una frontera de **23:45-01:00 hora de servidor**, que equivale
+aproximadamente a **17:00-18:00 ET** según la correspondencia horaria
+ya reconstruida — poco después del cierre NYSE (16:00 ET), no a las
+9:30 ET ni al hueco completo cierre-apertura (17,5h).
+
+3. Confirmado con datos: en el 87-91% de los días hay una pausa de
+mantenimiento del bróker de solo ~1h15m en esa frontera (categoría ya
+existente `cierre_diario`) — una ventana estrecha, no el hueco de
+liquidez NY completo. En el 9-13% restante (`intrasesion`) no hay
+pausa alguna: el "gap" ahí es ruido entre dos velas de 15 minutos, no
+un gap real.
+
+4. **No coherente con el fundamento económico** de la hipótesis
+(desequilibrio de liquidez durante todo el período de baja negociación
+NY-cierre→NY-apertura) — medimos una ventana distinta y ni siquiera
+presente todos los días.
+
+5. Los precios Open/Close son Bid reales ejecutables con el modelo de
+costes ya auditado — el problema es puramente de definición, no de
+ejecución ni de costes.
+
+**Decisión: no se prueba 0,3 ATR ni ningún otro umbral.** La
+implementación actual de Gap Fade queda marcada como **no concluyente
+por diseño** (mide el fenómeno equivocado), no como hipótesis
+descartada por falta de ventaja. Para probarla correctamente haría
+falta reconstruir el gap usando el cierre/apertura real de sesión NY
+(factible para USTEC/US500 con la reconstrucción horaria ya validada;
+no ahora, por decisión explícita de pasar a otra candidata).
+
+### Segunda candidata: Time Series Momentum (Moskowitz, Ooi & Pedersen, 2012)
+
+Fundamento: uno de los hallazgos más robustos y replicados de la
+literatura cuantitativa — el signo del retorno de los últimos 12 meses
+predice el signo del retorno del mes siguiente, documentado en
+prácticamente todas las clases de activo durante décadas, incluidas
+materias primas como el oro (a diferencia de las 4 hipótesis
+anteriores, específicas de acciones/EEUU). Reglas únicas (ver
+`research/estrategia_momentum_series_temporales.py`): dirección = signo
+del retorno de 252 días de sesión al cierre de cada mes; entrada en el
+Open del mes siguiente; SL = 2×ATR(20) (adaptación nuestra — el paper
+original no usa SL fijo, lo necesitamos para la contabilidad en R);
+cierre al fin de mes si no se toca el SL.
+
+| Mercado | n | Media R | PF | %Acierto | Drawdown |
+|---|---|---|---|---|---|
+| USTEC | 32 | +0,3556 | 1,86 | 56,2% | 3,00R |
+| US500 | 32 | +0,2271 | 1,52 | 53,1% | 3,87R |
+| XAUUSD | 33 | +0,6869 | 3,07 | 54,5% | 3,43R |
+
+**Hallazgo crítico que invalida estos números como evidencia: el
+100% de las 97 operaciones (en los 3 mercados) son LARGAS — cero
+cortos.** Verificado directamente: de 33-34 meses evaluables por
+mercado, **ninguno** tuvo un retorno de 12 meses negativo (mínimo
+observado +2,8% en oro, +5,7% en USTEC, +6,7% en US500). Esto no es un
+fallo de código — es que los tres mercados han estado en una tendencia
+alcista continua durante todo el tramo con historial suficiente
+(2024-2026). Como consecuencia, **esta implementación es
+matemáticamente idéntica a "siempre largo, rebalanceo mensual, stop de
+2×ATR"** en esta muestra concreta — la señal de momentum no tuvo
+ninguna oportunidad de demostrar capacidad discriminativa (nunca hubo
+una señal corta que comparar). Los resultados positivos no son
+evidencia de que el momentum de series temporales funcione; son
+evidencia (ya conocida por hipótesis anteriores) de que estar largo en
+estos 3 activos en 2024-2026 fue rentable.
+
+**Decisión: no se trata como candidata válida ni se descarta la
+hipótesis** — el resultado es simplemente **no informativo** en esta
+muestra, por la misma limitación de fondo que motivó la propuesta de
+fuentes de datos (2023-2026 no contiene ningún período bajista o de
+momentum negativo en estos 3 mercados con el que contrastar). No se
+prueba con otro lookback para forzar variación de señal (sería buscar
+el parámetro que da el resultado deseado). Validarla de verdad exigiría
+historial con algún tramo bajista real — pendiente de la decisión de
+fuente de datos ya propuesta.
