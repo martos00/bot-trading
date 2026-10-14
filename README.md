@@ -1956,3 +1956,94 @@ mercados disponibles. No se recomienda pasar a construir una
 estrategia sobre esta señal. Queda cerrada esta línea de investigación
 RSI(2)+SMA200 por ahora — no se reabre sin un cambio sustancial de
 datos (los tres mercados pendientes) o de diseño.
+
+## FASE 1 (nueva hipótesis) — Tres ventajas documentadas, evaluadas sin mirar rentabilidad primero
+
+Alcance fijado: solo USTEC, US500 y XAUUSD — sin comprar ni descargar
+histórico de otros mercados. Misma metodología (identificar ventaja →
+decisión → diseño → forward testing).
+
+### 1-3. Tres candidatas documentadas (evidencia, fundamento, limitaciones)
+
+**A. Market Intraday Momentum** (Gao, Han, Xu & Zhou, *Journal of
+Financial Economics*, 2018). Evidencia: el retorno de la primera media
+hora de la sesión regular predice, con el mismo signo, el retorno de
+la última media hora de la misma sesión, documentado en índices/ETFs
+de EEUU. Fundamento económico: flujo institucional de rebalanceo que
+se concentra al final del día ("smart money" opera tarde, continuando
+la dirección ya marcada). Limitaciones: publicado en 2018 — posible
+decaimiento por arbitraje tras publicación; requiere reconstrucción
+horaria fiable de la sesión (solo disponible para USTEC/US500 en este
+proyecto, ver más abajo).
+
+**B. Efecto cambio de mes** (Ariel 1987; Lakonishok & Smidt 1988).
+Evidencia: retornos anormalmente positivos en los últimos días de un
+mes y los primeros del siguiente, documentado en múltiples mercados y
+décadas. Fundamento: flujos de caja institucionales/retail
+concentrados en torno al cambio de mes (nóminas, aportaciones a
+pensiones, rebalanceo de fondos). Limitaciones: efecto muy conocido
+desde hace décadas (posible arbitraje), pocos eventos por año (~12),
+mecanismo menos claro para materias primas como el oro.
+
+**C. Pre-FOMC Announcement Drift** (Lucca & Moench, 2015). Evidencia:
+deriva alcista anormal en las ~24h previas a cada reunión programada de
+la Fed, documentada de forma robusta en el S&P500. Fundamento:
+resolución de la prima de riesgo por incertidumbre de política
+monetaria. Limitaciones: requiere un calendario externo de fechas FOMC
+verificado (nueva dependencia de datos, aunque no de precio); muy pocos
+eventos en 2023-2026 (~32), limitando la potencia estadística en
+nuestra ventana; estudios posteriores apuntan a que el efecto se ha
+debilitado tras su publicación.
+
+### 4. Selección (sin mirar rentabilidad todavía)
+
+**Seleccionada: A — Market Intraday Momentum.** Motivo, antes de ver
+ningún resultado: (a) es una señal de frecuencia DIARIA (~700-800
+observaciones por mercado en 2023-2026), muchísima más potencia
+estadística que B (~12 eventos/año) o C (~8 eventos/año); (b) reutiliza
+100% la reconstrucción horaria de sesión ya validada en este proyecto,
+sin ninguna dependencia de datos nueva; (c) es un mecanismo
+genuinamente distinto a todo lo ya probado (ORB, Liquidity Sweep, VWAP,
+EMA pullback, RSI(2)); (d) es intradía puro, el objetivo explícito de
+esta fase.
+
+**Limitación de datos verificada antes de definir la hipótesis (no
+asumida):** se comprobó si el método robusto de reconstrucción horaria
+(salto semanal de TickVolume) funciona también en XAUUSD. No lo hace
+de forma confiable: 117 regímenes brutos, solo 15 confirmados, apenas
+43,6% de días con cobertura confirmada (frente a 82,5%-95,7% en
+USTEC/US500), sin un patrón de DST limpio. **XAUUSD se excluye de esta
+hipótesis** — no por resultado negativo, sino por falta de una
+reconstrucción horaria fiable (coherente con que el oro cotiza casi
+24h sin una apertura de caja única como el NYSE).
+
+### 5-6. Comprobación estadística (USTEC, US500)
+
+Pre-registro: sesión RTH 9:30-16:00 ET (offset confirmado); "primera
+media hora" = retorno de las 2 primeras velas M15 de la sesión;
+"última media hora" = retorno de las 2 últimas; grupo tratamiento =
+apertura>0, control = apertura≤0; cada día aporta una sola observación
+(sin solapamiento entre días, a diferencia del estudio RSI(2)); IC95%
+de la diferencia y de la correlación de Pearson por bootstrap de
+bloques de 10 días consecutivos.
+
+| | n días | Media cierre (apertura>0) | Media cierre (apertura≤0) | Efecto | IC95% diferencia | Correlación |
+|---|---|---|---|---|---|---|
+| USTEC | 678 | −0,0018% | +0,0106% | −0,0124 pp | [−0,0489, +0,0248] cruza 0 | −0,0058 |
+| US500 | 799 | +0,0008% | +0,0092% | −0,0083 pp | [−0,0382, +0,0210] cruza 0 | −0,0107 |
+
+Sin evidencia de ventaja: efecto casi nulo y de **signo contrario** al
+predicho por la hipótesis (ligeramente peor tras apertura positiva, no
+mejor) en ambos mercados, IC95% cruzando cero ampliamente, correlación
+prácticamente cero (−0,006 a −0,011), sin patrón consistente por año
+(el signo cambia de año en año sin tendencia clara).
+
+### 7. Decisión
+
+**Se descarta esta hipótesis sin construir estrategia.** No hay
+indicio de la ventaja ni en USTEC ni en US500 con los datos
+disponibles — resultado limpio, no forzado. Candidatas B y C quedan
+documentadas pero no probadas (requieren datos de calendario
+adicionales o tienen menos potencia estadística en nuestra ventana);
+no se descartan de forma permanente, solo no se investigan ahora salvo
+que el usuario lo pida explícitamente.
