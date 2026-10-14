@@ -133,6 +133,58 @@ def resumen_grupo(nombre, sub, h):
     return dict(n=n, media=media, mediana=mediana, ic_lo=lo, ic_hi=hi)
 
 
+def bootstrap_diferencia_bloques(uptrend_ordenado, col_ret, es_tratamiento, bloque=BLOQUE_BOOTSTRAP,
+                                  repeticiones=REPETICIONES_BOOTSTRAP, seed=SEED):
+    """CORRECCION (verificacion punto 2): la version anterior bootstrapeaba
+    tratamiento y control por SEPARADO (bloques de cada grupo tomados de
+    dias distintos del calendario) y luego restaba los puntos estimados --
+    eso NO es el IC de la diferencia, es solo ver si dos ICs separados se
+    solapan. Aqui se resamplea en bloques de dias CONSECUTIVOS de la
+    MISMA secuencia cronologica de dias en tendencia alcista (preservando
+    que tratamiento y control estan entrelazados en el tiempo), y en cada
+    repeticion se recalculan ambas medias con la etiqueta que le tocase a
+    cada dia y se guarda la diferencia -- asi se obtiene el IC de la
+    diferencia misma, no la comparacion de dos ICs independientes."""
+    ret = uptrend_ordenado[col_ret].to_numpy(dtype=float)
+    es_trat = uptrend_ordenado[es_tratamiento].to_numpy(dtype=bool)
+    valido = ~np.isnan(ret)
+    ret, es_trat = ret[valido], es_trat[valido]
+    n = len(ret)
+    if n < bloque * 2:
+        return (np.nan, np.nan, 0)
+    rng = np.random.default_rng(seed)
+    n_bloques = int(np.ceil(n / bloque))
+    max_inicio = n - bloque
+    diffs = []
+    for _ in range(repeticiones):
+        inicios = rng.integers(0, max_inicio + 1, size=n_bloques)
+        idx = np.concatenate([np.arange(s, s + bloque) for s in inicios])[:n]
+        ret_b, trat_b = ret[idx], es_trat[idx]
+        if trat_b.sum() == 0 or (~trat_b).sum() == 0:
+            continue  # repeticion sin uno de los dos grupos -- se descarta, no se fuerza
+        diffs.append(ret_b[trat_b].mean() - ret_b[~trat_b].mean())
+    if not diffs:
+        return (np.nan, np.nan, 0)
+    diffs = np.array(diffs)
+    return np.percentile(diffs, 2.5), np.percentile(diffs, 97.5), len(diffs)
+
+
+def detectar_episodios(uptrend_ordenado, umbral):
+    """CORRECCION (verificacion punto 3): cuenta cuantos EPISODIOS de caida
+    distintos hay detras de las señales de un umbral, agrupando como un
+    mismo episodio los dias de señal consecutivos (indice de dia habil
+    consecutivo, sin huecos) -- para saber si el n reportado son eventos
+    realmente independientes o la misma caida contada varias veces."""
+    idx_señal = uptrend_ordenado.index[uptrend_ordenado['rsi2'] < umbral].to_numpy()
+    if len(idx_señal) == 0:
+        return [], []
+    rupturas = np.where(np.diff(idx_señal) > 1)[0]
+    limites = [0] + list(rupturas + 1) + [len(idx_señal)]
+    episodios = [idx_señal[limites[i]:limites[i + 1]] for i in range(len(limites) - 1)]
+    primer_dia_episodio = [ep[0] for ep in episodios]
+    return episodios, primer_dia_episodio
+
+
 def analizar_instrumento(nombre, path):
     print(f"\n\n################ FASE 1 -- {nombre} ################")
     df = cargar_m15(path)
@@ -157,7 +209,34 @@ def analizar_instrumento(nombre, path):
             r_t = resumen_grupo(f'tratamiento (RSI2<{umbral})', tratamiento, h)
             r_c = resumen_grupo(f'control (RSI2>={umbral}, mismo uptrend)', control, h)
             if r_t and r_c:
-                print(f"        efecto (tratamiento - control) = {(r_t['media']-r_c['media'])*100:+.3f} pp")
+                efecto = r_t['media'] - r_c['media']
+                uptrend_ord = uptrend.sort_values('dia').copy()
+                uptrend_ord['es_tratamiento'] = uptrend_ord['rsi2'] < umbral
+                lo_d, hi_d, n_rep = bootstrap_diferencia_bloques(uptrend_ord, f'ret_{h}d', 'es_tratamiento')
+                print(f"        efecto (tratamiento - control) = {efecto*100:+.3f} pp  "
+                      f"IC95% de la DIFERENCIA (bloques conjuntos, {n_rep} repeticiones validas)="
+                      f"[{lo_d*100:+.3f} pp, {hi_d*100:+.3f} pp]")
+
+    print("\n  --- Verificacion (punto 3): episodios distintos vs. señales repetidas en la misma caida ---")
+    for umbral in UMBRALES_RSI:
+        # OJO: se usa el indice ORIGINAL de la secuencia diaria completa
+        # (sin resetear), no el de este subconjunto filtrado -- es lo que
+        # permite detectar "dias de bolsa consecutivos" de verdad (el
+        # indice de 'diario' ya no tiene huecos de fin de semana porque
+        # solo contiene dias con datos reales).
+        uptrend_ord = uptrend.sort_values('dia')
+        episodios, primeros = detectar_episodios(uptrend_ord, umbral)
+        n_señales = sum(len(e) for e in episodios)
+        if not episodios:
+            print(f"    RSI(2)<{umbral}: sin señales")
+            continue
+        vals_todas = uptrend_ord.loc[uptrend_ord['rsi2'] < umbral, 'ret_5d'].dropna()
+        vals_primer_dia = uptrend_ord.loc[primeros, 'ret_5d'].dropna()
+        print(f"    RSI(2)<{umbral}: {n_señales} señales repartidas en {len(episodios)} episodios distintos "
+              f"(media {n_señales/len(episodios):.1f} señales/episodio)")
+        print(f"      +5d usando TODAS las señales: n={len(vals_todas)} media={vals_todas.mean()*100:+.3f}%")
+        print(f"      +5d usando solo el PRIMER dia de cada episodio: n={len(vals_primer_dia)} "
+              f"media={vals_primer_dia.mean()*100:+.3f}%")
 
     print("\n  --- Persistencia por año (umbral RSI(2)<10, horizonte +5d, el mas citado en la literatura) ---")
     for anio, g in uptrend.groupby('anio'):

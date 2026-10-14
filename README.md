@@ -1767,6 +1767,13 @@ sin una sola excepción:
 | US500, RSI(2)<10 | 56 | +1,168% | +0,252% | +0,917 pp |
 | US500, RSI(2)<15 | 93 | +0,789% | +0,254% | +0,535 pp |
 
+*(Nota: esta tabla y el párrafo original de abajo describen el primer
+cálculo, con la incertidumbre de tratamiento y control vistas por
+separado. La sección "Verificación previa a Fase 3" más abajo corrige
+esto con el IC95% de la DIFERENCIA directamente — el alcance real del
+hallazgo es más estrecho de lo que este párrafo sugiere: léase junto
+con esa corrección, no de forma aislada.)*
+
 El IC95% bootstrap del grupo tratamiento excluye claramente el cero (y
 en la mayoría de casos tampoco solapa con el del grupo control) para
 RSI(2)<10 y <15 en ambos instrumentos y casi todos los horizontes —
@@ -1800,21 +1807,67 @@ acumular 200 velas diarias) para ser informativo por sí solo.
   repetidamente en el proyecto — se trata como investigación
   exploratoria, NO como validación independiente.**
 
-### FASE 2 — Decisión
+### Verificación previa a Fase 3 (corrige el alcance de la Fase 1)
 
-**Hay evidencia razonable de una ventaja persistente** (consistencia
-direccional perfecta entre instrumentos/umbrales/horizontes, efecto
-económicamente significativo de varios puntos porcentuales por encima
-del control, persistencia a través de los años con muestra informativa)
-como para pasar a diseñar una estrategia — sin considerarlo todavía
-validado. Propuesta concreta para Fase 3 (pendiente de confirmación del
-usuario antes de programar nada): entrada en el Open del día siguiente
-a que RSI(2) cierre por debajo de un umbral (10 parece el mejor
-equilibrio muestra/efecto de los tres) en tendencia alcista (Close>SMA200),
-salida por: (a) un número fijo de días (p.ej. 3-5, el horizonte con
-mejor relación efecto/IC), o (b) una condición de reversión del propio
-RSI (p.ej. RSI(2)>70) con un límite máximo de días en el mercado, más
-un SL de protección basado en estructura (no probado todavía) — a
-definir y pre-registrar en Fase 3, con el mismo motor de costes en
+Antes de programar, verificación explícita de 3 puntos sobre
+`research/hipotesis_rsi2_sma200.py` — dos de ellos obligaron a corregir
+el alcance de lo que la Fase 1 realmente demuestra.
+
+**1. RSI(2)/SMA200 sin lookahead — confirmado, sin cambios.** Ambos se
+calculan con `.rolling()`/`.ewm()` directamente sobre `Close` diario
+(causales por construcción); la entrada usa `Open` del día siguiente y
+la salida `Close` del día h — verificado leyendo el código, no solo
+por diseño.
+
+**2. La incertidumbre reportada era la de dos grupos por separado, NO
+la de la diferencia — corregido, y cambia la conclusión.** La versión
+original bootstrapeaba tratamiento y control con bloques tomados de
+días distintos de cada grupo y restaba los dos puntos estimados; eso
+no es el intervalo de confianza de la diferencia, solo una comparación
+visual de dos IC. Se añadió un bootstrap de bloques CONJUNTO (bloques
+de 10 días consecutivos de la secuencia real de días en tendencia
+alcista, preservando el entrelazado cronológico de ambos grupos) que
+calcula directamente la distribución de (media tratamiento − media
+control). Resultado: el IC95% de la diferencia **cruza cero en una
+fracción relevante de las 24 combinaciones**, incluyendo el combo más
+citado antes (USTEC, RSI(2)<10, +5d: efecto puntual +0,626pp, pero
+IC95% de la diferencia=[−0,287pp, +1,550pp]). A +10d, NINGUNA de las 6
+combinaciones (2 instrumentos × 3 umbrales) excluye cero. El patrón que
+sí se mantiene robusto bajo esta corrección: **RSI(2)<15 a horizontes
+cortos (+1d a +5d)**, en ambos instrumentos (p.ej. USTEC +5d
+IC95%=[+0,300pp,+1,512pp]; US500 +5d IC95%=[+0,055pp,+0,978pp]).
+
+**3. Señales repetidas dentro de la misma caída — confirmado que
+inflan parcialmente el efecto, sobre todo en RSI(2)<10.** Las señales
+no son eventos independientes: se agrupan en episodios (días
+consecutivos de sobreventa dentro de la misma caída). USTEC RSI(2)<10:
+58 señales en solo 32 episodios distintos; al quedarse solo con el
+PRIMER día de cada episodio, la media a +5d cae de +1,005% a +0,525%
+(casi la mitad). El mismo chequeo en RSI(2)<15 (96 señales, 57
+episodios) es más estable: +1,202%→+0,963%. US500 muestra el mismo
+patrón, más moderado.
+
+**Conclusión revisada:** la ventaja es más débil y mucho menos uniforme
+de lo que se reportó inicialmente. Sigue habiendo una señal defendible,
+pero acotada a **RSI(2)<15, horizontes cortos (+1d a +5d)** — no al
+umbral más estricto (RSI(2)<10, muestra pequeña y gran parte del efecto
+viene de contar la misma caída varias veces) ni a horizontes largos
+(+10d, ningún combo sobrevive la corrección del punto 2). Esto no
+invalida la Fase 1, pero sí reduce su alcance real frente a lo
+presentado antes de esta verificación.
+
+### FASE 2 — Decisión (revisada tras la verificación)
+
+**Hay evidencia acotada, no la "ventaja robusta" descrita inicialmente**
+— suficiente para intentar una versión estrecha y específica en Fase 3
+(RSI(2)<15, salida corta), no la versión más laxa originalmente
+propuesta. Propuesta concreta (pendiente de confirmación del usuario
+antes de programar nada): entrada en el Open del día siguiente a que
+RSI(2) cierre por debajo de 15 en tendencia alcista (Close>SMA200),
+con una única señal por EPISODIO (no reentrar cada día de la misma
+caída, dado el punto 3), salida por un horizonte corto pre-registrado
+(1-5 días, a fijar sin mirar más resultados) o por reversión del propio
+RSI, más un SL de protección basado en estructura (no probado todavía)
+— a definir y pre-registrar en Fase 3, con el mismo motor de costes en
 R-múltiplos ya auditado, y validada contra historial pre-2023 antes de
 considerarla seria.
