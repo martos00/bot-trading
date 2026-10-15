@@ -2633,3 +2633,62 @@ resultado ya conocido salvo en los puntos declarados arriba (gap y
 drawdown de equity). Listo para ejecutarse directamente sobre histórico
 pre-2023 en cuanto esté disponible — sin modificar ninguna regla tras
 verlo.
+
+## Fase 3 (continuación): obtención del histórico Dukascopy
+
+MetaQuotes-Demo confirmó que no devuelve XAUUSD M15 anterior al
+11-jul-2022 — se descarta esa opción. Se pasa a Dukascopy.
+
+**Aviso de seguridad:** al consultar la página wiki oficial de
+Dukascopy sobre exportación de datos, el contenido devuelto pedía
+configurar credenciales de AWS reales y ejecutar `aws s3 sync` contra
+un bucket con nombre no oficial (`cfg-public-proper-wallaby`) bajo
+política "Requester Pays" — no corresponde al método real y
+documentado de Dukascopy (el feed `.bi5` gratuito). Tiene las
+características de una página de wiki comprometida o manipulada. No se
+ejecutó ninguno de esos comandos. Se usó en su lugar el método
+verificado por código fuente (ver abajo).
+
+**La herramienta web de exportación solo permite 1 día por descarga**
+— impracticable a mano para 7 años. Solución: `research/
+descargar_dukascopy_xauusd.py`, construido usando como librería el
+paquete `duka` (PyPI, código abierto, confirmado leyendo su fuente en
+github.com/giuse88/duka — no solo su documentación) para descargar
+ticks directamente, sin pasar por el formulario web.
+
+**Diferencia de ejecución importante encontrada y corregida antes de
+usarlo (verificado leyendo el código de `duka`, no asumido):** las
+velas que genera `duka` por defecto usan el precio **Ask**, no Bid.
+Nuestro motor asume Bid (igual que el histórico MetaQuotes-Demo usado
+hasta ahora). El script de este proyecto NO usa las velas de `duka`
+directamente — usa sus funciones de bajo nivel (`fetch_day`,
+`decompress`) para obtener los ticks Bid+Ask crudos y construye las
+velas M15 en **Bid** él mismo, calculando además el **spread real**
+como la media de (Ask−Bid) de los ticks de cada vela — una mejora
+genuina frente a la columna de spread autoreportada por el broker que
+usábamos hasta ahora.
+
+**Otra diferencia a documentar (no corregida, declarada):** los
+timestamps crudos de Dukascopy están indexados en UTC; los de
+MetaQuotes-Demo están en la hora de servidor del broker (EET/EEST). La
+estrategia agrega por "día de calendario", así que el día agregado en
+los datos de Dukascopy será un día UTC, no EET/EEST — diferencia
+metodológica pequeña pero real entre ambas fuentes.
+
+**Debe ejecutarse en el ordenador del usuario, no en esta sesión** — el
+endpoint de datos de Dukascopy bloquea las IPs de centros de datos
+(confirmado: 429/503 inmediatos desde esta sandbox; la página web
+normal sí respondía, solo el feed de datos está bloqueado aquí).
+
+### Instrucciones para el usuario
+
+```
+pip install duka pandas
+python3 research/descargar_dukascopy_xauusd.py 2015-01-01 2022-07-10 ./dukascopy_xauusd
+```
+
+Descarga mes a mes (reanudable — si se interrumpe, se vuelve a
+ejecutar igual y salta los meses ya completados), e imprime progreso
+día a día. Al terminar, subir aquí los CSV de la carpeta
+`dukascopy_xauusd/` (uno por mes) para unirlos, verificar cobertura/
+calidad y ejecutar la estrategia congelada.
