@@ -3637,3 +3637,39 @@ recién desbloqueadas sobrevivió — pero la limitación de datos que las
 pospuso YA NO EXISTE, y las 3 fueron probadas con el mismo rigor
 (controles de concentración, benchmarks aleatorios, costes) que
 desmontó los falsos positivos anteriores del proyecto.
+
+### 4. Oro vs. Tipos de Interés Reales (TIPS) (`research/hipotesis_oro_tipos_reales.py`)
+
+Añadida tras desbloquear FRED: el oro no paga cupón, su coste de
+oportunidad es el tipo de interés REAL (Erb & Harvey 2013, "The Golden
+Dilemma", *Financial Analysts Journal* 69(4):10-42) — distinta del
+USD-basket (divisa nominal) y del Carry Trade (diferencial nominal)
+ya probados. Serie: DFII10 (TIPS 10 años, FRED), 2015-2026 completo.
+
+Fase 1: correlación contemporánea -0,335 (signo correcto, esperado);
+correlación variación HOY → oro MAÑANA = **-0,046** (signo correcto,
+a diferencia del USD-basket, pero muy débil). Backtest completo
+(n=891, todo el histórico XAUUSD): Media R=+0,032 a coste cero, ya
+plano con 1$ de estrés (PF=0,999) y negativo con 3$ (PF=0,856);
+z=+1,01 no significativo; muy inconsistente año a año (2024:-0,25,
+2025:-0,12, pero 2016/2020/2026 positivos). **Descartada** — dirección
+económica correcta, pero sin magnitud suficiente para sobrevivir a
+costes reales.
+
+**Sesgo de selección acumulado actualizado:** ≈59 + 1 = **60
+hipótesis/combinaciones probadas en total en este proyecto.**
+
+### Balance de esta fase: bloqueo resuelto, 4 familias nuevas probadas, ninguna sobrevive
+
+El bloqueo de datos quedó resuelto (FRED, CFTC, CBOE, todos oficiales
+y gratuitos, accesibles desde esta sesión). Se probaron las 3
+familias pendientes (carry, COT, VIX) más una nueva que surgió de
+tener acceso a FRED (tipos reales) — las 4 con el mismo nivel de
+rigor que todo el proyecto: viabilidad previa, reglas pre-registradas,
+costes reales con estrés, controles aleatorios, y en 3 de los 4 casos
+una comprobación de concentración/benchmark que reveló que un
+resultado aparentemente positivo era beta disfrazada o ruido
+indistinguible del azar. Ninguna sobrevive. El fundamento económico de
+estas 4 familias sigue siendo sólido (no se está descartando la
+teoría) — lo que se descarta es su implementación concreta sobre
+estos instrumentos y este período con los datos disponibles.
