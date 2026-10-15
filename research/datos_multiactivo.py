@@ -41,12 +41,47 @@ UNIVERSO = {
 }
 
 
+def fusionar_domingo_en_lunes(diario):
+    """Correccion de un artefacto REAL de la union HistData/MetaQuotes-Demo
+    en XAUUSD (encontrado al comprobar, a peticion del usuario, que la
+    diferencia de proveedores no genera señales artificiales): HistData
+    (EST sin DST, 2015-2022) agrega por dia de calendario EST, lo que
+    produce una vela "domingo" propia cada semana (solo la breve
+    reapertura del domingo por la tarde, rango medio ~8,9 frente a
+    ~17-20 de un dia completo) que NO existe en MetaQuotes-Demo
+    (EET/EEST, 2023-2026), donde esa misma sesion de reapertura queda
+    dentro de la vela del lunes. Sin corregir esto, el tramo 2015-2022
+    tiene 6 "dias" por semana (5 completos + 1 parcial) y el tramo
+    2023-2026 tiene 5 completos -- un sesgo estructural que arrastra el
+    ATR14 hacia abajo de forma distinta en cada tramo (la vela domingo,
+    de rango bajo, entra en la media movil de las otras). Se corrige
+    fusionando cada vela domingo (si existe) dentro de la vela lunes
+    SIGUIENTE (Open=domingo, High/Low=combinado, Close=lunes), igual
+    convencion que usaria MetaQuotes-Demo -- no se inventa nada, se
+    iguala el criterio de agregacion entre ambas fuentes."""
+    d = diario.sort_values('dia').reset_index(drop=True)
+    dow = d['dia'].dt.dayofweek
+    idx_domingo = d.index[dow == 6].to_numpy()
+    if len(idx_domingo) == 0:
+        return d
+    filas_a_borrar = []
+    for i in idx_domingo:
+        if i + 1 >= len(d) or dow.iloc[i + 1] != 0:
+            continue  # sin lunes siguiente contiguo -- no se fusiona a ciegas
+        d.loc[i + 1, 'Open'] = d.loc[i, 'Open']
+        d.loc[i + 1, 'High'] = max(d.loc[i, 'High'], d.loc[i + 1, 'High'])
+        d.loc[i + 1, 'Low'] = min(d.loc[i, 'Low'], d.loc[i + 1, 'Low'])
+        filas_a_borrar.append(i)
+    return d.drop(index=filas_a_borrar).reset_index(drop=True)
+
+
 def cargar_diario(nombre):
     cfg = UNIVERSO[nombre]
     piezas = [cargar_m15(r) for r in cfg['rutas']]
     df = pd.concat(piezas, ignore_index=True).sort_values('TimestampServidor').reset_index(drop=True) \
         if len(piezas) > 1 else piezas[0]
     diario = agregar_diario_con_spread(df)
+    diario = fusionar_domingo_en_lunes(diario)
     diario['activo'] = nombre
     diario['point'] = cfg['point']
     diario['clase'] = cfg['clase']

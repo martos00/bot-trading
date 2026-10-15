@@ -3332,3 +3332,126 @@ falta procesar año a año ni símbolo a símbolo. Probado en esta sesión
 reprocesando los ficheros XAUUSD ya existentes (resultado idéntico al
 obtenido manualmente, 189.034 velas). Subir aquí los 6 ficheros de
 salida para integrarlos en `research/datos_multiactivo.py`.
+
+**Decisión del usuario: NO se descarga esta extensión por ahora.** El
+conversor queda preparado y probado, pero no se solicita de nuevo ni
+se bloquea ninguna investigación en su espera. Se continúa con
+XAUUSD/USTEC/US500/Forex (históricos actuales) según lo pedido.
+
+## Comprobación pedida: ¿la unión HistData+MetaQuotes-Demo en XAUUSD genera señales artificiales?
+
+El usuario pidió explícitamente comprobar esto antes de seguir
+investigando con la serie combinada 2015-2026. Resultado: **la propia
+fecha de unión (30-dic-2022 → 3-ene-2023) está limpia** — el hueco de
+precio es un fin de semana de Año Nuevo normal (~0,2%), la columna
+Spread pasa limpiamente de 100% NaN (HistData, no tiene este dato) a
+100% con valor real (MetaQuotes) sin mezclarse, y no hay ningún salto
+anómalo de ATR justo en el punto de corte.
+
+**Pero se encontró un artefacto estructural real, no puntual, que SÍ
+merecía corregirse antes de seguir:** HistData (EST sin DST) agrega
+por día de calendario EST, lo que produce una vela "domingo" propia
+cada semana — la breve reapertura del domingo por la tarde, con rango
+medio ~8,9 puntos frente a ~17-20 de un día completo (verificado
+directamente, no estimado). MetaQuotes-Demo (EET/EEST) NO genera esa
+vela: la misma sesión de reapertura queda dentro de la vela del lunes.
+Resultado antes de corregir: el tramo 2015-2022 tenía 6 "días"/semana
+(5 completos + 1 domingo parcial) y el tramo 2023-2026 tenía 5
+completos — un sesgo estructural, no aleatorio, que arrastraba el
+ATR14 hacia abajo de forma distinta en cada tramo (la vela domingo, de
+rango bajo, entra en la media móvil junto a las demás).
+
+**Corrección aplicada** (`datos_multiactivo.fusionar_domingo_en_lunes`,
+antes de cualquier hipótesis nueva de esta sesión): cada vela domingo
+(cuando existe) se fusiona dentro de la vela lunes siguiente
+(Open=domingo, High/Low=combinado, Close=lunes) — mismo criterio que
+ya aplica MetaQuotes-Demo, no se inventa nada nuevo, se iguala el
+criterio de agregación entre proveedores. Verificado tras la
+corrección: distribución de día de semana uniforme (solo lunes-viernes)
+en TODO el periodo 2015-2026, y el rango medio del lunes pasa a estar
+en línea con el resto de días (19,57 vs. 18,4-19,8), ya no
+artificialmente bajo.
+
+**Alcance de la corrección:** aplica a `research/datos_multiactivo.py`
+(usado por TSMOM, momentum transversal, pairs trading, FOMC/NFP
+multi-activo, y toda la investigación nueva a partir de aquí). Las
+hipótesis del ciclo de regímenes (A-G, ya cerradas) usaron el pipeline
+anterior `research/datos_ciclo2.py`, que NO tiene esta corrección —
+no se re-ejecutan (ya estaban claramente descartadas, y el efecto es
+de segundo orden sobre un ATR ya usado solo como filtro de régimen, no
+como señal principal), pero se declara la diferencia en vez de
+ocultarla.
+
+## Continuación autónoma (prioridad XAUUSD, USTEC/US500/Forex cuando se justifique)
+
+**1. USD-basket → Oro (lead-lag), familia intermarket nueva**
+(`research/hipotesis_usd_basket_gold.py`) — cesta orientada de los 6
+pares Forex (2023-2026, Forex como secundario según lo pedido).
+Fase 1: correlación contemporánea USD-oro = -0,457 (control de sanity,
+signo esperado), pero correlación USD HOY → oro MAÑANA = **+0,032**
+(prácticamente nula, y de signo "equivocado") — igual de débil que la
+autocorrelación propia del oro (-0,014, control). La relación inversa
+oro-dólar ya está descontada el mismo día, sin retraso explotable.
+Backtest completo (n=256) confirma: Media R=+0,008 a coste cero
+(z=+0,13, no significativo), negativo con cualquier estrés de coste,
+muy inconsistente año a año. **Descartada.**
+
+**2. CPI Release Drift** (`research/hipotesis_cpi_drift.py` +
+`research/estrategia_cpi_drift.py`) — calendario de publicaciones del
+IPC verificado fecha a fecha contra bls.gov/schedule/&lt;año&gt;/home.htm
+(no una regla genérica como NFP) — 44 fechas 2023-2026, incluyendo la
+alteración real del calendario por el cierre de la Administración de
+2025 (sin IPC de referencia octubre-2025, declarado, no omitido).
+
+Resultado con coste (largo incondicional al Open del día de IPC,
+SL=1,5×ATR14, cierre al Close del día siguiente):
+
+| Activo | n | Media R | PF | Año peor | Año mejor |
+|---|---|---|---|---|---|
+| XAUUSD | 44 | +0,207 | 2,143 | 2026: -0,13 | 2023: +0,44 |
+| USTEC | 43 | +0,269 | 2,896 | 2026: +0,03 | 2023: +0,49 |
+| US500 | 43 | +0,238 | 2,675 | 2026: +0,08 | 2023: +0,41 |
+
+A primera vista parece el mejor resultado del proyecto — pero antes de
+tratarlo como algo prometedor se hizo la comprobación decisiva (el
+mismo tipo de control de concentración que ya desmontó momentum
+transversal): **¿este mecanismo exacto (largo + SL ajustado 1,5×ATR +
+2 días) da resultados parecidos en días ALEATORIOS cualquiera, no solo
+en días de IPC?** Respuesta: **sí, en gran parte.** Simulando el mismo
+mecanismo en 43 días aleatorios (2000 repeticiones) sobre el mismo
+periodo:
+
+| Activo | Media R aleatoria (días cualquiera) | Percentil 95 aleatorio | Media R real en IPC |
+|---|---|---|---|
+| XAUUSD | +0,052 | +0,209 | +0,207 (dentro del percentil 95 — NO destaca) |
+| USTEC | +0,075 | +0,225 | +0,269 (por ENCIMA del percentil 95) |
+| US500 | +0,051 | +0,199 | +0,238 (por ENCIMA del percentil 95) |
+
+**Conclusión honesta:** la mayor parte de lo que parecía un resultado
+espectacular es simplemente el sesgo alcista general de 2023-2026
+combinado con un riesgo (SL) estrecho que amplifica el R-múltiplo —
+exactamente el mismo mecanismo de "beta disfrazada" ya detectado en
+momentum transversal. Descontando esa base, SÍ queda un efecto
+incremental real pero MODESTO en USTEC/US500 (por encima del percentil
+95 aleatorio, no un caso extremo) — no en XAUUSD, que queda dentro del
+rango aleatorio. Además: la tendencia por año es decreciente en los 3
+mercados (2023 claramente el mejor, 2026 plano o negativo) — compatible
+con que el efecto se esté arbitrando, o con que gran parte de la señal
+original dependiera del episodio concreto de desinflación de 2023, no
+de una ventaja estructural estable.
+
+**Decisión: NO se congela como candidata.** No cumple el estándar
+pedido ("ventaja que no dependa exclusivamente de unas pocas
+operaciones... consistencia suficiente") — depende sustancialmente de
+la deriva alcista genérica del período, el efecto incremental real es
+modesto, y la tendencia es decreciente. Es el hallazgo menos negativo
+de todo este proyecto hasta ahora, pero no alcanza el nivel de
+evidencia necesario. Se documenta en detalle por si una muestra más
+larga (cuando se amplíe el histórico) permite revisarlo con más
+potencia — no se descarta el fundamento económico (el IPC sí mueve
+mercados), se descarta la implementación actual con la evidencia
+disponible.
+
+**Sesgo de selección acumulado:** ~50 hipótesis previas + 3 de esta
+ronda (USD-basket, CPI drift Fase 1, CPI drift con coste) ≈ **53
+hipótesis/combinaciones probadas en total.**
