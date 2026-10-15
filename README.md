@@ -3550,3 +3550,90 @@ stooq.com, ambos con conexión rechazada desde el datacenter). Esto es
 un bloqueo real de datos/herramientas, no una decisión de parar. **Sesgo
 de selección acumulado: ≈56 hipótesis/combinaciones probadas en total
 en este proyecto.**
+
+## Bloqueo de datos RESUELTO — fuentes oficiales gratuitas encontradas
+
+A petición del usuario, se buscaron fuentes alternativas a Dukascopy/
+stooq.com antes de abandonar las 4 familias pospuestas. Resultado:
+**las 4 están desbloqueadas**, todas desde fuentes oficiales/
+académicas, verificadas accesibles directamente desde esta sesión
+(a diferencia de los proveedores comerciales de datos de mercado, que
+sí están bloqueados):
+
+| Dato necesario | Fuente | Verificado |
+|---|---|---|
+| Tipos de interés (carry trade) | FRED (Reserva Federal de San Luis), `fredgraph.csv?id=<serie>`, sin API key | USD/EUR/GBP/JPY/CAD/CHF/SEK, 2015-2026 completo |
+| Posicionamiento COT | cftc.gov/files/dea/history/ (oficial, sin registro) | Oro, EUR, GBP, JPY, CAD, CHF, Nasdaq-100, S&P 500, 2015-2026 (614 semanas) — **SEK no tiene futuro en CME con informe COT, limitación real declarada, no inventada** |
+| VIX | cdn.cboe.com (CBOE oficial) | Histórico diario 1990-2026 |
+| Factores de renta variable | Kenneth French Data Library (Dartmouth) — confirmado accesible, no usado todavía (nuestro universo es de índices, no de cesta amplia de acciones individuales; ver nota más abajo) | — |
+
+Scripts: `research/descargar_fred_tipos.py`, `research/descargar_cftc_cot.py`.
+Datos guardados en `research/datos_externos/` (filtrados a lo
+necesario, no el volcado completo de la CFTC — ~20MB/año/informe
+reducidos a unos pocos KB por mercado relevante).
+
+### 1. FX Carry Trade (`research/estrategia_carry_trade.py`)
+
+Mismo mecanismo que TSMOM (vol-targeting 10%, rebalanceo mensual) pero
+con signo = diferencial de tipos de interés real en vez de momentum de
+precio. Resultado: **Sharpe=-0,059, no significativo (z=+0,08)**,
+drawdown 13%, inconsistente año a año (2023:-4,8%, 2024:+7,8%,
+2025:-9,4%, 2026:+4,3%). Nota honesta: 5 de los 6 pares mantuvieron el
+mismo signo casi todo el período (el diferencial de tipos cambia
+lento, es esperable, no es un error) — el "carry" en esta ventana
+concreta fue mayormente una apuesta estática que no funcionó, consistente
+con el riesgo de "crash" del carry trade documentado en la literatura
+(Doskov & Swinkels: Sharpe 0,2-0,4 a 112 años vs. episodios muy
+distintos por período). **Descartada.**
+
+### 2. COT Positioning Contrarian (`research/estrategia_cot_contrarian.py`)
+
+Fade de posicionamiento especulativo extremo (percentil >90/<10 de su
+propio historial, con el retraso real de publicación del informe
+respetado: dato del martes, operable desde el lunes siguiente).
+Primera versión (percentil del neto especulativo en bruto): resultado
+agregado parecía significativo (Sharpe=0,958, z=+2,40) — pero
+descomponiendo por activo, USTEC/US500 estaban **permanentemente
+largos** (98-100% de las semanas), la misma "beta disfrazada" de
+siempre. Corrección aplicada (práctica estándar del "COT Index": normalizar
+el neto por el interés abierto antes del percentil, no es un ajuste
+inventado para rescatar el resultado) — **el problema persistió**
+igual en los índices incluso normalizado, indicando que es una
+característica estructural real del posicionamiento en futuros de
+índice en este período (no un error de cálculo), no algo a corregir
+más. Excluyendo USTEC/US500 (donde la señal SÍ varía de forma genuina):
+oro+Forex solos dan **Sharpe=-0,22 a -0,28, no significativo (z=-0,05
+a -0,18)** en ambas versiones. **Descartada.**
+
+### 3. VIX Spike Mean Reversion (`research/estrategia_vix_reversion.py`)
+
+Comprar tras picos de variación diaria del VIX >percentil 90 (propio
+historial causal de 252 días), aplicable a USTEC/US500 (VIX = volatilidad
+implícita del S&P 500). USTEC mostraba Media R=+0,1835, PF=1,441,
+robusto al estrés de coste, z=+1,71 (no bastante para significancia).
+**Comprobación decisiva (mismo control que desmontó CPI Drift):**
+el mismo mecanismo (largo + SL 1,5×ATR + hasta 5 días) en 101 días
+ALEATORIOS cualquiera da una media de +0,194 — **más alto** que el
+resultado real de +0,1835. El resultado del pico de VIX cae en el
+percentil 45 de la distribución aleatoria: indistinguible del azar, no
+aporta nada sobre el sesgo alcista genérico. US500 ya era plano de
+partida (Media R=+0,0003). **Descartada — la más claramente debunked
+de las tres.**
+
+### Nota sobre factores de renta variable (Fama-French)
+
+Kenneth French Data Library confirmada accesible, pero NO se ha usado
+todavía: los factores clásicos (value/size/quality) se construyen
+sobre una cesta amplia de ACCIONES INDIVIDUALES ordenadas por
+características — nuestro universo son ÍNDICES (USTEC/US500), no
+acciones sueltas, así que una estrategia de factores clásica no es
+directamente aplicable sin un universo de acciones que no tenemos.
+Queda como vía a explorar si se decide incorporar acciones
+individuales al proyecto (fuera del alcance actual, no se fuerza).
+
+**Sesgo de selección acumulado actualizado:** ≈56 + 3 = **59
+hipótesis/combinaciones probadas en total.** Ninguna de las 3 familias
+recién desbloqueadas sobrevivió — pero la limitación de datos que las
+pospuso YA NO EXISTE, y las 3 fueron probadas con el mismo rigor
+(controles de concentración, benchmarks aleatorios, costes) que
+desmontó los falsos positivos anteriores del proyecto.
