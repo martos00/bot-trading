@@ -2980,3 +2980,105 @@ Código: `research/sesion_ny.py`, `research/motor_intradia.py`,
 `research/hipotesis_h4_power_hour.py`,
 `research/hipotesis_h5_overshoot_apertura.py`,
 `research/hipotesis_h6_rango_estrecho.py`.
+
+## Fase OPCIÓN B — ampliación a estrategias con evidencia académica publicada, multi-activo
+
+El usuario decide no limitarse a XAUUSD/USTEC/US500 ni a M15: el
+objetivo pasa a ser encontrar UNA estrategia con evidencia convincente,
+cambiando de mercado/temporalidad/metodología si es necesario. Antes de
+programar nada, se investigan 5 familias con evidencia académica
+PUBLICADA Y VERIFICADA (fuentes buscadas y citadas abajo, no citadas de
+memoria).
+
+### Dos aclaraciones pedidas antes de continuar
+
+**1. Qué significa el 72%/85% de "apertura de NY confirmada" en
+USTEC/US500:** NO significa que el 28%/15% de los días no tengan
+sesión real — significa que nuestro MÉTODO de localización horaria
+(detectar, semana a semana, en qué franja M15 hay un salto de
+TickVolume consistente con la apertura de NY) no pudo anclarlo con
+confianza para esas semanas, normalmente por cambios de horario de
+servidor del bróker, festivos o perfiles de volumen ambiguos — esos
+días se EXCLUYEN en vez de adivinar la hora, por la misma disciplina de
+no inventar datos que rige todo el proyecto. Es una limitación del
+método de localización horaria, no de los datos en sí. Importante para
+este nuevo ciclo: todas las familias de esta fase (TSMOM, momentum
+transversal, pairs trading) operan en barra DIARIA por Close, sin
+necesitar localizar la apertura de NY — esta limitación concreta deja
+de aplicar.
+
+**2. Por qué las nuevas estrategias no son una repetición cosmética de
+los momentum/trend ya cerrados:**
+ - *Trend Continuation Pullback (EMA)* (cerrada, negativa): una técnica
+   de ENTRADA discrecional (precio retrocede a una EMA dentro de una
+   tendencia) sobre 2 mercados correlacionados (USTEC/US500), sin
+   escalado por volatilidad, sin universo diversificado. TSMOM
+   (Moskowitz/Ooi/Pedersen) es un MODELO distinto: señal = signo del
+   retorno de los últimos 12 meses (no un patrón de entrada visual),
+   tamaño de posición escalado por volatilidad inversa, aplicado sobre
+   un universo diversificado de activos poco correlacionados —
+   justamente la pieza (diversificación + vol-targeting) que nunca se
+   ha probado en este proyecto.
+ - *Time Series Momentum* ya probada (`estrategia_momentum_series_temporales.py`,
+   ciclo autónomo): se cerró como "no informativa" porque el retorno a
+   12 meses tuvo el MISMO signo (positivo) en el 100% de los ~33 meses
+   evaluables de esa muestra concreta (USTEC/US500/XAUUSD, 2023-2026)
+   — nunca hubo señal corta que probar. No fue una prueba válida de la
+   hipótesis, fue una muestra degenerada sin variación. La nueva
+   implementación usa un universo de 9 activos (añadiendo 6 pares
+   Forex nunca tocados en este proyecto) precisamente porque Forex
+   tiene mucha más probabilidad de mostrar tendencias en ambas
+   direcciones incluso en una ventana corta — se comprueba la variación
+   de signo ANTES de sacar conclusiones, misma disciplina de
+   verificación de viabilidad que el resto del proyecto.
+ - *Momentum Intradía* (cerrada): relación intradía mismo-día
+   (sesión temprana vs. tardía) — horizonte de HORAS, nada que ver con
+   el horizonte de MESES de TSMOM/momentum transversal.
+
+### Comparación de 5 estrategias con evidencia publicada (fuentes verificadas por búsqueda, no de memoria)
+
+| # | Estrategia | Estudio(s) original(es) y fuente | Mercados/período estudiados | Resultado publicado | Reglas núcleo | Costes/riesgos/limitaciones | Datos necesarios | Viabilidad con lo disponible |
+|---|---|---|---|---|---|---|---|---|
+| 1 | **Time-Series Momentum (TSMOM)** | Moskowitz, Ooi & Pedersen (2012), *J. of Financial Economics*; extensión "Trends Everywhere" (Babu, Levine, Ooi, Pedersen, Stamelos) | 58 futuros/forwards líquidos (índices, FX, materias primas, bonos), 1965-2009 | Momentum significativo persistente 1-12 meses, revierte a más largo plazo; Sharpe bruto ≈1,17 (activos tradicionales) según el estudio de seguimiento (NO del paper original, que no reporta esa cifra en las fuentes consultadas) | Señal = signo del retorno a 12 meses (u otros lookbacks 1-12m); posición escalada por volatilidad inversa (vol-targeting); rebalanceo periódico (mensual típico) | Reversión a largo plazo documentada (no es "cuanto más tendencia, mejor" sin límite); drawdowns en mercados laterales; costes de rebalanceo periódico, bajos en relativo (pocas operaciones/activo/año) | Precio diario (Close) de un universo diversificado, histórico suficiente para medir vol y lookback de hasta 12m | **ALTA** — solo necesita OHLC diario, universo de 9 activos ya disponible (XAUUSD, USTEC, US500, 6 FX), aunque la muestra de 3,75 años es corta frente a los ~44 años del estudio original (limitación a declarar, no a ocultar) |
+| 2 | **Trend-Following de largo plazo (estilo CTA)** | Hurst, Ooi & Pedersen (2017), *J. of Portfolio Management* / AQR, "A Century of Evidence on Trend-Following Investing" | 67 mercados (29 materias primas, 11 índices, 15 bonos, 12 divisas), 1880-2016 | Retornos positivos sostenidos y baja correlación con activos tradicionales durante más de un siglo; positivo en 8 de las 10 mayores caídas históricas de una cartera 60/40 | Posición por mercado según signo del retorno a 1, 3 y 12 meses combinados; volatilidad objetivo de cartera ≈10% anualizado | Cifras del estudio asumen estructura de comisión 2/20 (menor rendimiento neto real); requiere MUCHOS mercados y décadas para expresarse bien — con 9 activos y 3,75 años, la expresión de esta familia es necesariamente parcial | Igual que TSMOM pero con horizonte/historia ideal de décadas, no años | **MEDIA** — mismo dato que TSMOM pero la evidencia de la que depende (siglo de historia, 67 mercados) no es replicable con lo disponible; se puede probar una versión acotada, nunca "replicar el estudio" |
+| 3 | **Momentum transversal (cross-sectional)** | Jegadeesh & Titman (1993), *Journal of Finance*, "Returns to Buying Winners and Selling Losers" | Acciones NYSE/AMEX, muestras de 1965-1989 (las fuentes consultadas no coinciden en el rango exacto) | Retorno significativo comprando ganadores/vendiendo perdedores a 3-12 meses; parte del exceso de retorno del primer año se disipa en los 2 años siguientes | Señal = ranking de retorno pasado entre activos del universo (no frente a sí mismo); largo en los de mejor retorno relativo, corto en los peores | Necesita un universo con suficiente dispersión y activos "cortoeables" de forma realista; en un universo de solo 9 activos la cartera long/short tiene muy poca diversificación interna frente a las decenas/cientos de acciones del estudio original | Igual que TSMOM; además requiere que el broker permita corto en todos los activos del universo (ya verificado via CFDs) | **MEDIA-ALTA** — mismos datos que TSMOM, pero con un universo de solo 9 activos la dispersión transversal es limitada (limitación a declarar) |
+| 4 | **FX Carry Trade** | Literatura del "forward premium puzzle"/desviación de la paridad de interés descubierta; Jurek (SSRN), Burnside-Eichenbaum-Kleshchelski-Rebelo (CEPR DP6873), Doskov & Swinkels (muestra 1900-2012, Sharpe 0,2-0,4 a largo plazo vs. >0,6 en muestras recientes) | Pares G10, muestras desde 1900 hasta recientes según el estudio | Sharpe elevado en muestras recientes, pero cae a 0,2-0,4 en 112 años de historia; gran parte de la prima puede explicarse por riesgo de "crash" (cola) una vez se neutraliza la exposición direccional al dólar | Largo en divisas de tipo de interés alto, corto en las de tipo bajo, ponderado por diferencial de tipos | Necesita el DIFERENCIAL DE TIPOS DE INTERÉS real de cada par (o puntos swap/forward) — dato que **NO tenemos**: nuestros CSV no incluyen columna de swap/tipos, y conseguirlo gratis y fiable para 6 pares está fuera de lo verificado hasta ahora | Tipos de interés o puntos swap por par y día, además del precio spot | **BAJA por ahora** — limitación de ACCESO A DATOS real, no de fundamento económico; requiere conseguir series de tipos/swap antes de poder programarla honestamente |
+| 5 | **Pairs Trading / Arbitraje estadístico** | Gatev, Goetzmann & Rouwenhorst (2006), *Review of Financial Studies* | Acciones EEUU, 1962-2002 (replicación reciente de Zhu 2024, Yale, ~20 años recientes) | Retorno medio anualizado hasta ~11% en el estudio original (1962-2002); replicación reciente ~6,2% con Sharpe 1,35; otra réplica (EEUU/Japón/HK/China 2004-2009) NO encontró retorno positivo consistente — evidencia mixta fuera de la muestra original | Dos activos históricamente cointegrados/correlacionados; operar la reversión del spread cuando se desvía de su media histórica | La evidencia de reversión NO es universal (una réplica fuera de muestra fue negativa) — depende criticamente de la relación economica real entre el par elegido, no de un ajuste estadistico; en nuestro proyecto ya se probó una versión (USTEC/US500, cerrada) sin la relación de cointegración verificada formalmente | Precio diario de pares con relación económica real (no solo correlación casual) | **MEDIA** — nuestro universo ofrece pares con fundamento real (ej. divisas con USD común, XAUUSD vs. otros); requiere verificar cointegración antes de programar, no asumirla |
+
+### Decisión (sin pedir autorización, según lo pedido)
+
+Se implementa primero **TSMOM (#1)**: mejor evidencia (décadas, docenas
+de mercados, mecanismo simple y replicable sin datos que no tenemos) y
+máxima viabilidad inmediata con el universo de 9 activos ya disponible.
+En paralelo/a continuación: **momentum transversal (#3)**, reutilizando
+el mismo universo y pipeline. **Carry trade (#4) se pospone** — no por
+falta de fundamento (es sólido) sino por una limitación REAL de datos
+(sin tipos de interés/swap verificados, gratis, para los 6 pares) que
+se declara en vez de improvisar con un proxy inventado. **Pairs
+trading (#5)** se evalúa después de #1/#3, comprobando primero
+cointegración real entre candidatos de nuestro universo (no se
+reutiliza la pareja USTEC/US500 ya cerrada sin esa verificación).
+**Trend-following de largo plazo (#2)** se trata como una variante de
+TSMOM con combinación de lookbacks, no como una familia aparte a
+programar por separado — la limitación de historia corta aplica a
+ambas por igual.
+
+### Universo de datos disponible para esta fase
+
+9 instrumentos, mismo bróker (MetaQuotes-Demo), mismo formato M15:
+XAUUSD (2015-2026, histórico largo ya construido), USTEC y US500
+(2023-2026), y **6 pares Forex nunca usados en este proyecto**: EURUSD,
+GBPUSD, USDJPY, USDCAD, USDCHF, USDSEK (2023-2026). Limitación
+declarada: la mayoría de la muestra es de solo ~3,75 años, muy por
+debajo de las décadas de los estudios originales — cualquier resultado
+positivo se presentará con esa limitación explícita, nunca como
+replicación del estudio académico.
+
+**Intento de ampliar el histórico fallido (declarado, no ocultado):**
+se intentó acceder a fuentes gratuitas adicionales (stooq.com) desde
+esta sesión para alargar el historial de los pares Forex/otros activos
+— bloqueado por la misma razón que Dukascopy (conexión rechazada desde
+el datacenter de esta sandbox, `ws_closed_mid_exchange` confirmado en
+el proxy). Si se quiere más historia, el camino que ya funcionó una vez
+(HistData.com, descarga manual del usuario) es la vía disponible — se
+continúa por ahora con lo que ya está subido.
