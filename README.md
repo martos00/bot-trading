@@ -2692,3 +2692,115 @@ ejecutar igual y salta los meses ya completados), e imprime progreso
 día a día. Al terminar, subir aquí los CSV de la carpeta
 `dukascopy_xauusd/` (uno por mes) para unirlos, verificar cobertura/
 calidad y ejecutar la estrategia congelada.
+
+## Fase 3 (conclusión): validación independiente 2015-2022 con datos de HistData.com — RESULTADO NEGATIVO
+
+Antes de que el usuario ejecutara la descarga de Dukascopy, aportó
+directamente 8 años de histórico XAUUSD M1 **gratuito** de
+HistData.com (2015-2022, ficheros `HISTDATA_COM_MT_XAUUSD_M1AAAA.zip`,
+formato "Generic ASCII" para MetaTrader) — una fuente independiente,
+pública, nunca usada en el desarrollo de ninguna de las ~14
+candidatas de este proyecto. Esto sustituye a Dukascopy como fuente de
+validación (ya no hace falta ejecutar el script
+`descargar_dukascopy_xauusd.py`).
+
+**Verificación de la fuente antes de usarla (no asumida de memoria):**
+consultado `histdata.com/f-a-q/` directamente —
+- Zona horaria: **"Eastern Standard Time (EST) WITHOUT Day Light
+  Savings adjustments"** — GMT-5 fijo los 365 días del año. Distinto
+  del EET/EEST de MetaQuotes-Demo y del UTC de Dukascopy. Se agrega por
+  día de calendario EST sin convertir a otra zona (una conversión
+  casera podría introducir su propio error) — diferencia declarada, no
+  corregida.
+- Precio: OHLC = **Bid** (confirmado en la misma página) — misma
+  convención que MetaQuotes-Demo, sin diferencia metodológica aquí.
+- **Limitación real de coste:** el paquete M1 gratuito no incluye
+  precio Ask ni spread (a diferencia de los ticks de Dukascopy). No
+  hay spread real que aplicar — ver más abajo cómo se trató esto.
+
+**Conversión:** `research/convertir_histdata_m1_a_m15.py` agrega los
+2.826.332 minutos de los 8 ficheros a velas M15 en el formato exacto
+del proyecto (`TimestampServidor;Open;High;Low;Close;TickVolume;
+Spread;RealVolume`, columna Spread vacía). Verificación de cobertura
+independiente (no solo confiar en que el proveedor no reportó error):
+por cada año, de ~260-262 días lunes-viernes esperados solo falta 1-3
+por año, y **los que faltan son festivos reconocibles** (Navidad, Año
+Nuevo, Viernes Santo, Lunes de Pascua) — sin huecos sospechosos.
+Resultado: 189.034 velas M15, 2015-01-01 → 2022-12-30, cero duplicados,
+orden cronológico verificado.
+
+**Ejecución — dos vías independientes, mismo resultado exacto:** (1)
+`research/estrategia_volatilidad_expansion.ejecutar()`, el ejecutor
+ORIGINAL sin ninguna adaptación, y (2)
+`research/validacion_histdata_2015_2022.py` (reutiliza
+`validacion_independiente_volexp.ejecutar_congelada_realista` sin
+tocar señal/SL/TP/cierre forzoso, solo adapta el tratamiento de coste
+porque no hay spread real en esta fuente — ver docstrings). Ambas vías
+dan **n=369, misma distribución de R exacta** — descarta un error de
+adaptación como causa de lo que sigue.
+
+**Resultado (n=369 operaciones, 2015-2022, 8 años):**
+
+| Escenario de coste | Media R | PF | Drawdown balance |
+|---|---|---|---|
+| CERO coste (límite optimista — no hay spread real disponible) | +0,0451 | 1,103 | 17,68R |
+| +1$/operación (estrés etiquetado, no broker real) | **-0,0079** | 0,983 | 24,17R |
+| +3$/operación | -0,1139 | 0,785 | 53,82R |
+| +5$/operación | -0,2199 | 0,632 | 87,09R |
+
+Comparar con el resultado in-sample 2023-2026: Media R=+0,3337, PF=1,923,
+drawdown balance=3,18R (equity=5,88R). La caída es drástica incluso
+**antes** de aplicar ningún coste: +0,3337 → +0,0451, y ya es negativa
+con un estrés de apenas 1$ por operación — un nivel modesto frente al
+spread+deslizamiento real esperable en XAUUSD.
+
+**Por año (a coste cero, el escenario más favorable):** 2015 +0,13,
+2016 **-0,08**, 2017 +0,28, 2018 **-0,27**, 2019 **-0,04**, 2020 +0,05,
+2021 +0,31, 2022 +0,00 — tres de ocho años negativos y uno
+prácticamente plano, sin tendencia consistente. Mismo patrón de
+inconsistencia año a año que llevó a descartar otras candidatas del
+ciclo autónomo (rotación oro-equity, proximidad a máximo de 52 semanas).
+
+**Drawdown de equity con posiciones simultáneas** (sin impedir
+solapamiento, igual que la regla original): máximo 4 posiciones
+simultáneas, drawdown de equity = **21,67R** (9-feb-2020) — muy por
+encima del 5,88R visto en 2023-2026.
+
+**Controles aleatorios — la caída más importante:** Control A (misma
+fecha/riesgo, dirección aleatoria): z=+0,79. Control B (día de entrada
+aleatorio, mismo mecanismo de riesgo): z=+0,78. Ambos muy lejos de los
+z=+2,72 / +2,22 encontrados in-sample — **estadísticamente
+indistinguible de apostar con ese mismo tamaño de riesgo en una
+dirección o un día aleatorios**. La señal de continuación tras
+expansión de rango no muestra ventaja significativa fuera de la
+muestra de desarrollo.
+
+### Conclusión y decisión (Fase 4)
+
+Volatility Expansion Continuation en XAUUSD **no supera la validación
+independiente**. El patrón encontrado en 2023-2026 (z=+2,77, PF=1,923)
+no se replica en 2015-2022: la media cae a un nivel marginal incluso
+sin coste, se vuelve negativa con un estrés de coste modesto, el
+drawdown es mucho peor, y el margen sobre el azar (controles A/B)
+desaparece casi por completo. Esto es exactamente el resultado que la
+validación independiente está diseñada para detectar — un hallazgo que
+sobrevivió un cribado de ~14 candidatas y una ronda de controles de
+robustez propios, pero no una muestra genuinamente fuera del período de
+desarrollo, consistente con el contexto de comparaciones múltiples ya
+señalado (z=+2,77 no alcanza el umbral de Bonferroni ~p<0,0025 para 20
+hipótesis).
+
+**Siguiendo las reglas pre-registradas del proyecto (no optimizar tras
+ver el resultado): se cierra esta candidata como NO VALIDADA.** No se
+prueban umbrales alternativos de ATR, TP o días de cierre sobre este
+nuevo histórico para "rescatarla" — eso sería optimizar sobre datos ya
+vistos, exactamente lo que este proceso evita. No se prepara plan de
+forward-testing/demo para esta estrategia.
+
+Con este cierre, **las ~15 candidatas investigadas en este proyecto
+(ORB, Liquidity Sweep, VWAP Mean Reversion ×2, Trend Continuation ×3,
+RSI(2)+SMA200, Momentum Intradía, Turno de Mes, Pre-FOMC Drift, Gap
+Fade, Momentum Series Temporales, Volatility Expansion Continuation, y
+las otras 5 del ciclo autónomo) han sido cerradas sin una estrategia
+que sobreviva validación independiente** en los mercados e históricos
+disponibles hasta ahora.
