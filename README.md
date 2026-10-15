@@ -2886,3 +2886,97 @@ Código: `research/regimenes_mercado.py`, `research/datos_ciclo2.py`,
 `research/hipotesis_dia_semana.py`, `research/hipotesis_orb_semanal.py`,
 `research/hipotesis_overnight_intradia.py`,
 `research/estrategia_intradia_largo_indices.py`.
+
+## Ciclo intradía (USTEC/US500) — 6 hipótesis, ninguna sobrevive
+
+A petición del usuario, se abandona la barra diaria y se investigan 6
+hipótesis intradía con fundamento económico/conductual distinto de
+ORB/VWAP/EMA (ya cerradas), priorizando USTEC/US500 (reconstrucción de
+sesión de NY fiable) sobre XAUUSD (dejado en segundo plano).
+
+**Infraestructura reutilizada, no reinventada:** `research/sesion_ny.py`
+envuelve la detección de apertura por salto de TickVolume ya usada y
+confirmada en `orb_backtest.py` (sin reimplementarla) para dar, por
+cada día, el índice de la vela de apertura (9:30 ET) y de cierre de
+sesión (16:00 ET) con offset CONFIRMADO. Cobertura verificada: USTEC
+679/939 días (72%), US500 801/940 días (85%) — igual fiabilidad que la
+ya usada en el ORB cerrado. `research/motor_intradia.py` centraliza el
+informe (coste con spread real + estrés de slippage 1/3pt, año,
+régimen diario heredado, drawdown). Dato importante verificado (no
+asumido): las 6 hipótesis generan como máximo 1 operación/día sin
+mantener overnight, así que el drawdown de equity coincide exactamente
+con el de balance — se comprueba explícitamente en cada caso, no se
+asume.
+
+| # | Hipótesis (mecanismo nuevo) | Resultado | Decisión |
+|---|---|---|---|
+| H1 | **Failed Breakout/Rejection**: fade de un gap que extiende el rango de AYER pero fracasa en los primeros 30 min | n=62-68. Débil, no significativo (z=+0,43/+0,14), muy inconsistente año a año (US500: -0,26/+0,54/+0,32/-0,42) | Descartada |
+| H2 | **Momentum Ignition**: continuación tras una vela M15 anómala (>3× tamaño habitual) en cualquier momento de la sesión | n=457-525. Plana/negativa, no significativa (z=+0,11/+1,29), negativa con 1pt de estrés en ambos mercados, 2025 fuertemente negativo | Descartada |
+| H3 | **Midday Compression → PM Breakout**: ruptura de la caja de rango de mediodía (12:00-13:30 ET) por la tarde | n=557-639. Marginal/negativa, no significativa (z=+0,68/-0,01), negativa con 1pt de estrés, 2025 fuertemente negativo en ambos | Descartada |
+| H4 | **Power Hour**: continuación de la tendencia intradía acumulada hasta las 15:00 ET hacia el cierre (sin TP, solo SL) | n=678-798. Marginal/negativa, no significativa (z=+1,07/-0,59), SL casi nunca se toca (riesgo mal calibrado) y aun así no rentable neto de coste | Descartada |
+| H5 | **Opening Overshoot Reversion**: fade de un primer rango de apertura anómalo que cierra cerca de un extremo, 1 vela de duración | n=30-38. Muestra insuficiente y unidad de riesgo degenerada (entrada ya cerca del SL por construcción) → R-múltiplos extremos e inestables, signo distinto entre mercados | Descartada (potencia insuficiente, no concluyente) |
+| H6 | **Narrow-Range Breakout Continuation**: ruptura del rango de AYER (día comprimido, percentil 33 de 60 días) en cualquier momento de hoy | n=193-221. USTEC negativa (z=-0,70); US500 positiva y consistente año a año (+0,04/+0,01/+0,03/+0,01) pero no significativa (z=+0,75) y negativa ya con 1pt de estrés | Descartada |
+
+### Diagnóstico honesto (pedido explícitamente): ¿cuál es el obstáculo principal?
+
+Ninguna de las 6 hipótesis — ni las ~22 de los dos ciclos anteriores —
+sobrevive. El patrón se repite con tanta consistencia que merece un
+diagnóstico, no otra variante:
+
+- **No son los datos.** La cobertura, el spread real y la
+  reconstrucción de sesión están verificados en detalle (72-85% de
+  días confirmados, igual que en el ORB ya cerrado); ningún resultado
+  negativo de este ciclo se explica por datos ausentes o mal
+  etiquetados.
+- **No es principalmente el modelo de costes.** El spread real por sí
+  solo ya deja la mayoría de hipótesis en terreno marginal (Media R
+  entre -0,04 y +0,05 en la mayoría de casos) — el problema no es que
+  el coste sea excesivo, es que el tamaño de la ventaja bruta es del
+  mismo orden que el coste mínimo esperable.
+- **Sí es, principalmente, la elección de fenómeno + la granularidad
+  de ejecución.** Las 6 hipótesis (y buena parte de las ~22
+  anteriores) prueban patrones de comportamiento intradía YA
+  DOCUMENTADOS públicamente desde hace décadas (apertura de NY, lunch
+  lull, power hour, NR breakout, momentum ignition) sobre DOS DE LOS
+  INSTRUMENTOS MÁS LÍQUIDOS Y ARBITRADOS DEL MUNDO (índices EEUU), con
+  velas M15 y ejecución a la apertura de la vela siguiente. Es
+  exactamente el escenario donde una ventaja conocida tiene más
+  probabilidad de haber sido ya arbitrada por participantes más
+  rápidos, y donde M15+siguiente-apertura es demasiado lento para
+  capturar lo que pueda quedar de un efecto de microestructura, pero
+  demasiado líquido/eficiente para que un efecto puramente conductual
+  de más largo plazo sobreviva al coste.
+- **La metodología no es el obstáculo** — si algo, ha sido más
+  rigurosa de lo habitual (pre-registro, controles aleatorios,
+  regímenes, estrés de coste, desglose por año) y eso es precisamente
+  lo que ha permitido detectar la fragilidad de cada candidata en vez
+  de presentarla como ventaja.
+
+**Sesgo de selección acumulado del proyecto completo:** contando ORB,
+Liquidity Sweep, VWAP×2, Trend Pullback×3, RSI(2) (3 mercados × 3
+umbrales), Momentum Intradía, Turno de Mes, Pre-FOMC, Gap Fade,
+Momentum Series Temporales, Volatility Expansion Continuation, las
+otras 5 del ciclo autónomo, las 7 del ciclo de regímenes y estas 6
+intradía: **del orden de 40 hipótesis/combinaciones probadas en todo
+el proyecto.** Cualquier resultado futuro con p≈0,05 debe interpretarse
+con esa base, no de forma aislada (corrección tipo Bonferroni al 5%
+por familia ⇒ p<0,00125 aproximadamente).
+
+**No se proponen más variantes aleatorias de las mismas familias**,
+conforme a lo pedido. Opciones reales para continuar, a decidir por el
+usuario: (a) aceptar que USTEC/US500 a granularidad M15 con datos
+OHLC-only puede no tener ventaja explotable accesible con este
+enfoque, y cerrar la búsqueda de estrategias de precio puro en estos
+mercados; (b) cambiar de granularidad de ejecución (tick/L2) o de tipo
+de dato (order flow, sentimiento) — fuera del alcance de los datos
+gratuitos ya disponibles; (c) volver a XAUUSD con las limitaciones
+horarias ya conocidas; (d) cambiar de mercado (requiere autorización
+explícita, no se hace sin consultar).
+
+Código: `research/sesion_ny.py`, `research/motor_intradia.py`,
+`research/hipotesis_h1_rechazo_apertura.py`,
+`research/hipotesis_h2_momentum_ignition.py`,
+`research/hipotesis_h3_rango_mediodia.py`,
+`research/hipotesis_h4_power_hour.py`,
+`research/hipotesis_h5_overshoot_apertura.py`,
+`research/hipotesis_h6_rango_estrecho.py`.
