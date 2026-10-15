@@ -3082,3 +3082,136 @@ el datacenter de esta sandbox, `ws_closed_mid_exchange` confirmado en
 el proxy). Si se quiere más historia, el camino que ya funcionó una vez
 (HistData.com, descarga manual del usuario) es la vía disponible — se
 continúa por ahora con lo que ya está subido.
+
+### Resultados — TSMOM, momentum transversal, pairs trading, FOMC multi-activo
+
+**1. TSMOM (`research/estrategia_tsmom.py`)** — cartera mensual
+rebalanceada, vol-targeting 10% anualizado por activo, los 3 lookbacks
+siempre reportados (no se elige el mejor a posteriori):
+
+| Lookback | Meses | Ret. anualizado | Sharpe | Max DD | Control z |
+|---|---|---|---|---|---|
+| 1 mes | 138 | +0,57% | 0,106 | 26,5% | +0,43 |
+| 3 meses | 137 | +1,86% | 0,225 | 25,5% | +0,80 |
+| 12 meses | 129 | -0,51% | 0,011 | 33,1% | +0,11 |
+
+Ninguno significativo frente al control de signo aleatorio, Sharpe muy
+por debajo del ≈1,17 del estudio de referencia, año a año muy
+inconsistente. USTEC/US500 a 12m salieron 100% largos (ningún mes con
+señal corta) — la misma degeneración de la candidata ya cerrada, pero
+esta vez AISLADA a esos 2 activos, no a todo el universo: los 6 pares
+Forex sí mostraron señales cortas (29%-74% largos según activo), lo
+que confirma que el universo diversificado resolvió el problema de
+variación de señal — simplemente no hay ventaja detectable con lo que
+tenemos. **Descartada.**
+
+**2. Momentum transversal (`research/estrategia_momentum_transversal.py`)**
+— hallazgo importante, declarado con todo el detalle porque inicialmente
+parecía prometedor y una comprobación adicional lo desmontó:
+
+| Lookback (9 activos) | Meses | Ret. anualizado | Sharpe | Max DD | Control z |
+|---|---|---|---|---|---|
+| 1 mes | 45 | +3,33% | 0,448 | 5,4% | +1,63 |
+| 3 meses | 43 | +0,41% | 0,092 | 10,5% | +0,46 |
+| 12 meses | 34 | **+8,35%** | **1,175** | **5,4%** | **+2,93** |
+
+El resultado a 12 meses parecía la mejor señal de todo el proyecto
+hasta ahora. **Comprobación de concentración (hecha ANTES de aceptar
+el resultado, no después):** la pata larga fue XAUUSD/US500/USTEC en
+el 85-97% de los 34 meses, y la pata corta fue siempre alguna
+combinación de los 6 pares Forex — USTEC y US500 estuvieron en el
+MISMO lado el 88% de los meses. Esto no es momentum transversal
+rotando entre activos: es una apuesta prácticamente estática a "renta
+variable EEUU + oro" vs. "cesta de Forex", exactamente el patrón de
+"beta disfrazada de señal" ya detectado antes en este proyecto
+(Hipótesis F del ciclo diario). **Prueba de corrección:** repetir el
+mismo mecanismo SOLO dentro de los 6 pares Forex (sin XAUUSD/USTEC/
+US500) — resultado NEGATIVO en los 3 lookbacks (Sharpe -0,04 / -0,35 /
+-0,77, z hasta -1,62 a 12m). Confirma que la señal "prometedora" era un
+artefacto de concentración, no momentum transversal real. **Descartada
+por completo** (incluida la versión de 9 activos, que no se declara
+"prometedora" a pesar del Sharpe/z atractivos).
+
+**3. Pairs Trading con cointegración (`research/estrategia_pairs_trading_coint.py`)**
+— selección de par hecha ANTES de programar ninguna regla, con test de
+Engle-Granger explícito sobre 7 candidatos con relación económica real:
+
+| Par | Correlación retornos | p-valor cointegración |
+|---|---|---|
+| USTEC-US500 | +0,933 | **0,0081** |
+| GBPUSD-USDCHF | -0,655 | **0,0036** |
+| EURUSD-USDCHF | -0,790 | 0,0483 (límite) |
+| USDCHF-USDSEK | +0,680 | 0,0445 (límite) |
+| EURUSD-GBPUSD | +0,806 | 0,1960 (NO cointegrado a pesar de la alta correlación) |
+| USDCAD-USDCHF | +0,509 | 0,2890 (no cointegrado) |
+| XAUUSD-USDCHF | -0,398 | 0,4168 (no cointegrado) |
+
+Nota metodológica relevante: EURUSD-GBPUSD tiene la segunda correlación
+más alta de la tabla pero NO está cointegrado — confirma que
+correlación y cointegración son conceptos distintos, no intercambiables.
+
+Se operan los 2 pares con cointegración fuerte (beta por regresión
+OLS móvil de 120 días, entrada en |z|>2, salida en reversión a 0,
+stop en |z|>3,5, cierre forzoso a 40 días — mecanismo fijo, sin
+optimizar):
+- **USTEC-US500** (el mismo par cerrado antes, ahora con cointegración
+  verificada formalmente — mejora metodológica real, no repetición
+  cosmética): n=11 operaciones en 3,75 años — muestra insuficiente
+  para cualquier conclusión, y aun así negativa (Media=-0,30%, PF=0,722,
+  9 de 11 operaciones terminan en cierre por plazo, no por reversión
+  real del spread).
+- **GBPUSD-USDCHF**: n=19, Media=+0,073%, PF=1,124 — débil, y 3 de los
+  4 años son negativos (el resultado agregado depende casi por
+  completo de 2025).
+
+**Descartada por ahora** — no por falta de fundamento (la
+cointegración es real y verificada), sino porque 3,75 años solo
+produce 11-19 operaciones por par, muy por debajo de lo necesario para
+confirmar o descartar con confianza.
+
+**4. FOMC drift multi-activo (`research/hipotesis_fomc_drift_multiactivo.py`)**
+— mismo calendario FOMC ya verificado, extendido en barra diaria a los
+9 activos (nunca probado en Forex): de 18 comparaciones (9 activos × 2
+horizontes), solo USDJPY destaca (z=-2,35 el día del FOMC, z=-2,85 al
+día siguiente) — con ~18 pruebas simultáneas, encontrar 1 celda así por
+puro azar es esperable (no sorprendente), y el tamaño de muestra (n=30
+fechas FOMC) es pequeño. **No se construye estrategia** — señal
+aislada, no accionable dado el contexto de comparaciones múltiples.
+
+### Diagnóstico y obstáculo real identificado
+
+A diferencia del ciclo intradía (donde el problema parecía ser el
+fenómeno + la eficiencia del mercado), aquí el patrón es distinto:
+**el obstáculo dominante es el TAMAÑO DE MUESTRA**, no necesariamente
+la ausencia de ventaja. TSMOM, momentum transversal y pairs trading
+son todas familias que necesitan MUCHOS regímenes/ciclos para
+expresarse (el estudio de TSMOM usa 44 años; el de trend-following de
+largo plazo, 136 años) — con 3,75 años para 8 de los 9 activos, el
+número de observaciones verdaderamente independientes es de apenas
+unas pocas decenas en el mejor caso (34 meses en momentum transversal
+a 12m, 11-19 operaciones en pairs trading). Ningún resultado de esta
+sección debe leerse como "la estrategia no funciona" en sentido
+absoluto — la conclusión honesta es "no se puede confirmar ni
+descartar con la potencia estadística disponible".
+
+**Esto es un bloqueo real de datos, no de metodología ni de
+fundamento.** La vía ya disponible y gratuita (usada con éxito para
+XAUUSD 2015-2022) es que el usuario repita el proceso de HistData.com
+para los 6 pares Forex (y materias primas adicionales si se quiere
+ampliar el universo) — HistData ofrece gratis M1 de la mayoría de
+pares FX mayores desde los 2000s. Esto multiplicaría por 3-4 el tramo
+evaluable y permitiría una potencia estadística razonable para TSMOM/
+momentum transversal/pairs trading. Se continúa investigando otras
+líneas mientras se decide esto (no se bloquea el proyecto completo por
+este punto).
+
+**Sesgo de selección acumulado actualizado:** ~40 hipótesis del
+proyecto + 6 de esta fase (TSMOM×3 lookbacks tratados como 1 familia,
+momentum transversal×3, pairs trading×2 pares, FOMC multi-activo) ≈
+**46-50 hipótesis/combinaciones probadas en total.**
+
+Código de esta sección: `research/datos_multiactivo.py`,
+`research/estrategia_tsmom.py`,
+`research/estrategia_momentum_transversal.py`,
+`research/estrategia_pairs_trading_coint.py`,
+`research/hipotesis_fomc_drift_multiactivo.py`.
