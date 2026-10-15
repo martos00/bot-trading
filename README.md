@@ -3505,3 +3505,48 @@ dirección a revisar si se amplía el histórico de índices.
 
 **Sesgo de selección acumulado actualizado:** ≈53 + 2 = **55
 hipótesis/combinaciones probadas en total en este proyecto.**
+
+**5. FOMC Cycle Effect** (`research/hipotesis_ciclo_fomc.py`) — DISTINTA
+del Pre/Post-FOMC Drift ya probado (aquel mide el día del anuncio; este
+mide la posición dentro del ciclo de 6-8 semanas entre reuniones).
+Evidencia académica real: Cieslak, Morse & Vissing-Jorgensen (2019),
+*Journal of Finance* 74(5):2201-2248 — desde 1994, la prima de riesgo
+de renta variable se concentra en semanas PARES del ciclo FOMC.
+
+| Activo | n par | Media par | n impar | Media impar | Diferencia | IC95% |
+|---|---|---|---|---|---|---|
+| XAUUSD | 509 | +0,035%/día | 444 | +0,152%/día | -0,117%/día | [-0,268%, +0,042%] |
+| USTEC | 492 | +0,102%/día | 426 | +0,118%/día | -0,016%/día | [-0,190%, +0,135%] |
+| US500 | 492 | +0,066%/día | 427 | +0,086%/día | -0,020%/día | [-0,147%, +0,093%] |
+
+No significativo en ningún activo. Además, el signo observado va en
+la dirección CONTRARIA a la documentada (semanas impares ligeramente
+mejores que pares en nuestra muestra) — no se interpreta como una
+contradicción del estudio original (no es significativo, la muestra
+2023-2026 es corta y post-2019, fuera del periodo estudiado), solo
+como que no se replica aquí. **Descartada.**
+
+### Balance de esta ronda de continuación autónoma
+
+Se ha cubierto un conjunto amplio de familias con evidencia académica
+real: TSMOM, trend-following de largo plazo, momentum transversal,
+pairs trading/cointegración, FOMC drift (día del anuncio), FOMC Cycle
+(posición en el ciclo), NFP drift, CPI drift, USD-basket→oro (lead-lag),
+Halloween Effect, autocorrelación semanal. Ninguna alcanza el nivel de
+evidencia necesario para forward testing. La más cercana (CPI Drift en
+USTEC/US500) tiene un efecto incremental real pero modesto y
+decreciente, no una ventaja robusta.
+
+**Diagnóstico honesto sobre qué bloquea seguir con familias
+NUEVAS fundamentadas:** las familias con mejor evidencia académica que
+quedan sin probar (FX carry trade, prima de riesgo de volatilidad,
+factores clásicos de renta variable como value/quality/low-vol,
+posicionamiento COT) requieren datos que no están disponibles en este
+entorno — tipos de interés/swap, opciones/VIX, universo amplio de
+acciones individuales, o informes de posicionamiento — y el acceso a
+internet de esta sesión está bloqueado para fuentes gratuitas
+alternativas (confirmado dos veces de forma independiente: Dukascopy y
+stooq.com, ambos con conexión rechazada desde el datacenter). Esto es
+un bloqueo real de datos/herramientas, no una decisión de parar. **Sesgo
+de selección acumulado: ≈56 hipótesis/combinaciones probadas en total
+en este proyecto.**
