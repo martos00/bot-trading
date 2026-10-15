@@ -2575,3 +2575,61 @@ se prepara forward testing en demo; si falla, se documenta sin
 optimizar sobre el período de validación. Sin datos nuevos, no hay
 decisión que tomar todavía — el estado actual sigue siendo "candidata
 encontrada, no validada".
+
+## Motor de validación independiente — preparado, ejecutado sobre 2023-2026 como control
+
+`research/validacion_independiente_volexp.py`: NO modifica ninguna
+regla de la estrategia congelada (señal, SL nominal, TP, cierre forzoso
+a 5 días — idénticos al commit `6873cc3`). Añade, exactamente los 6
+puntos pedidos, sin tocar la señal ni los niveles:
+
+**1-2. Riesgo agregado y drawdown de equity (corrige la estimación
+anterior):** máximo de 3 posiciones simultáneas (3R de riesgo agregado
+en el peor momento). **El drawdown de equity real es 5,88R** (26-dic-2024)
+— **corrige la cifra de 3,93R dada en el turno anterior**, que estaba
+mal calculada (recorte demasiado estrecho del R realizado al construir
+la curva). 5,88R es sustancialmente mayor que el drawdown de balance
+(3,18R) — el número que importa para el riesgo real de cuenta es este,
+no el de cierres secuenciales.
+
+**3. Swap:** NINGÚN valor real confirmado para XAUUSD en este proyecto
+(a diferencia de US500/USTEC, confirmados hace tiempo vía
+especificación MT5). Tratado solo como estrés etiquetado (0/0,5/1,5
+puntos por noche de calendario mantenida — NO cifras reales del
+bróker): con 4,9 noches medias por operación, el PF baja de 1,92 a 1,78
+(0,5 pts/noche) y a 1,53 (1,5 pts/noche) — se mantiene por encima de 1
+en los tres escenarios, pero la sensibilidad es real y no despreciable.
+
+**4. Relleno realista ante gaps:** implementado — si el Open del día de
+salida ya gapeó más allá del SL nominal, el relleno es ese Open, no el
+SL. Efecto verificado: la única operación con gap real (2026-06-15)
+pasa a R=−1,03 (antes limitado artificialmente a exactamente −1,00). La
+media global apenas cambia (+0,3337 vs +0,3339) porque solo afecta a 1
+de 107 operaciones.
+
+**5. Proceso listo para datos nuevos:** `main(ruta_csv)` ejecuta todo
+el pipeline (resultado por año, drawdown de equity, sensibilidad a
+swap, dos controles) sobre cualquier CSV con el mismo formato — cero
+cambios de código necesarios al apuntar al histórico pre-2023 cuando
+llegue.
+
+**6. Dos referencias de control, no solo una:**
+- **Control A** (ya usado antes, misma fecha/riesgo, dirección
+  aleatoria): z=+2,72 (antes +2,77, diferencia trivial por el fix de
+  gaps) — aísla si la continuación (vs. azar direccional) aporta valor.
+- **Control B (nuevo):** días de entrada ALEATORIOS (no
+  necesariamente de expansión), mismo mecanismo de riesgo (SL en el
+  extremo de la vela elegida, TP 2R, cierre a 5 días) — aísla si elegir
+  específicamente un día de EXPANSIÓN aporta algo más que simplemente
+  apostar con ese tamaño de riesgo en cualquier día. Resultado: z=+2,22
+  — menor que el Control A, pero todavía claramente positivo: parte de
+  la ventaja viene de apostar con ese tamaño de riesgo en este mercado/
+  período en general, pero queda un componente adicional específico de
+  elegir días de expansión.
+
+**Verificado sobre 2023-2026 primero** (antes de usarlo con datos
+nuevos) para confirmar que la metodología de validación no altera el
+resultado ya conocido salvo en los puntos declarados arriba (gap y
+drawdown de equity). Listo para ejecutarse directamente sobre histórico
+pre-2023 en cuanto esté disponible — sin modificar ninguna regla tras
+verlo.
