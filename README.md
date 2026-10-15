@@ -3673,3 +3673,52 @@ indistinguible del azar. Ninguna sobrevive. El fundamento económico de
 estas 4 familias sigue siendo sólido (no se está descartando la
 teoría) — lo que se descarta es su implementación concreta sobre
 estos instrumentos y este período con los datos disponibles.
+
+## Síntesis tras ~60 hipótesis: qué dice el patrón, no solo cada resultado individual
+
+Antes de seguir generando hipótesis nuevas, merece la pena parar a
+mirar el conjunto, no solo cada prueba aislada — es información real
+que no estaba visible mirando una hipótesis a la vez.
+
+**Se consideró y se descartó explícitamente una cuarta variante del
+tema "risk-on/risk-off"/huida a la calidad** (diferencial de crédito
+Baa-Treasury, FRED serie BAA10Y, confirmada accesible) — no se
+construyó. Ya se ha probado esta misma familia conceptual desde 3
+ángulos distintos (magnitud de drawdown de renta variable — "Oro
+cobertura drawdown", ciclo autónomo, cerrada; fuerza del dólar —
+USD-basket, Fase 1 nula; tipo de interés real — Fase 1 débil). Añadir
+un cuarto proxy del mismo mecanismo sin una razón para esperar un
+resultado distinto es precisamente el tipo de variación cosmética que
+el usuario pidió evitar, no una línea de investigación nueva.
+
+**El patrón que se repite en las ~60 pruebas, independientemente de la
+familia:**
+1. Cuando aparece una media positiva con buen aspecto (Sharpe/PF
+   altos), descomponerla por activo o compararla con una referencia
+   aleatoria del MISMO mecanismo casi siempre revela que es beta
+   general del período (mercado alcista 2023-2026 en índices/oro)
+   amplificada por el tamaño de riesgo elegido, no una señal
+   específica de la hipótesis. Esto ha pasado con: momentum
+   transversal, CPI Drift, COT en índices, VIX Spike Reversion — 4
+   veces de forma independiente.
+2. Cuando el mecanismo SÍ tiene el signo económico correcto (tipos
+   reales, Halloween en XAUUSD, reversión semanal en índices), la
+   magnitud es sistemáticamente demasiado pequeña para sobrevivir a
+   1-3$ de estrés de coste, o la muestra es demasiado corta para
+   significancia — no es que la dirección esté mal, es que el tamaño
+   del efecto en estos instrumentos concretos no alcanza para cubrir
+   el coste de operar.
+3. Ningún resultado ha sido consistente en SIGNO en más del
+   ~70-75% de los años/sub-periodos probados, y los que más se
+   acercan dependen de 1-2 años concretos (sobre todo 2023).
+
+**Lectura honesta:** esto no demuestra que no exista ninguna ventaja
+explotable en XAUUSD/USTEC/US500/Forex a frecuencia diaria — demuestra
+que, con datos OHLC+calendario+macro públicos y una muestra de 3,75
+años (11 para XAUUSD), el proyecto no ha encontrado una cuya magnitud
+supere de forma fiable el coste de transacción y el ruido muestral.
+Las vías genuinamente no explotadas que quedan requieren o bien más
+historia (ya ofrecida, pendiente de decisión del usuario), o bien un
+tipo de dato que cambia la naturaleza del problema (tick/order flow,
+opciones, cesta amplia de acciones) en vez de otra variable macro más
+del mismo tipo.
