@@ -2754,6 +2754,29 @@ drawdown balance=3,18R (equity=5,88R). La caída es drástica incluso
 con un estrés de apenas 1$ por operación — un nivel modesto frente al
 spread+deslizamiento real esperable en XAUUSD.
 
+**Aclaración pedida por el usuario — los modelos de coste de ambas
+tablas NO son equivalentes:** en 2023-2026 la fila "spread real" ya
+incorpora el spread REAL reportado por MetaQuotes-Demo (medido: media
+≈9,5 puntos ≈ $0,095/operación) y el estrés (+1/+3) se suma ENCIMA de
+ese coste real. En 2015-2022 (HistData) no hay Ask/spread en el
+paquete M1 gratuito, así que la fila "CERO coste" es $0 absoluto, no
+"spread real + 0" — el estrés (+1/+3/+5$) aquí SUSTITUYE al coste
+desconocido, no se añade a nada. La fila "0" de ambas tablas, por
+tanto, no es comparable: la de 2015-2022 subestima el coste real más
+que la de 2023-2026. Esto hace el resultado 2015-2022 aún más débil de
+lo que parece al comparar las medias directamente.
+
+**Aclaración — corrección del drawdown de equity 2023-2026 (3,93R →
+5,88R):** no fue un cambio de criterio, fue la corrección de un error
+real. El cálculo original (3,93R) recortaba el R realizado de cada
+operación a un rango demasiado estrecho al construir la curva de
+equity día a día, lo que subestimaba el daño cuando una operación con
+gap a través del SL (R realizado peor que -1,0, motivo `SL_GAP`)
+coincidía con otras posiciones simultáneas abiertas. La función
+`calcular_equity_simultanea` usa un recorte más amplio
+(`[-3.0, TP_EN_R+0.1]`) que sí deja pasar esas pérdidas mayores — 5,88R
+es la cifra correcta.
+
 **Por año (a coste cero, el escenario más favorable):** 2015 +0,13,
 2016 **-0,08**, 2017 +0,28, 2018 **-0,27**, 2019 **-0,04**, 2020 +0,05,
 2021 +0,31, 2022 +0,00 — tres de ocho años negativos y uno
@@ -2804,3 +2827,62 @@ Fade, Momentum Series Temporales, Volatility Expansion Continuation, y
 las otras 5 del ciclo autónomo) han sido cerradas sin una estrategia
 que sobreviva validación independiente** en los mercados e históricos
 disponibles hasta ahora.
+
+## Nuevo ciclo de investigación — metodología mejorada con regímenes de mercado
+
+Con el histórico completo de XAUUSD (2015-2026) y USTEC/US500
+(2023-2026) disponible, se abre un nuevo ciclo con objetivo explícito:
+encontrar una estrategia con expectativa positiva DESPUÉS de costes y
+suficiente robustez para justificar forward testing. Reglas del ciclo,
+fijadas antes de programar ninguna hipótesis:
+
+**Política de uso de datos:** XAUUSD 2015-2022 ya se usó una vez para
+validar (y descartar) Volatility Expansion Continuation — no se trata
+como holdout virgen para las hipótesis nuevas, pero tampoco se
+descarta: se exige **consistencia de signo entre 2015-2022 y
+2023-2026** antes de considerar cualquier hallazgo en XAUUSD como señal
+real. USTEC/US500 solo tienen 2023-2026 (tramo ya muy usado en el ciclo
+anterior) — cualquier resultado ahí se trata como EXPLORATORIO, nunca
+como validación independiente.
+
+**Regímenes de mercado (`research/regimenes_mercado.py`), fijados antes
+de construir ninguna estrategia nueva, sin ajustar después:**
+tendencia (Close vs SMA200, causal) × volatilidad (ATR14[t-1]/Close[t-1]
+en terciles, mediante percentil EXPANDIDO causal — nunca una ventana
+que mire al futuro — con mínimo de 252 días de historial antes de
+clasificar). 6 regímenes combinados, siempre reportados todos los que
+tengan operaciones.
+
+**Carga de datos compartida:** `research/datos_ciclo2.py` centraliza
+rutas y construcción diaria+régimen para las tres series, reutilizada
+sin cambios por cada hipótesis.
+
+### Hipótesis probadas (todas con versión única, sin optimizar tras ver resultados)
+
+| # | Hipótesis | Familia / mecanismo | Resultado | Decisión |
+|---|---|---|---|---|
+| A | Volatility Expansion **Reversal** (fade del día de expansión, SL en el extremo alcanzado) | Mirror de la candidata ya cerrada (reversión vs. continuación) | Fuertemente negativa en los 3 mercados y casi todos los años/regímenes; z=-4,48 (XAUUSD), -2,47 (USTEC), -2,47 (US500) — **significativamente peor que el azar direccional** | Descartada |
+| B | Volatility **Compression** Breakout (ruptura tras régimen de volatilidad baja, umbral 1,0×ATR) | Squeeze/contracción-expansión, distinta precondición que A/VolExp | XAUUSD marginal a coste cero (+0,068R, z=+1,09 no significativo) y negativa con solo 1$ de estrés; USTEC/US500 negativos ya a coste cero | Descartada |
+| C | Bollinger Band Mean Reversion (20,2), TP=SMA20 | Mean reversion por distancia de precio en desv. típicas (distinto de RSI(2)) | XAUUSD negativa y significativamente peor que el azar (z=-2,02); USTEC/US500 positivas pero no significativas (z=+0,62/+1,00) e inconsistentes año a año | Descartada |
+| D | Estacionalidad por día de semana (Fase 1, sin backtest) | Retorno medio Close-Close por día, los 5 días siempre reportados | XAUUSD sin señal en ningún tramo; USTEC/US500 muestran Lunes significativo (+0,35%/+0,24%) pero es la MISMA pieza que ya explica por qué "Efecto Lunes" (corto) fracasó — no es hallazgo nuevo | Cerrada en Fase 1 (criterio pre-registrado no se cumple en XAUUSD) |
+| E | Opening Range Breakout **semanal** (rango del primer día de la semana) | Análogo semanal del ORB intradía ya cerrado | XAUUSD marginal a coste cero (z=+0,35), negativa con estrés; USTEC/US500 negativas ya a coste cero; muy inconsistente año a año | Descartada |
+| F | Asimetría overnight vs. intradía (USTEC/US500 — XAUUSD excluido, ya se sabe que su "cierre" diario es una pausa de mantenimiento, no una sesión real) | Decomposición Close-Open vs. Open-Close | Intradía significativo en ambos índices, pero overnight TAMBIÉN positivo (no hay asimetría real que explotar) — la pieza "ganadora" resultó ser solo beta alcista del propio período 2023-2026 concentrada en sesión diurna, no una ventaja estructural | Descartada tras construir la versión (frágil al coste: US500 PF<1 con 3$ de estrés; debilitándose año a año) |
+| G | Ventana estacional diciembre/enero ("Santa Claus Rally") | Estacionalidad institucional de fin de año, documentada solo para renta variable | Solo 3 diciembres completos disponibles (2023-2025) en USTEC/US500 — muy por debajo del mínimo de ~20 observaciones usado en todo este ciclo para cualquier IC | Cerrada en comprobación de viabilidad, sin backtest (potencia estadística insuficiente) |
+
+**Ninguna de las 7 hipótesis de este ciclo sobrevive ni siquiera la
+etapa exploratoria** — tres se cerraron en la fase de identificación de
+la ventaja sin necesidad de construir señal/SL/TP completos (D, G, y
+en la práctica B/E tras un coste mínimo), evitando auditorías
+innecesarias; ninguna llegó a mostrar robustez suficiente para
+justificar freeze + forward testing. Se decide no forzar hasta 10
+hipótesis con ideas de menor fundamento solo por completar el cupo —
+preferible un cierre honesto y documentado a diluir el proceso con
+hipótesis débiles.
+
+Código: `research/regimenes_mercado.py`, `research/datos_ciclo2.py`,
+`research/hipotesis_expansion_reversal.py`,
+`research/hipotesis_compresion_breakout.py`,
+`research/hipotesis_bollinger_reversion.py`,
+`research/hipotesis_dia_semana.py`, `research/hipotesis_orb_semanal.py`,
+`research/hipotesis_overnight_intradia.py`,
+`research/estrategia_intradia_largo_indices.py`.
