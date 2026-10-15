@@ -3215,3 +3215,120 @@ Código de esta sección: `research/datos_multiactivo.py`,
 `research/estrategia_momentum_transversal.py`,
 `research/estrategia_pairs_trading_coint.py`,
 `research/hipotesis_fomc_drift_multiactivo.py`.
+
+### Comprobación pedida: momentum transversal frente a una cartera ESTÁTICA equivalente
+
+El usuario pidió explícitamente no descartar momentum transversal solo
+por su concentración persistente, y comparar contra una referencia
+OBJETIVA (pesos no ajustados para favorecer ni perjudicar el
+resultado) con exposición/volatilidad/coste comparables. Referencia
+fijada ANTES de calcular nada: pierna larga ESTÁTICA (nunca cambia) =
+XAUUSD+US500+USTEC equiponderados por riesgo; pierna corta ESTÁTICA =
+los 6 pares Forex equiponderados por riesgo (los 6, no un subconjunto
+elegido — evita cualquier decisión arbitraria); mismo vol-targeting
+10%, mismo split 50/50, mismo coste de spread mensual que momentum
+transversal (`research/momentum_transversal_vs_benchmark.py`).
+
+| Lookback | Sharpe MOMENTUM | Sharpe ESTÁTICA | Excedente medio/mes | IC95% del excedente |
+|---|---|---|---|---|
+| 1 mes | 0,728 | **1,409** | -0,075% | [-0,70%, +0,56%] (no significativo) |
+| 3 meses | 0,092 | **1,409** | -0,527% | [-1,21%, +0,07%] (no significativo) |
+| 12 meses | 1,175 | **1,477** | +0,161% | [-0,14%, +0,50%] (no significativo) |
+
+**Resultado inequívoco: la cartera ESTÁTICA (sin ninguna señal, sin
+rotación) bate a momentum transversal en Sharpe en los 3 horizontes**,
+con menor volatilidad y menor drawdown (2,5-3,6% vs. 5,4-10,5%). El
+excedente de rotar por momentum sobre simplemente mantener esa
+exposición fija NO es significativamente distinto de cero en ningún
+caso. Esto confirma, de forma rigurosa y cuantificada (no solo por la
+concentración observada), que momentum transversal no aporta ventaja
+algorítmica alguna sobre la referencia objetiva — toda la rentabilidad
+venía de la exposición direccional, no de la rotación. **Cerrada
+definitivamente.**
+
+**Aclaración importante para no confundir el diagnóstico con un nuevo
+hallazgo:** la cartera ESTÁTICA en sí (Sharpe 1,4-1,5) NO se presenta
+como candidata — no tiene señal, es simplemente "haber estado largo
+oro+índices EEUU y corto una cesta de Forex" durante exactamente los
+~3 años en que esa combinación concreta funcionó bien. Es el mismo
+patrón de beta direccional ya identificado (Hipótesis F del ciclo
+diario) usado aquí únicamente como vara de medir, no como estrategia.
+
+### Limitación declarada: selección de pares en pairs trading usó todo el período
+
+El usuario pidió comprobar si el test de cointegración usó información
+futura. Respuesta honesta: **sí, parcialmente.** El test de
+Engle-Granger (`research/estrategia_pairs_trading_coint.py`) se
+calculó sobre TODO el histórico disponible de cada par (2023-2026, o
+2015-2026 para los que incluyen XAUUSD) para DECIDIR qué pares
+cointegran antes de construir ninguna regla. Esto es distinto de usar
+información futura DENTRO del backtest de trading (el hedge ratio/z-
+score de cada operación sí se calcula de forma causal, solo con datos
+pasados hasta ese día) — pero la SELECCIÓN del par en sí se apoyó en
+una ventana que incluye el mismo período luego usado para simular las
+operaciones. Un trader real, en tiempo real, no habría sabido en 2023
+que USTEC-US500 cointegraría con p=0,0081 hasta ver todo 2023-2026.
+
+**Consecuencia declarada, no oculta:** los resultados de pairs trading
+presentados (n=11 y n=19, ya débiles/negativos) tienen ADEMÁS este
+sesgo de selección de par no resuelto — no se trata como una
+simulación libre de sesgo retrospectivo. Cuando se disponga de más
+histórico (ver sección siguiente), la forma correcta de repetir esto
+es: dividir la muestra en un tramo de SELECCIÓN de pares (ej.
+2015-2020) y un tramo de SIMULACIÓN de trading completamente separado
+(2021 en adelante, nunca usado para decidir qué pares cointegran). No
+se repite ahora (no hace falta, según lo pedido) — se deja anotado
+para cuando haya más datos.
+
+### Continuación autónoma (restringida a XAUUSD/USTEC/US500, según lo pedido)
+
+**Estacionalidad de oro por demanda física india (Diwali/temporada de
+bodas):** considerada y RECHAZADA en la etapa de literatura, no de
+backtest — la búsqueda solo encontró reportajes/informes del World
+Gold Council y prensa especializada, no estudios académicos revisados
+por pares, y los propios informes del WGC describen el efecto como
+dependiente del precio e inconsistente. No se cumple el estándar de
+evidencia pedido ("preferiblemente estudios académicos... no inventes
+referencias") — se descarta sin programar nada.
+
+**NFP Drift** (`research/hipotesis_nfp_drift.py`) — familia macro
+distinta de FOMC/Turno de Mes, con fundamento académico real
+(Andersen, Bollerslev, Diebold & Vega documentan NFP como uno de los
+anuncios de mayor impacto medido en mercados globales). Calendario:
+primer viernes de cada mes, 2015-2026 (144 fechas; limitación menor
+declarada: no se corrigen a mano los pocos meses donde el informe real
+se retrasó una semana por festivo de Año Nuevo). Resultado, barra
+diaria, en los 3 mercados permitidos:
+
+| Activo | n | Día NFP (z) | NFP+1d (z) |
+|---|---|---|---|
+| XAUUSD | 137 | +0,68 | +1,06 |
+| USTEC | 43 | +0,47 | +0,92 |
+| US500 | 43 | +0,48 | +0,55 |
+
+Ninguna celda se acerca a |z|=2 — señal plana. **Descartada.**
+
+### Preparado: ampliación gratuita del histórico Forex (HistData)
+
+Para los 6 pares ya integrados en el universo (EURUSD, GBPUSD, USDJPY,
+USDCAD, USDCHF, USDSEK), descargar en
+histdata.com/download-free-forex-historical-data/?/metatrader/1-minute-bar-quotes,
+formato **"MetaTrader 4/5 Historical M1 Bar Data"**, años **2015 a
+2022** (8 descargas por par = 48 .zip — mismo rango que ya se hizo
+para XAUUSD, para igualar la ventana 2015-2026 en todo el universo).
+Verificado directamente en la página: los 6 pares están disponibles
+gratis en ese formato (EURUSD/GBPUSD/USDJPY/USDCHF desde 2000, USDCAD
+desde 2000, USDSEK desde 2008 — todos cubren 2015-2022 sin problema).
+
+Descomprimir TODOS los .zip en una sola carpeta (no importa el orden
+ni si quedan en subcarpetas) y ejecutar UNA VEZ:
+```
+pip install pandas
+python3 research/convertir_histdata_m1_multisimbolo.py carpeta_con_todos_los_csv carpeta_salida
+```
+El script busca recursivamente, agrupa por símbolo automáticamente y
+escribe un único CSV por par con los 8 años ya concatenados — no hace
+falta procesar año a año ni símbolo a símbolo. Probado en esta sesión
+reprocesando los ficheros XAUUSD ya existentes (resultado idéntico al
+obtenido manualmente, 189.034 velas). Subir aquí los 6 ficheros de
+salida para integrarlos en `research/datos_multiactivo.py`.
