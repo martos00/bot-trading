@@ -3455,3 +3455,53 @@ disponible.
 **Sesgo de selección acumulado:** ~50 hipótesis previas + 3 de esta
 ronda (USD-basket, CPI drift Fase 1, CPI drift con coste) ≈ **53
 hipótesis/combinaciones probadas en total.**
+
+**3. Halloween Effect / "Sell in May and Go Away"** (`research/hipotesis_halloween.py`)
+— efecto estacional con evidencia académica revisada por pares real
+(Bouman & Jacobsen 2002, *American Economic Review* 92(5):1618-1635,
+37 países 1970-1998, efecto en 36/37; extensión Jacobsen & Zhang, 108
+mercados, +4,52pp invierno vs. verano, t=9,69). Declarado: el
+fundamento es más sólido para renta variable que para oro — se prueba
+en los 3 mercados permitidos, sin fingir igual solidez. Regla más
+simple posible (sin SL, lección aplicada de CPI Drift: un marco de
+R-múltiplo con stop ajustado amplifica artificialmente resultados en
+mantenimientos largos): largo Nov-Abr, sin posición May-Oct.
+
+| Activo | Pares | Media invierno | Media verano | Diferencia | IC95% |
+|---|---|---|---|---|---|
+| XAUUSD | 11 | +9,60% | +4,19% | +5,40% | [-1,92%, +13,58%] (no significativo) |
+| USTEC | 3 | +8,58% | +18,79% | -10,21% | [-24,95%, +12,32%] (no significativo) |
+| US500 | 3 | +7,33% | +12,60% | -5,27% | [-18,53%, +19,69%] (no significativo) |
+
+XAUUSD muestra la DIRECCIÓN documentada en la literatura (9/11
+inviernos positivos, invierno > verano en promedio) pero sin
+significancia (n=11, IC amplio que incluye cero). USTEC/US500 muestran
+el signo contrario, pero con n=3 no es informativo (verano 2024-2025
+fue excepcionalmente fuerte para los índices, no hay base para
+generalizar). **Descartada por potencia insuficiente**, no por
+ausencia de fundamento — es, con diferencia, la familia con mejor
+respaldo académico probada hasta ahora, simplemente no hay suficientes
+años en los datos disponibles para confirmarla.
+
+**4. Autocorrelación semanal (lag-1)** (`research/hipotesis_autocorrelacion_semanal.py`)
+— frecuencia nueva en el proyecto (nunca se había probado la barra
+semanal), con fundamento en la literatura de autocorrelación a
+distintos horizontes (Lo & MacKinlay 1990, *RFS*, "When Are Contrarian
+Profits Due to Stock Market Overreaction?").
+
+| Activo | n semanas | Corr(lag-1) | IC95% | 1ª mitad | 2ª mitad |
+|---|---|---|---|---|---|
+| XAUUSD | 613 | +0,0025 | [-0,093, +0,085] | -0,008 | +0,009 |
+| USTEC | 189 | -0,0802 | [-0,228, +0,068] | -0,050 | -0,104 |
+| US500 | 189 | -0,1017 | [-0,236, +0,052] | -0,080 | -0,116 |
+
+XAUUSD esencialmente sin autocorrelación. USTEC/US500 muestran
+reversión semanal débil pero **consistente en ambas mitades de la
+muestra** (se vuelve más negativa, no desaparece) — dirección acorde
+con la reversión de corto plazo documentada en índices, pero el IC
+sigue incluyendo cero con n=189. **No se construye estrategia** — sin
+significancia no se justifica el siguiente paso, pero se anota como
+dirección a revisar si se amplía el histórico de índices.
+
+**Sesgo de selección acumulado actualizado:** ≈53 + 2 = **55
+hipótesis/combinaciones probadas en total en este proyecto.**
