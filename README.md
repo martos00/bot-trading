@@ -2408,3 +2408,170 @@ estrategia demostrada rentable en real.
 Todas las demás candidatas de este ciclo quedan descartadas o marcadas
 como demasiado débiles/inconsistentes para justificar más inversión de
 tiempo, sin haber sido optimizadas para forzar un resultado positivo.
+
+## Volatility Expansion Continuation (XAUUSD) — Fase 1: documentación y verificación
+
+Se detiene la búsqueda de nuevas candidatas. Todo el trabajo se centra
+en verificar esta única estrategia antes de congelarla (commit
+`6873cc3`, `research/estrategia_volatilidad_expansion.py`, sin
+modificar).
+
+### 1. Reglas exactas
+
+- **Barra:** diaria, agregada desde M15 por fecha de calendario del
+  servidor (`agregar_diario_con_spread`).
+- **Señal de expansión:** rango[t] = High[t]−Low[t] > 1,5 × ATR14[t−1]
+  (ATR de Wilder, conocido al cierre del día anterior).
+- **Dirección:** la del propio día de expansión — Close[t]>Open[t] ⇒
+  largo; si no, corto (continuación, no reversión).
+- **Horario:** ninguno específico — es un modelo diario, no depende de
+  reconstrucción horaria intradía (por eso se pudo probar en XAUUSD sin
+  el problema de offset ya documentado en otras hipótesis).
+- **Entrada:** Open[t+1] (el día siguiente al de expansión).
+- **SL:** el extremo opuesto del propio día de expansión (Low si
+  largo, High si corto).
+- **TP:** 2R desde la entrada.
+- **Salida temporal:** cierre forzoso al Close de 5 sesiones después de
+  la entrada si no se toca SL ni TP antes.
+- **Gestión de riesgo:** contabilidad en R-múltiplos (normalizado por
+  la distancia de entrada al SL), sin $ ni tamaño de posición fijo —
+  igual convención que todo el proyecto.
+- **Operaciones simultáneas — verificado, no documentado hasta ahora:**
+  el motor NO impide solapamiento. **El 58% de los pares de señales
+  consecutivas (62 de 106) tienen ventanas que se solapan**, y hay
+  hasta **3 posiciones abiertas a la vez** en algunos momentos. Esto es
+  coherente con la contabilidad en R (cada operación normaliza su
+  propio riesgo), pero importa para el drawdown real (ver punto 5).
+
+### 2. Verificación de lookahead — sin hallazgos
+
+Confirmado leyendo el código: la señal usa el rango y la dirección del
+día t, que solo se conocen al cierre de t; la entrada es el Open de
+t+1 (información ya disponible, sin adelantar nada); el escaneo de
+SL/TP empieza en la vela de entrada y solo usa High/Low de velas ya
+cerradas en cada paso. Empate SL/TP en la misma vela → gana el SL
+(mismo criterio conservador del resto del proyecto, confirmado en el
+código: se comprueba `toca_sl` antes de `toca_tp` y se corta ahí).
+
+### 3. Costes — qué se modela y qué NO
+
+- **Spread:** SÍ, real, de la primera vela M15 del día de entrada
+  (columna `Spread` del broker, convertida a precio).
+- **Comisión y slippage:** NO confirmados — presentados únicamente como
+  escenario de estrés (0/1/3 puntos adicionales), igual convención que
+  el resto del proyecto, nunca como cifra real del bróker.
+- **Swap/financiación overnight: NO MODELADO — limitación material
+  para ESTA estrategia en concreto.** A diferencia de las estrategias
+  intradía anteriores (que cerraban el mismo día y no incurrían en
+  swap), esta mantiene posiciones varios días (motivo de salida
+  `CIERRE_PLAZO` en 44 de 107 operaciones = mantuvo los 5 días
+  completos) y por tanto cruza varias noches y probablemente al menos
+  un fin de semana en una fracción relevante de operaciones. El swap
+  real de XAUUSD en esta cuenta nunca se ha confirmado en este
+  proyecto (mismo vacío ya señalado para otros instrumentos). No se
+  estima ni se inventa una cifra — queda como coste real no
+  incluido, a añadir antes de operar en real.
+- **Gaps / ejecución a través del stop:** comprobado directamente — de
+  las 33 operaciones cerradas por SL, **1 (3%) tuvo un gap real**: el
+  Open del día de salida ya estaba más allá del nivel de SL (ejemplo:
+  2026-06-15, corto, SL=4257,36, Open del día de salida=4262,55). El
+  motor asume ejecución exacta en el SL nominal — en esa operación
+  concreta, la ejecución real habría sido peor (al precio del Open,
+  no al SL). Impacto limitado (1 de 107 operaciones) pero real, y
+  más probable en una estrategia multi-día que en las intradía ya
+  auditadas.
+
+### 4. Resultados por año (ya calculados, no se repite el backtest)
+
+Solo spread real:
+
+| Año | n | Media R | PF |
+|---|---|---|---|
+| 2023 | 21 | +0,5065 | 3,171 |
+| 2024 | 34 | +0,1032 | 1,238 |
+| 2025 | 31 | +0,4092 | 2,014 |
+| 2026 | 21 | +0,4236 | 2,371 |
+
+Agregado: n=107, Media R=+0,334, PF=1,92, %Acierto=53,3%.
+
+### 5. Drawdown: balance (cierres) vs. equity (exposición simultánea real)
+
+- **Drawdown de balance** (curva de R acumulado solo al cierre de cada
+  operación, ya reportado): **3,18R**.
+- **Drawdown de equity** (recalculado ahora, marcando a mercado con el
+  Close de cada día TODAS las posiciones abiertas simultáneamente, no
+  solo una a la vez): **3,93R**, el 2024-10-29. Es mayor que el de
+  balance precisamente por el solapamiento del punto 1 — con hasta 3
+  posiciones abiertas a la vez, una racha adversa puede doler más de
+  lo que muestra la curva de cierres secuenciales. Es el número más
+  representativo del riesgo real de cuenta.
+
+### 6. El z-score del benchmark aleatorio NO es una prueba definitiva
+
+z=+2,77 (p≈0,0028 a una cola) es el resultado de UNA comparación, pero
+este proyecto ha probado del orden de 20 hipótesis/combinaciones
+distintas en total (RSI(2) con 3 umbrales × 3 mercados, momentum
+intradía, cambio de mes, pre-FOMC, y las 13 candidatas del último
+ciclo). Aplicando una corrección conservadora tipo Bonferroni para
+~20 pruebas, el umbral de significancia al 5% por familia pasaría a
+p<0,0025 — **nuestro p=0,0028 queda justo en el límite de esa
+corrección, no claramente por debajo.** Dicho de otro modo: con el
+número de hipótesis que hemos probado en total, encontrar UNA con este
+nivel de significancia por azar puro no sería sorprendente. El z-score
+sigue siendo un indicio real y favorable (no se descarta), pero no se
+trata como prueba estadística definitiva — exactamente la razón por la
+que corresponde validación independiente, no una declaración de
+ventaja confirmada.
+
+## Fase 2 — Congelación
+
+Código, parámetros y resultados fijados en el commit `6873cc3`
+(`research/estrategia_volatilidad_expansion.py`): umbral de expansión
+1,5×ATR14, TP=2R, cierre forzoso a 5 sesiones, SL en el extremo del día
+de expansión. **No se modifica nada de esto a partir de ahora**,
+independientemente de lo que muestre la validación con datos nuevos.
+
+## Fase 3 — Búsqueda de histórico XAUUSD anterior a 2023 (gratuito, sin comprar nada)
+
+**Primera opción a comprobar (la más directa, mismo bróker, estructura
+ya compatible):** el servidor MetaQuotes-Demo donde se exportó el
+histórico actual probablemente conserva más años de velas M15/D1 de
+XAUUSD de los que llegamos a exportar (solo se pidió desde 2023). Esto
+no se puede verificar desde esta sesión (no hay terminal MT5 activo
+aquí) — siguiente paso para el usuario: abrir el mismo gráfico XAUUSD
+en ese servidor demo, comprobar cuánto histórico D1/M15 ofrece
+realmente hacia atrás, y si hay cobertura, volver a ejecutar
+`MQL5/Scripts/Export_XAUUSD_M15.mq5` (ya existente, sin modificar) con
+un rango de fechas más amplio. Coste: cero, mismo bróker, mismo
+formato — compatible con el motor sin ningún adaptador.
+
+**Opción alternativa gratuita, confirmada en la propuesta de datos
+anterior de este proyecto: Dukascopy** — histórico tick gratuito de
+materias primas/CFDs, con herramientas de descarga de terceros
+(Tickstory, QuantDataManager) ya identificadas. No es el mismo bróker,
+así que sirve como contraste cruzado o sustituto si el demo no tiene
+suficiente historia, pero introduce una fuente de precios distinta
+(limitación a declarar si se usa).
+
+**No se compra nada** (Databento/Kibot/Firstrate quedan descartados
+para este paso, tal como se pidió).
+
+### Proceso preparado para cuando los datos lleguen
+
+En cuanto se obtenga el CSV con el mismo formato
+(`TimestampServidor;Open;High;Low;Close;TickVolume;Spread;RealVolume`),
+el proceso es: ejecutar `research/estrategia_volatilidad_expansion.py`
+tal cual (sin tocar una sola línea) sobre ese archivo, usando
+`cargar_m15`/`agregar_diario_con_spread` ya existentes — cero cambios
+de código necesarios, solo la ruta del nuevo CSV.
+
+## Fase 4 — Decisión (pendiente de datos)
+
+**No se puede ejecutar todavía** — no se ha conseguido histórico
+pre-2023 en esta sesión (depende de que el usuario compruebe la
+disponibilidad en el servidor demo o indique otra fuente). Según lo
+acordado: si el histórico anterior muestra el mismo patrón positivo,
+se prepara forward testing en demo; si falla, se documenta sin
+optimizar sobre el período de validación. Sin datos nuevos, no hay
+decisión que tomar todavía — el estado actual sigue siendo "candidata
+encontrada, no validada".
