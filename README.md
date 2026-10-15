@@ -2325,3 +2325,86 @@ prueba con otro lookback para forzar variación de señal (sería buscar
 el parámetro que da el resultado deseado). Validarla de verdad exigiría
 historial con algún tramo bajista real — pendiente de la decisión de
 fuente de datos ya propuesta.
+
+## Ciclo autónomo de candidatas (investigación continua sin pausas)
+
+Continuación del ciclo anterior (Gap Fade, Time Series Momentum) con
+autonomía completa, aplicando la verificación de viabilidad obligatoria
+antes de cada backtest. 13 candidatas consideradas en total; 5
+descartadas en el cribado de viabilidad sin programar nada, 8
+construidas y backtesteadas con el motor en R-múltiplos.
+
+### Descartadas en el cribado de viabilidad (sin backtest)
+
+| Candidata | Motivo (punto de viabilidad que falla) |
+|---|---|
+| Halloween / Sell-in-May | Solo 4 regímenes "invierno" completos en la muestra (punto 4: muestra insuficiente) |
+| Santa Claus Rally | Solo ~4 ocurrencias posibles (punto 4) |
+| Post-Earnings Announcement Drift | No está bien definido para un índice agregado, es un fenómeno a nivel de acción individual (punto 1) |
+| Triple Witching | Sin datos de open interest/opciones, sin regla de entrada clara sin ellos (punto 1) |
+| Anomalía de baja volatilidad (cross-sectional) | Exige una sección cruzada amplia de activos; solo tenemos 3 instrumentos (punto 4) |
+
+### Construidas y backtesteadas (solo spread real; ver cada script en `research/` para las reglas completas pre-registradas)
+
+| Candidata | Mercado(s) | n | Media R | PF | Consistencia por año | Veredicto |
+|---|---|---|---|---|---|---|
+| Gap Fade (sesión anterior) | USTEC/US500/XAUUSD | 10-28 | +0,11 a −0,20 | — | — | No concluyente **por diseño** (gap mal definido, ver arriba) |
+| Time Series Momentum (sesión anterior) | USTEC/US500/XAUUSD | 32-33 | +0,23 a +0,69 | 1,5-3,1 | 100% operaciones largas, 0 variación de señal | No informativo (confundido con deriva) |
+| **Volatility Expansion Continuation** | **XAUUSD** | **107** | **+0,334** | **1,92** | **Positivo en los 4 años (2023-2026)** | **Candidata para validación independiente** |
+| Volatility Expansion Continuation | USTEC / US500 | 116 / 115 | −0,053 / −0,059 | 0,89 / 0,88 | Negativo en 3 de 4 años ambos | Descartada (negativa) |
+| Rotación mensual Oro↔Equity (USTEC) | USTEC (señal cruzada XAUUSD) | 43 | +0,323 | 1,72 | 62% del beneficio en 2023 (n=11) | Descartada (concentración en un año) |
+| Pairs Spread USTEC/US500 | ratio sintético | 94 | +0,090 | 1,39 | Negativo en 2023 y 2026 | Descartada (inconsistente + sin coste de 2 piernas modelado) |
+| Efecto Lunes (día de la semana) | USTEC/US500/XAUUSD | 187-194 | −0,05 a −0,15 | 0,32-0,75 | Negativo en los 3 mercados y los 4 años | Descartada (claramente negativa) |
+| Proximidad al máximo de 252d | USTEC | 20 | +0,189 | 1,44 | 2023 n=1 (trivial); resto positivo | Débil (muestra pequeña) |
+| Proximidad al máximo de 252d | US500 | 30 | +0,036 | 1,07 | 2025/2026 negativos | Descartada (inconsistente) |
+| Proximidad al máximo de 252d | XAUUSD | 19 | +0,845 | 3,52 | 61% del beneficio en 2025 (n=9) | Descartada (concentración en un año) |
+| Oro como cobertura de drawdown USTEC | XAUUSD (señal cruzada USTEC) | 22 | +0,431 | 2,49 | Positivo 2023-2025, plano 2026; pero 77% del beneficio en solo 3 de 22 operaciones | Débil (demasiado concentrada, muestra pequeña) |
+
+### La única candidata que supera las pruebas de robustez: Volatility Expansion Continuation (XAUUSD)
+
+Fundamento: tras un día de expansión de rango claramente por encima de
+lo habitual (>1,5×ATR14) con cierre direccional, el movimiento tiende a
+continuar al día siguiente — patrón de "volatility breakout"
+documentado en la práctica de trading. Reglas (ver
+`research/estrategia_volatilidad_expansion.py`): dirección = la del
+propio día de expansión; entrada Open[t+1]; SL = extremo opuesto del
+día de expansión; TP = 2R; cierre forzoso a 5 días.
+
+**Pruebas de robustez aplicadas (no solo el resultado agregado):**
+- **Dirección equilibrada** (56 cortos / 51 largos) — no es un sesgo
+  direccional de deriva de mercado como Time Series Momentum.
+- **Sensibilidad a extremos:** quitar las 5 mejores y 5 peores
+  operaciones (de 107) apenas cambia la media (+0,334→+0,317). El 28%
+  del beneficio total viene de 5 operaciones (4,7% de la muestra) —
+  notable pero no dominante.
+- **Referencia adecuada (no confundir con deriva):** comparado contra
+  una referencia de MISMA fecha/riesgo/coste pero con dirección
+  ALEATORIA 50/50 en vez de "continuación" (1.000 repeticiones): media
+  aleatoria≈0,00, z=+2,77 — la dirección de continuación añade
+  información real más allá de estar expuesto esos días.
+- **Coste:** PF se mantiene >1,7 bajo el escenario de estrés más duro
+  (+3 puntos).
+- **No funciona en USTEC/US500** (negativo) — aceptable, el usuario
+  autorizó explícitamente que baste con un solo mercado.
+
+### Conclusión del ciclo
+
+**Sí hay una candidata que merece validación independiente: Volatility
+Expansion Continuation en XAUUSD.** Es la única de las 13 candidatas
+consideradas que combina resultado positivo, consistencia por año,
+robustez a extremos, superioridad sobre una referencia aleatoria
+adecuada, y resistencia al estrés de costes — sin signos de depender
+de un periodo extraordinario ni de confundirse con la deriva general
+del mercado.
+
+**Reglas congeladas, sin modificar tras este resultado** (conforme a lo
+acordado: "no modifiques estrategias basándote en resultados de
+validación"). Próximo paso explícito: validación independiente con
+datos que NO sean 2023-2026 (historial anterior y/o forward
+testing/demo) antes de considerarla una estrategia operable — el
+resultado actual es un candidato encontrado en una sola muestra, no una
+estrategia demostrada rentable en real.
+
+Todas las demás candidatas de este ciclo quedan descartadas o marcadas
+como demasiado débiles/inconsistentes para justificar más inversión de
+tiempo, sin haber sido optimizadas para forzar un resultado positivo.
