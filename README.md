@@ -4366,3 +4366,237 @@ más prometedora):**
    una 68ª hipótesis solo por mantener el ritmo, cuando las familias de
    estrategia razonablemente disponibles con este universo de datos ya
    están, en su mayoría, cubiertas.
+
+## Turtle System 2 — Expert Advisor para forward testing en DEMO (MT5)
+
+Primera candidata que pasa de backtest a fase práctica, por decisión
+explícita del usuario tras revisar los resultados anteriores. **Se
+mantiene la misma calificación que en la síntesis anterior: "ni
+descartada ni validada"** — el IC95% por cluster-bootstrap toca cero
+(ver sección anterior). Este EA existe para **recopilar evidencia
+nueva** (datos fuera de muestra reales), no porque la estrategia se
+considere ya rentable.
+
+### Advertencia que debe leerse antes de lo demás
+
+**Este entorno de ejecución es un sandbox en la nube sin MetaTrader 5
+instalado.** No se puede compilar, ejecutar ni probar el EA ni los
+scripts MQL5 aquí. Todo el código de abajo se ha escrito con el máximo
+cuidado para replicar exactamente la lógica ya probada en
+`research/estrategia_turtle_trading.py` (mismas fórmulas de N, mismos
+canales Donchian, misma prioridad stop-sobre-canal en empate), y se ha
+verificado la lógica del comparador Python con una prueba de
+autoconsistencia (ver más abajo) — **pero la comparación REAL
+EA-vs-Python todavía no se ha ejecutado, porque requiere que TÚ
+compiles y corras el script de validación en tu propio MT5.** No se
+declara en ningún momento que el EA "reproduce el backtest": eso se
+comprueba con el protocolo de la sección siguiente, y solo después de
+verlo sin diferencias tiene sentido pasar a la fase de demo.
+
+### Archivos
+
+| Archivo | Papel |
+|---|---|
+| `MQL5/Include/TurtleSystem2_Core.mqh` | Motor de señal puro (N, canales Donchian, decisión de entrada/salida/stop) — compartido POR DISEÑO entre el EA en vivo y el script de validación, para que ambos nunca puedan calcular la señal de forma distinta. |
+| `MQL5/Experts/TurtleSystem2_EA.mq5` | El EA en vivo — gestiona XAUUSD/USTEC/US500 desde un único gráfico. |
+| `MQL5/Scripts/TurtleSystem2_ExportarSenales.mq5` | Script de validación — NO opera nada; replica el backtest de Python en MQL5 sobre todo el histórico D1 del bróker y exporta un CSV por símbolo. |
+| `research/comparar_turtle_ea_vs_python.py` | Compara los CSV exportados por el script anterior contra `estrategia_turtle_trading.py` y reporta cualquier diferencia (no declara "validado"). |
+
+### Reglas congeladas (idénticas al backtest, no editables por parámetro)
+
+Entrada: ruptura del canal Donchian de **55 días**. Salida: ruptura del
+canal Donchian de **20 días** en contra. N = EMA de span 20 (alpha=2/21,
+igual que `pandas.ewm(span=20, adjust=False)`) del rango verdadero.
+Stop = entrada ∓ 2N. **Sin piramidación, 1 sola unidad.** Estas
+constantes están fijadas en `TurtleSystem2_Core.mqh` como `#define`,
+no como `input` — a propósito, para que no se puedan tocar desde las
+propiedades del EA sin editar y recompilar el código fuente, dejando
+rastro. **No se ha optimizado ningún parámetro con los resultados de
+2023-2026.**
+
+### Diferencias deliberadas frente al backtest de Python (declaradas, no accidentales)
+
+1. **Position sizing real.** El backtest de Python mide todo en
+   R-múltiplos (riesgo = 2N en PUNTOS) porque nunca asumió un tamaño de
+   cuenta. Este EA traduce ese riesgo a DINERO real vía
+   `OrderCalcProfit()` (que ya tiene en cuenta tick size, tick value y
+   contract size de cada símbolo) y redondea el volumen SOLO hacia
+   abajo al `SYMBOL_VOLUME_STEP` (nunca sube al mínimo del bróker si
+   eso superaría el riesgo autorizado — si el mínimo ya lo supera, la
+   operación se rechaza y se registra, no se amplía el riesgo).
+   `InpRiesgoPorOperacion_Pct` (1,0% del equity por defecto) es una
+   **decisión de ejecución nueva**, no una regla de señal — se eligió
+   deliberadamente conservadora, siguiendo la propia recomendación de
+   la síntesis anterior ("dado que el IC95% toca cero... tamaño de
+   posición conservador").
+2. **Límite de riesgo agregado y reparto por correlación USTEC/US500.**
+   `InpRiesgoMaximoCartera_Pct` (3,0% por defecto) limita la suma de
+   riesgo abierto entre los 3 mercados simultáneamente. Además, **si
+   USTEC y US500 tienen una señal en la MISMA dirección al mismo
+   tiempo** (el hallazgo ya documentado: disparan en fechas casi
+   idénticas), el EA les hace compartir un presupuesto de
+   `InpRiesgoCompartidoParUSTEC_US500 × InpRiesgoPorOperacion_Pct`
+   (1,5× una unidad por defecto, no 2×) en vez de dejar que cada uno
+   consuma su unidad completa por separado — aplicación directa del
+   caveat de independencia ya escrito más arriba.
+3. **El stop lo ejecuta el bróker, no una comprobación diaria.** El EA
+   envía el stop como SL real de la posición (ejecución intradía real,
+   más realista que la aproximación con velas D1 de Python); la salida
+   por CANAL sigue evaluándose explícitamente al cierre de cada vela
+   D1, igual que en Python.
+4. **Swap/financiación real, nunca asumido.** El EA no modela ningún
+   coste de swap manualmente — lo carga el bróker automáticamente, y
+   puede ser DISTINTO en cada mercado (justo lo que pedía el
+   requisito: "sin asumir que 2 puntos por noche equivalen al mismo
+   coste en todos los mercados"). `RegistrarSwapsReales()` escribe un
+   log diario con el swap long/short, modo de swap y triple-swap real
+   de cada símbolo (`TurtleSystem2_SwapsReales.csv`), para que quede
+   constancia de cuánto cobra realmente el bróker en cada uno.
+5. **Sin breakeven, trailing, cierre parcial, kill-switch diario ni
+   cierre de viernes.** A diferencia de otros EA de este repositorio,
+   **ninguno de esos mecanismos existía en el backtest congelado** —
+   añadir cualquiera de ellos cambiaría la estrategia que se está
+   poniendo a prueba. Se declara como ausencia intencionada, no un
+   olvido.
+6. **Recuperación tras reinicio.** Corriendo sin supervisión varios
+   meses, un reinicio del terminal/VPS es casi seguro que ocurrirá.
+   `SincronizarPosicionesExistentes()` reconstruye el estado interno
+   al arrancar a partir de las posiciones ya abiertas con el mismo
+   Magic Number (recupera el N original de forma EXACTA a partir de
+   `|precio_apertura - SL| / 2`, que es la misma fórmula invertida) —
+   evita abrir una segunda posición en el mismo símbolo por haber
+   "olvidado" la que ya estaba abierta. Limitación declarada: el %
+   de riesgo asignado a esa posición recuperada se aproxima al valor
+   ACTUAL de `InpRiesgoPorOperacion_Pct` (no hay forma de recuperar
+   qué % se usó realmente si el parámetro cambió entre reinicios).
+
+### Position sizing y límites de riesgo
+
+| Parámetro | Valor por defecto | Significado |
+|---|---|---|
+| `InpRiesgoPorOperacion_Pct` | 1,0% | % del equity arriesgado si el stop (2N) se toca limpiamente |
+| `InpRiesgoMaximoCartera_Pct` | 3,0% | Tope de riesgo abierto simultáneo entre los 3 mercados |
+| `InpRiesgoCompartidoParUSTEC_US500` | 1,5 | Múltiplo de `InpRiesgoPorOperacion_Pct` que USTEC+US500 comparten cuando coinciden en dirección |
+
+El volumen se calcula con `OrderCalcProfit()` + redondeo hacia abajo al
+`SYMBOL_VOLUME_STEP`, y se verifica el margen libre con
+`OrderCalcMargin()` antes de enviar cualquier orden — si cualquiera de
+los dos límites lo impide, la operación se rechaza y se registra en el
+log con el motivo exacto, nunca se amplía el riesgo para forzarla.
+
+### Logs generados (carpeta `MQL5/Files/` del terminal, o `Tester/Files/` en el Strategy Tester)
+
+- **`TurtleSystem2_Operaciones.csv`**: una fila por señal detectada,
+  rechazo (con motivo exacto: `LIMITE_RIESGO_CARTERA_O_CORRELACION`,
+  `VOLUMEN_MINIMO_EXCEDE_RIESGO`, `MARGEN_INSUFICIENTE`,
+  `ORDEN_RECHAZADA_SERVIDOR:<código>`, etc.), apertura confirmada
+  (precio/volumen/riesgo REALES del bróker, no el estimado) y cierre
+  (motivo `SALIDA_STOP` o `SALIDA_CANAL`, resultado monetario, swap,
+  comisión, duración).
+- **`TurtleSystem2_Equity.csv`**: snapshot de equity/balance/drawdown
+  desde el pico cada `InpEquitySnapshotSegundos` (5 min por defecto) Y
+  en cada apertura/cierre — al ser el equity REAL de la cuenta, incluye
+  automáticamente posiciones simultáneas, gaps de fin de semana y
+  costes ya cargados.
+- **`TurtleSystem2_SwapsReales.csv`**: especificaciones reales de cada
+  símbolo (swap long/short, modo, triple-swap, contract size, tick
+  size/value, volumen mínimo/paso), registradas al iniciar y una vez
+  al día — para que cualquier coste asumido en el backtest quede
+  contrastado con el dato real del bróker.
+
+### Protocolo de validación — OBLIGATORIO antes de activar en demo
+
+**No se declara en ningún momento que el EA está validado por
+reproducir el backtest — esto es una comprobación de que no hay un
+error de implementación, no una prueba de que la estrategia sea
+rentable (eso sigue pendiente del forward testing en sí).**
+
+1. Copia la carpeta `MQL5/` completa (`Include/`, `Experts/`,
+   `Scripts/`) dentro de la carpeta de datos de tu terminal MT5
+   (`Archivo -> Abrir carpeta de datos -> MQL5`), respetando la
+   misma estructura de subcarpetas.
+2. Compila `TurtleSystem2_ExportarSenales.mq5` (F7 en MetaEditor) y
+   ejecútalo como **Script** (doble clic desde el Navegador, o
+   arrástralo a cualquier gráfico) — no opera nada, solo lee
+   histórico y escribe 3 CSV (`TurtleSystem2_Validacion_XAUUSD.csv`,
+   `..._USTEC.csv`, `..._US500.csv`) en `MQL5/Files/`.
+3. Copia esos 3 CSV a esta máquina (o a donde ejecutes Python), por
+   ejemplo dentro de `research/validacion_ea/`.
+4. Ejecuta:
+   ```
+   python3 research/comparar_turtle_ea_vs_python.py --mql5-dir research/validacion_ea
+   ```
+   Reporta, por símbolo, operaciones emparejadas, solo-en-EA,
+   solo-en-Python y cualquier diferencia de dirección/precio/motivo de
+   salida/fecha de salida, con el detalle exacto de cada discrepancia.
+5. **Si hay diferencias:** NO continúes a la fase de demo todavía —
+   identifica la causa (candidatas más probables, de más a menos
+   frecuente: menos historial D1 disponible en el bróker que en los
+   datos de Python, lo que cambia ligeramente el "burn-in" del EMA de
+   N; huso horario del servidor del bróker distinto al usado al
+   construir los CSV de Python; un holiday/sesión que un calendario
+   tiene y el otro no) antes de decidir si es aceptable o es un error
+   real.
+6. Esta comparación solo puede hacerse sobre el TRAMO QUE YA ES
+   HISTÓRICO en ambos lados (no inventa datos nuevos) — sigue sin ser
+   una validación independiente de la estrategia, solo una
+   verificación de que el EA no tiene un bug de implementación frente
+   a la regla ya probada.
+
+**Autocomprobación ya realizada en este entorno (sin MT5):** se generó
+un CSV sintético idéntico a la salida esperada de Python y se
+confirmó que `comparar_turtle_ea_vs_python.py` lo marca sin
+diferencias (43/43, 15/15, 14/14 operaciones en XAUUSD/USTEC/US500), y
+que SÍ detecta diferencias introducidas a propósito (dirección,
+motivo de salida, operación añadida/eliminada). Esto confirma que el
+**comparador** funciona correctamente — NO confirma todavía que el EA
+real (compilado y ejecutado en tu MT5) produzca una salida idéntica a
+Python, porque eso depende de datos (historial del bróker) que esta
+máquina no tiene.
+
+### Instalación en MT5 (cuenta DEMO — nunca real)
+
+1. Copia `MQL5/Include/TurtleSystem2_Core.mqh`,
+   `MQL5/Experts/TurtleSystem2_EA.mq5` y
+   `MQL5/Scripts/TurtleSystem2_ExportarSenales.mq5` a las carpetas
+   correspondientes dentro de la carpeta de datos de tu terminal
+   (`Archivo -> Abrir carpeta de datos -> MQL5\Include`,
+   `MQL5\Experts`, `MQL5\Scripts`).
+2. Completa primero el **protocolo de validación** de arriba.
+3. Compila `TurtleSystem2_EA.mq5` con MetaEditor (F7).
+4. Asegúrate de que **XAUUSD, USTEC y US500** están visibles en
+   Market Watch con nombres EXACTOS (ajusta `InpSimbolos` si tu
+   bróker usa sufijos distintos, p. ej. `XAUUSD.`, `USTECm`).
+5. Arrastra el EA sobre **un único gráfico cualquiera** (recomendado:
+   XAUUSD, temporalidad D1 — el EA pide internamente D1 de los 3
+   símbolos vía `CopyRates`, independientemente del gráfico donde esté
+   adjunto). **No lo adjuntes a 3 gráficos distintos** — una sola
+   instancia gestiona los 3 mercados y su riesgo compartido; adjuntarlo
+   varias veces duplicaría posiciones y rompería el límite de cartera.
+6. Activa "Algo Trading" (botón en la barra de herramientas) y, en las
+   propiedades del EA (pestaña "Dependencias" o "Permitir importar
+   DLL/acceso a archivos" según versión), habilita el acceso a
+   archivos para que los 3 CSV de log puedan escribirse.
+7. **Confirma que la cuenta es DEMO** antes de activar "Algo Trading"
+   — este EA no debe usarse en una cuenta real bajo ninguna
+   circunstancia mientras la estrategia siga en esta fase.
+8. Déjalo corriendo sin intervención. Si se adjunta a mitad de una
+   sesión (no justo al cierre de una vela D1), evaluará inmediatamente
+   el último cierre disponible en cada símbolo — si ya cumplía una
+   señal, actuará enseguida en vez de esperar un día más (igual que
+   actuaría cualquier regla "congelada" aplicada en tiempo real).
+
+### Qué hacer con los datos del forward test
+
+Con el IC95% del backtest tocando cero, **un resultado positivo de
+pocas semanas no demuestra nada, y uno negativo tampoco descarta nada
+todavía** — la única forma honesta de leer esto es acumulando
+suficientes operaciones fuera de muestra (probablemente varios meses,
+dado que el sistema produce ~1 operación cada pocas semanas por
+mercado) antes de sacar cualquier conclusión. Revisa periódicamente
+`TurtleSystem2_Operaciones.csv` y `TurtleSystem2_Equity.csv` — cuando
+haya un número de operaciones razonable (orden de magnitud: la decena,
+no un puñado), tiene sentido volver a este documento y evaluar los
+resultados con la misma disciplina que el resto del proyecto (sin
+mirar antes de tener el tramo completo, sin optimizar nada con lo
+observado).
