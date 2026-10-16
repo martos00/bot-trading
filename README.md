@@ -4093,3 +4093,38 @@ explícita pedida por el usuario.
 
 **Sesgo de selección acumulado:** ≈65 + 1 = **66
 hipótesis/combinaciones probadas en total.**
+
+### Turtle System 2 — prueba de estrés de coste de financiación (swap), por el mismo motivo que mató al risk-parity
+
+El resultado Turtle System 2 combinado (72 operaciones, media de
+retención ≈39 días: XAUUSD 39,7, USTEC 36,0, US500 40,1) mantiene
+posiciones varias semanas — la misma razón por la que la cartera
+risk-parity (que apalancaba el bono sintético) resultó sensible a un
+coste de financiación del 4%/año no probado antes. Se aplica aquí la
+misma disciplina: coste de swap ETIQUETADO COMO ESTRÉS (no una tasa de
+swap real confirmada en MetaQuotes-Demo), en puntos por noche
+mantenida, sobre las 72 operaciones combinadas:
+
+| Estrés swap (pts/noche) | Media R | PF |
+|---|---|---|
+| 0,0 (solo spread real) | +0,6480 | 2,329 |
+| 0,5 | +0,6445 | 2,320 |
+| 1,0 | +0,6410 | 2,311 |
+| 2,0 | +0,6341 | 2,292 |
+
+**A diferencia del risk-parity (que el coste de financiación llevó a
+Sharpe negativo), el resultado Turtle System 2 es ROBUSTO a este
+estrés** — incluso a 2,0 puntos/noche (un nivel de estrés
+deliberadamente alto, no una tasa de swap real verificada) la media R
+cae solo de +0,648 a +0,634 (-2,1%) y el PF de 2,329 a 2,292. La razón
+estructural: el riesgo por operación (1R=2N) en este sistema es mucho
+mayor que el coste diario de swap acumulado durante ≈39 días, mientras
+que en el risk-parity el apalancamiento del bono (hasta ~2x) hacía que
+el coste de financiación compitiera directamente con un retorno anual
+ya modesto. Esto NO confirma la tasa de swap real de una cuenta viva
+(sigue sin confirmarse) — solo muestra que, a diferencia del
+risk-parity, esta candidata no depende de que el coste de financiación
+real sea bajo.
+
+**Sesgo de selección acumulado:** se mantiene en **66** (prueba de
+robustez sobre una candidata ya contada, no una hipótesis nueva).
