@@ -3867,3 +3867,52 @@ en total.**
 
 Código: `research/cartera_diversificada.py`,
 `research/estrategia_cartera_sistematica.py`.
+
+### 4. Cierre del hueco de coste de financiación — resultado decisivo
+
+Se estimó explícitamente el apalancamiento implícito medio que exige
+el vol-targeting (10% anualizado por activo) en la cartera de largo
+plazo (XAUUSD+BONO_US10Y+WTI): **BONO_US10Y promedia 1,96x, con picos
+en el límite de 3x** (su volatilidad natural, ~7%, es baja frente al
+objetivo del 10%, así que la fórmula le exige apalancarse para
+alcanzarlo) — XAUUSD 0,76x, WTI solo 0,29x (alta volatilidad natural,
+necesita menos). Aplicando un estrés de coste de financiación anual
+sobre ese apalancamiento medio mensual (NO es una cifra real de
+broker, es estrés etiquetado, igual disciplina que swap en el resto
+del proyecto):
+
+| Coste de financiación/año | Ret. anualizado | Sharpe | MaxDD |
+|---|---|---|---|
+| 0% (sin financiación, lo ya mostrado) | +3,15% | 0,527 | 9,67% |
+| 2%/año | +1,10% | 0,206 | 13,51% |
+| 4%/año | **-0,91%** | **-0,115** | 22,33% |
+| 6%/año | -2,88% | -0,435 | 34,86% |
+
+**Con un coste de financiación de apenas 4%/año — plausible para
+posiciones apalancadas via CFD/margen, no exagerado — el resultado ya
+modesto se vuelve NEGATIVO.** Esto es decisivo: ni siquiera la
+exposición pasiva diversificada (sin ninguna señal de timing) resulta
+atractiva una vez se incorpora un coste de financiación realista para
+el apalancamiento que el propio vol-targeting exige. Confirma que el
+hueco de coste señalado antes no era un detalle menor — era
+probablemente la diferencia entre "modesto pero positivo" y "negativo".
+
+### Conclusión final de la fase de cartera diversificada
+
+Con las 4 comprobaciones completas (pasiva vs. alternativas, muestra
+larga vs. corta, overlay activo, estrés de financiación), el veredicto
+es consistente y honesto: la construcción de risk-parity tiene mérito
+académico real y medible frente a alternativas naive, pero en este
+universo concreto (5 activos, 2 de ellos solo con 3,75 años de
+historia) el efecto es pequeño, no sobrevive a un régimen de estrés
+real (2022) sin degradarse sustancialmente, y no sobrevive a un coste
+de financiación realista en absoluto. El timing activo no solo no
+ayuda — la empeora. **Ninguna versión se congela como candidata.**
+Esto cierra, con un nivel de rigor más alto que las ~60 hipótesis
+anteriores (se probó la MISMA construcción en 2 longitudes de muestra
+y con 2 niveles de coste antes de concluir), la línea de "sistemas de
+cartera diversificada" tal como está planteada con los datos y
+activos disponibles.
+
+**Sesgo de selección acumulado:** ≈63 + 1 = **64
+hipótesis/combinaciones probadas en total.**
