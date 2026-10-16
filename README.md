@@ -4784,3 +4784,150 @@ se marca explícitamente como **INTEGRIDAD_DATOS_COMPROMETIDA** en los
 resultados siguientes y se reporta por separado, nunca mezclada sin
 aviso con el resto; (c) no se rellena ni se inventa ningún dato dentro
 del hueco.
+
+## Turtle System 2 sobre el histórico ampliado — reglas 100% congeladas, mismo stop=2N/entrada 55d/salida 20d/sin piramidación. Resultado: la evidencia nueva NO sostiene la estrategia
+
+Con el histórico ampliado ya auditado (sección anterior), se ejecuta
+`research/turtle_historico_ampliado.py` con las reglas EXACTAMENTE
+congeladas (ningún parámetro tocado tras ver resultados). Clasificación
+de período: una operación es **"ya usada"** si una operación con esa
+misma fecha de entrada YA aparecía en el backtest publicado
+(`datos_multiactivo.py`) — no un simple corte de fecha, porque el
+mayor histórico previo disponible ahora cambia ligeramente el
+"calentamiento" del indicador y puede adelantar la primera señal
+detectable (encontrado explícitamente: una operación de USTEC el
+2023-02-02 que el backtest original, con menos historial previo,
+nunca pudo ver). Todo lo demás es **"nuevo"**: evidencia que nunca
+participó en seleccionar ni en evaluar esta estrategia.
+
+### 1. Operaciones por período
+
+| Símbolo | Total | Ya usadas | Nuevas | Con integridad comprometida (excluida de las métricas) |
+|---|---|---|---|---|
+| XAUUSD | 57 | 37 | 20 | 1 |
+| USTEC | 17 | 15 | 2 | 1 |
+| US500 | 64 | 14 | 50 | 1 |
+
+### 2. Resultado en el período NUEVO (la pregunta real: ¿se sostiene fuera de la muestra que ya conocíamos?)
+
+| Símbolo | n | Media R | PF | %Acierto | z vs. dirección aleatoria |
+|---|---|---|---|---|---|
+| XAUUSD (nuevo, 2012-2016/2020-2021) | 20 | +0,074 | 1,132 | 25,0% | +0,17 |
+| USTEC (nuevo, solo 2 operaciones) | 2 | -0,846 | 0,000 | 0,0% | -1,40 |
+| US500 (nuevo, 2012-2023) | 50 | -0,230 | 0,582 | 32,0% | -1,53 |
+| **Pooled (3 mercados, nuevo)** | **72** | **-0,163** | **0,710** | 29,2% | — |
+
+**Cluster-bootstrap por año sobre el pooled nuevo (12 clusters):
+IC95%=[-0,456, +0,269] — P(Media R ≤ 0) = 80,1%.** Es decir: con la
+evidencia que genuinamente NUNCA se usó para elegir ni evaluar esta
+estrategia, hay un 80% de probabilidad de que el verdadero efecto sea
+nulo o negativo. US500 — con la muestra más grande de las tres (50
+operaciones nuevas, más del triple que las 14 ya publicadas) — es
+claramente negativo (PF=0,582) tanto en largo como en corto.
+
+**Sensibilidad a valores extremos (XAUUSD nuevo) y PF < 1 en la
+mayoría de desgloses** — ninguno de los tres mercados por separado,
+en su tramo nuevo, muestra un resultado que un observador neutral
+calificaría de "edge": XAUUSD depende por completo de un único trade
+de 2012 (excluirlo lo vuelve negativo, PF=0,328); USTEC solo tiene 2
+operaciones nuevas (muestra demasiado pequeña para decir nada); US500
+es negativo con una muestra ya respetable.
+
+**Referencias comprar-y-mantener del mismo período nuevo (sin ajuste
+de riesgo, solo contexto de qué hacía el mercado subyacente):**
+XAUUSD -9,5%/año, USTEC -15,6%/año (una ventana muy corta y mala),
+US500 **+10,2%/año** — en US500 concretamente, Turtle System 2
+(-0,23 Media R, pérdida neta) lo hizo PEOR que simplemente comprar y
+mantener el índice durante el mismo período.
+
+### 3. Resultado combinado (toda la muestra disponible hoy, ya usada + nueva), por símbolo
+
+| Símbolo | n | Media R | PF | %Acierto | MaxDD (balance) |
+|---|---|---|---|---|---|
+| XAUUSD | 56 | +0,266 | 1,487 | 32,1% | 8,47R |
+| USTEC | 16 | +0,089 | 1,137 | 31,2% | 4,07R |
+| US500 | 63 | -0,126 | 0,769 | 33,3% | 12,27R |
+
+**US500 combinado (toda la historia disponible del bróker, 63
+operaciones) es NEGATIVO.** No es ya "no concluyente" — con 14 años de
+datos y 63 operaciones, el sistema pierde dinero neto en este mercado
+bajo las reglas congeladas.
+
+### 4. Pooled TOTAL (los 3 mercados, toda la muestra disponible, excluyendo las 3 operaciones con integridad comprometida)
+
+| | n | Media R | Suma R | PF | %Acierto | MaxDD (balance) |
+|---|---|---|---|---|---|---|
+| Todas | 135 | +0,062 | +8,33 | 1,111 | 32,6% | 15,94R |
+| Excluyendo el MEJOR trade de los 135 | 134 | -0,005 | -0,63 | 0,992 | — | — |
+| Excluyendo los 3 mejores | 132 | -0,102 | -13,46 | 0,821 | — | — |
+
+**El resultado neto positivo de TODA la muestra ampliada (14+ años,
+135 operaciones, 3 mercados) depende de UN SOLO TRADE.** Quitar
+únicamente el mejor de los 135 ya lo vuelve negativo.
+
+**Cluster-bootstrap por año (15 clusters, toda la muestra):
+IC95%=[-0,198, +0,349] — P(Media R ≤ 0) = 33,6%.**
+
+**Hallazgo adicional, importante: el resultado combinado depende
+CASI ENTERAMENTE del lado LARGO.** Largo (n=82): Media R=+0,387,
+PF=1,849, %Acierto=43,9%. Corto (n=53): Media R=-0,442, PF=0,381,
+%Acierto=15,1% — **el lado corto pierde dinero de forma decisiva en
+toda la muestra ampliada.** Y al mirar el período NUEVO por separado,
+**tanto largo como corto son negativos ahí** (largo nuevo: -0,103;
+corto nuevo: -0,262) — la "ventaja" del lado largo en el resultado
+combinado viene ENTERAMENTE del período ya publicado (2023-2026,
+mercados alcistas en los 3 instrumentos), no se repite en la
+evidencia nueva. **Este es el mismo patrón de "beta de mercado
+alcista disfrazada de señal de tendencia" ya encontrado y descartado
+en COT, momentum transversal y Golden Cross** — aquí aparece dentro
+del propio candidato más prometedor del proyecto.
+
+**Sensibilidad a coste (pooled total):** PF=1,111 (spread real) →
+1,076 (+1 estrés) → 1,011 (+3 estrés) — sobrevive, pero por un margen
+mínimo, consistente con un sistema que ya partía de un PF apenas
+superior a 1.
+
+**Riesgo conjunto de los 3 mercados:** la correlación USTEC/US500 ya
+documentada se mantiene en el período nuevo (solo 1 fecha de entrada
+exactamente coincidente de 50 operaciones US500 en ese tramo, menor
+solapamiento que en el período ya usado porque USTEC casi no tiene
+historial nuevo) — el riesgo conjunto real de operar los 3 mercados
+simultáneamente sigue siendo menor que "3 apuestas independientes",
+en la misma dirección que el caveat ya escrito.
+
+### Veredicto actualizado — IMPORTANTE: esto rebaja sustancialmente la confianza en Turtle System 2, no la mantiene igual
+
+**La evidencia nueva —la que nunca participó en seleccionar ni en
+evaluar esta estrategia— NO respalda Turtle System 2. Si algo,
+apunta en contra:** P(Media R ≤ 0) = 80,1% solo con el tramo nuevo;
+US500 (el mercado con más muestra nueva) es negativo tanto en total
+como en ambas direcciones; el resultado positivo de la muestra
+COMPLETA depende de un único trade; y la aparente ventaja del lado
+largo resulta ser enteramente un artefacto del período ya publicado
+(mercados alcistas), no una propiedad robusta del sistema.
+
+**Esto cambia la calificación del candidato.** La sección original
+("NI SE DESCARTA NI SE DECLARA VALIDADA — la candidata más
+prometedora del proyecto") se escribió SIN esta evidencia, que estaba
+disponible en el propio bróker pero nunca se había consultado antes
+de esta fase de validación del EA. Con ella: Turtle System 2 pasa de
+"candidata prometedora, fíjate en forward testing" a **"candidata con
+evidencia predominantemente desfavorable fuera de la muestra que la
+hizo atractiva — no hay base estadística honesta para esperar que
+genere valor, más allá de la posibilidad real (no descartable del
+todo) de que el período 2023-2026 haya capturado una tendencia alcista
+genuina y sostenida que el resto de la muestra no tuvo la suerte de
+repetir.**
+
+**Recomendación para la fase de demo ya en marcha:** no hay motivo
+para detener el forward testing (es una cuenta demo, sin dinero real,
+y sigue siendo la única forma de conseguir evidencia genuinamente
+futura) — pero las expectativas deben ajustarse a la baja de forma
+sustancial. No se trata ya de validar una candidata prometedora con
+cautela; se trata de recopilar datos de un sistema cuya evidencia
+disponible, en conjunto, es más consistente con "sin ventaja
+demostrable" que con "ventaja modesta pendiente de confirmar".
+
+**Sesgo de selección acumulado:** se mantiene en **67** (esto es
+evaluación de evidencia adicional sobre una candidata ya contada, no
+una hipótesis nueva).
