@@ -4931,3 +4931,208 @@ demostrable" que con "ventaja modesta pendiente de confirmar".
 **Sesgo de selección acumulado:** se mantiene en **67** (esto es
 evaluación de evidencia adicional sobre una candidata ya contada, no
 una hipótesis nueva).
+
+## PRIORIDAD 1 (pedida explícitamente) — Investigación a fondo del hueco de 38 días (jul-sep 2025)
+
+### ¿De dónde viene el hueco? Archivo original, no procesamiento nuestro
+
+Se rastreó el hueco paso a paso por todo el pipeline:
+
+1. **Archivo M15 original** (`USTEC_M15_Export.csv`, exportado el 13 de
+   octubre, el mismo que usa `datos_multiactivo.py` desde el principio
+   del proyecto): se comprobó directamente — entre 2025-07-17 y
+   2025-09-08 hay **0 velas M15**. El hueco YA ESTÁ en el archivo de
+   origen, no lo introduce ningún script de este proyecto.
+2. **`cargar_m15()` / `agregar_diario()` / `fusionar_domingo_en_lunes()`**:
+   se probó cada función por separado — ninguna descarta ni filtra
+   días; un día sin ninguna vela M15 simplemente no puede aparecer en
+   el `groupby('dia')`. Confirmado: **no hay ningún bug en nuestro
+   código de agregación.**
+3. **Segunda fuente independiente**: existe un segundo archivo
+   `USTEC_M15_Export.csv` subido por separado (mismo nombre, hash
+   MD5 distinto) — comparado byte a byte, es **idéntico** salvo la
+   ÚLTIMA vela (la vela en formación en el momento de cada
+   exportación). El hueco está presente en AMBOS.
+4. **Export D1 directo vía `CopyRates`** (`Export_D1_Comparacion.mq5`,
+   ejecutado por el usuario el 16 de octubre, 3 días después del
+   export M15): **el mismo hueco exacto**, mismas fechas.
+
+**Conclusión: el hueco existe de forma IDÉNTICA en tres extracciones
+independientes del histórico (dos exports M15 con 3 días de
+diferencia, y un export D1 directo 3 días después) — no es un
+artefacto de nuestro procesamiento.** Esto apunta a que, durante esas
+~5,5 semanas, el terminal MT5 de la cuenta demo del usuario (o el
+propio servidor del bróker) no tenía ningún histórico D1/M15
+disponible para USTEC/US500 — no se puede determinar desde aquí si la
+causa es una ausencia real en el servidor del bróker o un problema de
+sincronización del histórico local del terminal que un
+"Centro de Historial de Cotizaciones" (Herramientas → Historial)
+podría forzar a re-descargar.
+
+**Acción concreta pendiente del usuario (la única necesaria para
+resolver esto con datos, no con inferencia):** en MT5, abrir
+`Herramientas → Centro de Historial de Cotizaciones` (o equivalente),
+seleccionar USTEC/US500, temporalidad D1 (y M1 si es posible), y
+pedir explícitamente la descarga del rango 2025-07-01 a 2025-09-15 —
+si el bróker tiene esos datos en servidor y el terminal simplemente no
+los había sincronizado, esto debería traerlos. Si tras pedirlo
+explícitamente el hueco persiste, es razonable concluir que la
+ausencia es del lado del servidor/proveedor, no del terminal local.
+
+### Reconstrucción completa de las dos operaciones afectadas (todos los campos pedidos)
+
+**USTEC (largo, 2025-06-11 → 2025-11-19, CANAL_SALIDA):**
+
+| Campo | Valor |
+|---|---|
+| Precio de entrada | 21.921,05 |
+| N en la señal | 358,21207 |
+| Stop inicial (entrada − 2N) | 21.204,62585 |
+| Distancia inicial al stop | 716,42415 puntos (3,27% del precio de entrada) |
+| Spread en la entrada | 0,90 puntos |
+| Precio de salida | 24.480,90 (salida por canal, Open del día siguiente a la señal) |
+| Retorno bruto | +2.559,85 puntos |
+| Retorno neto (− spread) | +2.558,95 puntos |
+| **R = neto / riesgo** | **+3,5718** |
+| [Ilustrativo, NO real — equity hipotético $10.000, 1% de riesgo al stop] | riesgo=$100, beneficio ilustrativo≈+$357 |
+
+**US500 (largo, 2025-06-11 → 2025-11-19, CANAL_SALIDA):**
+
+| Campo | Valor |
+|---|---|
+| Precio de entrada | 6.034,10 |
+| N en la señal | 79,60831 |
+| Stop inicial (entrada − 2N) | 5.874,88338 |
+| Distancia inicial al stop | 159,21662 puntos (2,64% del precio de entrada) |
+| Spread en la entrada | 0,40 puntos |
+| Precio de salida | 6.613,60 |
+| Retorno bruto | +579,50 puntos |
+| Retorno neto (− spread) | +579,10 puntos |
+| **R = neto / riesgo** | **+3,6372** |
+| [Ilustrativo, NO real] | riesgo=$100, beneficio ilustrativo≈+$364 |
+
+### ¿Qué pasa si el precio toca el stop durante el hueco?
+
+No se puede confirmar ni descartar con los datos disponibles — pero sí
+se puede acotar con lo que SÍ tenemos (última vela antes del hueco,
+primera después):
+
+| | Última vela antes (16-jul) | Primera vela después (9-sep) | Distancia del cierre previo al stop | Movimiento neto durante el hueco |
+|---|---|---|---|---|
+| USTEC | Close=22.813,10 | Open=23.798,80 | +1.608,47 puntos (7,34%) por encima del stop | +985,70 puntos (+4,32%) |
+| US500 | Close=6.229,90 | Open=6.503,40 | +355,02 puntos (5,88%) por encima del stop | +273,50 puntos (+4,39%) |
+
+En ambos casos, al cierre justo antes del hueco el precio estaba
+cómodamente por encima del stop (5,9%-7,3%), y la tendencia continuó
+al alza tanto antes como después del hueco (movimiento neto positivo
+en ambos). **Esto hace MENOS probable, pero de ninguna manera
+descarta, que el stop se tocara en algún momento intermedio** — 5,5
+semanas es tiempo suficiente para una caída temporal significativa
+incluso dentro de una tendencia alcista más amplia, y no hay forma de
+verificarlo con los datos actuales. **No se aceptan estas dos
+operaciones como "confirmadas"** — se tratan como
+`INTEGRIDAD_DATOS_COMPROMETIDA` (ya eran excluidas de las métricas
+principales desde la sección anterior) y se mantienen así hasta que
+el usuario confirme si el bróker puede servir el histórico real de
+ese tramo.
+
+## PRIORIDAD 2 (parte A) — Qué otras investigaciones usan los archivos afectados y podrían cambiar
+
+**Hallazgo clave que cambia la prioridad de esta revisión: agosto de
+2025 no tiene NINGUNA barra diaria para USTEC ni US500** (verificado
+directamente: `groupby('anio_mes')` de 2025-05 a 2025-10 da
+22/21/**12**/—/16/23 barras, con **2025-08 completamente ausente de la
+tabla**, no solo con pocos datos). Esto es más grave que el hallazgo
+original para cualquier método que rebalancee a **fin de mes**: no es
+que "falten días", es que **el mes de agosto no existe como punto de
+rebalanceo** — el código salta directamente de la última fila
+disponible de julio (16-jul, no 31-jul) a la última de septiembre,
+tratándolas como "meses consecutivos" cuando en realidad el "retorno
+mensual" calculado ahí comprime ~2,5 meses reales de movimiento en una
+sola observación.
+
+**Scripts que usan `datos_multiactivo.py`/`cartera_diversificada.py`
+y su riesgo de verse afectados:**
+
+| Script | Mecanismo | Riesgo | Motivo |
+|---|---|---|---|
+| `estrategia_tsmom.py` | Rebalanceo mensual (`fin_de_mes`), incluye USTEC/US500 | **ALTO** | El "mes" de julio-septiembre 2025 queda comprimido en una sola observación mensual para USTEC/US500 |
+| `estrategia_cartera_sistematica.py` | Rebalanceo mensual, risk-parity + overlay, NUCLEO incluye USTEC/US500 | **ALTO** | Mismo mecanismo `fin_de_mes` — afecta tanto a la cartera pasiva como al overlay activo |
+| `estrategia_momentum_transversal.py` / `momentum_transversal_vs_benchmark.py` | Ranking transversal mensual, incluye USTEC/US500 | **ALTO** | Mismo mecanismo |
+| `estrategia_golden_cross.py` | SMA50/SMA200 + rebalanceo mensual, incluye USTEC/US500 | **ALTO** | La SMA se calcula sobre una serie con 38 días ausentes (ventana efectivamente más corta sin avisar) + mismo problema de `fin_de_mes` |
+| `estrategia_pairs_trading_coint.py` | Cointegración USTEC-US500 sobre serie diaria completa | MEDIO | 38 días menos de ~900 no debería cambiar la conclusión (ya descartada por sesgo de selección de muestra completa), pero reduce ligeramente la potencia del test |
+| `hipotesis_cpi_drift.py` / `estrategia_cpi_drift.py` | Ventanas de evento ±1-5 días alrededor de fechas CPI, incluye USTEC/US500 | BAJO | 2 de ~35 fechas CPI (15-jul-2025, 12-ago-2025) caen dentro del hueco — esas 2 observaciones faltan silenciosamente para USTEC/US500; hallazgo ya era nulo/negativo, 2 observaciones menos no lo revierte |
+| `hipotesis_fomc_drift_multiactivo.py` / `hipotesis_ciclo_fomc.py` | Ventanas de evento alrededor de fechas FOMC | BAJO | 1 fecha FOMC (30-jul-2025) cae dentro del hueco, mismo razonamiento que CPI |
+| `estrategia_cot_contrarian.py` | Señal semanal COT sobre USTEC/US500 | BAJO | Ya descartada por un problema estructural distinto (posicionamiento "siempre largo" en índices) no relacionado con este hueco |
+| `estrategia_dual_momentum_gem.py` | Usa SP500 de FRED + bono sintético, NO usa USTEC/US500 del bróker | **NINGUNO** | No toca los archivos afectados |
+| `estrategia_carry_trade.py`, `estrategia_vix_reversion.py`, `hipotesis_usd_basket_gold.py`, `hipotesis_oro_tipos_reales.py`, `hipotesis_halloween.py`, `hipotesis_autocorrelacion_semanal.py` | Mayormente centradas en XAUUSD o en mecanismos no mensuales | BAJO | No usan el mecanismo `fin_de_mes` que colisiona con el hueco; revisar solo si se decide profundizar |
+
+**Decisión (sin re-ejecutar todo automáticamente, como se pidió):** se
+marcan los 4 scripts de riesgo ALTO como pendientes de re-verificación
+con el módulo de control de calidad (parte B, siguiente sección) antes
+de confiar en sus cifras de julio-septiembre 2025 — ninguno de ellos
+fue la base de una decisión "candidata validada" (TSMOM, momentum
+transversal y Golden Cross ya están descartados; risk-parity ya está
+descartado por coste de financiación), así que no hay una conclusión
+ya accionada que corregir con urgencia, pero si se retoma cualquiera
+de ellos en el futuro, debe pasar primero por el control de calidad.
+
+## PRIORIDAD 2 (parte B) — Módulo automático de control de calidad (`research/calidad_datos.py`)
+
+Implementa los 8 chequeos pedidos explícitamente. Principio rector:
+**un problema grave marca el resultado como NO VÁLIDO, nunca continúa
+en silencio.**
+
+| # | Chequeo | Función | Gravedad |
+|---|---|---|---|
+| 1 | Huecos inesperados de cotización | `detectar_huecos()` | GRAVE si ≥3 días hábiles consecutivos sin vela |
+| 2 | Velas artificiales de domingo/festivo | `detectar_velas_artificiales()` | Aviso (rango < 35% de la mediana — no se asume automáticamente que es un error, un movimiento real también puede ser estrecho) |
+| 3 | Precios anómalos | `detectar_velas_invalidas_y_precios_anomalos()` | GRAVE si OHLC inconsistente o precio ≤ 0; aviso si \|retorno log diario\| > 15% |
+| 4 | Diferencias de proveedor/horario | (metodología ya aplicada manualmente en la sección de resolución EA-vs-Python; no automatizada aún — requiere una segunda fuente para comparar) | — |
+| 5 | Datos duplicados o desordenados | `detectar_duplicados_y_desorden()` | GRAVE |
+| 6 | Stops no verificables por falta de datos | `marcar_operaciones_con_huecos()` | GRAVE si alguna operación real solapa un hueco |
+| 7 | Denominadores de R incorrectos/degenerados | `verificar_denominadores_r()` | GRAVE si riesgo_puntos ≤ 0 o riesgo/precio < 0,01% |
+| 8 | Posiciones abiertas durante huecos | Mismo mecanismo que el punto 6 (`col_entrada`/`col_salida` genéricos — también aplicable a rebalanceos mensuales, no solo a operaciones discretas) | GRAVE |
+
+`auditar_historico(diario, nombre)` corre los chequeos de histórico;
+`auditar_backtest(diario, ops, nombre)` además marca qué operaciones
+quedan con `integridad_comprometida=True` y verifica los denominadores
+de R. **Autocomprobación ya ejecutada** (`python3
+research/calidad_datos.py`): reproduce automáticamente, sin
+intervención manual, los mismos hallazgos ya documentados a mano —
+XAUUSD **VÁLIDO**, USTEC y US500 **NO VÁLIDO** (hueco jul-sep 2025) —
+y aplicado a `auditar_backtest()` sobre Turtle System 2 marca
+exactamente la 1 operación comprometida por mercado ya identificada.
+Este módulo se usa de aquí en adelante en cualquier backtest nuevo
+sobre XAUUSD/USTEC/US500.
+
+## PRIORIDAD 3 — Veredicto final sobre Turtle System 2: DESCARTADA como candidata prometedora
+
+Con los problemas de datos ya identificados, auditados y con un
+control de calidad automático que los detecta de forma reproducible,
+se aplica el veredicto pedido explícitamente: **la evidencia
+disponible, con las reglas 100% congeladas y sin ningún intento de
+recuperar rentabilidad, sigue siendo negativa/no concluyente a favor
+de la estrategia** (sección anterior: período nuevo pooled P(Media R≤0)
+=80,1%; el resultado positivo de toda la muestra depende de un único
+trade; el "edge" del lado largo es un artefacto del período ya
+publicado, no se repite en la evidencia nueva).
+
+**Turtle System 2 queda DESCARTADA como candidata prometedora.** No se
+declara "estrategia sin ninguna posibilidad de ventaja" (el período
+2023-2026 podría reflejar una tendencia alcista real que simplemente
+no se repitió en el resto de la muestra, algo que no se puede
+descartar del todo) — pero no hay base estadística honesta para
+seguir tratándola como la mejor candidata del proyecto ni para
+priorizar recursos en validarla.
+
+**El EA (`TurtleSystem2_EA.mq5`) se conserva como herramienta de
+investigación** — su motor de señal está verificado como
+bit-a-bit idéntico a Python (sección de validación), y sigue siendo
+útil para recopilar datos reales de ejecución (slippage, swap real,
+comportamiento del bróker) si en algún momento se quiere estudiar la
+mecánica de ejecución de un sistema de tendencia. **Pero no se
+prioriza su forward testing en demo** — no se desinstala ni se
+prohíbe, simplemente deja de ser la actividad principal del proyecto.
+
+**Sesgo de selección acumulado:** se mantiene en **67**.
