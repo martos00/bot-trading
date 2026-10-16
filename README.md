@@ -4189,3 +4189,52 @@ esta implementación y frente al benchmark correcto, no añade valor.
 
 **Sesgo de selección acumulado:** ≈66 + 1 = **67 hipótesis/combinaciones
 probadas en total.**
+
+### Turtle System 2 — concentración temporal y comportamiento reciente (2026) — comprobación de robustez adicional, no reoptimización
+
+Al revisar el desglose por año de las 72 operaciones (ya calculado por
+`analizar()`, sin modificar ninguna regla), aparece un patrón que no
+se había señalado todavía de forma explícita y que matiza más el
+resultado que el propio caveat de independencia entre mercados:
+
+| Periodo | n | Media R | PF | %Acierto |
+|---|---|---|---|---|
+| 2023 (primer año con USTEC/US500) | 11 | +0,954 | 2,963 | 45,5% |
+| 2024-2025 | 19 | +1,689 | 5,029 | 52,6% |
+| **2026 (año en curso, parcial)** | **12** | **-0,343** | **0,473** | **25,0%** |
+| Excluyendo 2023 y 2025 (los años con los outliers más grandes) | 52 | +0,166 | 1,335 | 44,2% |
+
+**El año en curso (2026) es, hasta ahora, claramente perdedor en las
+tres mercados simultáneamente** (XAUUSD Media R=-1,000 n=3; USTEC
+Media R=-0,117 n=5; US500 Media R=-0,134 n=4) — con un %Acierto
+conjunto de solo 25%, por debajo incluso del 42-47% esperado de la
+distribución de la estrategia. Y al excluir los dos años que contienen
+los trades más extremos (2023, el primer año con datos de USTEC/US500,
+y 2025, que incluye el trade de oro de +17,2R ya documentado en la
+sección de sensibilidad a valores extremos), el resto de la muestra
+(52 operaciones, el 72% del total) da una Media R de solo +0,166 y
+PF=1,335 — positivo, pero muy por debajo del +0,648/PF=2,329 titular.
+
+**Esto no es un hallazgo que invalide la estrategia, pero sí reduce
+razonablemente la confianza en que el resultado agregado se repita de
+forma estable año a año** — un sistema de tendencia genuino
+PUEDE perfectamente tener rachas perdedoras de 1 año (es consistente
+con la "forma esperada" de pocas operaciones grandes y muchas pequeñas
+pérdidas ya documentada), pero significa que 2026 por sí solo no sirve
+como evidencia a favor ni en contra: es una muestra más pequeña
+todavía dentro de una muestra ya modesta. Se declara esto en vez de
+presentar solo el número agregado +0,648/2,329 sin este contexto.
+
+**Esto refuerza, no cambia, la decisión ya tomada: NI SE DESCARTA NI SE
+DECLARA VALIDADA.** Sigue siendo la candidata más prometedora del
+proyecto (mecanismo genuino de tendencia, no beta disfrazada, robusta a
+coste de swap), pero con AÚN MENOS margen del que sugería el z=1,97
+original una vez sumados (a) la correlación entre USTEC/US500, (b) la
+dependencia de pocas operaciones grandes, y (c) la concentración
+temporal en 2023 y 2025 con un año 2026 perdedor hasta la fecha. La
+única forma de resolver esta incertidumbre con honestidad es forward
+testing en cuenta demo con las reglas ya congeladas, no más análisis
+retrospectivo sobre los mismos datos.
+
+**Sesgo de selección acumulado:** se mantiene en **67** (comprobación
+de robustez sobre una candidata ya contada, no una hipótesis nueva).
