@@ -4679,3 +4679,108 @@ esté validada como rentable — solo que la implementación es correcta.
 
 **Sesgo de selección acumulado:** sin cambios (67) — esto es
 verificación de implementación, no una hipótesis nueva.
+
+## Auditoría de calidad del histórico ampliado — HALLAZGO CRÍTICO: hueco de datos ya presente en resultados publicados
+
+Antes de usar el histórico ampliado (XAUUSD desde 2012 en este export,
+USTEC desde jul-2022, US500 desde 2012) para cualquier backtest nuevo,
+se audita su calidad: continuidad, huecos, velas anómalas, cambios de
+especificación, horarios, y plausibilidad del precio reconstruido.
+
+### Hallazgo crítico: hueco de ~38 días hábiles en USTEC y US500 (16 jul – 9 sep 2025) — YA ESTABA en el dataset usado para TODOS los resultados de Turtle System 2 publicados hasta ahora
+
+Buscando huecos de 3+ días hábiles consecutivos en los 3 históricos
+completos: **cero en XAUUSD**, pero **USTEC y US500 saltan,
+IDÉNTICAMENTE, de 2025-07-16 a 2025-09-09 (38 días hábiles sin una sola
+vela D1)**. No es un patrón de festivos (sería ~1-3 días, no 38, y no
+coincidiría exactamente entre dos instrumentos distintos salvo que
+comparta la misma causa real). Se comprobó que **este hueco YA ESTABA
+presente en `research/datos_multiactivo.py`** — es decir, en el
+dataset que se ha usado para TODOS los resultados de Turtle System 2
+publicados en este documento hasta la fecha, sin haber sido detectado
+ni declarado antes de esta auditoría.
+
+**Impacto directo y ya identificado:** las operaciones que ya figuran
+en la sección principal de Turtle System 2 como parte del grupo
+"2025: n=9, suma_R=+27,53" (el año que por sí solo aporta ~59% del
+resultado bruto acumulado) incluyen EXACTAMENTE las dos operaciones
+cuyo periodo de tenencia atraviesa este hueco:
+
+| Mercado | Entrada | Salida | Motivo | Retorno bruto |
+|---|---|---|---|---|
+| USTEC | 2025-06-11 (largo, 21.921,05) | 2025-11-19 | CANAL_SALIDA | +2.559,85 |
+| US500 | 2025-06-11 (largo, 6.034,10) | 2025-11-19 | CANAL_SALIDA | +579,50 |
+
+**Por qué esto importa:** durante esas ~5,5 semanas sin ninguna vela,
+el motor de backtest (tanto Python como el EA, que leen el mismo
+histórico) NO PUEDE comprobar si el stop (2N) se habría tocado
+intradía en ningún momento del hueco — el salto directo de la vela del
+16-jul a la del 9-sep solo compara el Close de una contra el Open de
+la otra, como si no hubiera pasado el tiempo. Si el precio real
+llegó a tocar el nivel de stop en algún momento de esas 5,5 semanas y
+luego se recuperó antes del 9-sep, el backtest NO LO VERÍA — el
+resultado registrado (+2.559,85R / +579,50R, ambas salidas por canal,
+ninguna por stop) podría estar sobreestimando la rentabilidad real de
+esas dos operaciones concretas. No se puede confirmar ni descartar
+esto sin un histórico de terceros independiente para ese tramo
+exacto — se declara como limitación, no se intenta adivinar el
+resultado real.
+
+**Esto no cambia la conclusión ya escrita ("NI SE DESCARTA NI SE
+VALIDA"), la REFUERZA en la dirección cautelosa:** ya se sabía que
+2025 concentra una fracción enorme del resultado bruto total; ahora
+sabemos además que DOS de esas operaciones (una por mercado, ambas en
+el grupo de mayor contribución) tienen un hueco de datos sin resolver
+exactamente durante su periodo de tenencia. El intervalo de confianza
+por cluster-bootstrap ya tocaba cero considerando solo la correlación
+entre mercados — este hallazgo es un motivo adicional, independiente,
+para no tratar el resultado agregado como una cifra sólida.
+
+**Causa del hueco: desconocida.** No se puede determinar desde aquí si
+es una interrupción real del proveedor de datos del bróker, un
+problema específico de la cuenta demo, o algo relacionado con el
+propio contrato CFD de esos índices en ese tramo. Se declara como
+desconocida en vez de inventar una explicación.
+
+### Resto de la auditoría (continuidad, velas anómalas, especificación)
+
+- **Continuidad fuera del hueco anterior:** excelente en los 3
+  símbolos. 0 fechas duplicadas, 0 barras con High/Low inconsistente
+  con Open/Close, 0 movimientos diarios >15% (ni uno solo en 14+ años
+  de XAUUSD/US500 ni en los 4+ de USTEC). Los días hábiles sin vela
+  (fuera del hueco de 2025), por año, son consistentes con un
+  calendario normal de festivos EEUU (XAUUSD ~3/año, US500 ~2-3/año,
+  USTEC similar) — nada que indique una fuente de datos defectuosa.
+- **Una (1) vela degenerada identificada:** US500 tiene una barra
+  fantasma el **sábado 2018-04-07** (Open=High=Low=Close=
+  2605,5, idéntico al cierre del viernes anterior, 1 solo tick de
+  volumen) — un artefacto de un único tick mal fechado, análogo en
+  espíritu al artefacto de "vela de domingo" ya documentado para
+  HistData, aunque de origen distinto (aquí es el propio histórico
+  MetaQuotes-Demo del bróker, no HistData). Se excluye esta única
+  barra en cualquier cálculo que use el histórico ampliado (no aporta
+  información real: mismo precio que el cierre anterior, 1 tick).
+- **Posible cambio de especificación a verificar (no confirmado,
+  pedido al usuario):** el `Close` de USTEC nunca muestra más de 1
+  decimal significativo en TODO su histórico (2022-2026), y US500
+  solo lo muestra en 2024. El proyecto ha asumido `point=0.01` (2
+  decimales) para ambos desde el principio. Esto podría ser simplemente
+  que el índice subyacente no cotiza más fino que 0,1 aunque el
+  símbolo permita 2 decimales (no afectaría nada), o podría indicar
+  que el tick real es 0,1 y no 0,01. **No se puede resolver sin mirar
+  la ficha de especificación del símbolo directamente en MT5** (clic
+  derecho sobre el símbolo en Observación del Mercado →
+  "Especificación del contrato", mirar "Dígitos" y "Tamaño de tick").
+  Se pide esta comprobación al usuario como la única acción pendiente
+  de esta fase; mientras tanto se continúa asumiendo `point=0.01` (ya
+  usado en todo el proyecto) con esta limitación declarada.
+
+### Decisión sobre cómo tratar el histórico ampliado para el backtest siguiente
+
+Se usa el histórico ampliado completo (no se descarta por el hueco),
+pero: (a) se excluye la única vela degenerada de US500; (b) toda
+operación cuyo periodo de tenencia solape el hueco 2025-07-16/2025-09-09
+se marca explícitamente como **INTEGRIDAD_DATOS_COMPROMETIDA** en los
+resultados siguientes y se reporta por separado, nunca mezclada sin
+aviso con el resto; (c) no se rellena ni se inventa ningún dato dentro
+del hueco.
