@@ -3722,3 +3722,148 @@ historia (ya ofrecida, pendiente de decisión del usuario), o bien un
 tipo de dato que cambia la naturaleza del problema (tick/order flow,
 opciones, cesta amplia de acciones) en vez de otra variable macro más
 del mismo tipo.
+
+## Nota metodológica permanente (pedida por el usuario)
+
+Muchas de las ~60 hipótesis cerradas son versiones SIMPLIFICADAS,
+automatizables con datos OHLC, de métodos usados por traders
+discrecionales — un backtest negativo de la versión simplificada NO
+demuestra que la familia completa carezca de valor en manos de un
+discrecional con información que no capturamos. A partir de aquí, al
+evaluar una estrategia con origen discrecional/documentado se
+distingue explícitamente: (1) la estrategia original documentada,
+(2) las reglas exactas que se pueden automatizar, (3) las
+simplificaciones necesarias para programarla, (4) qué información se
+pierde por depender solo de OHLC. Esta distinción se aplica desde
+ahora en adelante, no reabre conclusiones ya cerradas.
+
+## Nueva fase: sistemas de cartera diversificada (no señales de un solo activo)
+
+Cambio de enfoque pedido por el usuario tras las ~60 hipótesis de
+señal/entrada-salida: en vez de buscar timing rentable en un activo,
+investigar la CONSTRUCCIÓN DE CARTERA (risk parity/vol-targeting,
+trend-following diversificado, combinación justificada de primas de
+riesgo). Literatura base: Asness, Frazzini & Pedersen (2012),
+"Leverage Aversion and Risk Parity", *Financial Analysts Journal*
+68(1):47-59; Qian (2005) sobre el origen del concepto; y la crítica
+real y documentada de 2022 (bonos y materias primas cayendo a la vez,
+rompiendo el supuesto de baja correlación entre clases de activo que
+sostiene el risk parity) — evidencia a favor y en contra, no solo la
+favorable.
+
+**Hueco de universo cerrado antes de construir nada:** el universo
+anterior (XAUUSD+USTEC+US500+6FX) no tenía una clase de activo de
+TIPOS/DURACIÓN — sin eso, "risk parity" solo reparte riesgo dentro de
+activos ya correlacionados vía USD/riesgo EEUU, no entre clases
+genuinamente distintas. Se añaden 2 clases nuevas, ambas de fuentes
+oficiales gratuitas ya verificadas:
+ - **BONO_US10Y** (`research/cartera_diversificada.py`): proxy
+   SINTÉTICO del retorno total de un bono a 10 años a partir del
+   yield real (FRED, DGS10): retorno ≈ carry (yield/365) − duración
+   modificada constante (7, de manual, no calibrada) × variación de
+   yield. Declarado explícitamente como aproximación, NO el retorno
+   real de un ETF/futuro de bonos.
+ - **WTI** (petróleo, FRED DCOILWTICO): precio real, retorno real, sin
+   coste de spread real disponible (FRED no lo tiene) — tratado como
+   estrés etiquetado si se necesita, igual disciplina que swap/
+   slippage en el resto del proyecto.
+
+### 1. Cartera pasiva risk-parity (núcleo: XAUUSD+USTEC+US500+BONO_US10Y+WTI, siempre largo, sin señal)
+
+Peso inverso a volatilidad (ventana 60 días), rebalanceo mensual, SIN
+ninguna señal de dirección — mide exclusivamente el beneficio de
+DIVERSIFICACIÓN/EXPOSICIÓN, no habilidad de timing.
+
+**Tramo corto (2023-2026, el único con los 5 activos simultáneamente)
+— resultado inicial, antes de la comprobación de robustez:**
+
+| Cartera | Sharpe | Sortino | Vol. anualizada | MaxDD | Ret. anualizado |
+|---|---|---|---|---|---|
+| Risk-parity (vol inversa) | **1,899** | 3,314 | 4,95% | **4,04%** | +9,69% |
+| Equiponderada (mismo universo) | 1,781 | 2,692 | 9,02% | 7,54% | +16,84% |
+| 100% US500 (referencia 1 activo) | 1,520 | 2,805 | 12,27% | 8,89% | +19,46% |
+
+A primera vista, risk-parity bate claramente a equiponderada y a un
+solo activo en Sharpe y, sobre todo, en drawdown (menos de la mitad
+que estar 100% en US500) — consistente con la literatura. **Pero
+antes de tratar esto como un hallazgo, se repitió la prueba en una
+muestra mucho más larga.**
+
+### 2. Comprobación de robustez decisiva: la misma construcción sobre 2015-2026 (139 meses, no 43)
+
+Usando solo los 3 activos con historia larga (XAUUSD + BONO_US10Y +
+WTI — sin USTEC/US500, que solo tienen 2023-2026), la MISMA regla de
+risk-parity sobre un periodo que SÍ incluye episodios de estrés reales
+(2015 caída de materias primas, 2018, y sobre todo **2022** — el año
+en que el risk parity real sufrió por correlación positiva
+bonos-materias primas, exactamente la crítica documentada arriba):
+
+| Periodo | Sharpe | Vol. anualizada | MaxDD | Años negativos |
+|---|---|---|---|---|
+| 2023-2026 (corto, favorable) | 1,899 | 4,95% | 4,04% | 0 de 4 |
+| **2015-2026 (largo, 139 meses)** | **0,527** | 6,26% | **9,67%** | **3 de 12** (2015, 2018, 2022) |
+
+**El Sharpe se desploma de 1,9 a 0,53 y el drawdown se TRIPLICA** al
+usar la muestra larga. Esto confirma exactamente lo que pedía el
+usuario comprobar: el resultado atractivo del tramo corto es en gran
+parte un artefacto de un periodo favorable (ningún episodio de estrés
+multi-activo simultáneo en 2023-2026), no una propiedad robusta de la
+construcción. 2022 — el año documentado de crisis real del risk
+parity — reproduce el mismo patrón aquí (Sharpe=-0,848, MaxDD de ese
+año entre los peores de toda la muestra). Sharpe≈0,53 a largo plazo es
+modesto, no "sin efecto" (sigue siendo positivo y con menor drawdown
+que un solo activo), pero muy lejos de justificar forward testing por
+sí solo.
+
+### 3. Overlay activo (señal de tendencia 12m en vez de "siempre largo")
+
+Mismo núcleo, mismo tramo corto, sustituyendo "siempre largo" por el
+signo de tendencia a 12 meses (mecanismo TSMOM ya validado en este
+proyecto, sin modificar su definición):
+
+| Cartera | Sharpe | MaxDD |
+|---|---|---|
+| Pasiva (siempre largo) | 1,899 | 4,04% |
+| Con overlay de tendencia 12m | **1,287** | 6,80% |
+
+**El overlay activo empeora el resultado** (Sharpe más bajo, drawdown
+mayor) y el excedente mensual sobre la pasiva es negativo y no
+significativo (media=-0,155%/mes, IC95%=[-0,78%,+0,28%]). 2026 en la
+versión activa cae a Sharpe=-0,019 mientras la pasiva seguía positiva.
+**Mismo patrón que TSMOM/momentum transversal: el timing no añade
+nada sobre la mera exposición diversificada — en este caso, incluso
+la empeora.**
+
+### Costes no modelados — declarado explícitamente
+
+Ninguna de las pruebas anteriores incluye coste de FINANCIACIÓN
+(swap/margen) por mantener posiciones durante un mes, algunas
+apalancadas hasta 3x (límite de la fórmula de vol-targeting ya usada
+en TSMOM). Esto es una omisión real, no un descuido oculto: no hay
+cifras de financiación reales confirmadas para una cartera multi-
+activo en este proyecto. Dado que el Sharpe de largo plazo (0,53) ya
+es modesto, un coste de financiación realista probablemente lo
+reduciría más — otra razón para no tratar esto como candidata.
+
+### Conclusión de esta fase
+
+La diversificación/risk-parity tiene mérito estructural real y
+documentado (bate a equiponderada y a un solo activo de forma
+consistente en ambas muestras), pero en este universo concreto y con
+una muestra que incluye regímenes de estrés reales, el resultado es
+modesto (Sharpe≈0,53), no espectacular, y el overlay de timing activo
+no ayuda — la empeora. **No se congela ninguna versión como candidata
+de forward testing.** Es, aun así, de los hallazgos más honestos y
+útiles del proyecto: demuestra que la diversificación "funciona" en
+el sentido académico (mejor Sharpe/drawdown que la alternativa naive),
+pero no es un atajo hacia rentabilidad garantizada, y confirma una vez
+más (la quinta, contando TSMOM, momentum transversal, CPI Drift, COT,
+VIX) que ningún mecanismo de timing probado en este proyecto añade
+valor sobre la pura exposición.
+
+**Sesgo de selección acumulado:** ≈60 + 3 (risk-parity corto, risk-
+parity largo, overlay activo) = **63 hipótesis/combinaciones probadas
+en total.**
+
+Código: `research/cartera_diversificada.py`,
+`research/estrategia_cartera_sistematica.py`.
