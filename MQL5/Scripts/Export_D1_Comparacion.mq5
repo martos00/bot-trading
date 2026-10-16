@@ -17,6 +17,8 @@ input string   InpSimbolos      = "XAUUSD,USTEC,US500";
 input datetime InpFechaInicio   = D'2015.01.01 00:00:00';
 input datetime InpFechaFin      = D'2021.12.31 00:00:00';
 input string   InpSufijoArchivo = "_D1_Comparacion.csv";
+input int      InpMaxIntentos   = 10;
+input int      InpEsperaMsEntreIntentos = 1000;
 
 bool ExportarSimbolo(const string simbolo)
   {
@@ -29,10 +31,31 @@ bool ExportarSimbolo(const string simbolo)
 
    MqlRates rates[];
    ArraySetAsSeries(rates, false);
-   int copiados = CopyRates(simbolo, PERIOD_D1, InpFechaInicio, InpFechaFin, rates);
+
+   int copiados = 0;
+   int intentos = 0;
+   while(intentos < InpMaxIntentos)
+     {
+      copiados = CopyRates(simbolo, PERIOD_D1, InpFechaInicio, InpFechaFin, rates);
+      if(copiados > 0)
+         break;
+      intentos++;
+      int err = GetLastError();
+      PrintFormat("[%s] Intento %d/%d: CopyRates devolvio %d (error %d). Esperando sincronizacion de historial...",
+                  simbolo, intentos, InpMaxIntentos, copiados, err);
+      ResetLastError();
+      Sleep(InpEsperaMsEntreIntentos);
+     }
+
    if(copiados <= 0)
      {
-      PrintFormat("[%s] ERROR: CopyRates devolvio %d barras (error %d).", simbolo, copiados, GetLastError());
+      datetime primeraDisponible = (datetime)SeriesInfoInteger(simbolo, PERIOD_D1, SERIES_FIRSTDATE);
+      PrintFormat("[%s] ERROR FATAL: no se pudo obtener ninguna barra tras %d intentos en el rango [%s, %s]. "
+                  "Primera fecha D1 realmente disponible para este simbolo segun el terminal: %s -- "
+                  "si es POSTERIOR a tu InpFechaInicio, ese es el motivo: ajusta InpFechaInicio a esa fecha "
+                  "(o posterior) y vuelve a ejecutar SOLO para este simbolo.",
+                  simbolo, InpMaxIntentos, TimeToString(InpFechaInicio, TIME_DATE), TimeToString(InpFechaFin, TIME_DATE),
+                  primeraDisponible > 0 ? TimeToString(primeraDisponible, TIME_DATE) : "desconocida (0 barras en todo el historico)");
       return false;
      }
 
