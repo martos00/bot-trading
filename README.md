@@ -3916,3 +3916,125 @@ activos disponibles.
 
 **Sesgo de selección acumulado:** ≈63 + 1 = **64
 hipótesis/combinaciones probadas en total.**
+
+## Nueva fase: estrategias documentadas de traders sistemáticos reales (no hipótesis generadas desde cero)
+
+Cambio de enfoque pedido por el usuario: en vez de generar hipótesis
+técnicas/macro nuevas, investigar métodos concretos usados por
+traders/gestores sistemáticos con resultados citados externamente,
+distinguiendo evidencia auditada/simulada/promocional.
+
+### Turtle Trading System (Richard Dennis & William Eckhardt) — el resultado más sólido de todo el proyecto, todavía no concluyente
+
+**1. Estrategia original:** programa de entrenamiento de Dennis/
+Eckhardt (1983-1988), documentado en Curtis Faith, *Way of the
+Turtle* (2007) y Michael Covel, *The Complete TurtleTrader* (2007).
+Cartera diversificada de ~30+ mercados de futuros con límites de
+"heat" por correlación.
+
+**2. Reglas automatizadas** (verificadas cruzando varias fuentes
+secundarias — primaria no accesible desde aquí, discrepancias menores
+entre fuentes declaradas): N=ATR de 20 días (EMA del rango
+verdadero). Sistema 1: entrada en ruptura Donchian de 20 días, salida
+en ruptura de 10 días en contra. Sistema 2: entrada de 55 días, salida
+de 20 días en contra. Stop=2N. Piramidación: +1 unidad cada 0,5N a
+favor, hasta 4, moviendo el stop de TODAS las unidades a 2N bajo la
+última — probado CON y SIN piramidación por separado.
+
+**3. Simplificaciones y su efecto esperado** (declaradas, no
+ocultas): sin límite de "heat" entre USTEC/US500 (correlacionados,
+podría sobreestimar el riesgo real de cartera); R-múltiplos en vez de
+% cuenta real; sin el filtro "saltar tras ganadora anterior" (fuente
+única, no confirmado como regla original); CFD en vez de futuros
+(spread real, swap no confirmado).
+
+**4. Información perdida por OHLC: NINGUNA relevante** — Donchian y
+ATR son funciones puramente OHLC, caso excepcional en este proyecto.
+
+**Evidencia del track record original:** las cifras de ~80%/año de
+los Turtles originales son PROMOCIONALES/ANECDÓTICAS (relatadas por
+los propios participantes, popularizadas en libros), NO auditadas de
+forma independiente. El backtest siguiente prueba las REGLAS sobre
+nuestros datos/mercados/período actuales — no pretende replicar esa
+cifra histórica.
+
+**Resultado (`research/estrategia_turtle_trading.py`), SIN
+piramidación (la versión más limpia):**
+
+| Sistema | Mercado | n | Media R | PF | z vs. aleatorio |
+|---|---|---|---|---|---|
+| S2 (55d/20d) | XAUUSD | 43 | +0,719 | 2,442 | +1,43 |
+| S2 (55d/20d) | USTEC | 15 | +0,513 | 2,004 | +1,02 |
+| S2 (55d/20d) | US500 | 14 | +0,575 | 2,342 | +1,08 |
+| S2 (55d/20d) | **Combinado (los 3)** | **72** | **+0,648** | **2,329** | **+1,97** |
+| S1 (20d/10d) | XAUUSD/USTEC/US500 | 27-91 | +0,01 a +0,15 | 1,02-1,26 | débil |
+| S2/S1 | 6 pares Forex | 14-37 | mayormente negativo | — | — |
+
+**Por qué esto es distinto de los ~64 hallazgos anteriores:** no es
+una apuesta direccional disfrazada (el sistema opera largo Y corto,
+con %Acierto 42-47% y ganancias grandes poco frecuentes — la forma de
+distribución ESPERADA de un sistema de tendencia real, no beta).
+Combinando los 3 mercados prioritarios (72 operaciones), z=+1,97 —
+al límite de la significancia convencional (p≈0,024 a una cola), el
+más alto de todo el proyecto.
+
+**Comprobación de sensibilidad a valores extremos (pedida
+explícitamente antes de aceptar cualquier resultado positivo):**
+
+| | n | Media R | PF |
+|---|---|---|---|
+| Todas las operaciones | 72 | +0,648 | 2,329 |
+| Excluyendo el MEJOR trade | 71 | +0,415 | 1,839 |
+| Excluyendo los 3 mejores trades | 69 | +0,245 | 1,481 |
+
+El resultado depende parcialmente de pocas operaciones grandes (la
+mejor, oro en sep-2025, +17,2R — un movimiento real y verificado, no
+un error: entrada 3476, riesgo normal de ATR de 78 puntos, salida tras
+una tendencia genuina, no un denominador de riesgo degenerado). Esto
+es la FORMA esperada de un sistema de tendencia (pocas operaciones
+grandes, no fraude estadístico), pero significa que la confianza
+estadística depende de que esas operaciones grandes se repitan en el
+futuro, no está garantizado. Incluso excluyendo las 3 mejores, el PF
+se mantiene por encima de 1 (1,481) — no depende EXCLUSIVAMENTE de
+ellas, pero una fracción relevante de la ventaja sí.
+
+**Piramidación: empeora sustancialmente en todos los mercados**
+(ej. S2 EURUSD con pirámide: %Acierto=4,5%, PF=0,004) — consistente
+con que mover el stop de TODAS las unidades a 2N bajo la última añade
+riesgo de whipsaw documentado en la propia mecánica, no un error de
+implementación. Se declara como hallazgo honesto: la piramidación,
+tal como está documentada, no ayuda en nuestros datos — no se asume
+que la versión "más fiel/compleja" sea mejor sin comprobarlo.
+
+### Decisión: NI SE DESCARTA NI SE DECLARA VALIDADA — es la candidata más prometedora hasta ahora, prioridad de validación
+
+No cumple el estándar para forward testing (z=1,97 es límite, no
+contundente; n=72 sigue siendo modesto para un sistema de tendencia;
+USTEC/US500 solo tienen 3,75 años). Pero es cualitativamente distinta
+de todo lo anterior: mecanismo de tendencia genuino (largo y corto),
+asimetría de pagos esperada, no beta disfrazada, sobrevive al estrés
+de coste razonablemente bien, y es la que más se acerca a la
+significancia de las ~65 hipótesis probadas en este proyecto.
+
+**Reglas CONGELADAS para validación futura** (sin piramidación, única
+versión a partir de ahora): Sistema 2 (entrada ruptura Donchian 55
+días, salida ruptura 20 días en contra), N=EMA(20) del rango
+verdadero, stop=2N, sin piramidación, 1 unidad fija, R-múltiplo con
+riesgo=2N. Aplicado a XAUUSD, USTEC, US500.
+
+**Corrección honesta sobre validación independiente:** el backtest de
+arriba ya usa TODO el histórico disponible de XAUUSD (2015-2026) de
+una sola vez — no queda ningún tramo de XAUUSD genuinamente no visto
+para esta estrategia concreta (a diferencia de Volatility Expansion
+Continuation, donde sí hubo un tramo 2015-2022 reservado antes de
+probar). Una validación independiente real para el sistema Turtle
+necesita, o bien datos nuevos que no existían al hacer esta prueba
+(forward testing futuro — el paso natural siguiente), o bien el
+histórico Forex más largo que el usuario decidió no descargar por
+ahora. Se declara esta limitación en vez de reutilizar el mismo
+histórico y llamarlo "validación".
+
+**Sesgo de selección acumulado:** ≈64 + 1 = **65 hipótesis/combinaciones
+probadas en total** (cuenta el sistema Turtle como una, con S1/S2/
+piramidación como variantes documentadas de la misma estrategia, no
+hipótesis independientes).
