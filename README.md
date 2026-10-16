@@ -4038,3 +4038,58 @@ histórico y llamarlo "validación".
 probadas en total** (cuenta el sistema Turtle como una, con S1/S2/
 piramidación como variantes documentadas de la misma estrategia, no
 hipótesis independientes).
+
+### Caveat adicional sobre el z=1,97 combinado — importante, encontrado al comprobar independencia
+
+Antes de dar más peso al z=1,97 combinado, se comprobaron las fechas
+de entrada de cada mercado: **USTEC y US500 disparan señal en fechas
+casi idénticas repetidamente** (2024-05-16 exacto en ambos, 2025-03-11
+exacto en ambos, 2025-06-11 exacto en ambos, 2026-04-16/17 un día de
+diferencia) — ambos índices reaccionan al mismo factor macro
+subyacente, como es lógico. **Esto significa que los "72 trades
+combinados" NO son 72 apuestas independientes** — USTEC+US500 actúan
+más como 1,5 flujos de señal que como 2 separados. XAUUSD sí es
+independiente de ambos (sin solapamiento de fechas). Una estimación
+más conservadora del tamaño de muestra efectivo (XAUUSD + un flujo
+combinado de renta variable, en vez de 3 flujos) reduciría el z
+combinado por debajo de 1,97 — el resultado es, honestamente, **más
+débil de lo que el número combinado sugiere a primera vista.** Se
+declara esto explícitamente en vez de dejar el z=1,97 sin matizar.
+
+### Dual Momentum GEM (Gary Antonacci) — descartada con esta implementación, no evidencia contra el original
+
+Rotación mensual EEUU/internacional por momentum relativo + filtro de
+momentum absoluto frente a liquidez (`research/estrategia_dual_momentum_gem.py`).
+Sustituciones declaradas: SP500 de FRED (precio, sin dividendo,
+2016-2026 — no el 1974-2018 de Antonacci), **NIKKEI225 como único
+proxy "internacional"** (un solo país, no la cesta MSCI ACWI ex-US
+diversificada — simplificación material, no cosmética), tipo de
+interés de EEUU como liquidez, BONO_US10Y sintético como refugio.
+
+| | Ret. anualizado | Sharpe | MaxDD |
+|---|---|---|---|
+| GEM (rotación) | +11,79% | 0,715 | 24,24% |
+| 100% EEUU (buy&hold, mismo periodo) | +12,95% | **0,836** | 24,77% |
+
+**GEM no bate ni siquiera a comprar y mantener el S&P 500 sin hacer
+nada** — ni en retorno ni en Sharpe, y el drawdown es prácticamente
+igual (24,24% vs. 24,77%). La razón concreta: en 2022 (el único
+episodio de estrés real de la muestra), GEM rotó a bonos durante 6
+meses, pero el refugio elegido (nuestro bono sintético) **también
+cayó ese año** (ya documentado en la fase de cartera diversificada) —
+el "refugio" no protegió nada ese año concreto. Resultado: 2022
+GEM=-19,30%, un año muy malo a pesar de la rotación.
+
+**Esto NO se presenta como evidencia de que Dual Momentum "no
+funciona"** — es evidencia de que ESTA implementación concreta, con
+Japón como único proxy internacional y un bono sintético como único
+refugio, no añadió valor en ESTE periodo con ESTE único episodio de
+estrés. El diseño original de Antonacci (cesta internacional
+diversificada + bono agregado real, muestra 1950-2018 con múltiples
+episodios de estrés distintos) podría comportarse de forma
+distinta — no se puede concluir sobre el original a partir de esta
+prueba. **Descartada esta implementación**, con la distinción
+explícita pedida por el usuario.
+
+**Sesgo de selección acumulado:** ≈65 + 1 = **66
+hipótesis/combinaciones probadas en total.**
