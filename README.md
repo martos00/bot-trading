@@ -4128,3 +4128,64 @@ real sea bajo.
 
 **Sesgo de selección acumulado:** se mantiene en **66** (prueba de
 robustez sobre una candidata ya contada, no una hipótesis nueva).
+
+### Golden Cross / Death Cross (SMA50/SMA200) — descartada; elegida como caso de estudio de sesgo de selección, confirma el patrón de "beta disfrazada"
+
+Tercera candidata con evidencia externa documentada
+(`research/estrategia_golden_cross.py`): cruce de medias móviles
+50/200 días, "stop-and-reverse" (+1 cuando SMA50>SMA200, -1 en caso
+contrario), evaluado mensualmente de forma causal, con el MISMO motor
+de vol-targeting que TSMOM (para que cualquier diferencia se deba al
+mecanismo de señal, no al motor de cartera). Elegida deliberadamente
+por tener evidencia académica EN AMBOS SENTIDOS: Brock, Lakonishok &
+LeBaron (1992, *Journal of Finance*) encontraron significancia
+estadística en el Dow Jones 1897-1986; pero Sullivan, Timmermann &
+White (1999, *Journal of Finance*, "Data-Snooping, Technical Trading
+Rule Performance, and the Bootstrap") re-probaron ~26.000 reglas
+técnicas similares con el "Reality Check" de White (que corrige por
+haber probado miles de reglas y reportar solo la mejor) y encontraron
+que la ventaja de esas mismas reglas **desaparece fuera de muestra**
+una vez corregido el sesgo de selección — exactamente el riesgo que
+este proyecto intenta evitar en cada hipótesis.
+
+**Resultado combinado (9 activos, igual ponderación, 132 meses):**
+Retorno anualizado=-3,25%, Sharpe=-0,272, MaxDD=38,32%. Control de
+signo aleatorio: media real=-0,2316%/mes vs. media aleatoria
+=+0,0166%/mes, **z=-0,99 (la señal real es PEOR que una dirección
+aleatoria con el mismo escalado)**. Por activo: XAUUSD débilmente
+positivo (+0,154%/mes), los 6 pares Forex uniformemente negativos
+(-0,45% a -1,26%/mes), USTEC y US500 aparentemente fuertes
+(+0,97%/mes y +1,13%/mes).
+
+**Comprobación adicional en USTEC/US500 (el mismo patrón de "beta
+disfrazada" encontrado antes en COT y en momentum transversal):** el
+control de signo aleatorio por separado da z=+1,91 (USTEC) y z=+2,35
+(US500) — parecería prometedor. Pero el control de signo aleatorio
+NO es la prueba correcta aquí: compara contra apostar dirección al
+50/50, no contra la alternativa relevante de "estar simplemente
+expuesto todo el tiempo". Al comparar contra el benchmark correcto —
+**siempre largo, con el MISMO escalado de volatilidad y el mismo
+coste** (el estándar que ya exigió el usuario para momentum
+transversal) — el resultado se invierte: el benchmark estático
+siempre-largo da +1,1824%/mes (USTEC) y +1,3146%/mes (US500), **por
+encima** de la señal de cruce (+0,9672%/mes y +1,1264%/mes). Es decir:
+en este periodo (2023-2026, mercado alcista persistente en ambos
+índices), el cruce de medias solo acierta "estar largo la mayoría del
+tiempo" (94% de los meses) pero su timing de las SALIDAS resta valor
+frente a no hacer nada. El mismo patrón exacto que ya se documentó con
+COT (posicionamiento "siempre largo" en índices) y con momentum
+transversal (exposición persistente confundida con señal).
+
+**Decisión: DESCARTADA.** Ni el resultado pooled (negativo, z=-0,99)
+ni el resultado por activo (positivo solo frente al control incorrecto,
+negativo frente al benchmark correcto) sostienen esta estrategia con
+los datos/periodo disponibles. Esto confirma externamente, con nuestros
+propios datos, el mismo fenómeno que describe Sullivan-Timmermann-White
+sobre la literatura original: una regla con evidencia académica
+histórica puede no sostenerse al aplicar un control de sesgo de
+selección más estricto. No se presenta como evidencia de que el cruce
+de medias "nunca funciona" — solo de que, en este universo/periodo, con
+esta implementación y frente al benchmark correcto, no añade valor.
+
+**Sesgo de selección acumulado:** ≈66 + 1 = **67 hipótesis/combinaciones
+probadas en total.**
