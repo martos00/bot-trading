@@ -5136,3 +5136,22 @@ prioriza su forward testing en demo** — no se desinstala ni se
 prohíbe, simplemente deja de ser la actividad principal del proyecto.
 
 **Sesgo de selección acumulado:** se mantiene en **67**.
+
+## PRIORIDAD 4 (inicio) — Auditoría de calidad de todo el universo de 9 activos con el nuevo módulo
+
+Antes de continuar investigando, se aplica `calidad_datos.auditar_historico()`
+a los 9 activos del universo completo (no solo los 3 ya auditados a
+mano). **Resultado: los 6 pares Forex (EURUSD, GBPUSD, USDJPY,
+USDCAD, USDCHF, USDSEK) están VÁLIDOS — sin huecos, sin duplicados,
+sin OHLC inconsistente.** Solo USTEC/US500 tienen el problema grave ya
+conocido. Esto da confianza en que TSMOM/momentum transversal/pairs
+trading no tienen un problema de datos equivalente en sus patas Forex
+— su resultado (ya descartado por otros motivos: beneficio idéntico o
+peor que un benchmark estático) no cambia por esta vía. XAUUSD
+confirmado de nuevo como VÁLIDO.
+
+**Continúa la investigación autónoma de nuevas estrategias con
+evidencia externa verificable, usando desde ahora
+`calidad_datos.py` como paso obligatorio antes de confiar en
+cualquier resultado nuevo sobre USTEC/US500** (XAUUSD y los 6 pares
+Forex ya están confirmados limpios).
