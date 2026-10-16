@@ -49,16 +49,38 @@ def cargar_csv_ea(ruta):
     return df
 
 
-def generar_ops_python(simbolo):
-    universo = cargar_universo([simbolo])
-    d = universo[simbolo].reset_index(drop=True)
+def cargar_mt5_crudo(ruta):
+    """Carga un CSV exportado por MQL5/Scripts/Export_D1_Comparacion.mq5
+    (columnas Fecha;Open;High;Low;Close;Spread;TickVolume, separador ';')."""
+    d = pd.read_csv(ruta, sep=';')
+    d['dia'] = pd.to_datetime(d['Fecha'], format='%Y.%m.%d')
+    d = d[['dia', 'Open', 'High', 'Low', 'Close', 'Spread']].sort_values('dia').reset_index(drop=True)
+    return d
+
+
+def generar_ops_python(simbolo, mt5_raw_dir=None):
+    """Genera las operaciones de referencia con estrategia_turtle_trading.
+    Por defecto usa el dataset mixto de datos_multiactivo.py (HistData+
+    MetaQuotes-Demo, el mismo que seleccionó la estrategia). Si se pasa
+    mt5_raw_dir, usa en su lugar el CSV D1 CRUDO exportado directamente
+    del bróker (Export_D1_Comparacion.mq5) -- comparación MÁS LIMPIA,
+    sin el efecto de mezclar proveedores de datos distintos (ver README,
+    "Resolución de las discrepancias EA-vs-Python")."""
+    if mt5_raw_dir is not None:
+        ruta = Path(mt5_raw_dir) / f'{simbolo}_D1_Comparacion.csv'
+        if not ruta.exists():
+            return None
+        d = cargar_mt5_crudo(ruta)
+    else:
+        universo = cargar_universo([simbolo])
+        d = universo[simbolo].reset_index(drop=True)
     point = UNIVERSO[simbolo]['point']
     ops = ejecutar_sistema(d, 55, 20, point, False)
     ops['fecha_salida'] = d['dia'].iloc[ops['idx_salida'].to_numpy()].to_numpy()
     return ops
 
 
-def comparar_simbolo(simbolo, ruta_csv_ea):
+def comparar_simbolo(simbolo, ruta_csv_ea, mt5_raw_dir=None):
     print(f"\n######## {simbolo} ########")
     if not Path(ruta_csv_ea).exists():
         print(f"  [NO COMPARABLE] No se encontró '{ruta_csv_ea}' -- ejecuta primero el script MQL5 "
@@ -66,9 +88,15 @@ def comparar_simbolo(simbolo, ruta_csv_ea):
         return None
 
     ea = cargar_csv_ea(ruta_csv_ea)
-    py = generar_ops_python(simbolo)
+    py = generar_ops_python(simbolo, mt5_raw_dir=mt5_raw_dir)
+    if py is None:
+        print(f"  [NO COMPARABLE] No se encontró el CSV crudo de {simbolo} en '{mt5_raw_dir}' "
+              f"(se esperaba '{simbolo}_D1_Comparacion.csv').")
+        return None
     py = py.rename(columns={'dia': 'FechaEntrada'})
     py['FechaEntrada'] = pd.to_datetime(py['FechaEntrada'])
+    if mt5_raw_dir is not None:
+        print(f"  [modo --mt5-raw-dir] Python corre sobre el CSV crudo del bróker, no sobre el dataset mixto.")
 
     print(f"  Operaciones EA (MQL5): {len(ea)}   Operaciones Python: {len(py)}")
 
@@ -150,6 +178,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--mql5-dir', default='./validacion_ea',
                          help='Carpeta donde copiaste los CSV exportados por TurtleSystem2_ExportarSenales.mq5')
+    parser.add_argument('--mt5-raw-dir', default=None,
+                         help='Opcional: carpeta con los CSV crudos de Export_D1_Comparacion.mq5 '
+                              '(<SIMBOLO>_D1_Comparacion.csv). Si se da, Python corre sobre ESE historico '
+                              'en vez del dataset mixto de datos_multiactivo.py -- comparacion limpia, sin '
+                              'el efecto de mezclar proveedores de datos distintos.')
     parser.add_argument('--simbolos', default='XAUUSD,USTEC,US500')
     args = parser.parse_args()
 
@@ -157,7 +190,7 @@ def main():
     resultados = {}
     for sim in simbolos:
         ruta = Path(args.mql5_dir) / f'TurtleSystem2_Validacion_{sim}.csv'
-        resultados[sim] = comparar_simbolo(sim, ruta)
+        resultados[sim] = comparar_simbolo(sim, ruta, mt5_raw_dir=args.mt5_raw_dir)
 
     print("\n######## RESUMEN ########")
     for sim, ok in resultados.items():

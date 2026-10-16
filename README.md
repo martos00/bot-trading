@@ -4600,3 +4600,82 @@ no un puñado), tiene sentido volver a este documento y evaluar los
 resultados con la misma disciplina que el resto del proyecto (sin
 mirar antes de tener el tramo completo, sin optimizar nada con lo
 observado).
+
+## Resolución de las discrepancias EA-vs-Python — causa raíz identificada, NO es un bug
+
+Tras recibir los 3 CSV de validación del usuario y encontrar varias
+operaciones con precio de entrada o motivo de salida distinto (ver
+sección anterior), se pidió explícitamente diagnosticar la causa antes
+de asumir nada. Protocolo seguido: se exportó el histórico D1 CRUDO
+directamente del bróker (`MQL5/Scripts/Export_D1_Comparacion.mq5`,
+nuevo) para XAUUSD (2012-2026), USTEC (jul-2022 a 2026) y US500
+(2012-2026), y se comparó vela a vela contra el dataset que usa
+`research/datos_multiactivo.py`.
+
+**Diagnóstico por año (XAUUSD, diferencia media de Open en los días
+con fecha común):**
+
+| Año | % días con Open distinto (>0,05) | Diferencia relativa media |
+|---|---|---|
+| 2015-2022 | 97,3%-99,6% | 0,15%-0,28% |
+| **2023-2026** | **0,0%** | **0,0% (idéntico, byte a byte)** |
+
+**Causa raíz: no es un error de cálculo, es que son DOS FUENTES DE
+DATOS DISTINTAS para el mismo activo.** El histórico XAUUSD de Python
+combina HistData (2015-2022) y MetaQuotes-Demo (2023-2026) — ya
+declarado así desde el principio del proyecto. El terminal MT5 del
+usuario, al pedir historial D1 directamente al bróker, sirve
+MetaQuotes-Demo para TODO el rango, incluido 2015-2022 — un feed
+distinto de HistData para esos años, con pequeñas diferencias de
+cotización normales entre proveedores de un mismo CFD (no hay un
+precio único centralizado para oro al contado). A partir de 2023
+ambas fuentes SON la misma (MetaQuotes-Demo), y por eso coinciden al
+100%.
+
+**Hallazgo adicional (festivos, pedido explícitamente por el
+usuario):** de los días que solo existen en el dataset de Python (no
+en el export crudo del bróker), la mayoría son festivos de EEUU
+(Navidad, Año Nuevo) con un rango High-Low de 4 a 9 puntos frente a
+una media normal de 31 puntos — el MISMO patrón de "vela artificial
+de rango estrecho" ya documentado para los domingos (artefacto de
+huso horario de HistData), solo que en festivos en vez de domingos.
+El bróker en vivo, correctamente, no genera esa vela. Esto no se
+corrige (no se "limpia" retroactivamente el dataset ya usado para
+seleccionar la estrategia), solo se documenta como la explicación
+encontrada.
+
+**Verificación definitiva — Python sobre los datos crudos del
+bróker vs. el EA (elimina la diferencia de proveedor por completo):**
+se ejecutó `estrategia_turtle_trading.ejecutar_sistema()` directamente
+sobre el CSV crudo exportado por `Export_D1_Comparacion.mq5` (en vez
+del dataset mixto de `datos_multiactivo.py`), y se comparó contra las
+operaciones que exportó el EA (`TurtleSystem2_ExportarSenales.mq5`)
+sobre esos MISMOS datos:
+
+| Símbolo | Operaciones coincidentes | Diferencias |
+|---|---|---|
+| XAUUSD | 57/57 (las 19 restantes del EA son de 2007-2012, fuera del rango del CSV usado en esta prueba) | **0** |
+| USTEC | 17/17 | **0** |
+| US500 | 64/64 | **0** |
+
+**Conclusión: el motor de señal del EA (`TurtleSystem2_Core.mqh`) es
+bit-a-bit idéntico al motor de Python cuando se alimentan con los
+MISMOS datos — 138 operaciones comparadas, 0 diferencias de
+dirección, precio de entrada, motivo de salida o fecha de salida.**
+No se ha encontrado ningún desplazamiento de vela ni uso accidental de
+información futura (las fechas de entrada/salida y el orden
+stop-antes-que-canal en empate coinciden exactamente en los 138
+casos). **No se ha modificado ninguna regla congelada de Turtle
+System 2** — no hizo falta: no había ningún bug que corregir, ni en
+el EA ni en el comparador. La única mejora aplicada es de
+**herramienta**, no de regla: `comparar_turtle_ea_vs_python.py` ahora
+admite `--mt5-raw-dir` para repetir esta comparación limpia
+directamente sobre un export crudo del bróker en el futuro, sin
+depender del dataset mixto.
+
+**Validación del protocolo: COMPLETADA.** El EA reproduce fielmente
+las reglas congeladas. Esto sigue sin significar que la estrategia
+esté validada como rentable — solo que la implementación es correcta.
+
+**Sesgo de selección acumulado:** sin cambios (67) — esto es
+verificación de implementación, no una hipótesis nueva.
