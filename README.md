@@ -4238,3 +4238,73 @@ retrospectivo sobre los mismos datos.
 
 **Sesgo de selección acumulado:** se mantiene en **67** (comprobación
 de robustez sobre una candidata ya contada, no una hipótesis nueva).
+
+### Turtle System 2 — intervalo de confianza por cluster-bootstrap (respetando la correlación entre mercados), en vez del z vs. dirección aleatoria
+
+El z=+1,97 original y el z por mercado (`control_direccion_aleatoria`)
+asumen que las 72 operaciones son sorteos independientes — ya se
+documentó arriba que esto es FALSO (USTEC/US500 disparan en fechas casi
+idénticas). Para no quedarse con esa limitación sin cuantificar su
+efecto, se calcula aquí un intervalo de confianza de la Media R con DOS
+métodos, igual disciplina de bootstrap de bloques que el resto del
+proyecto (`bootstrap_bloques_media`):
+
+**Contribución por año (72 operaciones, los 3 mercados):**
+
+| Año | n | Suma R | Media R |
+|---|---|---|---|
+| 2015 | 3 | -0,65 | -0,22 |
+| 2016 | 4 | +3,12 | +0,78 |
+| 2017 | 5 | -4,92 | -0,99 |
+| 2018 | 3 | +5,10 | +1,70 |
+| 2019 | 4 | +5,69 | +1,42 |
+| 2020 | 3 | +0,34 | +0,11 |
+| 2021 | 4 | -1,88 | -0,47 |
+| 2022 | 4 | +1,41 | +0,35 |
+| 2023 | 11 | +10,49 | +0,95 |
+| 2024 | 10 | +4,56 | +0,46 |
+| **2025** | 9 | **+27,53** | **+3,06** |
+| 2026 (parcial) | 12 | -4,12 | -0,34 |
+
+**Un solo año (2025) aporta +27,5R de los +46,7R totales acumulados en
+las 72 operaciones (≈59% del resultado bruto total)** — ya se sabía que
+el mejor trade individual (oro, sep-2025, +17,2R) pesa mucho, pero este
+desglose muestra que el efecto es a nivel de AÑO COMPLETO, no solo de
+un trade aislado.
+
+| Método de IC95% para la Media R | IC95% | P(Media R ≤ 0) |
+|---|---|---|
+| Bootstrap i.i.d. (asume 72 sorteos independientes — SOBREESTIMA la confianza, ya sabemos que es falso) | [+0,075, +1,339] | 1,0% |
+| **Cluster-bootstrap por AÑO (12 clusters — respeta que la correlación cruzada USTEC/US500 y la autocorrelación de régimen ocurren DENTRO de cada año, no entre operaciones individuales)** | **[-0,024, +1,447]** | **3,2%** |
+
+(Reproducible con `research/turtle_cluster_bootstrap.py` — los números
+pueden variar en el 2º/3er decimal entre ejecuciones por el muestreo
+aleatorio del bootstrap, sin cambiar la conclusión.)
+
+**El cluster-bootstrap por año — la forma correcta de tratar esta
+muestra dado lo que ya sabemos sobre su falta de independencia — da un
+intervalo de confianza al 95% que TOCA CERO** (límite inferior
+-0,024, prácticamente cero). El bootstrap i.i.d. original sobreestima
+la confianza al tratar 72 operaciones correlacionadas como si fueran
+72 apuestas independientes. Esto es consistente con, y cuantifica
+formalmente, el caveat ya declarado sobre la independencia entre
+mercados y con la concentración temporal en 2025 — la honestidad
+estadística exige reportar el intervalo más conservador, no el más
+favorable.
+
+**Conclusión: la evidencia estadística de este candidato es más débil
+de lo que cualquiera de los números aislados (z=1,97; PF=2,329)
+sugiere por separado.** Sigue siendo la candidata más prometedora del
+proyecto por su MECANISMO (tendencia genuina, largo y corto, no beta
+disfrazada, robusta a coste de swap) — pero la combinación de (a)
+correlación entre mercados, (b) dependencia de pocas operaciones/años
+grandes, y (c) un intervalo de confianza que toca cero una vez
+corregido el supuesto de independencia, deja claro que esto NO cumple
+un estándar de significancia estadística convencional. Es una
+candidata para forward testing con expectativas MODESTAS, no una
+estrategia con "evidencia suficiente" ya demostrada — se declara así
+explícitamente en vez de inflar la confianza del hallazgo.
+
+**Sesgo de selección acumulado:** se mantiene en **67** (mejor
+cuantificación estadística de una candidata ya contada, no una
+hipótesis nueva).
