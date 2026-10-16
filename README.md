@@ -4308,3 +4308,61 @@ explícitamente en vez de inflar la confianza del hallazgo.
 **Sesgo de selección acumulado:** se mantiene en **67** (mejor
 cuantificación estadística de una candidata ya contada, no una
 hipótesis nueva).
+
+## Síntesis honesta tras 67 hipótesis — dónde está el proyecto y cuál es el límite real que queda
+
+Tras dos ciclos completos de investigación (ciclo de señales de un
+solo activo, ~60 hipótesis; ciclo de carteras sistemáticas y
+estrategias documentadas de traders reales, 7 más: TSMOM, momentum
+transversal, pairs trading, carry trade, COT, VIX reversion, oro/tipos
+reales, risk-parity+overlay, Turtle, GEM, Golden Cross), el inventario
+cubierto incluye ya la práctica totalidad de las familias de
+estrategia retail/académica/CTA razonablemente automatizables con
+datos OHLC diarios e intradía de este universo: ruptura de rango
+(ORB, Donchian/Turtle), reversión a la media (RSI(2)/SMA200, Bollinger,
+VWAP), seguimiento de tendencia (TSMOM, cruce de medias, pullback de
+tendencia), estacionalidad/calendario (día de la semana, Halloween,
+turno de mes, drift de FOMC/CPI), prima de riesgo (carry FX, momentum
+transversal, risk-parity), posicionamiento institucional (COT), y
+volatilidad (VIX, compresión/expansión). De 67 hipótesis/variantes
+probadas con la misma disciplina (pre-registro, benchmark correcto,
+coste real, sin optimizar tras ver resultados), **66 se descartan con
+evidencia clara, y 1 (Turtle System 2) queda en una zona intermedia
+honesta: ni descartada ni validada**, con un intervalo de confianza
+que toca cero una vez corregida la falta de independencia entre
+mercados.
+
+**Qué significa esto para el objetivo final (estrategia con evidencia
+suficiente para forward testing):** con los datos disponibles AHORA
+(históricos estáticos ya vistos, 2015-2026 para XAUUSD, 2023-2026 para
+el resto), **no existe más análisis retrospectivo que pueda resolver
+la incertidumbre que queda sobre Turtle System 2.** No es una cuestión
+de "probar una variante más" — ya se ha comprobado sensibilidad a
+valores extremos, correlación entre mercados, concentración temporal,
+coste de financiación y un intervalo de confianza correctamente
+calculado. Lo que falta es, literalmente, DATOS QUE NO EXISTEN TODAVÍA
+(operaciones futuras en una cuenta demo) — no un bloqueo técnico en el
+sentido de un error o una fuente de datos inaccesible, sino el límite
+estructural de cualquier backtest: no se puede validar fuera de
+muestra sin muestra fuera de la que se ya se ha mirado.
+
+**Recomendación de continuación (sin pedir dirección, aplicando la
+prioridad ya indicada por el usuario: congelar y validar la candidata
+más prometedora):**
+1. Forward testing en cuenta demo con las reglas YA CONGELADAS de
+   Turtle System 2 (Donchian 55/20, N=EMA(20) del rango verdadero,
+   stop=2N, sin piramidación, 1 unidad, sobre XAUUSD/USTEC/US500) —
+   sin modificar ni una regla a partir de los resultados de este
+   documento.
+2. Dado que el IC95% toca cero, el tamaño de posición en cualquier
+   prueba real debe ser conservador (p. ej. una fracción pequeña del
+   riesgo normal de cuenta) hasta acumular suficientes operaciones
+   fuera de muestra para una lectura honesta — no tratar esto como una
+   estrategia "confirmada".
+3. Mientras se acumulan datos de forward testing (proceso
+   necesariamente lento, no acelerable con más backtesting), seguir
+   documentando cualquier candidata adicional con evidencia externa
+   verificable que surja, bajo la misma disciplina — pero sin forzar
+   una 68ª hipótesis solo por mantener el ritmo, cuando las familias de
+   estrategia razonablemente disponibles con este universo de datos ya
+   están, en su mayoría, cubiertas.
