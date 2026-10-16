@@ -5155,3 +5155,41 @@ evidencia externa verificable, usando desde ahora
 `calidad_datos.py` como paso obligatorio antes de confiar en
 cualquier resultado nuevo sobre USTEC/US500** (XAUUSD y los 6 pares
 Forex ya están confirmados limpios).
+
+## FX Valor/REER (Menkhoff-Sarno-Schmeling-Schrimpf 2017) — descartada, muestra demasiado corta para el mecanismo que se prueba
+
+Quinta estrategia de la fase de métodos documentados, la de **mejor
+calidad de evidencia probada hasta ahora** (académica, revisada por
+pares, *Review of Financial Studies*, décadas de muestra en el estudio
+original — a diferencia de Turtle/libros o GEM/backtest propio del
+autor). Mecanismo: reversión a la paridad de poder adquisitivo —
+comprar la divisa cuyo tipo de cambio efectivo real (REER, datos del
+BIS vía FRED, sin sustitución de proxy) está por debajo de su media de
+60 meses, vender la que está por encima. Señal mensual causal, rezago
+de publicación de 1 mes, mismo motor de vol-targeting que TSMOM (ver
+`research/estrategia_fx_valor_reer.py` para las 4 distinciones
+completas: original/automatizable/simplificaciones/pérdida de OHLC).
+
+**Resultado (6 pares Forex, 2023-2026, 42 meses):** Retorno
+anualizado=+1,91%, Sharpe=0,295, z vs. dirección aleatoria=+1,19 (no
+significativo). **Sí bate al benchmark estático de exposición pura**
+(Sharpe 0,101, +0,33%/año) por +0,13%/mes de media — a diferencia de
+varias estrategias anteriores, aquí NO se trata de pura beta
+disfrazada. Pero el excedente no es robusto: **IC95% por bootstrap de
+bloques = [-0,74%, +1,20%] (toca cero ampliamente)**, y excluir solo
+el mejor mes de los 42 ya vuelve el excedente negativo (-0,08%/mes).
+
+**Decisión: DESCARTADA por ahora, no por evidencia negativa sino por
+muestra estructuralmente insuficiente para el mecanismo que se
+prueba.** La propia literatura citada describe este efecto actuando
+en horizontes de VARIOS AÑOS — 3,75 años de datos de precio es
+demasiado corto para que tenga tiempo de expresarse, igual limitación
+ya declarada para el trend-following de Hurst-Ooi-Pedersen. No se
+descarta el mecanismo en sí (es la evidencia académica más sólida
+probada en este proyecto), solo esta prueba concreta con los datos de
+precio disponibles — candidata a revisar si en el futuro se consigue
+más historial de precio Forex (ya preparado el conversor HistData,
+pendiente de autorización del usuario para descargar).
+
+**Sesgo de selección acumulado:** ≈67 + 1 = **68 hipótesis/combinaciones
+probadas en total.**
