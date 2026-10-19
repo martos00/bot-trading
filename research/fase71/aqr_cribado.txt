@@ -1,0 +1,47 @@
+último mes: 2026-02-27
+                                  SR<2012  SR2012+  t2012+  SR2020+
+18                                                                 
+US Stock Selection Value             0.31     0.01    0.06     0.30
+US Stock Selection Momentum          0.54     0.30    1.14     0.15
+US Stock Selection Defensive         0.70     0.83    3.11     0.22
+US Stock Selection Multi-style       1.15     0.69    2.61     0.45
+Intl Stock Selection Value           0.68     0.20    0.75     0.67
+Intl Stock Selection Momentum        0.57     1.21    4.55     1.16
+Intl Stock Selection Defensive       0.86     1.46    5.49     1.03
+Intl Stock Selection Multi-style     1.34     1.96    7.38     2.00
+Equity indices Value                 0.25    -0.18   -0.68    -0.12
+Equity indices Momentum              0.48     0.35    1.31     0.62
+Equity indices Carry                 0.20    -0.58   -2.20    -0.09
+Equity indices Defensive             0.34     0.30    1.14     0.03
+Equity indices Multi-style           0.66    -0.01   -0.02     0.27
+Fixed income Value                   0.26     0.44    1.64     0.26
+Fixed income Momentum                0.09    -0.16   -0.60    -0.51
+Fixed income Carry                   0.63     0.06    0.22    -0.50
+Fixed income Defensive              -0.03    -0.09   -0.35    -0.73
+Fixed income Multi-style             0.47     0.06    0.21    -0.47
+Currencies Value                     0.60     0.11    0.41    -0.61
+Currencies Momentum                  0.27    -0.14   -0.54     0.09
+Currencies Carry                     0.49     0.25    0.93     0.30
+Currencies Multi-style               0.72     0.13    0.51    -0.05
+Commodities Value                    0.33     0.44    1.67     0.03
+Commodities Momentum                 0.37    -0.02   -0.06     0.21
+Commodities Carry                    0.31     0.26    0.99     0.29
+Commodities Multi-style              0.68     0.45    1.71     0.40
+All Stock Selection Value            0.38     0.11    0.42     0.51
+All Stock Selection Momentum         0.57     0.80    3.01     0.71
+All Stock Selection Defensive        0.82     1.38    5.18     0.67
+All Stock Selection Multi-style      1.35     1.49    5.61     1.28
+All Macro Value                      0.49     0.32    1.19    -0.15
+All Macro Momentum                   0.46    -0.01   -0.05     0.01
+All Macro Carry                      0.59     0.07    0.25    -0.11
+All Macro Defensive                  0.22     0.15    0.57    -0.48
+All Macro Multi-style                0.91     0.32    1.21    -0.04
+All asset classes Value              0.55     0.19    0.71     0.13
+All asset classes Momentum           0.66     0.39    1.46     0.30
+All asset classes Carry              0.59     0.07    0.25    -0.11
+All asset classes Defensive          0.61     1.07    4.03     0.17
+All asset classes Multi-style        1.46     1.00    3.76     0.47
+Equity indices Market                0.63     0.90    3.37     0.77
+Fixed income Market                  0.51     0.08    0.32    -0.52
+Commodities Market                   0.34     0.16    0.62     0.66
+All Macro Market                     0.74     0.33    1.26     0.15
