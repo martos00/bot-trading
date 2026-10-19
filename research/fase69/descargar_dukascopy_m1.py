@@ -29,7 +29,7 @@ def pedir(url, intentos=30):
                 # Dukascopy usa 503 tanto para "antes del inicio del histórico" como para limitar la
                 # frecuencia: solo se marca sin datos si se pide explícitamente (SIN_DATOS_TRAS_503)
                 n503 += 1
-                if n503 >= int(os.environ.get('SIN_DATOS_TRAS_503', '0') or 10 ** 9):
+                if n503 >= int(os.environ.get('SIN_DATOS_TRAS_503') or 10 ** 9):
                     print(f'  503 persistente, se marca sin datos: {url}', flush=True)
                     return b''
             print(f'  HTTP {e.code}, espero {espera}s', flush=True)

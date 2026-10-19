@@ -5228,3 +5228,43 @@ Se reproduce el efecto en el tramo que solapa con la muestra original (2010-2013
 apoya que la implementación es fiel; tras las publicaciones desaparece, y el spread de un CFD
 (sin subasta de cierre) es mayor que la ventaja bruta incluso en el mejor tramo. Falla los
 criterios 1-3 fijados de antemano. **Sesgo de selección acumulado: 72.**
+
+### H70 — Trend following diversificado (Hurst-Ooi-Pedersen 2017): NO CANDIDATA
+
+`research/fase69/PREREGISTRO_H70_trend_following.md`. 34 mercados (11 índices, 9 bonos de
+bancos centrales, 9 divisas FRED/Bundesbank, 5 materias primas), cierres reales (no medias
+mensuales), 1964-2026. **Motor validado contra el factor oficial AQR TSMOM: correlación 0,79**
+(criterio ≥ 0,60). Dos motores idénticos.
+
+| | Bruto | Neto futuros | Neto CFD | AQR TSMOM (58 futuros) |
+|---|---|---|---|---|
+| 1982-2011 | SR 1,09 (t=6,3) | 1,00 | 0,55 | 1,34 |
+| 2012-2026 | SR −0,01 | −0,15 | −0,78 | 0,38 (t=1,45) |
+
+Nocional bruto medio ≈3x NAV: con CFD, el recargo de financiación destruye la estrategia.
+Conclusión: anomalía reproducible históricamente, sin evidencia estadística tras su publicación.
+
+### H71 — Reversiones en fixings FX (Krohn-Mueller-Whelan, JF 2024): PRINCIPAL DESCARTADA
+
+`research/fase69/PREREGISTRO_H71_fixings_fx.md`. HistData M1 2003-2026 (hora NY con DST,
+verificado), fixings en su hora local real. Principal EURUSD-Europa: 2003-2019 +5,27 pb/día
+(t=7,9; el paper da ≈6,2) → 2020-2026 +0,71 (t=0,80). Tokio en EUR/GBP se ha invertido
+(t≈−4/−5). **Excepción pre-registrada: USDJPY-Tokio** +5,07 pb (t=8,5) en 2003-2019 y
+**+4,00 pb (t=5,5) en 2020-2026**; neto con 1 pip fijo por tramo +2,48 pb/día (t=3,4). Se
+abre H73 para validarlo sin cambiar la regla.
+
+### H72 — Front-running del rebalanceo 60/40 (Harvey-Mazzoleni-Melone 2025): NO CONFIRMADA
+
+`research/fase69/PREREGISTRO_H72_rebalanceo.md`. Reproducción SR 0,81 en la muestra del
+paper (paper: 1,11). Fuera de muestra (mar-2023 → oct-2026): SR 0,42 bruto, 0,30 neto de
+futuros (t=0,57); solo renta variable vía CFD 0,33. Positivo, pero sin potencia estadística
+(3,5 años). Desglose (no usado para elegir): la señal de calendario de fin de mes conserva
+SR 0,79; la de umbral no.
+
+### Descartada documentalmente sin backtest
+- *Overnight drift* (Boyarchenko-Larsen-Whelan, RFS 2023): los propios autores informan
+  (Liberty Street Economics, jul-2026) de que la ventana 2-3 a.m. ET es ≈0 desde 2021.
+
+**Lectura conjunta de H69-H72:** las cuatro reproducciones fieles recuperan el efecto en la
+muestra original y lo pierden (total o parcialmente) después, en línea con McLean-Pontiff
+(JF 2016: −58% tras publicación). **Sesgo de selección acumulado: 81 ensayos.**
