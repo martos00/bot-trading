@@ -1,0 +1,22 @@
+Rotación media diaria |Δw|: 0.182  (|w| medio 0.268, días con w=0 por la pata Calendar: n/a)
+                                       n  anual_pct  vol_pct   sharpe     t_nw  max_dd_pct  asimetria
+tramo         serie                                                                                  
+REP 1997-2023 H72a bruto            6373      7.702    9.499    0.811    3.992     -16.417      3.684
+              H72a neto futuros     6373      6.956    9.492    0.733    3.617     -16.985      3.668
+              H72b bruto (solo RV)  6373      6.869    8.086    0.849    4.178     -12.515      3.830
+              H72b neto CFD         6372      5.822    8.079    0.721    3.550     -13.505      3.803
+OOS 2023-2026 H72a bruto             892      2.232    5.294    0.422    0.800      -7.318     -0.250
+              H72a neto futuros      892      1.591    5.294    0.301    0.571      -7.422     -0.277
+              H72b bruto (solo RV)   892      2.602    4.818    0.540    1.064      -5.616     -0.165
+              H72b neto CFD          892      1.598    4.817    0.332    0.654      -5.882     -0.206
+REP sin sep08-mar09 ni mar20 (paper: 0,90): Sharpe 0.57
+Integridad: el día 2001-09-17 recoge el cierre real del mercado tras el 11-S; REP sin ese día: Sharpe 0.813
+Por año (estr, %): {2015: 0.5, 2016: 5.2, 2017: 0.3, 2018: 5.7, 2019: -3.6, 2020: 32.5, 2021: 4.8, 2022: 9.8, 2023: 6.3, 2024: 3.6, 2025: -0.6, 2026: -0.5}
+Por año (neto_fut, %): {2015: -0.1, 2016: 4.6, 2017: -0.2, 2018: 5.0, 2019: -4.2, 2020: 31.5, 2021: 4.2, 2022: 9.0, 2023: 5.6, 2024: 3.0, 2025: -1.2, 2026: -1.0}
+Por año (neto_cfd_rv, %): {2015: -1.2, 2016: 4.5, 2017: -2.6, 2018: 6.8, 2019: -3.2, 2020: 29.6, 2021: 2.2, 2022: 5.8, 2023: 3.8, 2024: 2.0, 2025: -0.3, 2026: 1.2}
+Signo aleatorio OOS (H72a bruto): p = 0.2128
+DSR OOS estr: 0.0658 (SR0 exigido 1.23)
+DSR OOS neto_fut: 0.0412 (SR0 exigido 1.23)
+DSR OOS neto_cfd_rv: 0.0466 (SR0 exigido 1.23)
+Threshold: REP Sharpe 0.79  OOS Sharpe -0.28
+Calendar: REP Sharpe 0.41  OOS Sharpe 0.79
