@@ -14,7 +14,7 @@ import os, sys, time, datetime as dt, urllib.request, urllib.error
 URL = 'https://datafeed.dukascopy.com/datafeed/{s}/{y}/{m:02d}/{d:02d}/{lado}_candles_min_1.bi5'
 
 
-def pedir(url, intentos=8):
+def pedir(url, intentos=30):
     espera = 20
     n503 = 0
     for _ in range(intentos):
@@ -26,8 +26,10 @@ def pedir(url, intentos=8):
             if e.code == 404:
                 return b''
             if e.code == 503:
+                # Dukascopy usa 503 tanto para "antes del inicio del histórico" como para limitar la
+                # frecuencia: solo se marca sin datos si se pide explícitamente (SIN_DATOS_TRAS_503)
                 n503 += 1
-                if n503 >= 3:  # Dukascopy responde 503 persistente antes del inicio del histórico
+                if n503 >= int(os.environ.get('SIN_DATOS_TRAS_503', '0') or 10 ** 9):
                     print(f'  503 persistente, se marca sin datos: {url}', flush=True)
                     return b''
             print(f'  HTTP {e.code}, espero {espera}s', flush=True)

@@ -25,6 +25,6 @@ for x in dias:
                 continue
             datos = d.pedir(d.URL.format(s=sim, y=x.year, m=x.month - 1, d=x.day, lado=lado))
             open(f, 'wb').write(datos)
-            time.sleep(1.2)
+            time.sleep(4)
     print(x, flush=True)
 print('FIN')
