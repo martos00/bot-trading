@@ -96,3 +96,18 @@ Pasa a "candidata" solo si se cumplen TODOS en H69a:
 H69b-d se reportan como réplica/robustez; no pueden rescatar a H69a si esta falla.
 Si falla, la línea se cierra y se pasa a la siguiente estrategia seleccionada
 (trend following diversificado, ver `REVISION_FUENTES.md`).
+
+## Apéndice A (19-oct-2026, antes de calcular ningún resultado de la estrategia) — corrección de huso horario
+
+La documentación de HistData indica "EST sin horario de verano". Verificación empírica
+sobre los datos descargados (cociente entre el rango medio de los minutos hh:30-hh:34 y el
+de hh:15-hh:28, por año y por estado de horario de verano de Nueva York): el salto de
+actividad de la apertura de NY aparece en la marca **09:30** tanto en verano como en
+invierno de **todos** los años 2010-2026 (cociente 2,1-4,9), y el cociente en 10:30 es
+≈1,0 siempre. Con la regla "EST fijo" las señales de verano quedarían desplazadas una hora.
+
+Decisión: las marcas de HistData para SPXUSD/NSXUSD se interpretan como hora local de
+Nueva York (con horario de verano). Es una corrección de la lectura de los datos, tomada
+antes de ver ninguna rentabilidad; no cambia ninguna regla de la estrategia.
+Aviso para el resto del proyecto: cualquier uso previo de HistData que asumiera EST fijo
+(p. ej. XAUUSD 2015-2022) debería verificarse con el mismo test.
