@@ -1,0 +1,11 @@
+exposición media en posición 1.39
+H75f 1x: CAGR 2.18% Sharpe 0.45 MDD -14.1% p1_diario -0.60% peor_dia -6.53%
+   FTMO_2step        supera 0.62 diaria 0.22 max 0.10 dias_med 1064 sobrevive_1año 0.94
+   FundedNext_2step  supera 0.67 diaria 0.20 max 0.10 dias_med 904 sobrevive_1año 0.94
+P1 voltarget: CAGR 3.23% Sharpe 0.51 MDD -16.9% p1_diario -0.83% peor_dia -7.92%
+   FTMO_2step        supera 0.44 diaria 0.53 max 0.03 dias_med 661 sobrevive_1año 0.83
+   FundedNext_2step  supera 0.49 diaria 0.48 max 0.02 dias_med 561 sobrevive_1año 0.78
+
+VEREDICTO (pre-registrado): P1 FALLA. La P(incumplir pérdida diaria) sube de 0,22 a 0,53 en vez de bajar.
+Causa: la volatilidad de 20 días es baja justo antes de los desplomes; la exposición media sube a 1,39x y
+el peor día pasa de −6,5% a −7,9%. El riesgo de gap overnight no se controla con el tamaño.
