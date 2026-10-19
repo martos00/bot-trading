@@ -1,0 +1,26 @@
+
+bruto (sin costes)         ops= 3629 pnl=    25,287 $  media/día=    7.0 $  t_NW=  1.34  PF= 1.05  aciertos=35.3%  DDmax=  -15,843 $  contratos med=9
+neto base 1 tick + 1,50 $  ops= 3629 pnl=   -83,453 $  media/día=  -23.0 $  t_NW= -4.24  PF= 0.86  aciertos=35.2%  DDmax= -106,174 $  contratos med=9
+neto estrés 2 ticks + 2,50 $ ops= 3629 pnl=  -168,979 $  media/día=  -46.5 $  t_NW= -8.11  PF= 0.75  aciertos=35.0%  DDmax= -184,613 $  contratos med=9
+
+neto base por año ($): {2010: 2317, 2011: -13367, 2012: -14992, 2013: -12600, 2014: -14985, 2015: -13304, 2016: -9825, 2017: -15034, 2018: -3759, 2019: -6125, 2020: 1501, 2021: 1158, 2022: 1890, 2023: 241, 2024: 9522, 2025: 2901, 2026: 1007}
+años positivos: 8 de 17
+neto base 2010-2015        ops= 1207 pnl=   -66,931 $  media/día=  -55.3 $  t_NW= -5.48  PF= 0.72  aciertos=34.3%  DDmax=  -71,817 $  contratos med=22
+neto base 2016-2020        ops= 1190 pnl=   -33,242 $  media/día=  -27.9 $  t_NW= -3.07  PF= 0.84  aciertos=34.3%  DDmax=  -36,713 $  contratos med=10
+neto base 2021-2026        ops= 1232 pnl=    16,719 $  media/día=   13.6 $  t_NW=  1.64  PF= 1.10  aciertos=37.0%  DDmax=   -5,654 $  contratos med=2
+
+Puntos netos medios por operación =  0.56; largos 0.46, cortos 0.66
+
+Control dirección aleatoria (neto base): media/día regla -23.0 $; simulada -26.6 $ (p95 -18.8); p(sim >= regla) = 0.231
+Siempre largo tras la ruptura: -26.3 $/día; siempre corto: -26.6 $/día
+
+Fondeo (Monte Carlo, bloques de 5 días, incertidumbre de la ventaja):
+  Topstep_50K: supera 0.165  (con ventaja 0: 0.393)  incumple diaria 0.000  incumple máxima 0.835  días mediana 52.0  sobrevive financiada 0.086
+  FTMO_2step: supera 0.038  (con ventaja 0: 0.320)  incumple diaria 0.000  incumple máxima 0.962  días mediana 224.0  sobrevive financiada 0.344
+
+P&L diario (neto base): vol 0.65% del capital; percentil 1 -0.75%; peor día -0.92%; peor flotante -1.54%; racha perdedora máx 14 ops
+
+[Complementario, no cambia el veredicto] Solo 2021-2026 (precio de NQ actual):
+  media/op 13.6 $; contratos medios 2.8; t_NW diario 1.64
+  Topstep_50K: supera 0.571 (ventaja 0: 0.376); incumple máxima 0.429; sin resolver 0.000; días mediana 65.0; sobrevive financiada 0.566
+  FTMO_2step: supera 0.700 (ventaja 0: 0.313); incumple máxima 0.299; sin resolver 0.000; días mediana 297.0; sobrevive financiada 0.910
