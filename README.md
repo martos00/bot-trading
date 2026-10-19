@@ -5311,10 +5311,16 @@ TikToks, la literatura y nuestros 91 ensayos, y nuevas puertas de costes y de vi
 
 | Id | Estrategia pública | Fidelidad | Resultado clave | Fondeo |
 |---|---|---|---|---|
-| H74 | Noise Area SPY (Zarattini-Aziz-Barbon 2024) | **Corr. mensual 0,965** con la tabla del paper (2008-2021) | Sharpe 1,03 con costes del paper; **equilibrio en 0,025 $/acción = coste de un CFD** | CFD: inviable. Futuros: posible; **OOS 2021-2026 pendiente de datos con volumen** |
+| H74 | Noise Area SPY (Zarattini-Aziz-Barbon 2024) | **Corr. mensual 0,965** con la tabla del paper (2008-2021) | Sharpe 1,03 con costes del paper; **equilibrio en 0,025 $/acción = coste de un CFD** | **DESCARTADA como candidata actual**: réplica independiente (Brusco) SPY 2025 −4,9%, 2026 −12,9%; ES Sharpe −0,07 (`research/fase70/H74_REVISION_REPLICAS_INDEPENDIENTES.md`) |
 | H75 | Timing S&P de Connors (6 estrategias) | Double 7's coherente con réplica de terceros | Solo RSI(2)<5 supera al azar en OOS 2008-2026 (p=0,007), DSR≈0 | Rompe la pérdida diaria: compra en días de pánico |
 | P1 | RSI(2)<5 con tamaño por volatilidad (propia) | — | **Falla**: la pérdida diaria empeora (53% frente a 22%) | Riesgo de gap overnight no controlable |
 | H76 | ORB 5 min (Zarattini-Aziz 2023) | +0,153R bruto (paper ≈0,13) | Post-publicación neto CFD +0,10R (t=1,2), no significativo | Rachas perdedoras → pérdida máxima |
+| H77 | Oro largo en sesión de Tokio (Donati-Jung 2019) | IS t=3,3 (efecto reproducido) | **OOS 2020-2026 bruto t=0,21**: desaparece | Rechazada |
+| H78 | BTC largo 21-23 UTC (Quantpedia 2022) | Réplica +12,1 pb/día, t=4,5 | **OOS bruto +5,2 pb, t=3,0, en Binance y Coinbase**; neto CFD −3,3 pb | Rechazada: equilibrio 5,2 pb < coste FTMO ≈8,5 pb |
+
+**Cribado con datos de AQR** (`research/fase71/aqr_cribado.py`): value, momentum y carry en índices, divisas,
+materias primas y bonos tienen Sharpe bruto 2012-2026 entre −0,6 y +0,45 (ninguno con t ≥ 2). No se volverán a
+probar estilos macro lentos. Contador total de ensayos: **93**.
 
 **Lecciones para fondeo:** (1) intradía > overnight; (2) el coste del CFD frente a la ventaja bruta decide;
 (3) importan la cola izquierda diaria y las rachas, no solo la media; (4) la tasa base real de las prop firms
