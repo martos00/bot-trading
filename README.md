@@ -5300,3 +5300,22 @@ EUR/GBP (que entran cortos en USD = cortos del par al BID) tampoco es real.
 4. Para retail con CFD, dos costes estructurales eliminan casi todo: el spread (estrategias
    intradía con ventajas de 1-5 pb) y el recargo de financiación (estrategias de meses con
    nocional apalancado).
+
+## Fase 70 — Estrategias públicas completas + objetivo de cuentas de fondeo (oct-2026)
+
+Objetivo principal fijado por el usuario: **estrategias para cuentas de fondeo (prop firms)**.
+Documentos: `research/fondeo/REGLAS_PROP_FIRMS.md` (reglas reales con nivel de confianza),
+`research/fondeo/simulador_fondeo.py` (Monte Carlo de evaluaciones con incertidumbre de la ventaja,
+validado contra la ruina del jugador), `research/fondeo/APRENDIZAJE_METODOLOGIA.md` (lo aprendido de los
+TikToks, la literatura y nuestros 91 ensayos, y nuevas puertas de costes y de viabilidad de fondeo).
+
+| Id | Estrategia pública | Fidelidad | Resultado clave | Fondeo |
+|---|---|---|---|---|
+| H74 | Noise Area SPY (Zarattini-Aziz-Barbon 2024) | **Corr. mensual 0,965** con la tabla del paper (2008-2021) | Sharpe 1,03 con costes del paper; **equilibrio en 0,025 $/acción = coste de un CFD** | CFD: inviable. Futuros: posible; **OOS 2021-2026 pendiente de datos con volumen** |
+| H75 | Timing S&P de Connors (6 estrategias) | Double 7's coherente con réplica de terceros | Solo RSI(2)<5 supera al azar en OOS 2008-2026 (p=0,007), DSR≈0 | Rompe la pérdida diaria: compra en días de pánico |
+| P1 | RSI(2)<5 con tamaño por volatilidad (propia) | — | **Falla**: la pérdida diaria empeora (53% frente a 22%) | Riesgo de gap overnight no controlable |
+| H76 | ORB 5 min (Zarattini-Aziz 2023) | +0,153R bruto (paper ≈0,13) | Post-publicación neto CFD +0,10R (t=1,2), no significativo | Rachas perdedoras → pérdida máxima |
+
+**Lecciones para fondeo:** (1) intradía > overnight; (2) el coste del CFD frente a la ventaja bruta decide;
+(3) importan la cola izquierda diaria y las rachas, no solo la media; (4) la tasa base real de las prop firms
+es baja (Topstep 2025: 16,8% de Combines superados; FPFX: 14% aprueban, 7% cobran).

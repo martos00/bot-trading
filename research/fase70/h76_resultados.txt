@@ -1,0 +1,24 @@
+nsx_bruto OOS-atras 2010-2015: n=1205 media=+0.079R t=+1.11 | IS 2016-feb2023: n=1697 media=+0.206R t=+3.32 | OOS-post mar2023-2026: n= 735 media=+0.152R t=+1.70
+nsx_cfd OOS-atras 2010-2015: n=1205 media=-0.385R t=-5.28 | IS 2016-feb2023: n=1697 media=+0.044R t=+0.71 | OOS-post mar2023-2026: n= 735 media=+0.104R t=+1.16
+nsx_estres OOS-atras 2010-2015: n=1205 media=-0.849R t=-10.89 | IS 2016-feb2023: n=1697 media=-0.117R t=-1.85 | OOS-post mar2023-2026: n= 735 media=+0.055R t=+0.62
+spx_bruto OOS-atras 2010-2015: n= 496 media=+0.228R t=+1.80 | IS 2016-feb2023: n=1370 media=+0.102R t=+1.42 | OOS-post mar2023-2026: n= 733 media=+0.107R t=+1.10
+spx_cfd OOS-atras 2010-2015: n= 496 media=-0.136R t=-1.04 | IS 2016-feb2023: n=1370 media=-0.110R t=-1.50 | OOS-post mar2023-2026: n= 733 media=-0.018R t=-0.19
+spx_estres OOS-atras 2010-2015: n= 496 media=-0.500R t=-3.70 | IS 2016-feb2023: n=1370 media=-0.322R t=-4.32 | OOS-post mar2023-2026: n= 733 media=-0.143R t=-1.46
+aleatorio NSX neto OOS-atras 2010-2015: media de 20 semillas -1.346R (min -1.655, max -1.153); real -0.385R; p=0.00
+aleatorio NSX neto IS 2016-feb2023: media de 20 semillas -0.669R (min -0.808, max -0.509); real +0.044R; p=0.00
+aleatorio NSX neto OOS-post mar2023-2026: media de 20 semillas -0.229R (min -0.423, max -0.055); real +0.104R; p=0.00
+
+--- Fondeo (informativo; H76 no es candidata) ---
+nsx_cfd ('2023-02-18', '2026') FTMO_2step        supera 0.35 diaria 0.00 max 0.65 dias_med 101 sobrevive_1año 0.58
+nsx_cfd ('2023-02-18', '2026') FundedNext_2step  supera 0.47 diaria 0.00 max 0.53 dias_med 46 sobrevive_1año 0.55
+nsx_cfd ('2023-02-18', '2026') Topstep_50K       supera 0.33 diaria 0.00 max 0.67 dias_med 23 sobrevive_1año 0.29
+nsx_cfd ('2010', '2026') FTMO_2step        supera 0.15 diaria 0.00 max 0.85 dias_med 100 sobrevive_1año 0.31
+nsx_cfd ('2010', '2026') FundedNext_2step  supera 0.29 diaria 0.00 max 0.71 dias_med 43 sobrevive_1año 0.29
+nsx_cfd ('2010', '2026') Topstep_50K       supera 0.23 diaria 0.00 max 0.77 dias_med 20 sobrevive_1año 0.09
+
+VEREDICTO H76 (pre-registrado): NO CANDIDATA. Tras la publicación (mar-2023 → oct-2026), neto de costes de
+CFD: Nasdaq +0,104R (t=1,16), S&P −0,018R. El bruto reproduce el paper (+0,153R, 23,6% de aciertos) y la
+réplica independiente de MQL5. La dirección de la primera vela sí aporta información frente a la dirección
+aleatoria (≈ +0,33R), pero el coste del CFD se come casi toda la ventaja.
+Fondeo: con 23% de aciertos las rachas perdedoras rompen la pérdida máxima (65-85% de las simulaciones),
+aunque la pérdida diaria está acotada al 1%.
