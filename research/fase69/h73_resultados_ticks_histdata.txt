@@ -1,0 +1,11 @@
+Días OOS con ticks en los 3 instantes: 1566 ; con dato M1 también: 1566
+Corr(M1 BID, ticks mid)=0.998  Corr(M1 BID, ticks BID)=1.000
+Media pb/día: M1 BID 4.01 | ticks BID 4.01 | ticks MID 1.54 (t=2.14) | diferencia BID-MID 2.47
+Tramo 1 con MID: 1.10 pb/día
+Spread t1a: mediana 4.20 pb (5.70 pips), p90 10.69 pb, p99 19.33
+Spread t1b: mediana 0.35 pb (0.50 pips), p90 0.62 pb, p99 0.97
+Spread t2b: mediana 0.37 pb (0.50 pips), p90 0.64 pb, p99 0.97
+
+EJECUTABLE (ASK/BID reales de cada día + comisión 0,35 + desliz. 0,10 pb/lado): -3.50 pb/día, t_NW=-4.86, SR -1.80, -8.81%/año s/nocional
+  por año: {2020: -2.91, 2021: -0.57, 2022: 0.55, 2023: -7.88, 2024: -2.89, 2025: -7.49, 2026: -4.46} -> positivos 1 de 7
+Sin comisión ni deslizamiento: -1.70 pb/día, t=-2.36

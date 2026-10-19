@@ -5268,3 +5268,35 @@ SR 0,79; la de umbral no.
 **Lectura conjunta de H69-H72:** las cuatro reproducciones fieles recuperan el efecto en la
 muestra original y lo pierden (total o parcialmente) después, en línea con McLean-Pontiff
 (JF 2016: −58% tras publicación). **Sesgo de selección acumulado: 81 ensayos.**
+
+### H73 — Validación de USDJPY-Tokio: CERRADA (artefacto de datos BID en el rollover)
+
+`research/fase69/PREREGISTRO_H73_usdjpy_tokio.md`. Con ticks BID/ASK de HistData (82 meses,
+1.566 días 2020-2026; mismo proveedor, declarado no independiente; Dukascopy quedó bloqueado
+por límite de frecuencia tras 9 ficheros):
+
+| Medida (OOS 2020-2026) | pb/día |
+|---|---|
+| Bruto con BID (velas M1, como en H71) | +4,01 |
+| Bruto con precio medio | **+1,54** (t=2,1) |
+| Spread mediano a las 17:05 ET (rollover) | 4,2 pb (5,7 pips); p90 10,7 pb |
+| Spread mediano a 09:55 Tokio / 08:00 Frankfurt | 0,35 / 0,37 pb |
+| **Ejecutable (ASK/BID reales + comisión + deslizamiento)** | **−3,50 (t=−4,9)**, 1 de 7 años positivo |
+
+Falla el criterio 1 del pre-registro (diferencia media BID−mid 2,47 pb > 0,5). El resultado de
+H71 en USDJPY-Tokio era en su mayor parte un **artefacto**: en el rollover el BID está hundido
+y "comprar al BID" es imposible. Por el mismo motivo la aparente "inversión" de Tokio en
+EUR/GBP (que entran cortos en USD = cortos del par al BID) tampoco es real.
+**Lección permanente:** con datos solo-BID, toda entrada/salida en momentos de spread anómalo
+(rollover 17:00 ET, aperturas de domingo, noticias) debe verificarse con BID/ASK reales.
+
+## Síntesis de la Fase 69 (5 reproducciones fieles, 15 ensayos, contador total 81)
+
+1. Las cuatro anomalías publicadas que se reprodujeron (H69-H72) **se recuperan en su muestra
+   original** (lo que valida las implementaciones) y **se debilitan o desaparecen después**.
+2. La única señal que sobrevivía fuera de muestra (H73) era un artefacto de datos.
+3. Lo menos negativo y genuinamente fuera de muestra: H72 (rebalanceo 60/40), SR ≈0,3-0,4
+   neto, sin significación con 3,5 años.
+4. Para retail con CFD, dos costes estructurales eliminan casi todo: el spread (estrategias
+   intradía con ventajas de 1-5 pb) y el recargo de financiación (estrategias de meses con
+   nocional apalancado).
