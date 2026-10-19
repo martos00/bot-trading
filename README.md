@@ -5193,3 +5193,38 @@ pendiente de autorización del usuario para descargar).
 
 **Sesgo de selección acumulado:** ≈67 + 1 = **68 hipótesis/combinaciones
 probadas en total.**
+
+## Fase 69 — Nueva fase de investigación documental (oct-2026): fuentes académicas, reproducción fiel
+
+Documentación completa en `research/fase69/` (revisión de fuentes, pre-registros, motores y
+resultados). Resumen de lo cambiado respecto a fases anteriores:
+
+- **Bloqueo de datos levantado:** desde esta sesión son accesibles HistData (descarga
+  automatizada, sin intervención manual), Dukascopy (con límite de ~1-3 ficheros/min),
+  Yahoo Finance, FRED, Kenneth French, AQR Data Sets y Bundesbank.
+- **Hallazgo de datos:** las marcas horarias de HistData para SPXUSD/NSXUSD están en hora
+  local de Nueva York **con** horario de verano, no en "EST fijo" como dice su
+  documentación (verificado año a año por el salto de actividad de las 09:30). Cualquier
+  uso anterior de HistData que asumiera EST fijo debería revisarse con el mismo test.
+- **Evidencia post-publicación del trend following (dataset oficial de AQR, factor TSMOM de
+  58 futuros):** Sharpe bruto 1,41 en 1985-2009 frente a 0,38 en 2012-2026 (t=1,46).
+
+### H69 — Market Intraday Momentum (Gao et al. 2018; Baltussen et al. 2021): DESCARTADA
+
+Reproducción fiel pre-registrada (`research/fase69/PREREGISTRO_H69_momentum_intradia.md`,
+publicada en git antes de calcular nada). Diferencias materiales con la prueba anterior
+(`hipotesis_momentum_intradia.py`): señal con tramo overnight (definición original), datos M1
+de HistData 2010-2026 (~3.700 sesiones frente a ~700), calendario NYSE exacto. Dos motores
+independientes (pandas y Python puro) producen series idénticas.
+
+| Ensayo | Total pb/día (t) | 2010-13 | 2014-may20 | jun20-2026 | Coste 1 ida-vuelta | DSR |
+|---|---|---|---|---|---|---|
+| S&P 500, r_ROD (principal) | +0,53 (1,26) | **+2,15 (2,06)** | +0,60 | −0,44 | ≈1,6 pb (0,40 pt) | 0,000 |
+| S&P 500, r_ONFH | −0,58 | +1,35 | −0,65 | −1,58 | ≈1,6 pb | 0,000 |
+| Nasdaq 100, r_ROD | +0,59 (1,25) | +0,99 | +1,00 | −0,09 | ≈1,6 pb (0,90 pt) | 0,000 |
+| Nasdaq 100, r_ONFH | −0,15 | +1,38 | +0,42 | −1,64 | ≈1,6 pb | 0,000 |
+
+Se reproduce el efecto en el tramo que solapa con la muestra original (2010-2013), lo que
+apoya que la implementación es fiel; tras las publicaciones desaparece, y el spread de un CFD
+(sin subasta de cierre) es mayor que la ventaja bruta incluso en el mejor tramo. Falla los
+criterios 1-3 fijados de antemano. **Sesgo de selección acumulado: 72.**
