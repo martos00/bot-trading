@@ -70,3 +70,20 @@ parámetros. Lo que **faltaba y se ha añadido o se añadirá**:
 | P1 | RSI(2)<5 de Connors con tamaño inversamente proporcional a la volatilidad (2%/σ diaria, como ZAB) y límite interno diario | Reversión tras ventas forzadas / provisión de liquidez | Mantiene la ventaja OOS de H75f y estabiliza el riesgo diario, que es lo que hacía fallar el fondeo |
 | P2 | Noise Area (H74) con costes de micro-futuros (MES) y fuera de muestra 2021-2026 | Coberturas gamma / desequilibrios intradía | Cierra cada día: sin gaps ni swaps. Requiere prop firm de futuros que permita bots |
 | P3 | Cartera de ventajas débiles no correlacionadas (P1 + P2 + componente de calendario de fin de mes de H72) | Diversificación: la volatilidad diaria baja más que la media | Más días con ganancias pequeñas y menos días extremos: mejor para consistencia y límite diario |
+
+## 6. Segunda tanda de TikToks (20-oct-2026): @tradingstraty ×2, @cototrades, @nico66fx, @stickmanxwx
+Leídas la descripción y la transcripción de cada vídeo (subtítulos de TikTok); no se han visto las imágenes. Todo es **[O]**.
+- @tradingstraty: proceso investigación → código → optimización → IS/OOS → métricas (Sharpe, Sortino, alfa, DD), y no
+  operar en real sin validación; robustez y **pruebas de permutación**. Coincide con el método, salvo que optimiza
+  "para el mayor rendimiento" antes de validar fuera de muestra (lo que produjo el sobreajuste de la optimización MT5).
+- @cototrades: sobreajuste; Monte Carlo, walk-forward y variación de parámetros. Coincide.
+- @nico66fx: prompts para bots hechos con IA (promociona su web). Un buen prompt mejora la fidelidad del código, no crea
+  ventaja (lo admite él mismo). Nuestro equivalente: especificación exacta en el pre-registro.
+- @stickmanxwx: bot de cripto con CCXT; describe como "arbitraje" vender tras subidas de milisegundos, lo cual no es
+  arbitraje ni es competitivo desde un portátil. Contenido promocional; descartado como fuente.
+
+**Cambio de método que se adopta:** cuando haya una optimización (búsqueda en rejilla o genética), antes de pasar a
+validación se hará una **prueba de permutación de la optimización completa** (Monte Carlo Permutation Test, en la línea
+de T. Masters): se repite la misma optimización sobre ≥ 100 series de precios con los rendimientos barajados (por bloques
+para conservar volatilidad) y se compara el mejor resultado real con la distribución de los mejores resultados en datos
+barajados. Si p ≥ 0,05, el resultado de la optimización se trata como ruido y no se gasta tiempo en validarlo.
