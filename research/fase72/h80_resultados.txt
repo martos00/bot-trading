@@ -1,0 +1,31 @@
+Franjas evaluadas: 270
+Distribución de t en descubrimiento (si no hubiera nada, ~N(0,1)): t medio 0.37, desv. 1.70, |t|>=2: 62 (esperadas por azar ≈ 12), |t|>=3: 24 (≈ 0.7)
+
+Pasan el descubrimiento (|t| ≥ 3): k = 24
+t de Bonferroni unilateral en confirmación: 2.87
+
+   sim franja  lado  media_desc_pb  t_desc  n_conf  media_conf_pb  t_conf  neto_pb  t_neto  coste_pb años_pos  c1_bonf  c2_neto  c3_coste  c4_años  confirmada
+GBPUSD h16_d1 corto           0.43    3.04    2133           1.69   12.51     0.49    3.62       1.2      9/9     True     True     False     True       False
+EURUSD h06_d2 corto           1.96    5.35    2205           1.48    4.85     0.48    1.57       1.0      8/9     True    False     False     True       False
+EURUSD h06_d1 corto           1.22    4.76    2196           0.55    2.83    -0.45   -2.31       1.0      7/9    False    False     False     True       False
+NSXUSD h01_d2 largo           1.87    4.62    2248           1.33    2.23     0.33    0.55       1.0      7/9    False    False     False     True       False
+EURUSD h05_d2 corto           1.80    4.67    2209           0.54    2.02    -0.46   -1.73       1.0      8/9    False    False     False     True       False
+NSXUSD h23_d2 largo           1.07    3.40    1801           1.18    1.80     0.18    0.28       1.0      5/9    False    False     False    False       False
+SPXUSD h01_d2 largo           2.04    4.32    2235           0.87    1.77    -0.63   -1.28       1.5      6/9    False    False     False     True       False
+NSXUSD h02_d1 largo           1.55    4.72    2247           0.74    1.75    -0.26   -0.62       1.0      5/9    False    False     False    False       False
+USDJPY h07_d1 largo           0.72    3.26    2156           0.33    1.65    -0.67   -3.42       1.0      7/9    False    False     False     True       False
+SPXUSD h02_d2 largo           1.79    3.30    2241           0.81    1.56    -0.69   -1.34       1.5      6/9    False    False     False     True       False
+SPXUSD h02_d1 largo           1.51    4.29    2242           0.39    1.16    -1.11   -3.33       1.5      4/9    False    False     False    False       False
+XAUUSD h05_d1 corto           1.56    4.10    2234           0.27    0.74    -1.23   -3.39       1.5      4/9    False    False     False    False       False
+XAUUSD h09_d1 corto           2.17    3.10    2147           0.49    0.67    -1.01   -1.36       1.5      6/9    False    False     False     True       False
+EURUSD h22_d1 largo           0.70    3.32    1820           0.09    0.66    -0.91   -6.96       1.0      4/9    False    False     False    False       False
+XAUUSD h04_d2 corto           2.35    4.36    2237           0.03    0.05    -1.47   -2.64       1.5      3/9    False    False     False    False       False
+EURUSD h21_d2 largo           1.31    4.22    1819           0.01    0.04    -0.99   -4.98       1.0      4/9    False    False     False    False       False
+USDJPY h22_d1 corto           1.18    3.43    1820          -0.04   -0.16    -1.04   -4.31       1.0      3/9    False    False     False    False       False
+USDJPY h22_d2 corto           1.77    3.91    1819          -0.09   -0.27    -1.09   -3.36       1.0      3/9    False    False     False    False       False
+EURUSD h11_d1 largo           1.00    3.34    2156          -0.12   -0.50    -1.12   -4.76       1.0      4/9    False    False     False    False       False
+XAUUSD h21_d2 largo           1.73    3.02    1806          -0.35   -0.56    -1.85   -2.94       1.5      4/9    False    False     False    False       False
+GBPUSD h11_d2 largo           1.23    3.37    2190          -0.25   -0.73    -1.45   -4.15       1.2      2/9    False    False     False    False       False
+EURUSD h11_d2 largo           1.25    3.32    2189          -0.23   -0.76    -1.23   -4.09       1.0      6/9    False    False     False     True       False
+USDJPY h21_d2 corto           1.55    3.10    1820          -0.29   -0.79    -1.29   -3.50       1.0      6/9    False    False     False     True       False
+XAUUSD h02_d1 corto           1.20    3.07    2254          -0.67   -1.74    -2.17   -5.62       1.5      3/9    False    False     False    False       False
