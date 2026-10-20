@@ -158,3 +158,5 @@ propios datos sin usar.
   al informe. Una caída fuerte aquí se atribuye al modelado, no a la falta de ventaja fuera de muestra. Las 6 siguen
   pasando al paso 1 en todo caso (no hay descarte automático), con su resultado del 0b a la vista.
 - **Paso 1**: sin cambios (2023-2024, ticks reales, riesgo 0,5%).
+- **Confirmado por el usuario (20-oct-2026): las optimizaciones usaron "OHLC de 1 minuto".** El paso 0a se hace con ese
+  modo; el paso 0b (ticks reales) mide cuánto del resultado depende de él.
