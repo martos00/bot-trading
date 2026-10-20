@@ -1,0 +1,28 @@
+   par    sesion signo    n  media_pb       t  p_unilateral años_signo_previsto  corr_histdata  sharpe_bruto  umbral_holm_p  holm  certificada
+EURUSD    Europa     − 3709    2.2776  5.0750        0.0000               13/15         0.9840        1.3349         0.0042  True         True
+GBPUSD    Europa     − 3708    1.6495  3.2632        0.0006               12/15         0.9809        0.8184         0.0045  True         True
+USDCHF      EEUU     − 3689    1.4582  2.3974        0.0083               11/15            NaN        0.6278         0.0050 False        False
+EURUSD      EEUU     + 3691    1.3809  2.3127        0.0104               10/15         0.9946        0.6060         0.0056 False        False
+GBPUSD      EEUU     + 3692    1.2660  2.0501        0.0202               10/15         0.9907        0.5510         0.0062 False        False
+USDCHF    Europa     + 3708    0.9184  1.4150        0.0785               10/15            NaN        0.3829         0.0071 False        False
+EURJPY    Europa     − 3709    0.0678  0.1015        0.4596                7/15            NaN        0.0260         0.0083 False        False
+AUDUSD      EEUU     + 3689    0.0536  0.0805        0.4679                7/15            NaN        0.0201         0.0100 False        False
+USDJPY      EEUU     − 3692   -0.9553 -1.5231        0.9361                3/15         0.9947       -0.4019         0.0125 False        False
+EURJPY     Japon     + 3689   -0.8179 -1.8366        0.9669                4/15            NaN       -0.4504         0.0167 False        False
+USDJPY     Japon     + 3691   -1.4287 -3.1704        0.9992                4/15         0.9936       -0.7806         0.0250 False        False
+AUDUSD Australia     − 3690   -2.1291 -4.1961        1.0000                2/15            NaN       -1.0394         0.0500 False        False
+
+Correlaciones entre sesiones (rentabilidad en el sentido previsto):
+                  EURUSD_Europa  EURUSD_EEUU  GBPUSD_Europa  GBPUSD_EEUU  USDCHF_Europa  USDCHF_EEUU  USDJPY_Japon  USDJPY_EEUU  EURJPY_Europa  EURJPY_Japon  AUDUSD_Australia  AUDUSD_EEUU
+EURUSD_Europa              1.00        -0.00           0.50        -0.01           0.53        -0.01          0.01        -0.00           0.52          0.02              0.01         0.00
+EURUSD_EEUU               -0.00         1.00          -0.01         0.69           0.03         0.83         -0.01         0.53          -0.16         -0.02             -0.01         0.64
+GBPUSD_Europa              0.50        -0.01           1.00        -0.03           0.29        -0.02         -0.01        -0.01           0.24         -0.01              0.03        -0.02
+GBPUSD_EEUU               -0.01         0.69          -0.03         1.00           0.01         0.60         -0.02         0.44          -0.06         -0.03              0.01         0.66
+USDCHF_Europa              0.53         0.03           0.29         0.01           1.00        -0.02         -0.02        -0.01           0.12         -0.01              0.03         0.02
+USDCHF_EEUU               -0.01         0.83          -0.02         0.60          -0.02         1.00         -0.01         0.60          -0.06         -0.02             -0.01         0.56
+USDJPY_Japon               0.01        -0.01          -0.01        -0.02          -0.02        -0.01          1.00        -0.01          -0.03          0.84              0.03        -0.05
+USDJPY_EEUU               -0.00         0.53          -0.01         0.44          -0.01         0.60         -0.01         1.00           0.20         -0.01             -0.03         0.44
+EURJPY_Europa              0.52        -0.16           0.24        -0.06           0.12        -0.06         -0.03         0.20           1.00         -0.03              0.03        -0.01
+EURJPY_Japon               0.02        -0.02          -0.01        -0.03          -0.01        -0.02          0.84        -0.01          -0.03          1.00             -0.20        -0.05
+AUDUSD_Australia           0.01        -0.01           0.03         0.01           0.03        -0.01          0.03        -0.03           0.03         -0.20              1.00         0.02
+AUDUSD_EEUU                0.00         0.64          -0.02         0.66           0.02         0.56         -0.05         0.44          -0.01         -0.05              0.02         1.00
