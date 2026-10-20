@@ -28,3 +28,9 @@ Dukascopy, velas M1 BID y ASK, 2018-01-01 → 2026-09-30, marcas en UTC converti
   horario). Se informa con HistData (dato ya usado en H80, por eso no decide).
 - Franjas vecinas (05-07 y 07-09 ET) con Dukascopy: se espera el mismo signo.
 - N acumulado no cambia (364): es la confirmación de una franja de H80, no una hipótesis nueva.
+
+## Apéndice 1 (20-oct-2026, antes de ver ningún dato nuevo): fuente de datos
+Dukascopy limita las descargas (≈ 84 ficheros/hora con 9 procesos; > 50 h para 2018-2026). Se cambia la fuente principal a
+**FXCM** (velas M1 con BID y ASK, ficheros semanales públicos en candledata.fxcorporate.com; bróker distinto de HistData,
+marcas de tiempo en UTC). Los días que falten en FXCM se completan con Dukascopy. Criterios C1-C4 sin cambios, aplicados
+a la serie combinada; se informará además del resultado solo con FXCM y del número de días de cada fuente.
