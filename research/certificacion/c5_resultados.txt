@@ -1,0 +1,18 @@
+
+[AUDITORÍA DE CALIDAD -- USDJPY HistData M1 2003-2011] Estado: VÁLIDO
+  Avisos (no invalidan el resultado, pero conviene revisarlos):
+
+[AUDITORÍA DE CALIDAD -- AUDUSD HistData M1 2003-2011] Estado: VÁLIDO
+  Avisos (no invalidan el resultado, pero conviene revisarlos):
+
+Por par (sentido invertido, pb/día):
+  USDJPY 2003-2007 (informativo): n 1228, media +1.28, t 1.95
+  USDJPY 2008-2011: n 1020, media +3.06, t 2.57
+  AUDUSD 2003-2007 (informativo): n 1189, media +0.95, t 1.18
+  AUDUSD 2008-2011: n 1029, media -1.51, t -1.10
+
+Factor 2008-2011: n 1016, media +0.75 pb, t 0.86 → NO CUMPLE (t ≥ 1,645)
+Ambos pares con signo invertido 2008-2011: NO CUMPLE
+Factor por año 2008-2011 (pb): {2008: 0.76, 2009: 2.83, 2010: 0.95, 2011: -1.58} → CUMPLE (≥ 3/4)
+Informativo 2003-2007: media +1.33 pb, t 2.32; por año {2003: 2.33, 2004: -0.8, 2005: 0.29, 2006: 2.44, 2007: 2.37}
+VEREDICTO: NO CERTIFICADA
