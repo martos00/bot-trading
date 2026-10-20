@@ -129,3 +129,18 @@ considerarse una ventaja.
 Cambiar cualquier parámetro, filtro, período o riesgo de las 6 configuraciones; añadir candidatas nuevas elegidas
 mirando 2023-2024; repetir la optimización sobre 2023-2024. Cualquier idea nueva será una hipótesis nueva con sus
 propios datos sin usar.
+
+## Apéndice 2 (20-oct-2026, antes de cualquier resultado): `.set` guardados automáticamente por MT5 del usuario
+- `XAUUSD_SupplyDemand_RSI_EA_1.set` (guardado el 28-sep-2026, EA "(1)"): última configuración de optimización de la
+  copia "(1)". **No tiene el parámetro `InpUsarFiltroRegimen`**: es una versión anterior del EA (el interruptor se añadió
+  en el commit 7fa5611 del 23-sep), con el régimen H4 siempre activo. Sus columnas optimizadas (8 parámetros + riesgo)
+  coinciden con el informe COMPLETO: corresponde a esa optimización, que no aporta ninguna candidata.
+  Fijos: `InpFixedRR=2.0`, filtros de FVG mínimo y de sesión activos. Rangos de optimización idénticos a la rejilla de
+  los 6 informes.
+- `XAUUSD_SupplyDemand_RSI_EA.set` (guardado el 7-oct-2026): última prueba simple (nada optimizado, `InpSLBufferATRMult=0.60`,
+  fuera de la rejilla: corresponde al barrido de sensibilidad de Baseline 1). Mismos parámetros que el EA del repo.
+  `InpRiskPercent=1.5`, `InpFixedRR=2`.
+- **Ninguno es la configuración exacta de las 6 candidatas.** Son indicios coherentes: riesgo 1,5% (coincide con la
+  estimación indirecta de ≈ 1,5% del informe F) e `InpFixedRR = 2` (dentro de la cota [2,00; 2,25)). Siguen sin verificar.
+- Verificación propuesta: relanzar cada optimización con `RELANZAR_*.set` (riesgo 1,5%, `InpFixedRR=2`, filtros del
+  informe). Si MT5 carga la caché al instante, los valores fijos eran exactamente esos.
