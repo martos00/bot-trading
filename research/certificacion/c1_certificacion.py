@@ -1,5 +1,6 @@
 """Certificación C1 — EURUSD corto 06:00 → 08:00 ET con Dukascopy (punto medio BID/ASK). PREREGISTRO_C1_eurusd_manana_europea.md
-Uso: python3 c1_certificacion.py DIR_DUKASCOPY H80_EURUSD.csv H80_GBPUSD.csv"""
+Fuente principal FXCM (velas M1 BID/ASK, UTC); los días sin FXCM se completan con Dukascopy (apéndice 1 del pre-registro).
+Uso: python3 c1_certificacion.py DIR_FXCM DIR_DUKASCOPY H80_EURUSD.csv H80_GBPUSD.csv [--faltan SALIDA_TXT]"""
 import glob, lzma, os, struct, sys
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
@@ -19,6 +20,13 @@ def velas(f, div=1e5):
             struct.unpack('>IIIIIf', b[i * 24:(i + 1) * 24])[2] / div for i in range(len(b) // 24)}
 
 
+def fxcm(f):
+    """Velas de un fichero semanal de FXCM → ({minuto: cierre BID}, {minuto: cierre ASK}); minuto = inicio de la vela (UTC)."""
+    x = pd.read_csv(f, compression='gzip')
+    m = ((pd.to_datetime(x.DateTime, format='%m/%d/%Y %H:%M:%S.%f') - pd.Timestamp('1970-01-01')) // pd.Timedelta(minutes=1)).to_numpy()
+    return dict(zip(m, x.BidClose.to_numpy(float))), dict(zip(m, x.AskClose.to_numpy(float)))
+
+
 def en(d, T):
     """Cierre del último minuto que termina en o antes de T (tolerancia 5 min), como en HistData/H80."""
     base = int(T.timestamp()) // 60
@@ -35,21 +43,35 @@ def t_nw(x, L=5):
 
 
 if __name__ == '__main__':
-    raiz, h80_eur, h80_gbp = sys.argv[1:4]
-    bid, ask = {}, {}
-    for f in sorted(glob.glob(os.path.join(raiz, 'EURUSD_BID_*.bi5'))):
-        bid.update(velas(f))
-    for f in sorted(glob.glob(os.path.join(raiz, 'EURUSD_ASK_*.bi5'))):
-        ask.update(velas(f))
-    filas = []
+    dir_fxcm, dir_duka, h80_eur, h80_gbp = sys.argv[1:5]
+    fb, fa = {}, {}
+    for f in sorted(glob.glob(os.path.join(dir_fxcm, 'EURUSD_*.csv.gz'))):
+        b, a = fxcm(f)
+        fb.update(b); fa.update(a)
+    db, da = {}, {}
+    for f in sorted(glob.glob(os.path.join(dir_duka, 'EURUSD_BID_*.bi5'))):
+        db.update(velas(f))
+    for f in sorted(glob.glob(os.path.join(dir_duka, 'EURUSD_ASK_*.bi5'))):
+        da.update(velas(f))
+    filas, faltan = [], []
     for d in pd.bdate_range('2018-01-01', '2026-09-30'):
         fila = {'dia': d}
+        ok_fxcm = all(not np.isnan(en(fb, datetime(d.year, d.month, d.day, h, tzinfo=NY))) for h in (6, 8))
+        bid, ask = (fb, fa) if ok_fxcm else (db, da)
+        fila['fuente'] = 'FXCM' if ok_fxcm else 'Dukascopy'
         for h in (5, 6, 7, 8, 9):
             T = datetime(d.year, d.month, d.day, h, tzinfo=NY)
             b, a = en(bid, T), en(ask, T)
             fila[f'bid{h}'], fila[f'mid{h}'], fila[f'spr{h}'] = b, (a + b) / 2, (a - b) / ((a + b) / 2) * 1e4
+        if not ok_fxcm and np.isnan(fila['mid6'] + fila['mid8']):
+            faltan.append(d.date().isoformat())
         filas.append(fila)
+    if '--faltan' in sys.argv:
+        open(sys.argv[sys.argv.index('--faltan') + 1], 'w').write('\n'.join(faltan) + '\n')
+        print(f'Días sin dato en ninguna fuente: {len(faltan)}')
+        sys.exit()
     x = pd.DataFrame(filas).set_index('dia')
+    print('Días por fuente:', x.fuente.value_counts().to_dict())
     corto = lambda p, h0, h1: -np.log(x[f'{p}{h1}'] / x[f'{p}{h0}'])
     mid, bidr = corto('mid', 6, 8), corto('bid', 6, 8)
     print(f'Días con dato: {mid.notna().sum()} de {len(x)}')
