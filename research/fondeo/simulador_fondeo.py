@@ -136,6 +136,9 @@ REGLAS = {
     'FTMO_2step': Reglas('FTMO 2-Step', [0.10, 0.05], 0.05, 'inicial', 0.10, 'estatica', dias_minimos=4, consistencia=0.50),
     'FTMO_1step': Reglas('FTMO 1-Step', [0.10], 0.03, 'inicial', 0.10, 'trailing_cierre', dias_minimos=0, consistencia=0.50),
     'FundedNext_2step': Reglas('FundedNext Stellar 2-Step', [0.08, 0.05], 0.05, 'inicial', 0.10, 'estatica', dias_minimos=5),
+    # FundingPips 2-Step estándar [3]: 8% + 5%, diaria 5% (del mayor entre saldo al inicio del día y equity; aproximado con
+    # el saldo del día), máxima 10% estática, 3 días mínimos. Reglas de terceros: confirmar en la web oficial.
+    'FundingPips_2step': Reglas('FundingPips 2-Step', [0.08, 0.05], 0.05, 'saldo_dia', 0.10, 'estatica', dias_minimos=3),
     # Topstep 50K: MLL 2.000 $ (4%) trailing de cierre con tope en el inicial; objetivo 3.000 $ (6%); consistencia 50% (fuentes discrepan: 50-55%)
     'Topstep_50K': Reglas('Topstep 50K', [0.06], 1.0, 'inicial', 0.04, 'trailing_cierre', True, consistencia=0.50),
 }
