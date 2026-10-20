@@ -1,6 +1,7 @@
 """Genera archivos .set (UTF-16, formato del Probador de MT5) para validar las candidatas con riesgo uniforme del 0,5%.
 Los parámetros de señal salen tal cual de las pasadas de los informes; el resto, de los valores por defecto del EA del repo.
-Uso: python3 generar_set.py OPT.CSV"""
+Uso: python3 generar_set.py OPT.CSV [riesgo prefijo]
+Con riesgo 1.5 y prefijo REPRO genera los archivos de reproducción de 2025-2026."""
 import re, sys
 import pandas as pd
 
@@ -22,14 +23,16 @@ MAPA = {'PERIOD_M15': '15', 'PERIOD_H4': '16388', 'PERIOD_H1': '16385', 'MODO_TP
 defecto = [(n, MAPA.get(v.strip(), v.strip().strip('"').lower() if t == 'bool' else v.strip().strip('"')))
            for t, n, v in re.findall(r'^input\s+(\w+)\s+(\w+)\s*=\s*([^;]+);', src, re.M)]
 d = pd.read_csv(sys.argv[1])
+RIESGO = sys.argv[2] if len(sys.argv) > 2 else '0.5'
+PREFIJO = sys.argv[3] if len(sys.argv) > 3 else ''
 for nom, inf, ps, off in CAND:
     r = d[(d.informe == inf) & (d.Pass == ps)].iloc[0]
     over = {f: 'false' for f in off}
     over |= {c: (str(int(r[c])) if c in ENTEROS else f'{r[c]:g}') for c in P}
-    over['InpRiskPercent'] = '0.5'                      # riesgo uniforme de la validación
+    over['InpRiskPercent'] = RIESGO                     # 0,5 en la validación; 1,5 (supuesto) en la reproducción
     over['InpFixedRR'] = '2'                            # PROVISIONAL: acotado a [2,00; 2,25) por los informes; confirmar en MT5
-    cab = [f'; {nom}: informe {inf}, pasada {ps}. Validación 2023-2024 con riesgo 0,5%.',
+    cab = [f'; {nom}: informe {inf}, pasada {ps}. riesgo {RIESGO}%.',
            '; InpFixedRR=2 es PROVISIONAL (los informes solo lo acotan entre 2,00 y 2,25); solo afecta si InpModoTP=0.']
-    fn = f'{nom}_{inf[:20]}_p{ps}.set'
+    fn = f'{PREFIJO + "_" if PREFIJO else ""}{nom}_{inf[:20]}_p{ps}.set'
     open(fn, 'w', encoding='utf-16').write('\r\n'.join(cab + [f'{n}={over.get(n, v)}' for n, v in defecto]) + '\r\n')
     print(fn, {k: over[k] for k in P + off + ['InpRiskPercent']})
