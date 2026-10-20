@@ -1,0 +1,5 @@
+E1 ETH post-publicación: n 1700, media 6.85 pb, t_NW 2.97 → CUMPLE
+E2 control hora aleatoria: p = 0.0031 (media simulada 0.49 pb) → CUMPLE
+E3 por año (pb): {2022: -4.91, 2023: 5.78, 2024: 14.99, 2025: 13.7, 2026: 2.5} positivos 4/5 → CUMPLE
+E4 informativo: correlación diaria ETH-BTC en la franja 0.83; ETH antes de la publicación (2017-08 → 2022-02): media 13.02 pb, t 3.98
+Media por hora de inicio en ETH post-publicación (pb): {'h00': -1.4, 'h01': -3.2, 'h02': 1.8, 'h03': 3.5, 'h04': 2.1, 'h05': -0.2, 'h06': -0.6, 'h07': 1.3, 'h08': 1.9, 'h09': 1.4, 'h10': 2.5, 'h11': 2.5, 'h12': -4.4, 'h13': -5.3, 'h14': -0.7, 'h15': -1.5, 'h16': -0.6, 'h17': 0.2, 'h18': -0.4, 'h19': 2.1, 'h20': 4.6, 'h21': 6.9, 'h22': 1.2, 'h23': -1.7}
