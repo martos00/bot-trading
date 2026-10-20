@@ -76,7 +76,7 @@ if __name__ == '__main__':
     mid, bidr = corto('mid', 6, 8), corto('bid', 6, 8)
     print(f'Días con dato: {mid.notna().sum()} de {len(x)}')
     m, t = mid.mean() * 1e4, t_nw(mid.dropna())
-    print(f'\nC1 Dukascopy punto medio, corto 06→08 ET 2018-2026: media {m:.2f} pb, t_NW {t:.2f}  → {"CUMPLE" if m > 0 and t >= 3 else "NO CUMPLE"} (t ≥ 3)')
+    print(f'\nC1 punto medio (FXCM + Dukascopy en huecos), corto 06→08 ET 2018-2026: media {m:.2f} pb, t_NW {t:.2f}  → {"CUMPLE" if m > 0 and t >= 3 else "NO CUMPLE"} (t ≥ 3)')
     anual = mid.groupby(mid.index.year).mean() * 1e4
     print('C2 media por año (pb):', anual.round(2).to_dict(), f'→ positivos {(anual > 0).sum()}/9',
           '→ CUMPLE' if (anual > 0).sum() >= 7 else '→ NO CUMPLE')
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     print('\nInformativo:')
     for h0, h1 in ((5, 7), (7, 9), (6, 7), (7, 8)):
         r = corto('mid', h0, h1)
-        print(f'  Dukascopy corto {h0:02d}→{h1:02d} ET: media {r.mean() * 1e4:.2f} pb, t {t_nw(r.dropna()):.2f}')
+        print(f'  Punto medio corto {h0:02d}→{h1:02d} ET: media {r.mean() * 1e4:.2f} pb, t {t_nw(r.dropna()):.2f}')
     g = -pd.read_csv(h80_gbp, index_col=0, parse_dates=True)['h06_d2'].loc['2018':'2026-09']
     print(f'  GBPUSD (HistData) corto 06→08 ET 2018-2026: media {g.mean() * 1e4:.2f} pb, t {t_nw(g.dropna()):.2f}')
-    x.to_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'c1_precios_dukascopy.csv'))
+    x.to_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'c1_precios.csv'))
