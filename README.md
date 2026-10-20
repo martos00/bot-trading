@@ -5325,3 +5325,11 @@ probar estilos macro lentos. Contador total de ensayos: **93**.
 **Lecciones para fondeo:** (1) intradía > overnight; (2) el coste del CFD frente a la ventaja bruta decide;
 (3) importan la cola izquierda diaria y las rachas, no solo la media; (4) la tasa base real de las prop firms
 es baja (Topstep 2025: 16,8% de Combines superados; FPFX: 14% aprueban, 7% cobran).
+
+## Optimización MT5 de Sweep → MSS → FVG (archivo `XAUUSD_SupplyDemand_RSI_EA.mq5`) — DESCARTADA (20-oct-2026)
+Seis informes del optimizador (18.152 combinaciones, 2025-01 → 2026-09, OHLC de 1 minuto). Se eligieron 6 candidatas
+(4 regiones de parámetros) por meseta de vecinas, se reprodujeron exactamente (riesgo 1,5% e `InpFixedRR=2` verificados),
+con ticks reales en 2025-2026 seguían ganando (PF 1,33-1,78, beneficio −9% a −52% frente a OHLC) y **en 2023-2024, con
+parámetros congelados y riesgo 0,5%, las seis salen planas o negativas (PF 0,80-1,03, t entre −1,2 y 0,2)**. 2023-2024
+solo tiene ticks generados (0% reales), un sesgo que en 2025-2026 favorecía a la estrategia. Conclusión: sobreajuste por
+selección, sin ventaja reproducible. Detalle: `research/optimizacion_mt5/RESULTADOS_VALIDACION.md`.

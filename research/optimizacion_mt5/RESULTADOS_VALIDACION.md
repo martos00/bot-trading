@@ -92,3 +92,7 @@ combinaciones. **No procede la simulación de fondeo ni el forward en demo.** No
 Única prueba pendiente que podría cambiar la etiqueta formal: repetir 2023-2024 con ticks reales de otra fuente (por
 ejemplo, ticks de Dukascopy importados como símbolo personalizado en MT5); por el argumento anterior, no se espera que
 cambie la conclusión.
+
+## Cierre (20-oct-2026)
+**Descartada por decisión del usuario** tras el paso 1. Las 6 configuraciones quedan archivadas sin modificar. No se
+reabrirá esta optimización ni se buscarán nuevas combinaciones de la misma arquitectura sobre estos datos.
