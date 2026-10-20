@@ -1,0 +1,31 @@
+
+[AUDITORÍA DE CALIDAD -- EURUSD HistData M1 2003-2011] Estado: NO VÁLIDO -- revisar antes de usar este resultado
+  PROBLEMAS GRAVES:
+    - hueco de 4 días hábiles sin ninguna vela, de 2003-08-11 a 2003-08-18
+  Avisos (no invalidan el resultado, pero conviene revisarlos):
+
+[AUDITORÍA DE CALIDAD -- GBPUSD HistData M1 2003-2011] Estado: VÁLIDO
+  Avisos (no invalidan el resultado, pero conviene revisarlos):
+
+[AUDITORÍA DE CALIDAD -- USDCHF HistData M1 2003-2011] Estado: NO VÁLIDO -- revisar antes de usar este resultado
+  PROBLEMAS GRAVES:
+    - hueco de 9 días hábiles sin ninguna vela, de 2004-03-15 a 2004-03-29
+  Avisos (no invalidan el resultado, pero conviene revisarlos):
+
+[AUDITORÍA DE CALIDAD -- USDJPY HistData M1 2003-2011] Estado: VÁLIDO
+  Avisos (no invalidan el resultado, pero conviene revisarlos):
+
+Por par (sentido previsto, pb/día):
+  EURUSD 2003-2007: n 1254, media +3.77, t 3.31
+  EURUSD 2008-2011: n 1034, media +0.35, t 0.19
+  GBPUSD 2003-2007: n 1245, media +3.45, t 3.59
+  GBPUSD 2008-2011: n 1033, media +1.75, t 0.96
+  USDCHF 2003-2007: n 1245, media +4.34, t 3.40
+  USDCHF 2008-2011: n 1029, media +2.53, t 1.34
+  USDJPY 2003-2007: n 1251, media +1.28, t 1.28  (informativo)
+  USDJPY 2008-2011: n 1032, media +0.15, t 0.10  (informativo)
+
+PRINCIPAL factor 2008-2011: n 1025, media +1.64 pb, t 1.01 → NO CUMPLE (t ≥ 1,645)
+SECUNDARIO factor 2003-2011: media +2.87 pb, t 2.99, años + 7/9 → CUMPLE (t ≥ 2 y ≥ 6/9)
+Factor por año (pb): {2003: 9.64, 2004: 3.07, 2005: 0.08, 2006: 5.01, 2007: 2.17, 2008: -0.25, 2009: 6.02, 2010: 1.05, 2011: -0.25}
+Sharpe bruto del factor 2003-2011: 1.02
