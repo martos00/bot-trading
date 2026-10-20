@@ -144,3 +144,17 @@ propios datos sin usar.
   estimación indirecta de ≈ 1,5% del informe F) e `InpFixedRR = 2` (dentro de la cota [2,00; 2,25)). Siguen sin verificar.
 - Verificación propuesta: relanzar cada optimización con `RELANZAR_*.set` (riesgo 1,5%, `InpFixedRR=2`, filtros del
   informe). Si MT5 carga la caché al instante, los valores fijos eran exactamente esos.
+
+## Apéndice 3 (20-oct-2026, antes de cualquier resultado): modo de modelado y paso 0b
+- El usuario indica que las optimizaciones no usaron "Cada tick". Lo apoyan las horas de creación de los XML del
+  30-sep (B 12:41, E 13:10, D 13:35, F 14:15): ≈ 1.500 pasadas en 25-40 min, ≈ 1 s por pasada, compatible con
+  "OHLC de 1 minuto" o "Solo precios de apertura", no con "Cada tick". Es una inferencia, no una verificación.
+  La lectura anterior de `<Condition>0</Condition>` como modo de modelado queda retirada.
+- Consecuencia: los resultados de la optimización pueden estar inflados por el modelado (entrada con orden límite
+  en el FVG, breakeven, trailing y cierre parcial son sensibles al recorrido dentro de la vela y al spread).
+- **Paso 0a**: reproducir desde la caché probando "OHLC de 1 minuto" y, si no carga, "Solo precios de apertura".
+- **Paso 0b (nuevo)**: las 6 configuraciones exactas recuperadas en 0a, sin cambiar nada, en 2025.01.02 – 2026.09.21
+  con "Cada tick basado en ticks reales" y el mismo riesgo original. Se informan operaciones, PF, beneficio y DD frente
+  al informe. Una caída fuerte aquí se atribuye al modelado, no a la falta de ventaja fuera de muestra. Las 6 siguen
+  pasando al paso 1 en todo caso (no hay descarte automático), con su resultado del 0b a la vista.
+- **Paso 1**: sin cambios (2023-2024, ticks reales, riesgo 0,5%).
