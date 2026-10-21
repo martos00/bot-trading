@@ -1,0 +1,42 @@
+
+######## S&P 500 (^GSPC) — PRUEBA PRINCIPAL ########
+
+== R1 cambio de mes: 440 operaciones; coste medio 15.3 pb (7.4 noches)
+  Descubrimiento 1990-2007: n 215  bruto   46.3 pb (t 3.02)  neto   31.1 pb (t 2.03)  bruto/coste 3.04
+     media diaria ventana 9.20 pb vs resto 1.20 pb  dif 8.00 pb  t 2.28   años netos + 13/18
+  Confirmación 2008-2026: n 225  bruto   28.7 pb (t 1.81)  neto   13.4 pb (t 0.85)  bruto/coste 1.87
+     media diaria ventana 5.80 pb vs resto 2.78 pb  dif 3.02 pb  t 0.72   años netos + 12/19
+  confirmación: peor operación -9.9%  caída máx. acumulada (1× capital) -18.9%
+  neto por año (%): {2008: -17.9, 2009: 1.5, 2010: 9.3, 2011: -0.8, 2012: 3.9, 2013: 4.5, 2014: 1.9, 2015: -5.4, 2016: -3.9, 2017: 1.2, 2018: -4.5, 2019: 5.4, 2020: 16.1, 2021: 3.0, 2022: 4.1, 2023: 11.3, 2024: -7.5, 2025: -2.8, 2026: 10.6}
+  correlación con E1 en la misma ventana: 0.044
+
+== R2 víspera de festivo: 323 operaciones; coste medio 2.7 pb (1.1 noches)
+  Descubrimiento 1990-2007: n 152  bruto    2.4 pb (t 0.33)  neto   -0.4 pb (t -0.05)  bruto/coste 0.87
+     media diaria ventana 2.38 pb vs resto 3.13 pb  dif -0.74 pb  t -0.10   años netos + 7/18
+  Confirmación 2008-2026: n 171  bruto   15.5 pb (t 2.26)  neto   12.8 pb (t 1.87)  bruto/coste 5.87
+     media diaria ventana 15.49 pb vs resto 3.05 pb  dif 12.44 pb  t 1.75   años netos + 15/19
+  confirmación: peor operación -3.0%  caída máx. acumulada (1× capital) -5.3%
+  neto por año (%): {2008: 4.5, 2009: 1.4, 2010: 0.1, 2011: -1.3, 2012: 1.9, 2013: 1.1, 2014: 0.5, 2015: -1.1, 2016: 0.3, 2017: -0.8, 2018: -0.5, 2019: 4.0, 2020: 2.5, 2021: 2.4, 2022: 1.4, 2023: 1.7, 2024: 2.2, 2025: 0.6, 2026: 1.0}
+  correlación con E1 en la misma ventana: -0.050
+
+######## Nasdaq 100 (^NDX) — informativo ########
+
+== R1 cambio de mes: 440 operaciones; coste medio 15.3 pb (7.4 noches)
+  Descubrimiento 1990-2007: n 215  bruto   69.0 pb (t 2.43)  neto   53.8 pb (t 1.89)  bruto/coste 4.53
+     media diaria ventana 13.69 pb vs resto 2.14 pb  dif 11.55 pb  t 1.73   años netos + 15/18
+  Confirmación 2008-2026: n 225  bruto   39.7 pb (t 2.07)  neto   24.4 pb (t 1.27)  bruto/coste 2.59
+     media diaria ventana 8.04 pb vs resto 4.95 pb  dif 3.10 pb  t 0.63   años netos + 12/19
+  confirmación: peor operación -12.8%  caída máx. acumulada (1× capital) -21.4%
+  neto por año (%): {2008: -23.9, 2009: 7.4, 2010: 7.1, 2011: 0.2, 2012: 6.9, 2013: 12.6, 2014: 4.0, 2015: -5.5, 2016: -6.0, 2017: 0.4, 2018: -1.0, 2019: 8.3, 2020: 27.2, 2021: -1.2, 2022: 1.9, 2023: 16.0, 2024: -10.5, 2025: -2.3, 2026: 13.2}
+
+== R2 víspera de festivo: 323 operaciones; coste medio 2.7 pb (1.1 noches)
+  Descubrimiento 1990-2007: n 152  bruto   -4.4 pb (t -0.31)  neto   -7.2 pb (t -0.50)  bruto/coste -1.63
+     media diaria ventana -4.45 pb vs resto 5.20 pb  dif -9.65 pb  t -0.65   años netos + 6/18
+  Confirmación 2008-2026: n 171  bruto   18.0 pb (t 2.28)  neto   15.4 pb (t 1.94)  bruto/coste 6.84
+     media diaria ventana 18.05 pb vs resto 5.22 pb  dif 12.83 pb  t 1.56   años netos + 15/19
+  confirmación: peor operación -3.1%  caída máx. acumulada (1× capital) -6.4%
+  neto por año (%): {2008: 4.3, 2009: 3.2, 2010: 1.4, 2011: -0.9, 2012: 2.9, 2013: 0.9, 2014: 0.8, 2015: -0.4, 2016: -2.0, 2017: -1.3, 2018: 0.0, 2019: 2.8, 2020: 1.8, 2021: 4.2, 2022: 1.9, 2023: 2.6, 2024: 1.6, 2025: 0.9, 2026: 1.5}
+
+======== CRITERIOS (S&P 500) ========
+R1 cambio de mes {'D: dif>0 t>=2': np.True_, 'C1: neto>0 t>=2,24': np.False_, 'C2: dif>0 t>=1,645': np.False_, 'C3: años>=60%': np.True_, 'C4: bruto>=3x coste': np.False_} → NO CERTIFICADA
+R2 víspera de festivo {'D: dif>0 t>=2': np.False_, 'C1: neto>0 t>=2,24': np.False_, 'C2: dif>0 t>=1,645': np.True_, 'C3: años>=60%': np.True_, 'C4: bruto>=3x coste': np.True_} → NO CERTIFICADA
