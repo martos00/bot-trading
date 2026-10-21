@@ -30,7 +30,7 @@ for par in ('EURUSD', 'GBPUSD'):
         h, l, c, sp, mm = s.h.values, s.l.values, s.c.values, s.spr.values, s.mins.values
         fin = np.searchsorted(mm, 16 * 60 + 55) if False else None
         cal = (s.index.normalize() == pd.Timestamp(hoy))          # minutos del día natural de hoy (el día FX empieza a las 17:00 de ayer)
-        idx = np.flatnonzero(cal.values)
+        idx = np.flatnonzero(np.asarray(cal))
         if len(idx) < 300: continue
         # ---- R
         H, L = a.h.max(), a.l.min(); rango = H - L
