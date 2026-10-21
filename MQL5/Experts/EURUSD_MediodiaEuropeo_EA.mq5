@@ -28,7 +28,8 @@ input int    InpDiasSigma            = 60;     // dias para estimar sigma
 input double InpMaxSpreadPips        = 1.0;    // no entrar si el spread es mayor
 input double InpLotesFijos           = 0.0;    // >0: usar este lotaje fijo (solo para medir costes)
 input bool   InpServidorConDSTdeEEUU = true;   // el servidor cambia de hora con EEUU (lo habitual)
-input bool   InpSoloDemo             = true;   // negarse a operar si la cuenta no es DEMO
+input bool   InpSoloDemo             = true;   // negarse a operar si la cuenta no es DEMO (en el Probador no aplica)
+input int    InpOffsetServidorInv    = 2;      // SOLO Probador: hora servidor - UTC en invierno (MetaQuotes/FTMO: 2)
 input ulong  InpMagico               = 60800;
 input string InpArchivoCSV           = "EURUSD_MediodiaEuropeo_log.csv";
 
@@ -54,8 +55,22 @@ bool VeranoEEUU(datetime utc)
   }
 datetime UTCaNY(datetime utc) { return utc - (VeranoEEUU(utc) ? 4 : 5) * 3600; }
 
-int OffsetInvierno()   // hora servidor - UTC en invierno, detectada ahora
+bool EnProbador() { return (bool)MQLInfoInteger(MQL_TESTER); }
+
+// En el Probador, TimeGMT() devuelve la hora del servidor simulado (documentación de MQL5), así que el UTC se
+// reconstruye con la diferencia horaria del servidor indicada por el usuario.
+datetime AhoraUTC()
   {
+   if(!EnProbador()) return TimeGMT();
+   datetime srv = TimeCurrent();
+   datetime utc = srv - InpOffsetServidorInv * 3600;
+   if(InpServidorConDSTdeEEUU && VeranoEEUU(utc - 3600)) utc -= 3600;
+   return utc;
+  }
+
+int OffsetInvierno()   // hora servidor - UTC en invierno, detectada ahora (en el Probador, la indicada)
+  {
+   if(EnProbador()) return InpOffsetServidorInv;
    datetime u = TimeGMT();
    int off = (int)MathRound((double)(TimeTradeServer() - u) / 3600.0);
    return off - ((InpServidorConDSTdeEEUU && VeranoEEUU(u)) ? 1 : 0);
@@ -85,7 +100,8 @@ double PrecioEn(datetime T_srv)
 double SigmaFranja()
   {
    int offInv = OffsetInvierno();
-   datetime hoy = TimeGMT() - (TimeGMT() % 86400);
+   datetime ahora = AhoraUTC();
+   datetime hoy = ahora - (ahora % 86400);
    double r[]; int n = 0;
    for(int k = 1; k <= 200 && n < InpDiasSigma; k++)
      {
@@ -127,7 +143,7 @@ void Registrar(string evento, double precio, double spreadPips, double desliz, d
    if(fh == INVALID_HANDLE) return;
    if(nuevo) FileWrite(fh, "hora_utc", "evento", "lotes", "sigma_pb", "precio", "spread_pips", "desliz_pips", "comision", "swap", "beneficio", "balance");
    FileSeek(fh, 0, SEEK_END);
-   FileWrite(fh, TimeToString(TimeGMT(), TIME_DATE | TIME_SECONDS), evento, DoubleToString(g_lotes, 2), DoubleToString(g_sigma * 1e4, 2),
+   FileWrite(fh, TimeToString(AhoraUTC(), TIME_DATE | TIME_SECONDS), evento, DoubleToString(g_lotes, 2), DoubleToString(g_sigma * 1e4, 2),
              DoubleToString(precio, 5), DoubleToString(spreadPips, 2), DoubleToString(desliz, 2), DoubleToString(comision, 2),
              DoubleToString(swap, 2), DoubleToString(beneficio, 2), DoubleToString(AccountInfoDouble(ACCOUNT_BALANCE), 2));
    FileClose(fh);
@@ -144,12 +160,12 @@ int OnInit()
   {
    if(_Symbol != "EURUSD" && StringFind(_Symbol, "EURUSD") < 0)
       Print("AVISO: este EA esta pensado para EURUSD; simbolo actual ", _Symbol);
-   if(InpSoloDemo && AccountInfoInteger(ACCOUNT_TRADE_MODE) != ACCOUNT_TRADE_MODE_DEMO)
+   if(InpSoloDemo && !EnProbador() && AccountInfoInteger(ACCOUNT_TRADE_MODE) != ACCOUNT_TRADE_MODE_DEMO)
      { Print("Cuenta no DEMO e InpSoloDemo=true: el EA no operara."); return INIT_FAILED; }
    g_trade.SetExpertMagicNumber(InpMagico);
    EventSetTimer(1);
-   PrintFormat("EA iniciado. Servidor UTC%+d (invierno UTC%+d). Venta 06:00 NY, cierre 08:00 NY.",
-               (int)MathRound((double)(TimeTradeServer() - TimeGMT()) / 3600.0), OffsetInvierno());
+   PrintFormat("EA iniciado%s. Servidor invierno UTC%+d. Venta 06:00 NY, cierre 08:00 NY.",
+               EnProbador() ? " en el PROBADOR" : "", OffsetInvierno());
    return INIT_SUCCEEDED;
   }
 
@@ -157,7 +173,7 @@ void OnDeinit(const int reason) { EventKillTimer(); }
 
 void OnTimer()
   {
-   datetime ny = UTCaNY(TimeGMT());
+   datetime ny = UTCaNY(AhoraUTC());
    MqlDateTime t; TimeToStruct(ny, t);
    int seg = t.hour * 3600 + t.min * 60 + t.sec;
    double pip = 0.0001;
@@ -193,7 +209,7 @@ void OnTimer()
    if(g_trade.Sell(g_lotes, _Symbol, 0, sl, 0, "E1_mediodia_europeo"))
      {
       g_dealIn = g_trade.ResultDeal();
-      g_horaEntrada = TimeGMT();
+      g_horaEntrada = AhoraUTC();
       Registrar("venta", g_trade.ResultPrice(), spreadPips, (bid - g_trade.ResultPrice()) / pip, 0, 0, 0);
      }
    else
