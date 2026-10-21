@@ -1,0 +1,6 @@
+USDCZK (LON 7:00 → NY 8:00): 2010-17  4.66 pb (t 5.18) | 2018-26  2.54 pb (t 3.38) | sentido usado + | años con ese signo 100% | resto del día 2018-26 -2.58 pb | corr E1 0.39
+USDSGD (SGP 9:00 → SGP 17:00): 2010-17 -0.15 pb (t -0.35) | 2018-26 -0.31 pb (t -0.97) | sentido usado - | años con ese signo 56% | resto del día 2018-26 0.13 pb | corr E1 -0.01
+NZDUSD (WLG 10:00 → WLG 17:00): 2010-17 -2.05 pb (t -2.59) | 2018-26  1.54 pb (t 2.19) | sentido usado - | años con ese signo 11% | resto del día 2018-26 -2.79 pb | corr E1 -0.01
+CRITERIOS USDCZK: {'signo_D': True, 't': np.float64(3.38470989902624), 'años': np.float64(1.0)} Holm True → CERTIFICADA
+CRITERIOS USDSGD: {'signo_D': True, 't': np.float64(0.9658279098938055), 'años': np.float64(0.5555555555555556)} Holm False → NO CERTIFICADA
+CRITERIOS NZDUSD: {'signo_D': True, 't': np.float64(-2.1883532144078854), 'años': np.float64(0.1111111111111111)} Holm False → NO CERTIFICADA

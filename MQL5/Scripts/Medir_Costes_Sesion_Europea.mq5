@@ -21,7 +21,7 @@ enum ENUM_DST_SERVIDOR
    DST_NINGUNO = 2   // el servidor no cambia de hora
   };
 
-input string InpSimbolos = "USDPLN,USDHUF,EURUSD";  // simbolos separados por comas (nombre exacto en esta cuenta)
+input string InpSimbolos = "USDPLN,USDHUF,USDCZK,EURUSD";  // simbolos separados por comas (nombre exacto en esta cuenta)
 input int    InpDias     = 90;                       // dias naturales hacia atras
 input ENUM_DST_SERVIDOR InpDSTServidor = DST_EUROPA; // cambio de hora del servidor (MetaQuotes-Demo: Europa; compruebalo en tu broker)
 
@@ -123,5 +123,5 @@ void OnStart()
                   s, n, Percentil(ent, 0.5), Percentil(ent, 0.9), Percentil(sal, 0.5), Percentil(sal, 0.9), Percentil(tot, 0.5), Media(tot), contrato);
      }
    FileClose(fh);
-   Print("Referencia (C20, sin costes): USDPLN ≈ 3,6 pb/dia y USDHUF ≈ 4,9 pb/dia. Con un coste total (spread + comision) <= 2 pb merece la pena; >= 4 pb, no.");
+   Print("Referencia (C20/C22, sin costes): USDPLN ≈ 3,6, USDHUF ≈ 4,9 y USDCZK ≈ 2,5 pb/dia. Con un coste total (spread + comision) <= 2 pb merece la pena; >= 4 pb, no.");
   }
