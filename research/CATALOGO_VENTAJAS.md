@@ -33,3 +33,17 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Optimización MT5 Supply-Demand/RSI | Validación | Sobreajuste |
 
 ## B. Pendientes (se completa con la búsqueda bibliográfica)
+Búsqueda bibliográfica (agente, 21-oct-2026; casi todo a partir de resúmenes, no de textos completos: cada prueba se
+contrasta con la fuente antes de pre-registrarla). Prioridad: mecanismo claro + datos gratuitos + años después de publicarse.
+
+| Prior. | Candidata | Fuente | Mercado | Datos | Aviso |
+|---|---|---|---|---|---|
+| 1 | Día del informe de gas natural (jueves EIA): más del 50% de la rentabilidad anual | Prokopczuk, Wese Simen y Wichmann, Energy Journal 2021 | Gas natural | Diarios | — |
+| 2 | Ciclo del FOMC: la prima de la bolsa se gana en las semanas pares | Cieslak, Morse y Vissing-Jorgensen, JF 2019 | S&P 500 | Diarios + fechas FOMC | — |
+| 3 | Ventana de 3 días del FOMC en bonos largos | Hillenbrand, RFS 2025 | ZN/ZB | Diarios | Régimen de tipos bajando |
+| 4 | Deriva previa a datos macro (no NFP/IPC) | Kurov et al., JFQA 2019 | ES, bonos | M1 + calendario | Posibles cambios de embargo |
+| 5 | Deriva previa al BCE, BoE, BoJ y SNB | Quantpedia 2025 | DAX, FTSE, Nikkei | Diarios | Contradicha por Brusa et al. 2020 |
+| 6 | Presión del pago de dividendos | Hartzmark y Solomon, AER 2025 | Índices | Calendario de pagos (no gratuito completo) | — |
+| 7 | Vencimiento de futuros de BTC en el CME | Blasco et al. 2023 | BTC | Diarios | El signo cambió en 2021 |
+| 8 | Rebalanceo anual de índices de materias primas (enero) | JPMorgan/Saxo (práctica) | Oro, plata | Diarios | Sin estudio académico |
+| — | Con datos de pago o ya muertas: pinning de opciones, gamma de 0DTE, ETF del BoJ, Goldman roll, fixing del oro, Tether, fin de año fiscal japonés | varias | — | — | Ver informe del agente |
