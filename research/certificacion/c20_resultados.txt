@@ -1,0 +1,25 @@
+== FACTOR (media de los 6 pares) ==
+  2010-2017: n 1780 media  3.50 pb/día (t 4.34) años+ 8/8
+  2018-2026: n 2026 media  2.40 pb/día (t 3.17) años+ 8/9
+  confirmación por año (pb/día): {2018: 5.0, 2019: 1.97, 2020: 1.33, 2021: 1.35, 2022: 5.38, 2023: 5.27, 2024: 1.56, 2025: -0.14, 2026: 0.25}
+
+== PARES (informativo; Holm en confirmación) ==
+  USDSEK: 2010-17  1.70 pb (t 1.96) | 2018-26  1.61 pb (t 1.91) años+ 8/9 | coste ref 3 pb → bruto/coste 0.54 | Holm no
+  USDNOK: 2010-17  2.61 pb (t 2.74) | 2018-26 -0.74 pb (t -0.79) años+ 4/9 | coste ref 3 pb → bruto/coste -0.25 | Holm no
+  USDPLN: 2010-17  5.13 pb (t 4.98) | 2018-26  3.58 pb (t 4.05) años+ 9/9 | coste ref 4 pb → bruto/coste 0.90 | Holm SÍ
+  USDHUF: 2010-17  4.83 pb (t 4.08) | 2018-26  4.87 pb (t 4.15) años+ 9/9 | coste ref 5 pb → bruto/coste 0.97 | Holm SÍ
+  USDZAR: 2010-17  3.83 pb (t 2.64) | 2018-26  0.79 pb (t 0.66) años+ 5/9 | coste ref 6 pb → bruto/coste 0.13 | Holm no
+  USDTRY: 2010-17  3.90 pb (t 3.85) | 2018-26  4.53 pb (t 3.61) años+ 8/9 | coste ref 15 pb → bruto/coste 0.30 | Holm SÍ
+  USDTRY sin 2018/2021/2023: 3.53 pb (t 2.99)
+
+CRITERIOS FACTOR: {'D>0': np.True_, '1 t>=2': np.True_, '2 años>=60%': np.True_} → CERTIFICADA
+
+== Comprobación posterior: sesión europea frente al resto del día (misma divisa) ==
+  USDPLN 2010-2017: sesión europea  5.13 pb (t 4.98) | resto del día (08:00 NY→07:00 Londres) -4.48 pb (t -3.08)
+  USDPLN 2018-2026: sesión europea  3.58 pb (t 4.05) | resto del día (08:00 NY→07:00 Londres) -2.58 pb (t -2.55)
+  USDHUF 2010-2017: sesión europea  4.83 pb (t 4.08) | resto del día (08:00 NY→07:00 Londres) -4.11 pb (t -2.76)
+  USDHUF 2018-2026: sesión europea  4.87 pb (t 4.15) | resto del día (08:00 NY→07:00 Londres) -3.42 pb (t -2.98)
+  USDTRY 2010-2017: sesión europea  3.90 pb (t 3.85) | resto del día (08:00 NY→07:00 Londres)  1.37 pb (t 1.10)
+  USDTRY 2018-2026: sesión europea  4.91 pb (t 3.55) | resto del día (08:00 NY→07:00 Londres)  5.28 pb (t 4.12)
+  USDSEK 2010-2017: sesión europea  1.70 pb (t 1.96) | resto del día (08:00 NY→07:00 Londres) -1.14 pb (t -0.94)
+  USDSEK 2018-2026: sesión europea  1.61 pb (t 1.91) | resto del día (08:00 NY→07:00 Londres) -0.83 pb (t -0.79)
