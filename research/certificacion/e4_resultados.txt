@@ -1,0 +1,7 @@
+A fin de mes (3 últimos días) 2012-2017: 1.82 pb (n 216) vs resto 1.68 pb | dif t 0.12
+A fin de mes (3 últimos días) 2018-2026: 1.79 pb (n 306) vs resto 1.40 pb | dif t 0.48
+B festivo EE. UU. 2012-2017: 1.09 pb (n 42) vs resto 1.72 pb | dif t -0.39
+B festivo EE. UU. 2018-2026: 3.01 pb (n 66) vs resto 1.41 pb | dif t 1.15
+C lunes 2012-2017: 1.99 pb (n 290) vs resto 1.63 pb | dif t 0.40
+C lunes 2018-2026: 0.29 pb (n 401) vs resto 1.74 pb | dif t -2.05
+cumple regla de adopción: {'A fin de mes (3 últimos días)': np.False_, 'B festivo EE. UU.': np.False_}
