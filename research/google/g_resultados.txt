@@ -1,0 +1,15 @@
+
+=== G1 EURUSD reversión asiática (coste 0.8 pb) ===
+  descubrimiento 2010-2017: 2427 ops | bruto +0.89 pb | neto +0.09 pb (t +0.33) | neto estrés -0.71 pb | años netos + 4/8 | aciertos 62%
+  confirmación 2018-2026: 2707 ops | bruto +0.55 pb | neto -0.25 pb (t -1.33) | neto estrés -1.05 pb | años netos + 2/9 | aciertos 60%
+  VEREDICTO: NO CONFIRMADA
+
+=== G1 GBPUSD reversión asiática (coste 1.2 pb) ===
+  descubrimiento 2010-2017: 2361 ops | bruto +0.75 pb | neto -0.45 pb (t -1.24) | neto estrés -1.65 pb | años netos + 3/8 | aciertos 62%
+  confirmación 2018-2026: 2602 ops | bruto +0.67 pb | neto -0.53 pb (t -2.41) | neto estrés -1.73 pb | años netos + 2/9 | aciertos 59%
+  VEREDICTO: NO CONFIRMADA
+
+=== G2 pares oro/plata (3 pb de spreads + 1,4 pb/día de financiación, por pata) ===
+  descubrimiento 2010-2017: 41 ops | bruto -34.19 pb | neto -48.26 pb (t -1.19) | neto estrés -62.33 pb | años netos + 1/8 | aciertos 46%
+  confirmación 2018-2026: 47 ops | bruto -16.88 pb | neto -31.21 pb (t -0.58) | neto estrés -45.55 pb | años netos + 4/9 | aciertos 51%
+  VEREDICTO: NO CONFIRMADA
