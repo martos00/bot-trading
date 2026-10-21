@@ -87,3 +87,11 @@ validación se hará una **prueba de permutación de la optimización completa**
 de T. Masters): se repite la misma optimización sobre ≥ 100 series de precios con los rendimientos barajados (por bloques
 para conservar volatilidad) y se compara el mejor resultado real con la distribución de los mejores resultados en datos
 barajados. Si p ≥ 0,05, el resultado de la optimización se trata como ruido y no se gasta tiempo en validarlo.
+
+## 7. Tercera tanda de TikToks (21-oct-2026): @tradingstraty ×2
+- "Mean reversion trading": operar los extremos del perfil de volumen hacia el valor justo cuando el mercado está en
+  equilibrio. Probado con la regla concreta de esa escuela (regla del 80% de Dalton, C9): pasa en S&P 500 2018-2026
+  (t 2,54) pero no en Nasdaq ni en 2010-2017; candidata débil, sin fuente independiente.
+- "Opera volatilidad, no direccionalidad" con niveles de exposición gamma: probado con la versión académica (Baltussen et
+  al. 2021, C11) usando el GEX gratuito de SqueezeMetrics: el signo es el previsto pero el efecto (≈ 3 pb) no supera
+  costes. Lección: el GEX es un dato gratuito útil como filtro de régimen; por sí solo no dio una ventaja operable.
