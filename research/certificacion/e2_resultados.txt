@@ -1,0 +1,9 @@
+días: total 2141, festivos UE/RU 66, BCE 60
+  efecto bruto 06-08 NY en festivos: 0.74 pb (t 0.75) n 66
+  efecto bruto 06-08 NY en BCE: 0.37 pb (t 0.13) n 60
+  efecto bruto 06-08 NY en excluidos (ambos): 0.56 pb (t 0.37) n 126
+  efecto bruto 06-08 NY en resto: 1.41 pb (t 4.52) n 2015
+E1 (todos los días): 5.5%/año Sharpe 0.66 DD -17.8%
+E2 (sin festivos ni BCE): 6.2%/año Sharpe 0.77 DD -16.7%
+diferencia excluidos − resto: -0.84 pb
+ADOPTAR E2: True
