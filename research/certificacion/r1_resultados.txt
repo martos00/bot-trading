@@ -1,0 +1,20 @@
+
+=== alta_vol ===
+  descubrimiento 2010-2017: volatilidad alta +1.86 pb (n 595) | volatilidad baja +1.84 pb (n 1167) | diferencia t = +0.02
+  confirmación 2018-2026: volatilidad alta +1.88 pb (n 636) | volatilidad baja +1.18 pb (n 1565) | diferencia t = +0.96
+  Criterio 1 (|t| ≥ 2,5 en descubrimiento): NO CUMPLE
+  Criterio 2 (mismo sentido, t ≥ 2 en confirmación): NO CUMPLE
+  Criterio 3: Sharpe neto confirmación con filtro 0.69 (anualizado sobre todos los días) frente a sin filtro 0.99: NO CUMPLE
+  → sin filtro
+
+=== alcista ===
+  descubrimiento 2010-2017: tendencia alcista +1.57 pb (n 881) | tendencia bajista +2.13 pb (n 881) | diferencia t = -0.73
+  confirmación 2018-2026: tendencia alcista +0.96 pb (n 1010) | tendencia bajista +1.73 pb (n 1191) | diferencia t = -1.35
+  Criterio 1 (|t| ≥ 2,5 en descubrimiento): NO CUMPLE
+  Criterio 2 (mismo sentido, t ≥ 2 en confirmación): NO CUMPLE
+  Criterio 3: Sharpe neto confirmación con filtro 1.01 (anualizado sobre todos los días) frente a sin filtro 0.99: CUMPLE
+  → sin filtro
+
+Informativo: media (pb) por régimen combinado
+2010-2017 {'vol baja/bajista': '+2.30 (n 488)', 'vol baja/alcista': '+1.52 (n 679)', 'vol alta/bajista': '+1.92 (n 393)', 'vol alta/alcista': '+1.74 (n 202)'}
+2018-2026 {'vol baja/bajista': '+1.45 (n 855)', 'vol baja/alcista': '+0.84 (n 710)', 'vol alta/bajista': '+2.45 (n 336)', 'vol alta/alcista': '+1.24 (n 300)'}
