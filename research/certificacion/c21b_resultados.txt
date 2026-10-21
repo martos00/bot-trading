@@ -1,0 +1,14 @@
+
+== EUR+GBP ==
+  2012-2018: n 492 bruto -0.82 pb neto -1.86 pb (t -2.33) coste 1.04 pb bruto/coste -0.78 R -0.161 años+ 1/7 objetivo 25% stop 44%
+  2019-2026: n 450 bruto -0.14 pb neto -1.14 pb (t -1.23) coste 1.00 pb bruto/coste -0.14 R -0.086 años+ 3/8 objetivo 28% stop 45%
+
+== EURUSD ==
+  2012-2018: n 233 bruto -0.92 pb neto -1.81 pb (t -1.55) coste 0.90 pb bruto/coste -1.02 R -0.114 años+ 3/7 objetivo 26% stop 43%
+  2019-2026: n 213 bruto -0.82 pb neto -1.71 pb (t -1.63) coste 0.89 pb bruto/coste -0.93 R -0.126 años+ 2/8 objetivo 29% stop 45%
+
+== GBPUSD ==
+  2012-2018: n 259 bruto -0.73 pb neto -1.90 pb (t -1.70) coste 1.18 pb bruto/coste -0.62 R -0.204 años+ 1/7 objetivo 25% stop 46%
+  2019-2026: n 237 bruto  0.48 pb neto -0.62 pb (t -0.50) coste 1.10 pb bruto/coste 0.44 R -0.050 años+ 4/8 objetivo 27% stop 45%
+
+CRITERIOS: {'D>0': np.False_, '1 t>=2': np.False_, '2 bruto>=3x': np.False_, '3 años>=60%': np.False_} → NO CERTIFICADA
