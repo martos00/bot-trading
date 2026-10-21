@@ -10,17 +10,20 @@ Maven (prohíbe todo EA), Alpha Capital (solo EAs de gestión de riesgo), Funded
 Apex (futuros, prohíbe automatización). E8 no tiene evaluación de 2 fases (solo 1 fase con pérdida máxima dinámica del 4%).
 
 ## Ranking
+Cifras recalculadas el 21-oct-2026 tras corregir el error de la σ de 60 días con huecos en E1 (ver
+`../certificacion/E1_RESULTADOS.md`). El orden no cambia; todas mejoran ~0,6 puntos de rentabilidad anual.
+
 | Firma | Comisión EUR/USD (fuente) | Coste/op | Neto anual | Supera | Valor esperado 1er año | Bots | Fiabilidad |
 |---|---|---|---|---|---|---|---|
-| Audacity Ability | 3 $ i/v (**terceros, contradictorio**; tabla oficial dice "por lado") | 0,52 pb | 6,8% | 75% | +3.418 $ | EA propio, VPS sí, mín. 2 min | Desde 2012; Trustpilot suspendido; reparto 75% |
-| **FTMO 2-Step** | **2,50 $/lado = 5 $ i/v (oficial)** | 0,70 pb | 4,9% | 67% | +2.190 $ | **El más permisivo**; VPS sí | **Desde 2015, Trustpilot 4,8 (55k), compró OANDA** |
-| Goat Funded Trader | 5 $ (sin aclarar lado) | 0,70 pb | 4,9% | 66% | +2.126 $ | EA propio con prueba; **sin VPS** | Trustpilot suspendido, 40% de 1 estrella |
-| The5ers High Stakes | **4 $ i/v (oficial)** | 0,61 pb | 5,8% | 62% | +1.973 $ | Código propio; **una FAQ dice que prohíbe el trading algorítmico** | Desde 2016, Trustpilot 4,7; tope 4.000 $/pago |
-| Blue Guardian | 5 $ (sin aclarar lado) | 0,70-1,14 pb | 0,2-4,9% | 35-60% | −260 a +1.885 $ | EA propio, VPS sí | Trustpilot suspendido |
-| FundingPips | 5 $ (sin aclarar lado) | 0,70-1,14 pb | 0,2-4,9% | 38-67% | −475 a +1.861 $ | EA propio con prueba; **sin VPS** | Trustpilot 4,5 (71k) |
-| FXIFY | 6 $ RAW / 0 $ All-In | 0,79 pb | 3,9% | 54-60% | +800 a +1.496 $ | EA con aprobación previa | Trustpilot 4,3 |
-| Funded Trading Plus | 7 $ (terceros) | 0,87 pb | 3,0% | 45% | +320 $ | Sí | Trustpilot suspendido; límite 3% por símbolo |
-| Topstep (futuro 6E) | 4,22 $ + 1 tick | 0,83 pb | 3,4% | 48% | ≈ 0 $ | Sí (API); sin VPS | Pérdida máxima trailing de 2.000 $ |
+| Audacity Ability | 3 $ i/v (**terceros, contradictorio**; tabla oficial dice "por lado") | 0,52 pb | 7,4% | 79% | +3.977 $ | EA propio, VPS sí, mín. 2 min | Desde 2012; Trustpilot suspendido; reparto 75% |
+| **FTMO 2-Step** | **2,50 $/lado = 5 $ i/v (oficial)** | 0,70 pb | 5,5% | 68% | +2.573 $ | **El más permisivo**; VPS sí | **Desde 2015, Trustpilot 4,8 (55k), compró OANDA** |
+| Goat Funded Trader | 5 $ (sin aclarar lado) | 0,70 pb | 5,5% | 68% | +2.567 $ | EA propio con prueba; **sin VPS** | Trustpilot suspendido, 40% de 1 estrella |
+| The5ers High Stakes | **4 $ i/v (oficial)** | 0,61 pb | 6,5% | 65% | +2.437 $ | Código propio; **una FAQ dice que prohíbe el trading algorítmico** | Desde 2016, Trustpilot 4,7; tope 4.000 $/pago |
+| Blue Guardian | 5 $ (sin aclarar lado) | 0,70-1,14 pb | 0,8-5,5% | 37-62% | −103 a +2.337 $ | EA propio, VPS sí | Trustpilot suspendido |
+| FundingPips | 5 $ (sin aclarar lado) | 0,70-1,14 pb | 0,8-5,5% | 41-71% | −303 a +2.363 $ | EA propio con prueba; **sin VPS** | Trustpilot 4,5 (71k) |
+| FXIFY | 6 $ RAW / 0 $ All-In | 0,79 pb | 4,6% | 57-63% | +1.113 a +1.878 $ | EA con aprobación previa | Trustpilot 4,3 |
+| Funded Trading Plus | 7 $ (terceros) | 0,87 pb | 3,6% | 48% | +602 $ | Sí | Trustpilot suspendido; límite 3% por símbolo |
+| Topstep (futuro 6E) | 4,22 $ + 1 tick | 0,83 pb | 4,1% | 52% | +127 $ | Sí (API); sin VPS | Pérdida máxima trailing de 2.000 $ |
 
 ## Recomendación
 - **FTMO 2-Step**: coste confirmado oficialmente, política de bots más clara y permisiva (VPS permitido, sin requisito de
