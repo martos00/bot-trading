@@ -1,0 +1,16 @@
+===== G: gotobi USD/JPY 03:00 → 09:55 Tokio =====
+  Descubrimiento HistData 2003-2011: n 551  medio   6.20 pb (t 4.87)  años+ 7/9
+  Confirmación FXCM 2012-2026: n 889  medio   5.18 pb (t 6.81)  ejecutable   3.72 pb (t 4.90)  coste 1.45 pb  medio/coste 3.56  años+ 12/15
+     ejecutable por año (pb): {2012: 310.0, 2013: 940.0, 2014: 208.0, 2015: 105.0, 2016: 536.0, 2017: 331.0, 2018: 245.0, 2019: 31.0, 2020: 187.0, 2021: 220.0, 2022: 362.0, 2023: -32.0, 2024: -122.0, 2025: -66.0, 2026: 51.0}
+  Informativo 08:00 → 09:55 (sin rollover): n 1021  medio   2.15 pb (t 4.35)  ejecutable   0.98 pb (t 1.98)  coste 1.17 pb  medio/coste 1.83  años+ 11/15
+     correlación con E1 (mismo día): 0.027
+
+===== F: corto USD contra la cesta, 16:00 NY del día anterior → 16:00 NY del día del FOMC =====
+  Descubrimiento HistData 2003-2011 (5 pares): n 64  medio  20.49 pb (t 2.15)  años+ 8/9
+  Confirmación FXCM 2012-2026: n 114  medio   7.65 pb (t 1.42)  ejecutable   6.15 pb (t 1.14)  coste 1.50 pb  medio/coste 5.09  años+ 9/15
+     ejecutable por año (pb): {2012: 42.0, 2013: -64.0, 2014: -346.0, 2015: 221.0, 2016: 88.0, 2017: 118.0, 2018: -15.0, 2019: 103.0, 2020: 233.0, 2021: -39.0, 2022: 225.0, 2023: 363.0, 2024: 220.0, 2025: -220.0, 2026: -228.0}
+     por par (medio, pb): {'EURUSD': np.float64(7.85), 'GBPUSD': np.float64(12.4), 'AUDUSD': np.float64(8.58), 'USDJPY': np.float64(1.06), 'USDCHF': np.float64(8.38)}
+
+CRITERIOS:
+  G {'D: bruto>0': np.True_, '1: ejec>0 t>=2,24': np.True_, '2: medio>=3x coste': np.True_, '3: años>=60%': np.True_} → CERTIFICADA
+  F {'D: bruto>0': np.True_, '1: ejec>0 t>=2,24': np.False_, '2: medio>=3x coste': np.True_, '3: años>=60%': np.True_} → NO CERTIFICADA
