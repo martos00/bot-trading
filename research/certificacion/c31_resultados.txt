@@ -1,0 +1,14 @@
+== V1 ventana FOMC (largo cierre −2 → cierre +1) ==
+   ZT:   3.06 pb (t 1.26) n 69
+   ZF:   9.40 pb (t 1.57) n 69
+  V1 media: 6.23 pb (t 1.49) → NO confirmada
+== V2 madrugada 01:00 → 03:00 NY (largo) ==
+  m = pd.concat(series, axis=1).loc[desde:hasta]; f = m.mean(axis=1).dropna()
+   YM:   0.47 pb (t 1.05) n 2259
+   RTY:   0.99 pb (t 1.77) n 2258
+  V2 media: 0.74 pb (t 1.48) → NO confirmada
+== V3 antes del BCE (largo cierre D−2 → cierre D−1) ==
+   FCHI:  13.40 pb (t 1.23) n 111
+   IBEX:  18.32 pb (t 1.86) n 111
+   FTSEMIB.MI:  17.27 pb (t 1.34) n 111
+  V3 media: 16.33 pb (t 1.51) → NO confirmada
