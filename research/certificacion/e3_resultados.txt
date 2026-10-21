@@ -1,0 +1,6 @@
+P2 bruta (pb/día): 0.18 t 0.41
+P2 neta escalada: -2.8%/año Sharpe -0.34 DD -34.8% peor día -2.71% | t neta -1.02
+E2: 6.2%/año Sharpe 0.77 DD -16.7% peor día -2.06%
+corr E2-P2: 0.0
+E3 (misma vol. que E2): 2.4%/año Sharpe 0.29 DD -12.8% peor día -2.80%
+ADOPTAR E3: False
