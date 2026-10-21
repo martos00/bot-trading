@@ -1,0 +1,20 @@
+=== N1: VIX/VIX3M → S&P 500 al día siguiente ===
+  descubrimiento 2006-2015: inversión +11.64 pb/día (n 123) | normal +3.47 pb/día (n 1459) | t diferencia +0.46
+  confirmación 2016-2026: inversión +9.62 pb/día (n 201) | normal +4.51 pb/día (n 2514) | t diferencia +0.27
+  Criterio descubrimiento |t| ≥ 2,5: NO CUMPLE → estado bueno: inversión
+  Confirmación: regla neta Sharpe 0.12 (exposición 7%) frente a siempre largo 0.41; diferencia mismo signo y t ≥ 2: NO
+  DD máx. regla -37% | veredicto: NO CONFIRMADA
+
+=== N2: S&P 500 el día del anuncio del FOMC ===
+  descubrimiento 1994-2009: días FOMC n 128, media +35.2 pb (t 3.40), neta +32.7 pb (t 3.15) | resto de días +1.08 pb | t diferencia 3.23 | años netos + 11/16
+  confirmación 2010-2026: días FOMC n 133, media +10.6 pb (t 1.08), neta +8.1 pb (t 0.83) | resto de días +4.38 pb | t diferencia 0.62 | años netos + 13/17
+
+=== N3: materias primas → divisas al día siguiente (16:00 NY → 16:00 NY) ===
+/usr/local/lib/python3.13/dist-packages/pandas/core/arraylike.py:402: RuntimeWarning: invalid value encountered in log
+  result = getattr(ufunc, method)(*inputs, **kwargs)
+
+  USDCAD según petróleo descubrimiento 2010-2017: n 1989, bruto -0.03 pb (t -0.03), neto -1.53 pb (t -1.35), años netos + 2/8
+  USDCAD según petróleo confirmación 2018-2026: n 2083, bruto +0.83 pb (t 0.94), neto -0.67 pb (t -0.76), años netos + 3/9
+
+  AUDUSD según cobre descubrimiento 2010-2017: n 1982, bruto +1.25 pb (t 0.82), neto -0.25 pb (t -0.17), años netos + 4/8
+  AUDUSD según cobre confirmación 2018-2026: n 2071, bruto -1.05 pb (t -0.78), neto -2.55 pb (t -1.89), años netos + 2/9
