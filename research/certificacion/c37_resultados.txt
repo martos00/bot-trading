@@ -1,0 +1,11 @@
+operaciones 2778 (163/año), huecos cerrados 43%
+2010-2017: n 1275 bruto 0.75 pb neto -0.75 pb (t -0.77) años+ 4/8
+   por año (%): {2010: 6.0, 2011: -6.2, 2012: 0.7, 2013: 3.2, 2014: 0.4, 2015: -7.4, 2016: -3.4, 2017: -3.1}
+2018-2026: n 1503 bruto 0.02 pb neto -1.48 pb (t -1.46) años+ 3/9
+   por año (%): {2018: -8.1, 2019: -8.3, 2020: -1.1, 2021: -8.8, 2022: 1.9, 2023: 4.6, 2024: 1.0, 2025: -0.4, 2026: -3.1}
+  tramo 0.1-0.3%: n 627 neto -0.42 pb (t -0.45)
+  tramo 0.3-0.6%: n 569 neto -0.67 pb (t -0.42)
+  tramo 0.6-1.0%: n 307 neto -5.17 pb (t -1.64)
+  hueco arriba (corto): n 875 neto -2.30 pb (t -1.89)
+  hueco abajo (largo): n 628 neto -0.34 pb (t -0.20)
+CRITERIOS: {'1 t>=2': np.False_, '2 años>=60%': np.False_, '3 bruto>=3·coste': np.False_} → NO CERTIFICADA
