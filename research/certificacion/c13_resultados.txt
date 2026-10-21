@@ -1,0 +1,19 @@
+
+== GSPC con ajuste de liquidación ==
+  Réplica 1990-2013: n 288 bruto   91.1 pb (t 3.77) neto   89.1 pb (t 3.69) bruto/coste 45.6 años+ 22/24 | corto 29.3 pb (t 1.86) largo 61.8 pb (t 4.03)
+  Confirmación 2014-2026: n 152 bruto   27.0 pb (t 0.95) neto   25.0 pb (t 0.88) bruto/coste 13.5 años+ 9/13 | corto -12.6 pb (t -0.69) largo 39.6 pb (t 2.49)
+
+== GSPC sin ajuste (s=3 siempre) ==
+  Réplica 1990-2013: n 288 bruto   91.1 pb (t 3.77) neto   89.1 pb (t 3.69) bruto/coste 45.6 años+ 22/24 | corto 29.3 pb (t 1.86) largo 61.8 pb (t 4.03)
+  Confirmación 2014-2026: n 152 bruto   51.5 pb (t 1.76) neto   49.5 pb (t 1.69) bruto/coste 25.7 años+ 9/13 | corto 2.0 pb (t 0.11) largo 49.5 pb (t 2.90)
+
+== NDX con ajuste de liquidación ==
+  Réplica 1990-2013: n 288 bruto   95.8 pb (t 2.91) neto   93.8 pb (t 2.84) bruto/coste 47.9 años+ 21/24 | corto 18.9 pb (t 0.79) largo 76.9 pb (t 2.93)
+  Confirmación 2014-2026: n 152 bruto   34.8 pb (t 0.97) neto   32.8 pb (t 0.91) bruto/coste 17.4 años+ 8/13 | corto -16.7 pb (t -0.74) largo 51.5 pb (t 2.44)
+
+== NDX sin ajuste (s=3 siempre) ==
+  Réplica 1990-2013: n 288 bruto   95.8 pb (t 2.91) neto   93.8 pb (t 2.84) bruto/coste 47.9 años+ 21/24 | corto 18.9 pb (t 0.79) largo 76.9 pb (t 2.93)
+  Confirmación 2014-2026: n 152 bruto   57.4 pb (t 1.59) neto   55.4 pb (t 1.53) bruto/coste 28.7 años+ 8/13 | corto -5.1 pb (t -0.25) largo 62.5 pb (t 2.73)
+
+confirmación S&P, neto por año (pb): {2014: -864.0, 2015: 1070.0, 2016: 502.0, 2017: 305.0, 2018: 477.0, 2019: 320.0, 2020: 852.0, 2021: -2129.0, 2022: 2176.0, 2023: 2073.0, 2024: -678.0, 2025: -1408.0, 2026: 1101.0}
+CRITERIOS: {'réplica>0': np.True_, '1 neto>0 t>=2': np.False_, '2 bruto>=3x': np.True_, '3 años>=60%': np.True_} → NO CERTIFICADA
