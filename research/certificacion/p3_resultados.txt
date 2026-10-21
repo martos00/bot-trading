@@ -1,0 +1,9 @@
+días 3691
+punto medio : 1.43 pb  t 3.17
+ejecutable  : 0.26 pb  t 0.57
+coste medio : 1.17 pb   medio/coste 1.22
+spread 08:00 Tokio mediana 0.46 pb p90 1.95 pb | 15:00 mediana 0.23 pb p90 0.46 pb
+ejecutable por año (pb/día): {2012: 0.73, 2013: 3.06, 2014: -0.44, 2015: 1.96, 2016: 4.72, 2017: -0.07, 2018: -0.14, 2019: -0.43, 2020: 2.88, 2021: -2.32, 2022: -1.14, 2023: -2.7, 2024: -2.7, 2025: 1.38, 2026: -2.53}  positivos 6/15
+punto medio por año (pb/día): {2012: 1.83, 2013: 4.11, 2014: 0.53, 2015: 2.97, 2016: 5.92, 2017: 0.94, 2018: 0.79, 2019: 0.55, 2020: 4.02, 2021: -1.2, 2022: 0.26, 2023: -1.29, 2024: -1.14, 2025: 2.79, 2026: -1.0}
+correlación diaria con E1 (EUR/USD 06-08 NY): -0.057
+CRITERIOS: {'1 ejecutable t>=2': np.False_, '2 medio >= 3x coste': np.False_, '3 años >= 60%': np.False_} → SE CIERRA
