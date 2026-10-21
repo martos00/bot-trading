@@ -1,0 +1,15 @@
+== C12: último día hábil del mes, largo (cierre penúltimo → cierre último) ==
+  ZN 2010-2018 : n 102 bruto   3.35 pb (t 1.33) neto   1.55 pb (t 0.62) años+ 7/9
+  ZN 2019-2026 : n 74 bruto   2.25 pb (t 0.67) neto   0.45 pb (t 0.14) años+ 4/8
+  ZF 2010-2018 : n 101 bruto   2.94 pb (t 1.68) neto   1.85 pb (t 1.06) años+ 6/9
+  ZF 2019-2026 : n 74 bruto   3.18 pb (t 1.36) neto   2.09 pb (t 0.89) años+ 5/8
+  ZB 2010-2018 : n 102 bruto   8.12 pb (t 1.82) neto   5.18 pb (t 1.16) años+ 5/9
+  ZB 2019-2026 : n 79 bruto   4.64 pb (t 0.77) neto   1.70 pb (t 0.28) años+ 5/8
+== C16: ventana FOMC (cierre día −2 → cierre día +1), largo ==
+  ZN 2010-2019 : n 77 bruto  13.28 pb (t 1.40) neto  11.48 pb (t 1.21) años+ 7/10
+  ZN 2020-2026 : n 53 bruto  12.80 pb (t 1.17) neto  11.00 pb (t 1.01) años+ 3/7
+  ZB 2010-2019 : n 77 bruto  26.86 pb (t 1.58) neto  23.92 pb (t 1.41) años+ 7/10
+  ZB 2020-2026 : n 53 bruto  23.53 pb (t 1.20) neto  20.59 pb (t 1.05) años+ 3/7
+== C15-N: gas natural, jueves (cierre miércoles → cierre jueves), largo ==
+  NG 2010-2016 : n 325 bruto -32.79 pb (t -2.12) neto -37.79 pb (t -2.45) años+ 2/7 | resto de días -3.3 pb
+  NG 2017-2026 : n 490 bruto -45.47 pb (t -2.94) neto -50.47 pb (t -3.26) años+ 1/10 | resto de días -5.0 pb
