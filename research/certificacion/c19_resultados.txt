@@ -1,0 +1,10 @@
+== V: BTC vencimiento CME (corto jue + largo vie + largo lun) ==
+  2018-2021-09 (antes de BITO): n 45 bruto  264.6 pb (t 2.49) neto  243.6 pb (t 2.29) | jue 109 vie 99 lun 57 pb
+  2021-10 a 2024-02 (incl. Quantpedia): n 29 bruto  -21.3 pb (t -0.25) neto  -42.3 pb (t -0.51) | jue -74 vie -37 lun 90 pb
+  CONFIRMACIÓN 2024-03 a 2026-09: n 31 bruto  -97.6 pb (t -1.97) neto -118.6 pb (t -2.39) | jue 22 vie -88 lun -31 pb
+
+== E: rebalanceo de enero (5.º → 10.º día hábil) ==
+  2001-2014: n 13 media  -12.7 pb (t -0.25) años+ 7/13 | oro 3 plata -27 pb
+  CONFIRMACIÓN 2015-2026: n 12 media  -99.8 pb (t -0.86) años+ 4/12 | oro -10 plata -188 pb
+
+CRITERIOS: V {'t>=2': np.False_, 'bruto>=3x': np.False_} → NO CERTIFICADA | E {'t>=2': np.False_, 'años>=60%': np.False_} → NO CERTIFICADA
