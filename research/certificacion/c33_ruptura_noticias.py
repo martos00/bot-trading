@@ -27,7 +27,7 @@ for par in ('EURUSD', 'GBPUSD'):
     for ayer, hoy in zip(dias[:-1], dias[1:]):
         a, s = g[ayer], g[hoy]
         if len(a) < 600 or len(s) < 600 or pd.Timestamp(hoy).weekday() >= 5: continue
-        h, l, c, sp, mm = s.h.values, s.l.values, s.c.values, s.spr.values, s.mins.values
+        h, l, c, sp, mm, o = s.h.values, s.l.values, s.c.values, s.spr.values, s.mins.values, s.o.values
         fin = np.searchsorted(mm, 16 * 60 + 55) if False else None
         cal = (s.index.normalize() == pd.Timestamp(hoy))          # minutos del día natural de hoy (el día FX empieza a las 17:00 de ayer)
         idx = np.flatnonzero(np.asarray(cal))
@@ -42,7 +42,8 @@ for par in ('EURUSD', 'GBPUSD'):
             for k in ent_ok:
                 lado = +1 if h[k] >= H else (-1 if l[k] <= L else 0)
                 if lado:
-                    ent = H if lado > 0 else L
+                    # orden stop: si la vela abre ya más allá del nivel, se ejecuta a la apertura (corrección 21-oct-2026)
+                    ent = max(H, o[k]) if lado > 0 else min(L, o[k])
                     sal, sp_s = simular(h, l, c, sp, k, lado, ent, (H + L) / 2, ent + lado * rango, fin)
                     bruto = lado * np.log(sal / ent); coste = (sp[k] + sp_s) / 2 / ent + COM + 2 * DESL
                     R.setdefault(pd.Timestamp(hoy), []).append((bruto, bruto - coste)); break
