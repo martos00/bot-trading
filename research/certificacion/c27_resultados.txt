@@ -1,0 +1,14 @@
+== CL: corto los miércoles ==
+  2010-2017: n 375 bruto    1.3 pb (t 0.12) neto   -0.7 pb años+ 6/8 | corto resto de días 5.5 pb, dif t -0.35
+  2018-2026: n 443 bruto   -4.6 pb (t -0.39) neto   -6.6 pb años+ 3/9 | corto resto de días -1.5 pb, dif t -0.21
+  por día de la semana (precio, pb, 2010-2026): {'L': np.float64(-18.5), 'M': np.float64(-6.6), 'X': np.float64(1.9), 'J': np.float64(10.7), 'V': np.float64(6.5)}
+== RB: corto los miércoles ==
+  2010-2017: n 377 bruto  -17.2 pb (t -1.58) neto  -20.2 pb años+ 2/8 | corto resto de días 5.5 pb, dif t -1.95
+  2018-2026: n 424 bruto  -17.6 pb (t -1.33) neto  -20.6 pb años+ 3/9 | corto resto de días -5.7 pb, dif t -0.86
+  por día de la semana (precio, pb, 2010-2026): {'L': np.float64(-13.1), 'M': np.float64(-3.4), 'X': np.float64(17.4), 'J': np.float64(11.6), 'V': np.float64(7.7)}
+== HO: corto los miércoles ==
+  2010-2017: n 378 bruto  -17.1 pb (t -1.64) neto  -20.1 pb años+ 3/8 | corto resto de días 5.6 pb, dif t -2.23
+  2018-2026: n 422 bruto  -11.7 pb (t -1.00) neto  -14.7 pb años+ 4/9 | corto resto de días -8.3 pb, dif t -0.24
+  por día de la semana (precio, pb, 2010-2026): {'L': np.float64(-10.1), 'M': np.float64(8.9), 'X': np.float64(14.2), 'J': np.float64(9.4), 'V': np.float64(-1.5)}
+
+CRITERIOS CL: {'D>0': np.True_, '1 t>=2': np.False_, '2 bruto>=3x': np.False_, '3 años>=60%': np.False_, '4 dif t>=1,645': np.False_} → NO CERTIFICADA
