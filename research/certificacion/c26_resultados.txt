@@ -1,0 +1,5 @@
+GBPJPY: sentido - | 2012-18 -0.20 pb (t -0.20) | 2019-26  0.14 pb (t 0.17) años 50% | coste 1.41 pb neto -1.27 pb (t -1.56) | corr E1 0.14 | Holm False → no
+EURAUD: sentido - | 2012-18 -2.18 pb (t -2.60) | 2019-26 -0.04 pb (t -0.07) años 62% | coste 1.25 pb neto -1.29 pb (t -2.27) | corr E1 0.19 | Holm False → no
+EURNZD: sentido - | 2012-18 -2.31 pb (t -2.77) | 2019-26 -0.01 pb (t -0.01) años 75% | coste 1.53 pb neto -1.53 pb (t -2.70) | corr E1 0.16 | Holm False → no
+GBPCAD: sentido - | 2012-18 -0.91 pb (t -1.31) | 2019-26 -0.06 pb (t -0.09) años 38% | coste 1.61 pb neto -1.67 pb (t -2.61) | corr E1 0.16 | Holm False → no
+EURJPY: sentido - | 2012-18 -1.19 pb (t -1.39) | 2019-26  0.44 pb (t 0.66) años 75% | coste 1.05 pb neto -0.61 pb (t -0.91) | corr E1 0.28 | Holm False → no
