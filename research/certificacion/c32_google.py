@@ -87,7 +87,7 @@ P = pd.DataFrame(tr, columns=['dia', 'bruto', 'neto']).set_index('dia')
 res['P Cointegración SEK/NOK'] = (P, '2010', '2017', '2018')
 ps, filas = [], []
 for nom, (x, a0, a1, c0) in res.items():
-    d, c = x.loc[a0:a1], x.loc[c0:'2026']; an = c.neto.groupby(c.index.year).sum()
+    x = x.sort_index(); x.index = pd.to_datetime(x.index); d, c = x.loc[a0:a1], x.loc[c0:"2026"]; an = c.neto.groupby(c.index.year).sum()
     t = t_nw(c.neto.values); ps.append(1 - stats.norm.cdf(t)); filas.append((nom, d, c, an, t))
 orden = np.argsort(ps); ok = [False] * 3; seguir = True
 for k, i in enumerate(orden):
