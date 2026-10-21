@@ -21,13 +21,20 @@
 #property strict
 #include <Trade\Trade.mqh>
 
+enum ENUM_DST_SERVIDOR
+  {
+   DST_EUROPA = 0,   // Europa: ultimo domingo de marzo -> ultimo domingo de octubre (MetaQuotes-Demo)
+   DST_EEUU   = 1,   // EEUU: 2.o domingo de marzo -> 1.er domingo de noviembre ("cierre de Nueva York")
+   DST_NINGUNO = 2   // el servidor no cambia de hora
+  };
+
 input double InpRiesgoDiarioPct      = 0.5;    // volatilidad diaria objetivo, % del balance (pre-registro: 0.5 o 1.0)
 input double InpTopeExposicion       = 10.0;   // exposicion maxima, multiplo del balance
 input double InpStopSigmas           = 4.0;    // stop de catastrofe en sigmas
 input int    InpDiasSigma            = 60;     // dias para estimar sigma
 input double InpMaxSpreadPips        = 1.0;    // no entrar si el spread es mayor
 input double InpLotesFijos           = 0.0;    // >0: usar este lotaje fijo (solo para medir costes)
-input bool   InpServidorConDSTdeEEUU = true;   // el servidor cambia de hora con EEUU (lo habitual)
+input ENUM_DST_SERVIDOR InpDSTServidor = DST_EUROPA; // cambio de hora del servidor (MetaQuotes-Demo: Europa; compruebalo en tu broker)
 input bool   InpSoloDemo             = true;   // negarse a operar si la cuenta no es DEMO (en el Probador no aplica)
 input int    InpOffsetServidorInv    = 2;      // SOLO Probador: hora servidor - UTC en invierno (MetaQuotes/FTMO: 2)
 input ulong  InpMagico               = 60800;
@@ -53,6 +60,15 @@ bool VeranoEEUU(datetime utc)
    MqlDateTime x; TimeToStruct(utc, x);
    return utc >= Domingo(x.year, 3, 2) + 7 * 3600 && utc < Domingo(x.year, 11, 1) + 6 * 3600;
   }
+
+// horario de verano del SERVIDOR (Europa: 01:00 UTC del ultimo domingo de marzo -> 01:00 UTC del ultimo domingo de octubre)
+bool VeranoServidor(datetime utc)
+  {
+   if(InpDSTServidor == DST_NINGUNO) return false;
+   if(InpDSTServidor == DST_EEUU) return VeranoEEUU(utc);
+   MqlDateTime x; TimeToStruct(utc, x);
+   return utc >= Domingo(x.year, 4, 1) - 7 * 86400 + 3600 && utc < Domingo(x.year, 11, 1) - 7 * 86400 + 3600;
+  }
 datetime UTCaNY(datetime utc) { return utc - (VeranoEEUU(utc) ? 4 : 5) * 3600; }
 
 bool EnProbador() { return (bool)MQLInfoInteger(MQL_TESTER); }
@@ -64,7 +80,7 @@ datetime AhoraUTC()
    if(!EnProbador()) return TimeGMT();
    datetime srv = TimeCurrent();
    datetime utc = srv - InpOffsetServidorInv * 3600;
-   if(InpServidorConDSTdeEEUU && VeranoEEUU(utc - 3600)) utc -= 3600;
+   if(VeranoServidor(utc - 3600)) utc -= 3600;
    return utc;
   }
 
@@ -73,11 +89,11 @@ int OffsetInvierno()   // hora servidor - UTC en invierno, detectada ahora (en e
    if(EnProbador()) return InpOffsetServidorInv;
    datetime u = TimeGMT();
    int off = (int)MathRound((double)(TimeTradeServer() - u) / 3600.0);
-   return off - ((InpServidorConDSTdeEEUU && VeranoEEUU(u)) ? 1 : 0);
+   return off - (VeranoServidor(u) ? 1 : 0);
   }
 datetime UTCaServidor(datetime utc, int offInv)
   {
-   return utc + (offInv + ((InpServidorConDSTdeEEUU && VeranoEEUU(utc)) ? 1 : 0)) * 3600;
+   return utc + (offInv + (VeranoServidor(utc) ? 1 : 0)) * 3600;
   }
 // hh:00 NY de la fecha 'dia' (00:00 UTC) en UTC
 datetime HoraNYenUTC(datetime dia, int hh)

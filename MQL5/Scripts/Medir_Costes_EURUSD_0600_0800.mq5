@@ -15,18 +15,24 @@
 //|                                                                    |
 //| Husos: 06:00 y 08:00 NY se calculan en UTC con el horario de      |
 //| verano de EEUU. La diferencia servidor-UTC se detecta sola        |
-//| (TimeTradeServer - TimeGMT) y se supone que el servidor cambia de |
-//| hora con EEUU (lo habitual: UTC+2 / UTC+3). Si no es asi, pon     |
-//| InpServidorConDSTdeEEUU=false.                                    |
+//| (TimeTradeServer - TimeGMT). Indica en InpDSTServidor cuando      |
+//| cambia de hora el servidor (MetaQuotes-Demo: Europa).             |
 //+------------------------------------------------------------------+
 #property script_show_inputs
 #property strict
 
 #include <Trade\Trade.mqh>
 
+enum ENUM_DST_SERVIDOR
+  {
+   DST_EUROPA = 0,   // Europa: ultimo domingo de marzo -> ultimo domingo de octubre (MetaQuotes-Demo)
+   DST_EEUU   = 1,   // EEUU: 2.o domingo de marzo -> 1.er domingo de noviembre ("cierre de Nueva York")
+   DST_NINGUNO = 2   // el servidor no cambia de hora
+  };
+
 input string InpSimbolo              = "EURUSD";  // nombre del simbolo en esta cuenta (p.ej. EURUSD, EURUSD.r)
 input int    InpDias                 = 90;        // dias naturales hacia atras para medir el spread
-input bool   InpServidorConDSTdeEEUU = true;      // el servidor suma 1 h con el horario de verano de EEUU
+input ENUM_DST_SERVIDOR InpDSTServidor = DST_EUROPA; // cambio de hora del servidor (MetaQuotes-Demo: Europa; compruebalo en tu broker)
 input bool   InpProbarComision       = false;     // abrir y cerrar UNA operacion de prueba (solo demo)
 input double InpLotesPrueba          = 1.0;       // lotes de la operacion de prueba (1 lote = 100.000 EUR)
 
@@ -47,11 +53,20 @@ bool VeranoEEUU(datetime utc)   // 2.º domingo de marzo 07:00 UTC -> 1.er domin
    return utc >= Domingo(x.year, 3, 2) + 7 * 3600 && utc < Domingo(x.year, 11, 1) + 6 * 3600;
   }
 
+// horario de verano del SERVIDOR (Europa: 01:00 UTC del ultimo domingo de marzo -> 01:00 UTC del ultimo domingo de octubre)
+bool VeranoServidor(datetime utc)
+  {
+   if(InpDSTServidor == DST_NINGUNO) return false;
+   if(InpDSTServidor == DST_EEUU) return VeranoEEUU(utc);
+   MqlDateTime x; TimeToStruct(utc, x);
+   return utc >= Domingo(x.year, 4, 1) - 7 * 86400 + 3600 && utc < Domingo(x.year, 11, 1) - 7 * 86400 + 3600;
+  }
+
 int g_offInvierno;   // hora servidor - UTC en invierno (detectada)
 
 datetime AServidor(datetime utc)
   {
-   return utc + (g_offInvierno + ((InpServidorConDSTdeEEUU && VeranoEEUU(utc)) ? 1 : 0)) * 3600;
+   return utc + (g_offInvierno + (VeranoServidor(utc) ? 1 : 0)) * 3600;
   }
 
 // hh:00 de Nueva York de la fecha 'dia' (00:00 UTC) expresado en UTC
@@ -125,7 +140,7 @@ void OnStart()
    double pip = (SymbolInfoInteger(InpSimbolo, SYMBOL_DIGITS) >= 4) ? 0.0001 : 0.01;
    datetime ahora = TimeGMT();
    int off = (int)MathRound((double)(TimeTradeServer() - ahora) / 3600.0);
-   g_offInvierno = off - ((InpServidorConDSTdeEEUU && VeranoEEUU(ahora)) ? 1 : 0);
+   g_offInvierno = off - (VeranoServidor(ahora) ? 1 : 0);
    Print("Servidor: UTC", (off >= 0 ? "+" : ""), off, " ahora (invierno UTC", (g_offInvierno >= 0 ? "+" : ""), g_offInvierno, ")");
 
    double p6[], p8[], b6[], b8[];
