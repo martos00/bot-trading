@@ -1,0 +1,16 @@
+== N: gas natural, jueves (cierre miércoles → cierre jueves) ==
+  Descubrimiento 2001-2016 [futuro]: n 803 bruto  -23.8 pb (t -1.80) neto  -28.8 pb (t -2.18) bruto/coste -4.8 años+ 4/16
+  Descubrimiento 2001-2016 [CFD]: n 803 bruto  -23.8 pb (t -1.80) neto  -38.8 pb (t -2.94) bruto/coste -1.6 años+ 3/16
+     resto de días 1.4 pb; diferencia t -1.69
+  Confirmación 2017-2026 [futuro]: n 485 bruto  -13.8 pb (t -0.81) neto  -18.8 pb (t -1.11) bruto/coste -2.8 años+ 4/10
+  Confirmación 2017-2026 [CFD]: n 485 bruto  -13.8 pb (t -0.81) neto  -28.8 pb (t -1.69) bruto/coste -0.9 años+ 4/10
+     resto de días 2.8 pb; diferencia t -0.85
+     neto por año (pb, futuro): {2017: 1777.0, 2018: -1451.0, 2019: -462.0, 2020: -2357.0, 2021: -1825.0, 2022: -5594.0, 2023: 769.0, 2024: 739.0, 2025: -2276.0, 2026: 1562.0}
+
+== F: ciclo FOMC, S&P 500 semanas pares ==
+  Descubrimiento 1994-2016: pares 8.47 pb/día (n 3088) impares -4.03 pb/día (n 2681) dif t 4.04 | estrategia neta 11.1%/año vs siempre largo 6.8%/año | años pares>impares 83%
+  Confirmación 2017-2026: pares 2.20 pb/día (n 1295) impares 7.01 pb/día (n 1132) dif t -1.06 | estrategia neta 2.6%/año vs siempre largo 12.6%/año | años pares>impares 20%
+
+CRITERIOS:
+  N {'D>0': np.False_, '1 t>=2,24': np.False_, '2 bruto>=3x': np.False_, '3 años>=60%': np.False_} → NO CERTIFICADA
+  F {'D>0': np.True_, '1 dif t>=2,24': np.False_, '2 neta>0': np.True_, '3 años>=60%': np.False_} → NO CERTIFICADA
