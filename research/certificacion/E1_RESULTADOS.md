@@ -34,3 +34,18 @@ máxima del 10% (DD histórico de −15% con riesgo 0,5%).
 - El coste decide: con el escenario alto (FTMO 3 $ por lado) la ventaja deja de ser significativa (t = 1,3).
 - Riesgos no modelados: que la ventaja se debilite (2024 y 2026 flojos), diferencias de ejecución reales a las 06:00 y 08:00
   ET, reglas de noticias de cada firma y que la firma permita EAs.
+
+## Corrección (21-oct-2026): σ de 60 días con huecos
+Error de programación: la desviación de 60 días se calculaba sobre la serie con huecos, de modo que tras cada día sin dato
+se perdían 60 días de operaciones (1.973 días operados en lugar de 2.141). La regla del pre-registro ("60 días anteriores")
+se aplica ahora sobre los 60 días anteriores **con dato**. No cambia ninguna regla. Salida: `e1_resultados_corregido.txt`.
+
+| Riesgo 0,5% | Antes (con el error) | Corregido |
+|---|---|---|
+| Coste bajo 0,44 pb: rent. anual / Sharpe / t / DD | 7,7% / 0,91 / 2,56 / −14,8% | **8,3% / 1,00 / 2,87 / −15,8%** |
+| Coste medio 0,53 pb | 6,7% / 0,80 / 2,24 / −15,4% | **7,4% / 0,88 / 2,53 / −16,5%** |
+| Coste alto 0,79 pb | 3,9% / 0,47 / 1,31 / −17,1% | **4,6% / 0,54 / 1,57 / −18,4%** |
+| FTMO 2-Step supera (bajo / medio / alto) | 79,8% / 75,6% / 59,2% | **82,1% / 78,4% / 61,9%** |
+| Años positivos | 6/9 | **7/9** |
+Por años (coste medio): 2018 +4,5 · 2019 +11,9 · 2020 −3,6 · 2021 +11,6 · 2022 +22,4 · 2023 +12,9 · 2024 +3,1 ·
+**2025 +6,7** (antes −5,2: los días saltados eran favorables) · 2026 (hasta sep.) −7,0.

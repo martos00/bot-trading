@@ -1,0 +1,29 @@
+=== Backtest 2018-2026 (rentabilidades sobre el capital, sin capitalizar) ===
+     riesgo         coste  dias  rent_anual%  Sharpe    t  DD_max%  peor_dia%  peor_intradia% años+  stops  expos_media
+riesgo 0,5%  bajo 0,44 pb  2141          8.3    1.00 2.87    -15.8      -2.06           -2.06   7/9     13          4.3
+riesgo 0,5% medio 0,53 pb  2141          7.4    0.88 2.53    -16.5      -2.07           -2.07   7/9     13          4.3
+riesgo 0,5%  alto 0,79 pb  2141          4.6    0.54 1.57    -18.4      -2.08           -2.08   6/9     13          4.3
+riesgo 1,0%  bajo 0,44 pb  2141         15.4    0.97 2.76    -29.9      -4.09           -4.09   7/9     13          8.0
+riesgo 1,0% medio 0,53 pb  2141         13.6    0.86 2.44    -31.2      -4.09           -4.09   7/9     13          8.0
+riesgo 1,0%  alto 0,79 pb  2141          8.4    0.53 1.50    -35.0      -4.12           -4.12   6/9     13          8.0
+
+=== Simulación de fondeo (5.000 simulaciones; "sin_ventaja" = misma estrategia con media 0) ===
+     riesgo         coste             firma  supera  sin_ventaja  incumple_diaria  incumple_maxima  sin_resolver  dias_mediana  sobrevive_financiada_1año
+riesgo 0,5%  bajo 0,44 pb        FTMO_2step   0.821        0.317              0.0            0.179           0.0         322.0                      0.942
+riesgo 0,5%  bajo 0,44 pb  FundedNext_2step   0.819        0.357              0.0            0.181           0.0         268.0                      0.942
+riesgo 0,5%  bajo 0,44 pb FundingPips_2step   0.819        0.357              0.0            0.181           0.0         268.0                      0.942
+riesgo 0,5% medio 0,53 pb        FTMO_2step   0.784        0.312              0.0            0.216           0.0         336.0                      0.933
+riesgo 0,5% medio 0,53 pb  FundedNext_2step   0.782        0.354              0.0            0.218           0.0         281.0                      0.937
+riesgo 0,5% medio 0,53 pb FundingPips_2step   0.782        0.354              0.0            0.218           0.0         281.0                      0.937
+riesgo 0,5%  alto 0,79 pb        FTMO_2step   0.619        0.310              0.0            0.380           0.0         377.0                      0.892
+riesgo 0,5%  alto 0,79 pb  FundedNext_2step   0.652        0.359              0.0            0.348           0.0         315.0                      0.896
+riesgo 0,5%  alto 0,79 pb FundingPips_2step   0.652        0.359              0.0            0.348           0.0         315.0                      0.896
+riesgo 1,0%  bajo 0,44 pb        FTMO_2step   0.604        0.275              0.0            0.396           0.0         123.0                      0.588
+riesgo 1,0%  bajo 0,44 pb  FundedNext_2step   0.632        0.336              0.0            0.368           0.0          98.0                      0.600
+riesgo 1,0%  bajo 0,44 pb FundingPips_2step   0.632        0.332              0.0            0.368           0.0          98.0                      0.748
+riesgo 1,0% medio 0,53 pb        FTMO_2step   0.572        0.286              0.0            0.428           0.0         127.0                      0.585
+riesgo 1,0% medio 0,53 pb  FundedNext_2step   0.587        0.327              0.0            0.413           0.0         101.0                      0.590
+riesgo 1,0% medio 0,53 pb FundingPips_2step   0.587        0.330              0.0            0.413           0.0         100.0                      0.723
+riesgo 1,0%  alto 0,79 pb        FTMO_2step   0.442        0.274              0.0            0.558           0.0         134.0                      0.542
+riesgo 1,0%  alto 0,79 pb  FundedNext_2step   0.493        0.322              0.0            0.507           0.0         105.0                      0.539
+riesgo 1,0%  alto 0,79 pb FundingPips_2step   0.493        0.324              0.0            0.507           0.0         105.0                      0.640
