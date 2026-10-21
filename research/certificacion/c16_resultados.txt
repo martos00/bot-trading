@@ -1,0 +1,6 @@
+Réplica 1990-2019 (DGS10): n 208 media 20.4 pb (t 2.97) | ventanas sin FOMC 5.9 pb, dif t 2.07
+Confirmación 2020-2026 ZN: n 53 bruto 15.9 pb (t 1.23) neto 14.1 pb (t 1.09) años+ 4/7 | sin FOMC -5.0 pb, dif t 1.93
+   neto por año (pb): {2020: 221.0, 2021: -180.0, 2022: -78.0, 2023: 557.0, 2024: 331.0, 2025: 7.0, 2026: -111.0}
+Confirmación 2020-2026 ZB: n 53 bruto 24.7 pb (t 1.13) neto 21.8 pb (t 1.00) años+ 4/7 | sin FOMC -8.8 pb, dif t 1.69
+   neto por año (pb): {2020: 467.0, 2021: -361.0, 2022: -119.0, 2023: 759.0, 2024: 464.0, 2025: 79.0, 2026: -135.0}
+CRITERIOS ZN: {'réplica>0': np.True_, '1 t>=2': np.False_, '2 bruto>=3x': np.True_, '3 años>=60%': np.False_, '4 dif t>=1,645': np.True_} → NO CERTIFICADA
