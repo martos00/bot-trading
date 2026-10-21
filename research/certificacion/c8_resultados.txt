@@ -1,0 +1,27 @@
+
+===== Nota a 5 años (PRINCIPAL): 383 subastas; coste 2.36 pb/ciclo =====
+  Réplica 1990-jun 2008: n 164  bruto  22.19 pb (t 3.42)  neto  19.83 pb (t 3.05)  bruto/coste 9.4  años+ 14/18
+     pata corto antes -4.17 pb (t -0.84) | largo después 26.36 pb (t 5.92)
+  Confirmación jul 2008-2026: n 219  bruto  20.94 pb (t 3.79)  neto  18.58 pb (t 3.36)  bruto/coste 8.9  años+ 15/19
+     pata corto antes 2.65 pb (t 0.74) | largo después 18.30 pb (t 4.78)
+  confirmación, neto por año (pb): {2008: 1048.0, 2009: 1086.0, 2010: 490.0, 2011: 536.0, 2012: 69.0, 2013: -24.0, 2014: 48.0, 2015: -240.0, 2016: 313.0, 2017: 96.0, 2018: 209.0, 2019: -241.0, 2020: 13.0, 2021: 146.0, 2022: 228.0, 2023: 62.0, 2024: 450.0, 2025: 7.0, 2026: -227.0}
+  confirmación: peor ciclo -181 pb; desv. típica por ciclo 82 pb
+  correlación con E1 en la misma ventana: -0.011
+
+===== Nota a 2 años (informativo): 561 subastas; coste 1.18 pb/ciclo =====
+  Réplica 1990-jun 2008: n 222  bruto  11.81 pb (t 5.37)  neto  10.63 pb (t 4.83)  bruto/coste 10.0  años+ 17/19
+     pata corto antes -5.13 pb (t -3.53) | largo después 16.94 pb (t 9.50)
+  Confirmación jul 2008-2026: n 219  bruto   4.59 pb (t 2.47)  neto   3.41 pb (t 1.84)  bruto/coste 3.9  años+ 12/19
+     pata corto antes -1.78 pb (t -1.40) | largo después 6.37 pb (t 5.18)
+  confirmación, neto por año (pb): {2008: 459.0, 2009: 196.0, 2010: 122.0, 2011: 81.0, 2012: 2.0, 2013: 30.0, 2014: 94.0, 2015: -74.0, 2016: 134.0, 2017: 75.0, 2018: 85.0, 2019: -56.0, 2020: 66.0, 2021: 122.0, 2022: -29.0, 2023: -255.0, 2024: -119.0, 2025: -155.0, 2026: -31.0}
+  confirmación: peor ciclo -84 pb; desv. típica por ciclo 27 pb
+
+===== Nota a 10 años (informativo): 335 subastas; coste 3.92 pb/ciclo =====
+  Réplica 1990-jun 2008: n 84  bruto  21.24 pb (t 1.31)  neto  17.32 pb (t 1.07)  bruto/coste 5.4  años+ 12/19
+     pata corto antes -23.29 pb (t -1.95) | largo después 44.53 pb (t 4.77)
+  Confirmación jul 2008-2026: n 217  bruto  24.11 pb (t 2.32)  neto  20.18 pb (t 1.94)  bruto/coste 6.1  años+ 13/19
+     pata corto antes 16.24 pb (t 2.27) | largo después 7.86 pb (t 0.99)
+  confirmación, neto por año (pb): {2008: 988.0, 2009: 927.0, 2010: 291.0, 2011: -51.0, 2012: -130.0, 2013: 1063.0, 2014: 240.0, 2015: 259.0, 2016: -251.0, 2017: 78.0, 2018: 444.0, 2019: 40.0, 2020: 543.0, 2021: 378.0, 2022: 142.0, 2023: -614.0, 2024: -155.0, 2025: 268.0, 2026: -81.0}
+  confirmación: peor ciclo -533 pb; desv. típica por ciclo 153 pb
+
+CRITERIOS (5 años): {'réplica bruto > 0': np.True_, '1 neto > 0, t >= 2': np.True_, '2 bruto >= 3x coste': np.True_, '3 años >= 60%': np.True_} → CERTIFICADA
