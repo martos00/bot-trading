@@ -1,0 +1,13 @@
+                                         firma  coste_pb  neto_anual%  supera  dias_med  sobrevive  precio$  valor_esperado_1er_año$                                                       notas
+           Audacity Ability (3 $/lote i/v [3])      0.52          6.8    0.75     332.0       0.93      549                     3418                                 Fase 1: 7,5%/15%; EA propio
+  FTMO 2-Step (2,50 $/lado = 5 $ i/v, oficial)      0.70          4.9    0.67     373.0       0.92      585                     2190                              EA permitido; el más permisivo
+      Goat Funded Trader 2-Step (5 $/lote i/v)      0.70          4.9    0.66     371.0       0.91      628                     2126                                          EA propio, sin VPS
+        The5ers High Stakes (4 $ i/v, oficial)      0.61          5.8    0.62     273.0       0.84      455                     1973 EA con código propio; FAQ contradictoria; tope 4.000 $/pago
+           Blue Guardian 2-Step (5 $/lote i/v)      0.70          4.9    0.60     256.5       0.83      463                     1885                                   EA propio; ¿5 $ por lado?
+         FundingPips 2-Step (5 $/lote i/v [3])      0.70          4.9    0.67     319.0       0.91      522                     1861                               EA propio con prueba; SIN VPS
+       FXIFY Two Phase Standard (RAW 6 $/lote)      0.79          3.9    0.60     395.0       0.90      549                     1496                        EA con aprobación; máx. trailing [3]
+FXIFY 2-Phase Pro (RAW 6 $/lote, i/v supuesto)      0.79          3.9    0.54     262.0       0.82      599                      800                                    EA con aprobación previa
+ Funded Trading Plus 2-Step (7 $/lote i/v [3])      0.87          3.0    0.45     350.0       0.81      549                      320                                       límite 3% por símbolo
+      Topstep 50K, futuro 6E (4,22 $ + 1 tick)      0.83          3.4    0.48      85.0       0.52      345                       43             futuros; sin VPS; precio aprox. (cuota mensual)
+      Blue Guardian 2-Step (5 $/lote por lado)      1.14          0.2    0.35     279.0       0.68      463                     -260                                                            
+        FundingPips 2-Step (5 $/lote por lado)      1.14          0.2    0.38     352.0       0.81      522                     -475                                                            
