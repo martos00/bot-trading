@@ -1,0 +1,6 @@
+W grano día WASDE: 2010-17 n 90   14.1 pb (t 0.63) | 2018-26 n 103 bruto   -6.2 pb neto  -12.2 pb (t -0.92) años+ 4/9 | normal -0.0 pb dif t -0.40 | Holm False → no
+   neto por año (pb): {2018: 152.0, 2019: 97.0, 2020: -647.0, 2021: -1035.0, 2022: 320.0, 2023: 300.0, 2024: -137.0, 2025: -11.0, 2026: -298.0}
+G oro antes del aviso de entrega: 2010-17 n 45   36.2 pb (t 1.71) | 2018-26 n 53 bruto    4.5 pb neto    3.5 pb (t 0.10) años+ 6/9 | normal -18.7 pb dif t 0.56 | Holm False → no
+   neto por año (pb): {2018: 122.0, 2019: -107.0, 2020: -683.0, 2021: 711.0, 2022: 37.0, 2023: 401.0, 2024: 52.0, 2025: 116.0, 2026: -466.0}
+L ganado día Cattle on Feed: 2010-17 n 82    2.2 pb (t 0.26) | 2018-26 n 104 bruto   -6.8 pb neto   -8.8 pb (t -1.47) años+ 4/9 | normal -1.4 pb dif t -0.70 | Holm False → no
+   neto por año (pb): {2018: 37.0, 2019: 197.0, 2020: 127.0, 2021: -410.0, 2022: 10.0, 2023: -199.0, 2024: -324.0, 2025: -335.0, 2026: -18.0}
