@@ -1,0 +1,9 @@
+/usr/local/lib/python3.13/dist-packages/pandas/core/arraylike.py:402: RuntimeWarning: invalid value encountered in log
+  result = getattr(ufunc, method)(*inputs, **kwargs)
+W1 adelantamiento (5 últimos + DH1-4): 2010-14 n 55 neto  -4.64 pb (t -0.40) | 2015-26 n 142 bruto  -9.06 neto -13.06 pb (t -1.00) años+ 5/12 | Holm False → no
+   por año (pb): {2015: 25.0, 2016: 297.0, 2017: -175.0, 2018: -207.0, 2019: -110.0, 2020: -608.0, 2021: -429.0, 2022: -701.0, 2023: 363.0, 2024: 332.0, 2025: 177.0, 2026: -819.0}
+W2 periodo de roll (DH5-9): 2010-14 n 55 neto  -6.35 pb (t -1.60) | 2015-26 n 141 bruto   5.83 neto   1.83 pb (t 0.29) años+ 7/12 | Holm False → no
+   por año (pb): {2015: 44.0, 2016: -27.0, 2017: -53.0, 2018: -89.0, 2019: 99.0, 2020: 575.0, 2021: 103.0, 2022: 36.0, 2023: -483.0, 2024: -520.0, 2025: 111.0, 2026: 463.0}
+Por mercado, 2015-26, bruto medio (pb):
+   W1 adelantamiento (5 últimos + DH1-4) {'CL': -11.7, 'HO': 20.2, 'RB': -2.8, 'NG': -41.7}
+   W2 periodo de roll (DH5-9) {'CL': 23.4, 'HO': 3.0, 'RB': 12.8, 'NG': -15.8}
