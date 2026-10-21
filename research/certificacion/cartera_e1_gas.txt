@@ -1,0 +1,16 @@
+
+E1 coste FTMO: 5.5%/año Sharpe 0.66 DD -17.8%
+<stdin>:18: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  + gas jueves (coste  5 pb): gas solo 2.9%/año Sharpe 0.76 | CARTERA (misma vol. que E1 al 0,5%): 7.8%/año Sharpe 0.92 DD -15.5% | al 1%: 15.5%/año DD -31.1% | corr -0.03
+<stdin>:18: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  + gas jueves (coste 15 pb): gas solo 2.0%/año Sharpe 0.53 | CARTERA (misma vol. que E1 al 0,5%): 7.0%/año Sharpe 0.83 DD -15.8% | al 1%: 13.9%/año DD -31.7% | corr -0.03
+<stdin>:18: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  + gas jueves (coste 25 pb): gas solo 1.1%/año Sharpe 0.30 | CARTERA (misma vol. que E1 al 0,5%): 6.2%/año Sharpe 0.73 DD -16.1% | al 1%: 12.3%/año DD -32.3% | corr -0.02
+
+E1 coste bajo: 8.3%/año Sharpe 0.99 DD -15.8%
+<stdin>:18: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  + gas jueves (coste  5 pb): gas solo 2.9%/año Sharpe 0.76 | CARTERA (misma vol. que E1 al 0,5%): 10.4%/año Sharpe 1.23 DD -14.1% | al 1%: 20.7%/año DD -28.2% | corr -0.03
+<stdin>:18: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  + gas jueves (coste 15 pb): gas solo 2.0%/año Sharpe 0.53 | CARTERA (misma vol. que E1 al 0,5%): 9.6%/año Sharpe 1.14 DD -14.4% | al 1%: 19.1%/año DD -28.8% | corr -0.03
+<stdin>:18: Pandas4Warning: Sorting by default when concatenating all DatetimeIndex is deprecated.  In the future, pandas will respect the default of `sort=False`. Specify `sort=True` or `sort=False` to silence this message. If you see this warnings when not directly calling concat, report a bug to pandas.
+  + gas jueves (coste 25 pb): gas solo 1.1%/año Sharpe 0.30 | CARTERA (misma vol. que E1 al 0,5%): 8.7%/año Sharpe 1.04 DD -14.7% | al 1%: 17.5%/año DD -29.4% | corr -0.02
