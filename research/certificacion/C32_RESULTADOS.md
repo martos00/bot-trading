@@ -9,3 +9,7 @@ FXCM BID/ASK reales (L, F); HistData cierres 16:00 NY (P).
 | Frankfurt breakout (rango 06-07 UTC, 07-09 UTC) | +0,6 pb (t 1,84) | **+0,6 pb (t 2,12)**, 7/8 años; bruto 1,5 pb, coste 0,95 pb | No supera Holm ni 3× coste |
 | Cointegración EUR/SEK–EUR/NOK | +2,9 pb (36 op.) | −6,9 pb (38 op.) | Sin ventaja (bruto 3 pb frente a 10 pb de coste) |
 El Frankfurt breakout es positivo y estable, pero pequeño: con costes de FTMO apenas queda nada. Descartadas.
+
+**Nota (revisión tras C33):** en el Frankfurt breakout la entrada se simuló al nivel de ruptura aunque el cierre de ese minuto
+ya estuviera más allá (mismo sesgo a favor que en C33). Su +0,6 pb neto es, por tanto, un máximo; corregido sería menor.
+El veredicto (no certificada) no cambia.
