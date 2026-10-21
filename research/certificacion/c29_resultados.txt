@@ -1,0 +1,12 @@
+== FACTOR (media de HG, ZS, CL, GC), largo 01:00→07:00 UTC ==
+  2010-2017: n 1503  0.69 pb (t 0.71) años+ 6/8
+  2018-2026: n 1461 -0.60 pb (t -0.49) años+ 5/9
+  corr con E1: 0.055
+
+== Por materia (informativo) ==
+  HG: 2010-17  0.21 pb (t 0.13) | 2018-26  0.78 pb (t 0.51) coste 1.1 pb | EE.UU. 14-20 UTC 2018-26 -0.80 pb
+  ZS: 2010-17  0.94 pb (t 0.72) | 2018-26  2.87 pb (t 2.49) coste 2.0 pb | EE.UU. 14-20 UTC 2018-26 -1.95 pb
+  CL: 2010-17 -0.83 pb (t -0.73) | 2018-26 -0.01 pb (t -0.01) coste 1.5 pb | EE.UU. 14-20 UTC 2018-26 -1.18 pb
+  GC: 2010-17  2.78 pb (t 3.00) | 2018-26  0.24 pb (t 0.26) coste 0.5 pb | EE.UU. 14-20 UTC 2018-26 -0.42 pb
+
+CRITERIOS FACTOR: {'D>0': np.True_, '1 t>=2': np.False_, '2 años>=60%': np.False_, '3 neto>0 y bruto>=3x': np.False_} → NO CERTIFICADA
