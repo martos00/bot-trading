@@ -1,0 +1,7 @@
+
+##### ES (Databento), sin días de cambio de contrato: 821 operaciones #####
+  Descubrimiento 2010-2017: n 405  bruto   1.92 pb  neto   0.92 pb (t 0.53)  estrés  -0.08 pb  bruto/coste 1.92  R medio 0.031  años+ 3/8
+     llegan al objetivo 50%  stop 20%  cierre 16:00 30%   ventas/compras 210/195
+  Confirmación 2018-2026: n 416  bruto   3.02 pb  neto   2.02 pb (t 0.81)  estrés   1.02 pb  bruto/coste 3.02  R medio 0.046  años+ 5/9
+     llegan al objetivo 52%  stop 20%  cierre 16:00 28%   ventas/compras 214/202
+  confirmación, neto por año (pb): {2018: 427.0, 2019: -174.0, 2020: -409.0, 2021: -45.0, 2022: 154.0, 2023: 86.0, 2024: -53.0, 2025: 675.0, 2026: 179.0}

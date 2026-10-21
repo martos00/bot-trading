@@ -17,3 +17,11 @@ A diferencia de Yahoo, aquí se sabe qué contrato es cada barra y no se calcula
   el estudio): 2010-2016 −32,8 pb (t −2,12), 2017-2026 −45,5 pb (t −2,94), frente a ≈ −3/−5 pb el resto de días. Como el
   sentido se descubrió al ver los datos, no se puede certificar con el pasado: **candidata nueva para vigilar hacia delante**
   ("corto en gas el jueves del informe"), pendiente de entender el mecanismo y de medir su coste en CFD.
+
+## C9 (regla del 80% de Dalton) con el futuro ES de Databento (M1, sin días de cambio de contrato) — `v_databento_c9.py`
+| | HistData SPXUSD (antes) | Databento ES |
+|---|---|---|
+| 2010-2017 | +1,5 pb (t 0,64) | +0,9 pb (t 0,53), 3/8 años |
+| 2018-2026 | **+5,1 pb (t 2,54)**, 7/9 años | **+2,0 pb (t 0,81)**, 5/9 años |
+Con el futuro real el resultado de 2018-2026 se reduce a menos de la mitad y deja de ser significativo. **No se confirma con
+fuente independiente: se retira de la lista de vigilancia.** Coste de los datos: ≈ 20,8 $ del crédito gratuito.
