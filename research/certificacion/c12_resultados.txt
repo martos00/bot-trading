@@ -1,0 +1,15 @@
+
+== ZN (coste 1.78 pb) ==
+  Réplica 2001-2018: último día n 216 bruto   9.10 pb (t 3.47) neto   7.32 pb (t 2.79) bruto/coste 5.1 años+ 13/18 | resto -0.06 pb, dif t 3.53 | penúltimo 6.07 pb (t 2.75)
+  Confirmación 2019-2026: último día n 92 bruto   5.74 pb (t 1.96) neto   3.95 pb (t 1.35) bruto/coste 3.2 años+ 5/8 | resto -1.13 pb, dif t 2.17 | penúltimo 1.60 pb (t 0.48)
+     neto por año (pb): {2019: 111.0, 2020: 116.0, 2021: 49.0, 2022: 73.0, 2023: 121.0, 2024: -61.0, 2025: -16.0, 2026: -30.0}
+
+== ZF (coste 1.09 pb) ==
+  Réplica 2001-2018: último día n 216 bruto   7.42 pb (t 4.77) neto   6.33 pb (t 4.07) bruto/coste 6.8 años+ 15/18 | resto -0.16 pb, dif t 4.62 | penúltimo 4.11 pb (t 3.03)
+  Confirmación 2019-2026: último día n 92 bruto   6.49 pb (t 3.43) neto   5.39 pb (t 2.86) bruto/coste 5.9 años+ 7/8 | resto -0.83 pb, dif t 3.39 | penúltimo 2.47 pb (t 1.21)
+
+== ZB (coste 2.94 pb) ==
+  Réplica 2001-2018: último día n 216 bruto  15.45 pb (t 3.46) neto  12.52 pb (t 2.80) bruto/coste 5.3 años+ 13/18 | resto -0.16 pb, dif t 3.56 | penúltimo 7.49 pb (t 2.08)
+  Confirmación 2019-2026: último día n 92 bruto   8.94 pb (t 1.62) neto   6.00 pb (t 1.08) bruto/coste 3.0 años+ 5/8 | resto -2.34 pb, dif t 1.90 | penúltimo 5.93 pb (t 1.05)
+
+CRITERIOS ZN: réplica>0 True {'1 neto>0 t>=2': np.False_, '2 bruto>=3x': np.True_, '3 años>=60%': np.True_, '4 dif t>=1,645': np.True_} → NO CERTIFICADA
