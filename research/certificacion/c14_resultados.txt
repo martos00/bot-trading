@@ -1,0 +1,29 @@
+
+== S&P 500 (principal) — P: 993 operaciones ==
+  Descubrimiento 2010-2017: n 381 bruto  -0.26 pb neto  -1.26 pb (t -0.77) bruto/coste -0.26 años+ 3/8 aciertos 22%
+  Confirmación 2018-2026: n 612 bruto   0.65 pb neto  -0.35 pb (t -0.25) bruto/coste 0.65 años+ 3/9 aciertos 25%
+
+== S&P 500 (principal) — B: 1565 operaciones ==
+  Descubrimiento 2010-2017: n 630 bruto  -0.21 pb neto  -1.21 pb (t -1.06) bruto/coste -0.21 años+ 2/8 aciertos 22%
+  Confirmación 2018-2026: n 935 bruto  -1.23 pb neto  -2.23 pb (t -2.44) bruto/coste -1.23 años+ 2/9 aciertos 23%
+
+== S&P 500 (principal) — F: 770 operaciones ==
+  Descubrimiento 2010-2017: n 297 bruto  -2.33 pb neto  -3.33 pb (t -1.79) bruto/coste -2.33 años+ 1/8 aciertos 38%
+  Confirmación 2018-2026: n 473 bruto   0.05 pb neto  -0.95 pb (t -0.57) bruto/coste 0.05 años+ 3/9 aciertos 40%
+
+== Nasdaq 100 (informativo) — P: 1224 operaciones ==
+  Descubrimiento 2010-2017: n 602 bruto   1.55 pb neto   0.55 pb (t 0.40) bruto/coste 1.55 años+ 5/8 aciertos 26%
+  Confirmación 2018-2026: n 622 bruto  -2.41 pb neto  -3.41 pb (t -1.92) bruto/coste -2.41 años+ 2/9 aciertos 19%
+
+== Nasdaq 100 (informativo) — B: 1873 operaciones ==
+  Descubrimiento 2010-2017: n 883 bruto   0.33 pb neto  -0.67 pb (t -0.69) bruto/coste 0.33 años+ 4/8 aciertos 25%
+  Confirmación 2018-2026: n 990 bruto  -0.91 pb neto  -1.91 pb (t -1.48) bruto/coste -0.91 años+ 3/9 aciertos 22%
+
+== Nasdaq 100 (informativo) — F: 925 operaciones ==
+  Descubrimiento 2010-2017: n 466 bruto  -1.93 pb neto  -2.93 pb (t -1.81) bruto/coste -1.93 años+ 1/8 aciertos 42%
+  Confirmación 2018-2026: n 459 bruto   2.47 pb neto   1.47 pb (t 0.63) bruto/coste 2.47 años+ 5/9 aciertos 43%
+
+CRITERIOS (S&P 500, t >= 2,39):
+  P {'D>0': np.False_, '1 t>=2,39': np.False_, '2 bruto>=3x': np.False_, '3 años>=60%': np.False_} → NO CERTIFICADA
+  B {'D>0': np.False_, '1 t>=2,39': np.False_, '2 bruto>=3x': np.False_, '3 años>=60%': np.False_} → NO CERTIFICADA
+  F {'D>0': np.False_, '1 t>=2,39': np.False_, '2 bruto>=3x': np.False_, '3 años>=60%': np.False_} → NO CERTIFICADA
