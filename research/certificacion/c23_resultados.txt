@@ -1,0 +1,15 @@
+EURPLN LON 7:00→NY 8:00 (signo previsto +): 2010-17  2.73 pb (t 3.86) | 2018-26  1.96 pb (t 3.65) años ok 100% corr E1 0.08 | Holm True → CERTIFICADA
+EURHUF LON 7:00→NY 8:00 (signo previsto +): 2010-17  1.53 pb (t 1.87) | 2018-26  3.81 pb (t 2.21) años ok 67% corr E1 0.29 | Holm True → CERTIFICADA
+EURCZK LON 7:00→NY 8:00 (signo previsto +): 2010-17  1.55 pb (t 2.91) | 2018-26  1.57 pb (t 3.57) años ok 100% corr E1 0.03 | Holm True → CERTIFICADA
+USDPLN NY 8:00→NY 16:00 (signo previsto -): 2010-17 -3.69 pb (t -2.74) | 2018-26 -2.88 pb (t -3.12) años ok 100% corr E1 0.01 | Holm True → CERTIFICADA
+USDHUF NY 8:00→NY 16:00 (signo previsto -): 2010-17 -3.84 pb (t -2.84) | 2018-26 -3.06 pb (t -2.83) años ok 89% corr E1 -0.03 | Holm True → CERTIFICADA
+USDCZK NY 8:00→NY 16:00 (signo previsto -): 2010-17 -3.09 pb (t -2.61) | 2018-26 -1.84 pb (t -2.16) años ok 89% corr E1 0.01 | Holm True → CERTIFICADA
+
+correlaciones 2018-26 (en el sentido previsto):
+              EURPLN  EURHUF  EURCZK  USDPLN_tarde  USDHUF_tarde  USDCZK_tarde
+EURPLN          1.00    0.42    0.37          0.00         -0.01          0.00
+EURHUF          0.42    1.00    0.34          0.02          0.10         -0.04
+EURCZK          0.37    0.34    1.00         -0.03         -0.02         -0.01
+USDPLN_tarde    0.00    0.02   -0.03          1.00          0.81          0.86
+USDHUF_tarde   -0.01    0.10   -0.02          0.81          1.00          0.81
+USDCZK_tarde    0.00   -0.04   -0.01          0.86          0.81          1.00
