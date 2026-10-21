@@ -1,0 +1,16 @@
+
+##### S&P 500 (principal): 649 operaciones #####
+  Descubrimiento 2010-2017: n 279  bruto   2.46 pb  neto   1.46 pb (t 0.64)  estrés   0.46 pb  bruto/coste 2.46  R medio 0.034  años+ 4/7
+     llegan al objetivo 50%  stop 20%  cierre 16:00 30%   ventas/compras 138/141
+  Confirmación 2018-2026: n 370  bruto   6.11 pb  neto   5.11 pb (t 2.54)  estrés   4.11 pb  bruto/coste 6.11  R medio 0.069  años+ 7/9
+     llegan al objetivo 55%  stop 17%  cierre 16:00 28%   ventas/compras 188/182
+  confirmación, neto por año (pb): {2018: 539.0, 2019: -200.0, 2020: 127.0, 2021: 197.0, 2022: 345.0, 2023: -107.0, 2024: 57.0, 2025: 573.0, 2026: 359.0}
+
+##### Nasdaq 100 (informativo): 770 operaciones #####
+  Descubrimiento 2010-2017: n 364  bruto  -0.68 pb  neto  -1.68 pb (t -0.82)  estrés  -2.68 pb  bruto/coste -0.68  R medio -0.044  años+ 3/8
+     llegan al objetivo 46%  stop 21%  cierre 16:00 32%   ventas/compras 190/174
+  Confirmación 2018-2026: n 406  bruto   1.99 pb  neto   0.99 pb (t 0.36)  estrés  -0.01 pb  bruto/coste 1.99  R medio 0.042  años+ 5/9
+     llegan al objetivo 49%  stop 17%  cierre 16:00 34%   ventas/compras 225/181
+  confirmación, neto por año (pb): {2018: 106.0, 2019: -281.0, 2020: 484.0, 2021: 497.0, 2022: -777.0, 2023: 464.0, 2024: -322.0, 2025: 251.0, 2026: -19.0}
+
+CRITERIOS (S&P 500): {'D: neto > 0': np.True_, '1: neto > 0, t >= 2': np.True_, '2: bruto >= 3x coste': np.True_, '3: años >= 60%': np.True_} → CERTIFICADA
