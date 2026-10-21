@@ -15,7 +15,8 @@ FIRMAS = ['FTMO_2step', 'FundedNext_2step', 'FundingPips_2step']
 
 def construir(x, objetivo, coste_pb):
     r = -np.log(x.mid8 / x.mid6)
-    sd = r.rolling(60).std().shift(1)
+    rv = r.dropna()                                      # 60 días anteriores CON dato (corrección 21-oct-2026)
+    sd = rv.rolling(60).std().shift(1).reindex(r.index)
     w = (objetivo / sd).clip(upper=10)
     adverso = x.ask_max / x.mid6 - 1
     stop = adverso >= 4 * sd
