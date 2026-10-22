@@ -1,0 +1,4 @@
+C65b (INFORMATIVO, dentro de muestra): Sharpe por operación del oro del viernes, neto 0,74 pb, según peso en régimen VIX alto/bajo
+  peso alto 1 / bajo 1: media/desv por operación 0.224  (Sharpe anual ≈ 1.62)
+  peso alto 1.25 / bajo 0.75: media/desv por operación 0.219  (Sharpe anual ≈ 1.58)
+  peso alto 1.5 / bajo 0.5: media/desv por operación 0.206  (Sharpe anual ≈ 1.49)

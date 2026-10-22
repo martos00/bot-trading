@@ -1,0 +1,2 @@
+Oro viernes 16:00-16:55: VIX alto n 360 4.05 pb (media/desv 0.321) | VIX bajo n 423 2.59 pb (media/desv 0.261) | diferencia 1.46 pb (t Welch 1.78) → PASA
+Plata víspera 16-17 (inf.): VIX alto n 54 12.49 pb (media/desv 0.626) | VIX bajo n 84 8.21 pb (media/desv 0.443) | diferencia 4.28 pb (t Welch 1.27)
