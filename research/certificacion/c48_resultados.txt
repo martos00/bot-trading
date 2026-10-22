@@ -1,0 +1,12 @@
+USDJPY largo D−2 07-08 NY: n 174 bruto 3.44 pb neto 2.76 pb (t 4.55) años+ 13/15 | 2012-18 neto 3.15 | 2019-26 neto 2.39 (t 3.05) | coste medio 0.68 pb
+   por año neto (pb): {2012: 6.6, 2013: 47.4, 2014: 19.4, 2015: 42.3, 2016: 71.3, 2017: -4.2, 2018: 82.2, 2019: 14.4, 2020: 63.2, 2021: 42.6, 2022: 22.2, 2023: 73.5, 2024: 12.5, 2025: 2.3, 2026: -15.4}
+CRITERIOS: {'1 t>=2': np.True_, '2 años>=60%': np.True_, '3 2019-26>0': np.True_} → CONFIRMADA
+informativo (bruto, pb, t):
+   USDCHF largo D−2 07-08: 2.71 pb (t 3.81) n 174
+   EURUSD corto D−2 07-08: 2.61 pb (t 3.80) n 174
+   GBPUSD corto D−2 07-08: 1.60 pb (t 1.77) n 174
+   USDJPY largo D−3 07-08: 0.06 pb (t 0.10) n 174
+   USDJPY largo D−1 07-08: 2.14 pb (t 3.36) n 174
+   USDJPY largo D−2 06-07: 1.14 pb (t 2.06) n 174
+   USDJPY largo D−2 08-09: 0.25 pb (t 0.27) n 174
+   USDJPY largo resto de días 07-08: 0.61 pb (t 2.02) n 1004
