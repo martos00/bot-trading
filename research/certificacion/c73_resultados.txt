@@ -1,0 +1,4 @@
+  return x.mean() / np.sqrt((g[0] + 2 * sum((1 - k / (L + 1)) * g[k] for k in range(1, L + 1))) / n)
+C73 UKXGBP Q−2 01-02 largo (a) 2010-2018 (principal): n 1 -11.39 pb (t -inf) años+ 0/1 → NO PASA
+C73 UKXGBP Q−2 01-02 largo (b) 2019-2026 (inf.): n 31 3.66 pb (t 1.44) años+ 5/8
+   inf. resto de días 01-02: 0.41 pb
