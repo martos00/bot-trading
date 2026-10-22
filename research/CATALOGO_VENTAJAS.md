@@ -62,6 +62,9 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Niveles redondos (Osler) | C61 | Nada (bruto 0) |
 | Valor relativo oro/plata y Brent/WTI | C62, C63 | Brent/WTI era artefacto de los CFD; oro/plata no |
 | Adelanto entre mercados (1 h) y días extremos | B17 | Nada |
+| **Materias primas no metálicas en víspera de festivo (Fabozzi-Ma-Briley 1994)** | C69 + C70 + E12 | **6.ª ventaja (prudente)**: 2000-09 +28 pb (t 2,89, 9/10 años); 2010-26 +12 pb (t 1,85, 13/17); aporta +0,04 a la cartera |
+| Flujos programados (MSCI, Russell, triple hechicería, VIX, dividendos JP) | C64 | Nada (triple hechicería cerca: t −2,54) |
+| Metales y VIX; franco fin de mes; divisas refugio antes del cierre; cereales viernes verano | C65-C68 | C65 apoya el mecanismo pero no mejora el tamaño; el resto no |
 | Refugios no metálicos y paladio el viernes | C46, C47 | No: el efecto del viernes es del oro (y algo plata/platino) |
 | **Gas natural jueves 09:00-10:00 NY (F1b)** | descomposición de F1 | **En forward (a posteriori, sin certificar): −12 pb, 17/17 años** |
 | Reversión de fin de día (Baltussen-Da-Soebhag 2025) | — | Solo acciones individuales en sección cruzada: no operable en CFD/futuros |
