@@ -1,0 +1,5 @@
+USDJPY corto viernes: -0.61 pb (t -2.43) neto -1.91 pb
+USDCHF corto viernes: 0.14 pb (t 0.61) neto -2.11 pb
+AUDUSD corto viernes: 0.45 pb (t 1.66) neto -1.47 pb
+CESTA viernes: n 740 bruto 0.01 pb (t 0.07) años+ 7/15 | neto -1.84 pb → NO PASA; neto ≤ 0: NO OPERABLE
+informativo vísperas no viernes: n 43 -0.06 pb (t -0.29)
