@@ -1,0 +1,14 @@
+GC hecho
+SI hecho
+ES hecho
+reglas evaluadas: 2269
+seleccionadas (|t| >= 4,0): 8; umbral Bonferroni: t >= 2.50
+mercado dia inicio  n_d    m_d   t_d  n_c   m_c   t_c  años  coste  pasa  control
+     SI vie   1630  364   4.19  5.50  425  4.90  4.31  0.78   2.30 False    False
+     SI D+2   1200   91 -11.43 -4.79  105 -4.05 -1.71  0.78   2.30 False    False
+     GC  Q0   0730   31  -4.38 -4.32   35 -1.49 -0.52  0.44   0.74 False    False
+     GC Q-2   2000   26   7.39  4.33   28 -0.02 -0.01  0.56   0.74 False    False
+     SI Q+2   1200   30 -13.05 -4.95   35  3.00  0.83  0.44   2.30 False    False
+     ES  Q0   0200   31  -4.20 -4.47   35  1.48  0.86  0.44   0.73 False    False
+     GC vie   0500  383  -2.79 -5.08  442  0.61  1.13  0.33   0.74 False    False
+     SI vie   1500  366   3.78  4.25  426 -1.73 -1.76  0.22   2.30 False    False
