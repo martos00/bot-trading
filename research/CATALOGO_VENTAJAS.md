@@ -48,6 +48,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | **Oro largo viernes 16:00-16:55 NY** | B4 + C45 + E8 | **CERTIFICADA (2.ª ventaja)**: futuro t 4,38 en 2018-26, 9/9 años; contado independiente t 3,78; Sharpe 1,0-1,5 según coste |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
+| **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |
 | Día × hora en 15 futuros nuevos / 13 divisas | B5, B6 | Nada nuevo |
 | Refugios no metálicos y paladio el viernes | C46, C47 | No: el efecto del viernes es del oro (y algo plata/platino) |
 | **Gas natural jueves 09:00-10:00 NY (F1b)** | descomposición de F1 | **En forward (a posteriori, sin certificar): −12 pb, 17/17 años** |
