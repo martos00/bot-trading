@@ -1,0 +1,9 @@
+6J (largo): n 804 0.96 pb (t 1.42) | 2010-17 2.42 | 2018-26 -0.30 (t -0.77) | años+ 9/17 | coste 1.2
+ZN (largo): n 805 0.12 pb (t 0.65) | 2010-17 0.38 | 2018-26 -0.11 (t -0.40) | años+ 12/17 | coste 1.8
+ZB (largo): n 805 0.60 pb (t 1.65) | 2010-17 0.93 | 2018-26 0.31 (t 0.53) | años+ 12/17 | coste 2.7
+ES (corto): n 806 -0.12 pb (t -0.21) | 2010-17 -0.67 | 2018-26 0.36 (t 0.43) | años+ 9/17 | coste 0.73
+CONJUNTA (media de las 4 con su signo): 0.36 pb (t 1.23) → NO PASA
+  Holm ZB: no
+  Holm 6J: no
+  Holm ZN: no
+  Holm ES: no
