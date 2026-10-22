@@ -1,0 +1,7 @@
+jueves válidos: 792
+  mié 15:00→jue 09:00          media    -3.3 pb (t -0.55)  % del total    10%
+  jue 09:00→jue 10:00          media   -12.1 pb (t -3.73)  % del total    35%
+  jue 10:00→jue 11:00          media    -9.4 pb (t -1.61)  % del total    27%
+  jue 11:00→jue 14:00          media    -6.8 pb (t -1.35)  % del total    20%
+  jue 14:00→jue 17:00          media    -2.6 pb (t -0.72)  % del total     8%
+  total mié 15:00→jue 17:00    media   -34.3 pb (t -2.99)  % del total   100%
