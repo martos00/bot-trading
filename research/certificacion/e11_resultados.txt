@@ -1,0 +1,9 @@
+EURJPY fin de trimestre: n 58, 0.67 %/año, Sharpe anual 0.63, años+ 14/15, neto medio 3.49 pb
+  J = pd.concat([e.rename('e1'), oro(0.005, co).ret.loc['2018':].rename('oro'), yen.loc['2018':].rename('yen'), plata(cp).loc['2018':].rename('plata'), ej.loc['2018':].rename('ej')], axis=1).fillna(0)
+  E1 FTMO 0,79 | oro 0.74, plata 2.3 → 4 ventajas 1.48 | 5 ventajas 1.54 (12.8 %/año, DD -12.3 %)
+  J = pd.concat([e.rename('e1'), oro(0.005, co).ret.loc['2018':].rename('oro'), yen.loc['2018':].rename('yen'), plata(cp).loc['2018':].rename('plata'), ej.loc['2018':].rename('ej')], axis=1).fillna(0)
+  E1 FTMO 0,79 | oro 1.5, plata 4.0 → 4 ventajas 1.22 | 5 ventajas 1.29 (10.7 %/año, DD -13.2 %)
+  J = pd.concat([e.rename('e1'), oro(0.005, co).ret.loc['2018':].rename('oro'), yen.loc['2018':].rename('yen'), plata(cp).loc['2018':].rename('plata'), ej.loc['2018':].rename('ej')], axis=1).fillna(0)
+  E1 bajo 0,44 | oro 0.74, plata 2.3 → 4 ventajas 1.85 | 5 ventajas 1.91 (15.9 %/año, DD -10.4 %)
+  J = pd.concat([e.rename('e1'), oro(0.005, co).ret.loc['2018':].rename('oro'), yen.loc['2018':].rename('yen'), plata(cp).loc['2018':].rename('plata'), ej.loc['2018':].rename('ej')], axis=1).fillna(0)
+  E1 bajo 0,44 | oro 1.5, plata 4.0 → 4 ventajas 1.60 | 5 ventajas 1.66 (13.8 %/año, DD -11.3 %)
