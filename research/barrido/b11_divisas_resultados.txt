@@ -1,0 +1,5 @@
+reglas evaluadas: 546
+seleccionadas en 2012-18 (|t| >= 3,5): 2; umbral Bonferroni 2019-26: t >= 1.96
+   par dia  inicio  m_d  t_d   m_c   t_c  años  coste  pasa
+EURCHF  CN      21 1.07 3.90  0.24  0.91  0.62   1.03 False
+EURCHF  JP      21 1.48 3.54 -0.13 -0.34  0.50   0.99 False

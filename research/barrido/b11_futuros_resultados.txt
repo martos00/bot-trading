@@ -1,0 +1,22 @@
+reglas evaluadas: 1114
+seleccionadas en descubrimiento (|t| >= 3.5): 4; umbral de Bonferroni en confirmación: t >= 2.24
+mercado dia  inicio   m_d   t_d   m_c   t_c  años  coste  pasa
+     HE  CN      14 10.88  5.47  1.77  0.99  0.56    4.0 False
+     6S  CN      21 -1.92 -4.11 -0.04 -0.08  0.56    1.4 False
+     ZS  CN       2  3.24  3.69 -0.34 -0.41  0.33    2.5 False
+     ZM  CN       2  4.93  3.90 -1.63 -1.85  0.22    3.0 False
+
+mayores |t| en 2010-17 (informativo):
+mercado dia  inicio   m_d   t_d   m_c   t_c  años  coste
+     HE  CN      14 10.88  5.47  1.77  0.99  0.56   4.00
+     6S  CN      21 -1.92 -4.11 -0.04 -0.08  0.56   1.40
+     ZM  CN       2  4.93  3.90 -1.63 -1.85  0.22   3.00
+     ZS  CN       2  3.24  3.69 -0.34 -0.41  0.33   2.50
+     ZS  JP       9 11.50  3.17  1.78  0.36  0.56   2.50
+     GC  JP      20  4.18  3.08 -1.69 -1.21  0.33   0.74
+     6S  CN       2 -2.61 -3.03 -0.53 -0.46  0.56   1.40
+     6C  CN      22  1.68  3.01 -0.03 -0.05  0.44   1.40
+     ZS  JP       8 -5.38 -2.92  0.45  0.20  0.44   2.50
+     NG  CN      16  8.27  2.91 -4.56 -1.12  0.22   4.70
+     ZC  JP       8 -6.46 -2.90  0.45  0.17  0.56   6.60
+     ZC  CN       6 -5.30 -2.84 -2.05 -1.12  0.78   6.60
