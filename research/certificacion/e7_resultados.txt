@@ -1,0 +1,3 @@
+post-festivo: n 93 media -0.18 pb (t -0.15) | resto: n 3513 media 1.68 pb | diferencia -1.86 pb (t Welch -1.22)
+informativo: lunes normales n 670 media 1.10 pb; resto no lunes 1.81 pb
+DECISIÓN: no pasa → nada
