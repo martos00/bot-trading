@@ -1,0 +1,11 @@
+PLATA víspera festivo (coste 2.3 pb): 1.82 %/año, Sharpe anual 1.03, años+ 11/14, n 114
+PLATA víspera festivo (coste 4.0 pb): 1.40 %/año, Sharpe anual 0.80, años+ 10/14, n 114
+Sharpe 2018-2026 (cada pata al 0,5 %; cartera reescalada a la volatilidad de E1 solo):
+  J = pd.concat([e.rename('e1'), oro(0.005, co).ret.loc['2018':].rename('oro'), yen.loc['2018':].rename('yen'), plata(cp).loc['2018':].rename('plata')], axis=1).fillna(0)
+  E1 FTMO 0,79 | oro 0.74 pb, plata 2.3 pb → E1+oro+yen 1.30 | E1+oro+yen+plata 1.48 (12.3 %/año, DD -12.5 %) | corr plata-oro 0.06
+  J = pd.concat([e.rename('e1'), oro(0.005, co).ret.loc['2018':].rename('oro'), yen.loc['2018':].rename('yen'), plata(cp).loc['2018':].rename('plata')], axis=1).fillna(0)
+  E1 FTMO 0,79 | oro 1.5 pb, plata 4.0 pb → E1+oro+yen 1.09 | E1+oro+yen+plata 1.22 (10.2 %/año, DD -13.5 %) | corr plata-oro 0.06
+  J = pd.concat([e.rename('e1'), oro(0.005, co).ret.loc['2018':].rename('oro'), yen.loc['2018':].rename('yen'), plata(cp).loc['2018':].rename('plata')], axis=1).fillna(0)
+  E1 bajo 0,44 | oro 0.74 pb, plata 2.3 pb → E1+oro+yen 1.69 | E1+oro+yen+plata 1.85 (15.4 %/año, DD -10.6 %) | corr plata-oro 0.06
+  J = pd.concat([e.rename('e1'), oro(0.005, co).ret.loc['2018':].rename('oro'), yen.loc['2018':].rename('yen'), plata(cp).loc['2018':].rename('plata')], axis=1).fillna(0)
+  E1 bajo 0,44 | oro 1.5 pb, plata 4.0 pb → E1+oro+yen 1.47 | E1+oro+yen+plata 1.60 (13.3 %/año, DD -11.5 %) | corr plata-oro 0.06
