@@ -1,0 +1,4 @@
+USDJPY largo D−2 07-08, 2003-11: n 108 1.76 pb (t 1.67) años+ 7/9 | resto de días 0.41 pb
+   → PASA | por año (pb): {2003: 54.0, 2004: 35.0, 2005: 13.0, 2006: 7.0, 2007: 64.0, 2008: 6.0, 2009: -5.0, 2010: -45.0, 2011: 61.0}
+EURUSD corto D−2 07-08, 2003-11: n 108 0.98 pb (t 0.81) años+ 5/9 | resto de días 1.10 pb
+USDCHF largo D−2 07-08, 2003-11: n 108 0.70 pb (t 0.68) años+ 5/9 | resto de días 0.71 pb
