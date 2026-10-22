@@ -1,0 +1,5 @@
+GC cat 1: 0.28 pb (t 1.34, n 3206) | cat 2: 3.62 pb (t 5.82, n 721) | cat 3: 3.13 pb (t 3.59, n 138)
+SI cat 1: 0.81 pb (t 2.00, n 3206) | cat 2: 5.94 pb (t 5.20, n 721) | cat 3: 9.88 pb (t 5.29, n 138)
+PENDIENTE media GC+SI: 3.64 pb por categoría (t NW 7.71) → PASA
+   2010-2017: cat 1 1.09 pb | cat 2 4.43 pb | cat 3 6.06 pb
+   2018-2026: cat 1 0.07 pb | cat 2 5.08 pb | cat 3 6.85 pb
