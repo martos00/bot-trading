@@ -45,6 +45,8 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Reversión semanal en sección cruzada de divisas | C42 | Nada (t −0,19) |
 | Gas tras el informe EIA: deriva o reversión | C43 | El signo cambia entre periodos |
 | Estacionalidad del mismo mes en materias primas (KLN 2016) | C44 | Invertida (t −3,43); no se invierte la regla |
+| **Oro largo viernes 16:00-16:55 NY** | B4 + C45 + E8 | **CERTIFICADA (2.ª ventaja)**: futuro t 4,38 en 2018-26, 9/9 años; contado independiente t 3,78; Sharpe 1,0-1,5 según coste |
+| Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **Gas natural jueves 09:00-10:00 NY (F1b)** | descomposición de F1 | **En forward (a posteriori, sin certificar): −12 pb, 17/17 años** |
 | Reversión de fin de día (Baltussen-Da-Soebhag 2025) | — | Solo acciones individuales en sección cruzada: no operable en CFD/futuros |
 | Presión por pago de dividendos (Hartzmark-Solomon 2025) | — | Sin fechas de pago gratuitas del NYSE: no probable |
