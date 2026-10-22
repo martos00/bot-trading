@@ -1,0 +1,10 @@
+YEN solo (riesgo 0,5 %): 2.1 %/año, Sharpe anual 1.10, años+ 11/13, stops 1
+Sharpe 2018-2026 (cada pata al 0,5 %; cartera reescalada a la volatilidad de E1 solo):
+  J = pd.concat([e.rename('e1'), g.rename('oro'), y.rename('yen'), n.rename('gas')], axis=1).fillna(0)
+  E1 FTMO 0,79 | oro 0.74 pb → E1+oro 1.13 | E1+oro+yen 1.29 (10.7 %/año, DD -15.1 %) | +gas 1.44 (11.9 %/año, DD -13.4 %) | corr yen-E1 0.044
+  J = pd.concat([e.rename('e1'), g.rename('oro'), y.rename('yen'), n.rename('gas')], axis=1).fillna(0)
+  E1 FTMO 0,79 | oro 1.5 pb → E1+oro 0.91 | E1+oro+yen 1.08 (8.9 %/año, DD -16.0 %) | +gas 1.24 (10.2 %/año, DD -14.2 %) | corr yen-E1 0.044
+  J = pd.concat([e.rename('e1'), g.rename('oro'), y.rename('yen'), n.rename('gas')], axis=1).fillna(0)
+  E1 bajo 0,44 | oro 0.74 pb → E1+oro 1.52 | E1+oro+yen 1.68 (13.8 %/año, DD -12.8 %) | +gas 1.79 (14.8 %/año, DD -11.4 %) | corr yen-E1 0.043
+  J = pd.concat([e.rename('e1'), g.rename('oro'), y.rename('yen'), n.rename('gas')], axis=1).fillna(0)
+  E1 bajo 0,44 | oro 1.5 pb → E1+oro 1.30 | E1+oro+yen 1.46 (12.1 %/año, DD -13.7 %) | +gas 1.59 (13.2 %/año, DD -12.2 %) | corr yen-E1 0.043
