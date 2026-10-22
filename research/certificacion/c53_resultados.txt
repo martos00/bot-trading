@@ -1,0 +1,4 @@
+USDJPY largo: fin de trimestre n 58 2.29 pb (t 1.61) | resto n 116 4.01 pb (t 5.11) | diferencia -1.72 pb (t Welch -1.14) | diciembre n 14 -0.90 pb
+   → NO PASA
+USDCHF largo (inf.): fin de trimestre n 58 2.13 pb (t 1.91) | resto n 116 3.01 pb (t 3.94) | diferencia -0.88 pb (t Welch -0.58) | diciembre n 14 -0.03 pb
+EURUSD corto (inf.): fin de trimestre n 58 1.73 pb (t 1.50) | resto n 116 3.05 pb (t 4.05) | diferencia -1.31 pb (t Welch -0.77) | diciembre n 14 0.70 pb
