@@ -67,6 +67,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Ventanas a 30 min de las ventajas certificadas | E13 | Ya eran casi óptimas; solo E11 pasa a 00:30-02:00 |
 | Calendario × 30 min en 13 divisas, oro, plata y S&P | B18, B19 | Nada nuevo; plata viernes 16:30-17:00 (t 4,31) falla solo por coste |
 | Materias primas el día después del festivo | C71 | Signo inestable |
+| Mercados de ICE (cacao, café, azúcar, algodón, Brent, gasóleo, FTSE, gilt) | B21, C72, C73 | Nada certificado; FTSE Q−2 01-02 NY candidato débil |
 | Última media hora antes del cierre en 16 futuros | B20 | Platino +2,1 pb (t 3,38, 14/17): confirma el mecanismo, pero < coste; resto nada |
 | Metales y VIX; franco fin de mes; divisas refugio antes del cierre; cereales viernes verano | C65-C68 | C65 apoya el mecanismo pero no mejora el tamaño; el resto no |
 | Refugios no metálicos y paladio el viernes | C46, C47 | No: el efecto del viernes es del oro (y algo plata/platino) |
