@@ -13,3 +13,15 @@ Dentro de la hora: 16:00-16:29 +0,69 pb (t 1,85); **16:30-16:58 +1,77 pb (t 3,93
 Aviso: en el contado el tramo reciente es más débil (+1,61 pb, t 1,71) que en el futuro (+3,86 pb). Posibles causas: el futuro incluye
 los dos últimos minutos (16:58-17:00) o el BID del contado baja cuando se amplía el spread al cierre (sesgo en contra). Se comprueba
 con el futuro a minuto (análisis descriptivo siguiente) antes de definir la estrategia.
+
+## C45b — Futuro GC a minuto el viernes (descriptivo, Databento ≈ 0,4 $)
+| Tramo | Media | t | 2010-17 | 2018-26 | Años + |
+|---|---|---|---|---|---|
+| 16:00 → 17:00 | +3,53 pb | 5,87 | +3,27 | +3,76 (t 4,24) | 15/17 |
+| **16:00 → 16:55** | **+3,26 pb** | **6,09** | +3,28 | +3,25 (t 4,09) | **16/17** |
+| 16:30 → 16:55 | +2,01 pb | 6,43 | +1,56 | +2,39 (t 4,72) | 15/17 |
+| 16:55 → 16:58 | +0,22 pb | 1,63 | | | |
+| 16:58 → 17:00 | +0,06 pb | 0,54 | | | |
+El efecto NO depende de los últimos minutos. La debilidad reciente del contado de HistData (BID) no aparece en el futuro; lo más
+probable es el sesgo del BID al ampliarse el spread por la tarde del viernes (va en contra del largo). Dispersión ≈ 15 pb por viernes:
+Sharpe anual bruto ≈ 1,5; neto con 0,74 pb ≈ 1,2 (futuro); con CFD a 1-1,5 pb ≈ 0,9-1,1. Coste real del CFD pendiente de medir en MT5.
