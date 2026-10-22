@@ -1,0 +1,17 @@
+reglas 135; seleccionadas en 2010-2017 (|t| >= 3): 2
+umbral Bonferroni unilateral en 2018-2026: t >= 1.96
+  HO   lun: 2010-17  -35.07 pb (t -3.92) | 2018-26    5.13 pb (t  0.38) años con signo 22% bruto/coste -1.7× → no
+  RB   lun: 2010-17  -41.98 pb (t -4.08) | 2018-26   -4.52 pb (t -0.22) años con signo 44% bruto/coste 1.5× → no
+
+Mayores |t| en 2018-2026 (informativo, sin selección):
+mercado dia    m_d   t_d    m_c   t_c
+     6J lun  -1.57 -0.52  -8.52 -3.53
+     LE mar   8.49  2.02  16.08  3.17
+     PL vie  -4.46 -0.46  61.23  2.82
+     NQ lun   2.76  0.60  18.87  2.74
+     ZB lun   4.76  1.64  -7.74 -2.62
+     ZF lun   1.95  2.43  -2.30 -2.35
+     PL mié   1.96  0.17  51.10  2.28
+     ZN lun   3.67  2.72  -3.37 -2.27
+     ES lun  -1.92 -0.45  11.88  2.24
+     NG jue -23.06 -1.68 -38.63 -2.23
