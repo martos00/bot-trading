@@ -29,10 +29,10 @@ input string InpJPY   = "USDJPY";
 input string InpOro   = "XAUUSD";
 input string InpPlata = "XAGUSD";
 input string InpGas   = "NATGAS";   // p. ej. NATGAS, NGAS, XNGUSD... (mira la Observacion de mercado)
-input int    InpDias  = 365;        // dias naturales hacia atras (cuanto mas, mas vísperas de festivo)
+input int    InpDias  = 365;        // dias naturales hacia atras (cuanto mas, mas visperas de festivo)
 input ENUM_DST_SERVIDOR InpDSTServidor = DST_EUROPA; // cambio de hora del servidor
 
-// Festivos de la NYSE (para las visperas de E10). Ampliar cada año.
+// Festivos de la NYSE (para las visperas de E10). Ampliar cada anio.
 string FESTIVOS = "2024.01.01,2024.01.15,2024.02.19,2024.03.29,2024.05.27,2024.06.19,2024.07.04,2024.09.02,2024.11.28,2024.12.25,"
                   "2025.01.01,2025.01.09,2025.01.20,2025.02.17,2025.04.18,2025.05.26,2025.06.19,2025.07.04,2025.09.01,2025.11.27,2025.12.25,"
                   "2026.01.01,2026.01.19,2026.02.16,2026.04.03,2026.05.25,2026.06.19,2026.07.03,2026.09.07,2026.11.26,2026.12.25";
@@ -126,7 +126,7 @@ void Cuenta(string s)
    double tv = SymbolInfoDouble(s, SYMBOL_TRADE_TICK_VALUE), ts = SymbolInfoDouble(s, SYMBOL_TRADE_TICK_SIZE);
    if(ts > 0) nocional = precio / ts * tv;
    double apal = (okm && margen > 0) ? nocional / margen : 0;
-   PrintFormat("%s: contrato %.2f | precio %.5f | nocional 1 lote ≈ %.0f %s | margen 1 lote %.2f %s | APALANCAMIENTO EFECTIVO ≈ 1:%.0f | lote min %.2f paso %.2f",
+   PrintFormat("%s: contrato %.2f | precio %.5f | nocional 1 lote ~ %.0f %s | margen 1 lote %.2f %s | APALANCAMIENTO EFECTIVO ~ 1:%.0f | lote min %.2f paso %.2f",
                s, contrato, precio, nocional, AccountInfoString(ACCOUNT_CURRENCY), margen, AccountInfoString(ACCOUNT_CURRENCY), apal,
                SymbolInfoDouble(s, SYMBOL_VOLUME_MIN), SymbolInfoDouble(s, SYMBOL_VOLUME_STEP));
   }
@@ -155,7 +155,7 @@ void Medir(string s, int tipo, int h0, int m0, int h1, int m1, string etiqueta, 
    int n = ArraySize(tot);
    if(n == 0) { Print(s, " ", etiqueta, ": sin ticks (abre su grafico M1 y desplazate atras para descargar historico) o sin dias de ese tipo."); return; }
    double c = Percentil(tot, 0.5);
-   PrintFormat("%s %s (%d dias): spread entrada mediana %.2f pb (p90 %.2f) | salida mediana %.2f pb (p90 %.2f) | COSTE mediana %.2f pb + comision | ventaja bruta historica ≈ %.1f pb → %s",
+   PrintFormat("%s %s (%d dias): spread entrada mediana %.2f pb (p90 %.2f) | salida mediana %.2f pb (p90 %.2f) | COSTE mediana %.2f pb + comision | ventaja bruta historica ~ %.1f pb -> %s",
                s, etiqueta, n, Percentil(ent, 0.5), Percentil(ent, 0.9), Percentil(sal, 0.5), Percentil(sal, 0.9), c, refBruto,
                (c <= refBruto / 3 ? "OK (coste <= 1/3)" : (c <= refBruto / 2 ? "JUSTO" : "CARO")));
   }
@@ -170,7 +170,7 @@ void OnStart()
                AccountInfoString(ACCOUNT_CURRENCY), off, g_offInvierno);
    Print("=== Simbolos y apalancamiento ===");
    Cuenta(InpEUR); Cuenta(InpJPY); Cuenta(InpOro); Cuenta(InpPlata); Cuenta(InpGas);
-   Print("Nota: el oro necesita de media ~5,4 veces el capital (vol. de 1 h muy baja). Si el apalancamiento efectivo del oro es menor, el EA limitara el tamaño.");
+   Print("Nota: el oro necesita de media ~5,4 veces el capital (vol. de 1 h muy baja). Si el apalancamiento efectivo del oro es menor, el EA limitara el tamanio.");
    int fh = FileOpen("costes_5_estrategias.csv", FILE_WRITE | FILE_CSV | FILE_ANSI, ',');
    FileWrite(fh, "simbolo", "regla", "dia", "pb_entrada", "pb_salida", "coste_ida_vuelta_pb");
    datetime hoy = ahora - (ahora % 86400);
