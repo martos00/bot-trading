@@ -1,0 +1,5 @@
+EURJPY: n 117 bruto -0.55 pb (t -0.48) neto -1.47 pb
+USDJPY: n 117 bruto -1.11 pb (t -1.02) neto -1.82 pb
+GBPJPY: n 117 bruto -0.57 pb (t -0.51) neto -1.74 pb
+PRINCIPAL cesta 2012-26: n 117 bruto -0.74 pb (t -0.71) neto -1.68 pb años+ 6/15 → NO PASA
+informativo USDJPY HistData 2003-11 meses normales: n 72 1.72 pb (t 1.06)
