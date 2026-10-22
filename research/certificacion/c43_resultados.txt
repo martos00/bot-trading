@@ -1,0 +1,3 @@
+jueves con |m| >= 0,5%: 582; correlación m–resto 0.083
+D: 2010-17 n 282 bruto -14.1 pb (t -1.66) | 2018-26 n 300 bruto 15.3 pb neto 10.6 pb (t 0.93) años+ 3/9 | Holm False → no
+R: 2010-17 n 282 bruto 14.1 pb (t 1.66) | 2018-26 n 300 bruto -15.3 pb neto -20.0 pb (t -1.75) años+ 4/9 | Holm False → no
