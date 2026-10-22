@@ -1,0 +1,18 @@
+== C72 víspera de festivo (diario, 2019-2026-09)
+   CC: PRE n 74 2.7 pb (t 0.13) | resto 4.3 pb
+   KC: PRE n 73 -10.7 pb (t -0.47) | resto 7.1 pb
+   SB: PRE n 66 22.8 pb (t 0.90) | resto 1.8 pb
+   CT: PRE n 73 10.2 pb (t 0.60) | resto -0.4 pb
+   BRN: PRE n 43 39.7 pb (t 1.21) | resto 4.1 pb
+   G: PRE n 41 65.7 pb (t 1.97) | resto 5.6 pb
+   Z: PRE n 47 17.5 pb (t 1.38) | resto 3.4 pb
+   R: PRE n 46 8.2 pb (t 1.65) | resto -1.9 pb
+  m = pd.concat(cesta, axis=1).mean(axis=1).dropna(); t = t_nw(m.values, 2); an = m.groupby(m.index.year).sum()
+PRINCIPAL cesta 6 materias primas PRE: n 94 15.01 pb (t 1.05) años+ 4/8 → NO PASA
+
+== B21 calendario × hora en CC y Z (descubrimiento 2019-2022, confirmación 2023-2026-09)
+reglas 239; seleccionadas 3; umbral 2.13
+mercado dia  inicio  n_d   m_d  t_d  n_c    m_c   t_c  años  coste  pasa
+      Z Q-2       1   16 10.52 4.57   15   5.89  2.49  0.75    1.5  True
+     CC Q-2       7   16 18.49 4.46   15 -22.60 -0.85  0.50    5.0 False
+     CC Q+2       6   15 22.22 4.80   15 -36.56 -1.40  0.25    5.0 False
