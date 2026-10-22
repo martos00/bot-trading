@@ -1,0 +1,5 @@
+sep+nov: n 31 media -1.58 %/mes | resto: n 158 media 0.97 %/mes | diferencia -2.55 pp (t Welch -2.88)
+por mes (%): {1: 2.96, 2: 1.34, 3: 0.73, 4: 1.13, 5: -1.48, 6: -0.81, 7: 1.38, 8: 2.78, 9: -1.87, 10: 1.17, 11: -1.27, 12: 0.53}
+años con sep+nov > resto: 3/16 | estrategia neta futuros -1.61 %/mes, CFD -2.01 %/mes
+sep+nov por año (%): {2011: -11.2, 2012: 3.7, 2013: -10.8, 2014: -6.9, 2015: -8.1, 2016: -6.9, 2017: -1.4, 2018: 0.7, 2019: -5.5, 2020: -11.8, 2021: -2.4, 2022: 2.6, 2023: -0.1, 2024: 1.6, 2025: 11.5, 2026: -4.0}
+CRITERIOS: {'1 dif t>=2': np.False_, '2 años>=60%': np.False_, '3 neta>0': np.False_} → NO CERTIFICADA
