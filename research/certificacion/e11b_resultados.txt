@@ -1,0 +1,5 @@
+CESTA yen fin de trimestre: n 58, 0.50 %/año, Sharpe anual 0.58, años+ 14/15
+  E1 FTMO 0,79 | oro 0.74, plata 2.3 → 4 ventajas 1.48 | 5 ventajas (cesta yen) 1.53 (12.7 %/año, DD -12.4 %)
+  E1 FTMO 0,79 | oro 1.5, plata 4.0 → 4 ventajas 1.22 | 5 ventajas (cesta yen) 1.28 (10.6 %/año, DD -13.3 %)
+  E1 bajo 0,44 | oro 0.74, plata 2.3 → 4 ventajas 1.85 | 5 ventajas (cesta yen) 1.90 (15.8 %/año, DD -10.5 %)
+  E1 bajo 0,44 | oro 1.5, plata 4.0 → 4 ventajas 1.60 | 5 ventajas (cesta yen) 1.65 (13.7 %/año, DD -11.4 %)
