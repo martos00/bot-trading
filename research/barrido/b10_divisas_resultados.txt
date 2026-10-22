@@ -1,0 +1,10 @@
+reglas evaluadas: 1020
+seleccionadas en 2012-18 (|t| >= 3,5): 7; umbral Bonferroni 2019-26: t >= 2.45
+   par    dia  inicio   m_d   t_d   m_c   t_c  años  coste  pasa
+GBPCAD    BCE       9 -6.75 -4.53 -4.50 -2.24  0.71   1.37 False
+USDJPY    BCE       7  4.00  5.23  0.98  0.61  0.43   0.69 False
+AUDUSD   FOMC      13  7.28  4.77 -0.14 -0.10  0.38   2.30 False
+AUDUSD FOMC-1       1 -2.92 -3.54  0.15  0.13  0.50   0.80 False
+EURAUD    BCE       6 -3.47 -3.85  0.27  0.30  0.43   0.98 False
+USDCAD   FOMC      13 -4.27 -3.61  0.97  0.85  0.38   1.98 False
+EURAUD   FOMC      13 -3.34 -4.39  1.43  1.39  0.38   3.74 False
