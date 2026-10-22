@@ -1,0 +1,11 @@
+  result = getattr(ufunc, method)(*inputs, **kwargs)
+== BM basis-momentum (principal) ==
+  2011-2014: n 42 meses, media 2.09%/mes (t 2.80), Sharpe anual 1.62, años+ 4/4
+  2015-2026: n 141 meses, media 0.08%/mes (t 0.18), Sharpe anual 0.05, años+ 6/12
+  por año (%): {2011: 11.6, 2012: 11.6, 2013: 22.5, 2014: 42.0, 2015: -14.4, 2016: -22.6, 2017: -2.2, 2018: 3.9, 2019: -10.8, 2020: 4.6, 2021: 10.9, 2022: 18.1, 2023: 18.0, 2024: -7.0, 2025: 26.2, 2026: -13.5}
+== MOM momentum 12m (informativo) ==
+  2011-2014: n 42 meses, media 1.12%/mes (t 1.86), Sharpe anual 0.84, años+ 3/4
+  2015-2026: n 141 meses, media -0.38%/mes (t -0.79), Sharpe anual -0.22, años+ 5/12
+  por año (%): {2011: 3.0, 2012: -7.9, 2013: 30.6, 2014: 21.4, 2015: -13.0, 2016: -20.1, 2017: 2.6, 2018: -33.7, 2019: -14.4, 2020: -10.9, 2021: -21.5, 2022: 25.6, 2023: 4.4, 2024: 8.7, 2025: 31.5, 2026: -13.6}
+
+CRITERIOS BM: {'réplica>0': np.True_, '1 t>=2': np.False_, '2 años>=60%': np.False_} → NO CERTIFICADA

@@ -1,0 +1,5 @@
+2011-2014: TOM n 44 bruto -0.5 pb/mes neto -6.5 pb (t -0.78) Sharpe -0.38 años+ 2/4 | por día: TOM -0.18 pb, no-TOM 2.25 pb
+   por año TOM neto (%): {2011: -1.41, 2012: -3.02, 2013: 1.07, 2014: 0.5}
+2015-2026: TOM n 140 bruto -9.2 pb/mes neto -15.2 pb (t -1.77) Sharpe -0.51 años+ 2/12 | por día: TOM -3.05 pb, no-TOM 2.48 pb
+   por año TOM neto (%): {2015: -3.49, 2016: 4.46, 2017: -2.74, 2018: -5.35, 2019: 0.98, 2020: -0.05, 2021: -1.31, 2022: -6.95, 2023: -0.07, 2024: -3.84, 2025: -1.47, 2026: -1.38}
+CRITERIOS: {'1 t>=2': np.False_, '2 años>=60%': np.False_} → NO CERTIFICADA
