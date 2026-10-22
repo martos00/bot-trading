@@ -1,0 +1,36 @@
+== (a) lead-lag horario: 132 reglas; seleccionadas 4; umbral 2.24
+regla   m_d   t_d   m_c   t_c  años  coste  t_c_s  m_c_s  pasa
+ZB→GC  0.42  3.04  0.31  2.41  0.67   0.74   2.41   0.31 False
+ZN→GC  0.45  3.31  0.19  1.47  0.56   0.74   1.47   0.19 False
+6E→6A -0.32 -3.42 -0.07 -0.89  0.78   1.30   0.89   0.07 False
+ES→HG  0.65  3.62  0.04  0.20  0.67   1.65   0.20   0.04 False
+== (b) día extremo (+ = momentum, − = reversión): 25 reglas; seleccionadas 0; umbral 1.64
+   (ninguna seleccionada)
+
+(b) informativo, todas:
+             regla  n_d    m_d   t_d  n_c    m_c   t_c  años  coste
+    ES día extremo  107 -10.89 -0.69  136 -23.68 -1.15  0.56   0.73
+    NQ día extremo  112  -3.08 -0.22  144 -33.19 -1.50  0.56   0.30
+    ZN día extremo   93  -2.72 -0.79  111  -1.39 -0.32  0.56   1.80
+    ZB día extremo   84 -15.85 -1.60  122   0.36  0.06  0.33   2.70
+    CL día extremo   98  -9.58 -0.51  129  52.27  1.86  0.44   2.00
+    GC día extremo  104  -7.51 -0.67  143   8.09  0.75  0.33   0.74
+    SI día extremo  113  10.85  0.45  136  10.04  0.37  0.33   2.30
+    HG día extremo  100  13.55  0.79  111 -25.93 -1.20  0.22   1.65
+    6E día extremo   89   1.91  0.32  112   5.90  1.36  0.67   0.75
+    6J día extremo  108   1.99  0.38  113  -5.48 -0.97  0.22   1.20
+    6A día extremo   98  -5.10 -0.72  117  11.00  1.75  0.22   1.30
+    6B día extremo   98  -8.92 -1.08  117  11.09  1.38  0.33   1.30
+EURUSD día extremo   84   0.44  0.08  102   4.99  1.06  0.50   0.64
+GBPUSD día extremo  106 -11.74 -1.41  107  11.84  1.21  0.50   0.85
+USDJPY día extremo  104   7.27  1.50  106  -5.56 -0.70  0.50   0.73
+USDCHF día extremo   98   7.52  1.59  106  14.10  3.14  1.00   0.95
+AUDUSD día extremo   98  -6.29 -0.93  108  16.09  2.14  0.12   0.85
+USDCAD día extremo  101  -2.29 -0.48  113   6.38  1.54  0.25   0.71
+EURGBP día extremo  104  13.74  2.73  124   5.29  1.22  0.50   0.92
+EURCHF día extremo  101  -1.63 -0.34  110  -3.52 -0.97  0.62   0.99
+EURJPY día extremo   95   2.46  0.32  107  -5.68 -0.83  0.38   0.84
+GBPJPY día extremo  109  -3.48 -0.32  119   8.38  1.04  0.25   1.19
+EURAUD día extremo  106  -0.84 -0.15  108 -12.32 -1.72  0.75   1.19
+EURNZD día extremo   96   4.02  0.65  102  -4.64 -0.76  0.38   1.74
+GBPCAD día extremo  104   4.14  0.76  102  -4.74 -0.93  0.38   1.23
