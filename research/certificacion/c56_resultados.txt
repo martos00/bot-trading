@@ -1,0 +1,4 @@
+días de cierre anticipado: 2010-07-05, 2010-09-06, 2010-11-25, 2010-11-26, 2011-01-17, 2011-02-21 ... 88 en total
+GC: n 87 1.50 pb (t 1.55) positivos 53%
+SI: n 87 -1.38 pb (t -0.97) positivos 40%
+PRINCIPAL media GC+SI: n 88 -0.07 pb (t -0.07) → NO PASA
