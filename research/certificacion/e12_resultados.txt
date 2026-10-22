@@ -1,0 +1,5 @@
+E12 sola (2010-26): n 151, 0.31 %/año, Sharpe anual 0.46, años+ 13/17
+  E1 FTMO 0,79 | oro 0.74, plata 2.3 → 5 ventajas 1.53 | 6 ventajas 1.57 (13.0 %/año, DD -12.3 %)
+  E1 FTMO 0,79 | oro 1.5, plata 4.0 → 5 ventajas 1.28 | 6 ventajas 1.32 (10.9 %/año, DD -13.2 %)
+  E1 bajo 0,44 | oro 0.74, plata 2.3 → 5 ventajas 1.90 | 6 ventajas 1.94 (16.1 %/año, DD -10.5 %)
+  E1 bajo 0,44 | oro 1.5, plata 4.0 → 5 ventajas 1.65 | 6 ventajas 1.69 (14.0 %/año, DD -11.3 %)
