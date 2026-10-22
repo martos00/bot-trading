@@ -1,0 +1,24 @@
+=== Sin costes, desde 2018-03-26 (cada pata al 0,5 % de riesgo) ===
+  euro                    13.0 %/año | Sharpe 1.56 | DD  -12.5 % | meses + 66 % | peor mes  -4.9 %
+  oro                      8.2 %/año | Sharpe 1.93 | DD   -6.1 % | meses + 67 % | peor mes  -3.4 %
+  plata                    2.9 %/año | Sharpe 1.33 | DD   -0.8 % | meses + 46 % | peor mes  -0.8 %
+  yen_mes                  2.4 %/año | Sharpe 1.26 | DD   -1.6 % | meses + 64 % | peor mes  -1.5 %
+  yen_trim                 1.1 %/año | Sharpe 1.06 | DD   -0.6 % | meses + 22 % | peor mes  -0.5 %
+  materias                 0.6 %/año | Sharpe 0.85 | DD   -0.7 % | meses + 45 % | peor mes  -0.4 %
+  CARTERA (vol = euro)    23.1 %/año | Sharpe 2.78 | DD   -8.5 % | meses + 74 % | peor mes  -3.9 %
+  cartera a vol 8.0 %: 22.2 %/año, DD -8.2 %, peor año 2.2 %, años + 9/9, meses + 74 %
+  cartera a vol 10.0 %: 27.8 %/año, DD -10.2 %, peor año 2.7 %, años + 9/9, meses + 74 %
+  cartera a vol 12.5 %: 34.7 %/año, DD -12.8 %, peor año 3.4 %, años + 9/9, meses + 74 %
+  correlación máxima entre patas: 0.125
+=== Sin costes, desde 2018-03-26 (cada pata al 0,5 % de riesgo) ===
+  euro                    13.0 %/año | Sharpe 1.56 | DD  -12.5 % | meses + 66 % | peor mes  -4.9 %
+  oro                      8.2 %/año | Sharpe 1.93 | DD   -6.1 % | meses + 67 % | peor mes  -3.4 %
+  plata                    2.9 %/año | Sharpe 1.33 | DD   -0.8 % | meses + 46 % | peor mes  -0.8 %
+  yen_mes                  2.4 %/año | Sharpe 1.26 | DD   -1.6 % | meses + 64 % | peor mes  -1.5 %
+  yen_trim                 1.1 %/año | Sharpe 1.06 | DD   -0.6 % | meses + 22 % | peor mes  -0.5 %
+  materias                 0.6 %/año | Sharpe 0.85 | DD   -0.7 % | meses + 45 % | peor mes  -0.4 %
+  CARTERA (vol = euro)    23.1 %/año | Sharpe 2.78 | DD   -8.5 % | meses + 74 % | peor mes  -3.9 %
+  cartera a vol 8.0 %: 22.2 %/año, DD -8.2 %, peor año 2.2 %, años + 9/9, meses + 74 %
+  cartera a vol 10.0 %: 27.8 %/año, DD -10.2 %, peor año 2.7 %, años + 9/9, meses + 74 %
+  cartera a vol 12.5 %: 34.7 %/año, DD -12.8 %, peor año 3.4 %, años + 9/9, meses + 74 %
+  correlación máxima entre patas: 0.125
