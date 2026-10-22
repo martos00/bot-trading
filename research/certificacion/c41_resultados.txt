@@ -1,0 +1,10 @@
+miércoles: n 845 bruto -0.54 pb neto -2.54 pb (t -0.80) años+ 8/17
+   2010-2017: bruto 0.32 pb (t 0.12)
+   2018-2026: bruto -1.29 pb (t -0.24)
+   informativo lun: bruto 1.07 pb (t 0.41)
+   informativo mar: bruto -1.93 pb (t -0.54)
+   informativo mié: bruto -0.54 pb (t -0.17)
+   informativo jue: bruto 0.67 pb (t 0.24)
+   informativo vie: bruto 4.43 pb (t 1.61)
+por año neto (pb): {2010: -175.0, 2011: 246.0, 2012: 31.0, 2013: -204.0, 2014: -247.0, 2015: -425.0, 2016: 145.0, 2017: -30.0, 2018: -594.0, 2019: -1042.0, 2020: -2421.0, 2021: 343.0, 2022: 1447.0, 2023: 651.0, 2024: -135.0, 2025: 185.0, 2026: 74.0}
+CRITERIOS: {'1 t>=2': np.False_, '2 años>=60%': np.False_} → NO PASA
