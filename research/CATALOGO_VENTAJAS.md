@@ -47,6 +47,9 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Estacionalidad del mismo mes en materias primas (KLN 2016) | C44 | Invertida (t −3,43); no se invierte la regla |
 | **Oro largo viernes 16:00-16:55 NY** | B4 + C45 + E8 | **CERTIFICADA (2.ª ventaja)**: futuro t 4,38 en 2018-26, 9/9 años; contado independiente t 3,78; Sharpe 1,0-1,5 según coste |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
+| **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
+| Día × hora en 15 futuros nuevos / 13 divisas | B5, B6 | Nada nuevo |
+| Refugios no metálicos y paladio el viernes | C46, C47 | No: el efecto del viernes es del oro (y algo plata/platino) |
 | **Gas natural jueves 09:00-10:00 NY (F1b)** | descomposición de F1 | **En forward (a posteriori, sin certificar): −12 pb, 17/17 años** |
 | Reversión de fin de día (Baltussen-Da-Soebhag 2025) | — | Solo acciones individuales en sección cruzada: no operable en CFD/futuros |
 | Presión por pago de dividendos (Hartzmark-Solomon 2025) | — | Sin fechas de pago gratuitas del NYSE: no probable |
