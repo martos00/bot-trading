@@ -1,0 +1,7 @@
+2  EURJPY Q0 01-02 corto 2012-2026-09: n 59 2.46 pb (t 2.86) años con signo 10/15 → PASA
+USDJPY corto Q0 01-02: n 58 3.37 pb (t 3.59) años+ 13/15
+GBPJPY corto Q0 01-02: n 58 3.40 pb (t 3.37) años+ 12/15
+EURJPY corto Q0 01-02: n 58 4.50 pb (t 5.47) años+ 14/15
+AUDJPY corto Q0 01-02: n 55 2.22 pb (t 2.04) años+ 9/14
+PRINCIPAL media USDJPY+GBPJPY+AUDJPY: n 60 3.05 pb (t 4.52) → PASA
+dosis-respuesta (4 pares): marzo 4.12 pb (n 15) | jun/sep/dic 3.11 pb

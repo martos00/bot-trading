@@ -20,8 +20,10 @@ def prueba(nom, s, tipo, h0, m0, h1, m1, signo, a0, a1, umbral):
     an = r.groupby(r.index.year).sum(); t = t_nw(r.values)
     ok = r.mean() > 0 and t >= umbral and (an > 0).mean() >= 0.6
     print(f'{nom} {a0}-{a1}: n {len(r)} {r.mean()*1e4:.2f} pb (t {t:.2f}) años con signo {(an>0).sum()}/{len(an)} → {"PASA" if ok else "NO PASA"}')
-eu = carga(S + 'hd_all/EURUSD')
-prueba('1a EURUSD Q+1 15-16 largo', eu, 'Q+1', 15, 0, 15, 59, 1, '2012', '2026-09', 2.0)
-prueba('1b EURUSD Q+1 15-16 largo', eu, 'Q+1', 15, 0, 15, 59, 1, '2003', '2011', 1.65)
-prueba('2  EURJPY Q0 01-02 corto', carga(S + 'hd_eurjpy'), 'Q0', 1, 0, 1, 59, -1, '2012', '2026-09', 2.0)
-prueba('3  WTIUSD Q-1 16-17 largo (inf. para HO)', carga(S + 'hd_new/WTIUSD'), 'Q-1', 16, 0, 16, 58, 1, '2010', '2026-09', 2.0)
+if __name__ == "__main__":
+    eu = carga(S + 'hd_all/EURUSD')
+    prueba('1a EURUSD Q+1 15-16 largo', eu, 'Q+1', 15, 0, 15, 59, 1, '2012', '2026-09', 2.0)
+    prueba('1b EURUSD Q+1 15-16 largo', eu, 'Q+1', 15, 0, 15, 59, 1, '2003', '2011', 1.65)
+    prueba('2  EURJPY Q0 01-02 corto', carga(S + 'hd_eurjpy'), 'Q0', 1, 0, 1, 59, -1, '2012', '2026-09', 2.0)
+    prueba('3  WTIUSD Q-1 16-17 largo (inf. para HO)', carga(S + 'hd_new/WTIUSD'), 'Q-1', 16, 0, 16, 58, 1, '2010', '2026-09', 2.0)
+
