@@ -1,0 +1,3 @@
+2012-2018: n 1786 E1 neto 0.97 pb | E5 neto 0.17 pb (t 0.50) | mejora -0.79 pb (t -6.15) años+ 0/7 | relleno pasivo entrada 94% salida 95%
+2019-2026: n 1872 E1 neto 0.64 pb | E5 neto -0.03 pb (t -0.10) | mejora -0.67 pb (t -5.53) años+ 1/8 | relleno pasivo entrada 92% salida 95%
+CRITERIOS: {'1 mejora t>=2': np.False_, '2 años>=60%': np.False_, '3 E5 neto>0': np.False_} → NO ADOPTADA
