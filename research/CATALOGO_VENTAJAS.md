@@ -55,6 +55,13 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Dosis-respuesta de los metales con la duración del cierre | C50 | **Pasa (t 7,71)**: refuerza el mecanismo de E8/E10 |
 | Metales al reabrir y durante el fin de semana; yen a fin de trimestre | C51-C53 | No |
 | EURUSD primer día del trimestre; gasóleo penúltimo día del trimestre | B13/C54 | Falso positivo / sin confirmar |
+| Yen de fin de trimestre frente a todos; en 2003-2011; yen de fin de mes en 2003-2011 | C55, C57, C58 | **Pasan**: refuerzan E9 y E11 |
+| Yen en fin de mes normal; metales antes de cierres anticipados | C59, C56 | No (C56b informativo apoya el oro) |
+| Nikkei 2.º día del trimestre (NKD) | B14/C60 | Falso positivo (precio rancio del NKD) |
+| CFD de índices × calendario; cripto × calendario (incluye fin de semana) | B15, B16 | Nada |
+| Niveles redondos (Osler) | C61 | Nada (bruto 0) |
+| Valor relativo oro/plata y Brent/WTI | C62, C63 | Brent/WTI era artefacto de los CFD; oro/plata no |
+| Adelanto entre mercados (1 h) y días extremos | B17 | Nada |
 | Refugios no metálicos y paladio el viernes | C46, C47 | No: el efecto del viernes es del oro (y algo plata/platino) |
 | **Gas natural jueves 09:00-10:00 NY (F1b)** | descomposición de F1 | **En forward (a posteriori, sin certificar): −12 pb, 17/17 años** |
 | Reversión de fin de día (Baltussen-Da-Soebhag 2025) | — | Solo acciones individuales en sección cruzada: no operable en CFD/futuros |
