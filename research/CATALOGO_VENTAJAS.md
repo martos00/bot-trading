@@ -31,6 +31,18 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Barridos de franjas horarias en 17+ mercados | B1, H80 | Solo artefactos del BID |
 | Oro en Tokio (Donati-Jung) | H77 | Desaparece fuera de muestra |
 | Optimización MT5 Supply-Demand/RSI | Validación | Sobreajuste |
+| Base del VIX (Simon-Campasano) | C35 | No certificada (t 0,19; colas de −12 pt) |
+| Basis-momentum en materias primas (Boons-Prado 2019) | C34 | Fuerte hasta 2014 (t 2,8), muerto después (t 0,18) |
+| Adelantarse al Goldman roll (Mou 2011) | C36 | Desaparecido en ambas ventanas |
+| Hueco de apertura del ES ("los huecos se cierran"; Berkman et al.) | C37 | Bruto 0 pb: sin ventaja |
+| MOM-TOM: tendencia en cambio de mes (Van Hemert 2014) | C38 | Días TOM negativos |
+| Día de la semana en 27 futuros | B3 | Las 2 seleccionadas desaparecen |
+| Rebote tras el fixing del BCE (14:15 Frankfurt) | C39 | Existe (+0,34 pb) pero < coste (0,84 pb) |
+| Efecto otoño del oro (Baur 2013) | C40 | Invertido tras publicarse (t −2,88) |
+| E1 con órdenes limitadas | E5 | Peor (selección adversa): se queda a mercado |
+| Reloj de E1 en semanas de desfase horario | E6 | Apunta a Frankfurt, sin significación: se mantiene NY |
+| Reversión de fin de día (Baltussen-Da-Soebhag 2025) | — | Solo acciones individuales en sección cruzada: no operable en CFD/futuros |
+| Presión por pago de dividendos (Hartzmark-Solomon 2025) | — | Sin fechas de pago gratuitas del NYSE: no probable |
 
 ## B. Pendientes (se completa con la búsqueda bibliográfica)
 Búsqueda bibliográfica (agente, 21-oct-2026; casi todo a partir de resúmenes, no de textos completos: cada prueba se
