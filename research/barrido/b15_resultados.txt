@@ -1,0 +1,12 @@
+reglas evaluadas: 1444
+seleccionadas (|t| >= 3,5): 9; umbral Bonferroni: t >= 2.54
+mercado      dia  inicio  n_d   m_d   t_d  n_c    m_c   t_c  años  coste  pasa
+ NSXUSD       Q0      11   29 15.92  4.66   33  16.78  1.96  0.67    1.0 False
+ SPXUSD       Q0      11   25 13.86  3.93   33  11.30  1.82  0.56    1.0 False
+ WTIUSD      Q-1       9   29 20.70  3.94   23  16.34  1.27  0.43    4.0 False
+ BCOUSD      vie      14  346  6.99  3.88  399   3.95  1.23  0.78    4.0 False
+ WTIUSD      D-1       9   85 13.47  3.68   69  10.48  1.09  0.57    4.0 False
+ GRXEUR POSTOPEX       7   83 -8.16 -3.63   84  -0.41 -0.08  0.56    1.0 False
+ NSXUSD      Q-2      15   28  8.38  4.29   33  -2.26 -0.23  0.33    1.0 False
+ WTIUSD       Q0      14   29 27.03  3.66   24 -16.28 -1.28  0.29    4.0 False
+ NSXUSD      Q-2       3   27  6.43  3.82   35  -5.89 -1.82  0.33    1.0 False
