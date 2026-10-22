@@ -1,0 +1,8 @@
+EURUSD hecho
+GBPUSD hecho
+AUDUSD hecho
+USDCAD hecho
+USDCHF hecho
+USDJPY hecho
+R: 2012-18 n 1749 bruto -0.16 neto -0.95 pb (t -5.71) | 2019-26 n 1822 bruto 0.01 (t 0.06) neto -0.75 pb (t -5.37) coste 0.76 años+ 0/8 | Holm False → no
+C: 2012-18 n 1659 bruto -0.28 neto -1.08 pb (t -5.61) | 2019-26 n 1694 bruto -0.28 (t -1.58) neto -1.05 pb (t -5.83) coste 0.77 años+ 0/8 | Holm False → no
