@@ -1,0 +1,3 @@
+No metálicas (principal): PRE n 152 12.35 pb (t 1.85) años+ 13/17 | resto 0.93 pb | neto 9.35 pb → NO PASA
+Metales (inf.): PRE n 144 17.37 pb (t 2.13) años+ 14/17 | resto 3.07 pb | neto 14.37 pb
+por mercado PRE (pb): {'CL': 25.4, 'HO': -0.2, 'RB': 43.3, 'NG': -27.8, 'ZC': 33.6, 'ZS': 13.9, 'ZW': 2.3, 'ZL': 6.8, 'ZM': 16.0, 'KE': 8.0, 'LE': 17.3, 'HE': 15.5, 'GC': 16.4, 'SI': 35.1, 'HG': 10.0, 'PL': 4.3}
