@@ -49,7 +49,12 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |
+| **EURJPY corto el último día hábil del trimestre, 01:00-02:00 NY** | B13 + C54 + E11 | **CERTIFICADA (5.ª ventaja)**: FXCM t −3,37 en 2019-26; HistData +2,46 pb (t 2,86); 14/15 años; solo 4 operaciones/año |
 | Día × hora en 15 futuros nuevos / 13 divisas | B5, B6 | Nada nuevo |
+| Bancos centrales, festivos extranjeros, hora condicionada, calendario en divisas | B9-B12 | Nada nuevo |
+| Dosis-respuesta de los metales con la duración del cierre | C50 | **Pasa (t 7,71)**: refuerza el mecanismo de E8/E10 |
+| Metales al reabrir y durante el fin de semana; yen a fin de trimestre | C51-C53 | No |
+| EURUSD primer día del trimestre; gasóleo penúltimo día del trimestre | B13/C54 | Falso positivo / sin confirmar |
 | Refugios no metálicos y paladio el viernes | C46, C47 | No: el efecto del viernes es del oro (y algo plata/platino) |
 | **Gas natural jueves 09:00-10:00 NY (F1b)** | descomposición de F1 | **En forward (a posteriori, sin certificar): −12 pb, 17/17 años** |
 | Reversión de fin de día (Baltussen-Da-Soebhag 2025) | — | Solo acciones individuales en sección cruzada: no operable en CFD/futuros |
