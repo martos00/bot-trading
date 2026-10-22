@@ -1,0 +1,32 @@
+reglas evaluadas: 1479
+seleccionadas en descubrimiento (|t| >= 3.5): 10; umbral de Bonferroni en confirmación: t >= 2.58
+mercado dia  inicio   m_d   t_d   m_c   t_c  años  coste  pasa
+     GC vie      16  3.20  4.21  3.86  4.38  1.00   0.74  True
+     SI vie      16  6.46  5.03  6.30  3.68  1.00   2.30 False
+     6E mié       6 -2.06 -3.75 -1.33 -3.38  0.78   0.75 False
+     NG mié      16  4.81  4.17  2.29  1.27  0.67   4.70 False
+     CL vie      15  4.57  4.13  1.74  0.89  0.44   2.00 False
+     ES mié       2  2.90  4.07  0.42  0.66  0.67   0.73 False
+     NQ mié       2  2.48  3.62  0.51  0.64  0.56   0.30 False
+     HG vie      16  2.08  3.63  0.10  0.12  0.78   1.65 False
+     ZS jue       3  3.17  3.52 -0.45 -0.54  0.33   2.50 False
+     SI vie      15  6.11  3.93 -1.98 -1.64  0.11   2.30 False
+
+control conocido (F1b, no cuenta):
+mercado dia  inicio  n_d    m_d   t_d  n_c    m_c   t_c  años  coste
+     NG jue       9  389 -10.02 -2.84  454 -13.78 -2.66   1.0    4.7
+
+mayores |t| en 2010-17 (informativo):
+mercado dia  inicio   m_d   t_d   m_c   t_c  años  coste
+     SI vie      16  6.46  5.03  6.30  3.68  1.00   2.30
+     GC vie      16  3.20  4.21  3.86  4.38  1.00   0.74
+     NG mié      16  4.81  4.17  2.29  1.27  0.67   4.70
+     CL vie      15  4.57  4.13  1.74  0.89  0.44   2.00
+     ES mié       2  2.90  4.07  0.42  0.66  0.67   0.73
+     SI vie      15  6.11  3.93 -1.98 -1.64  0.11   2.30
+     6E mié       6 -2.06 -3.75 -1.33 -3.38  0.78   0.75
+     HG vie      16  2.08  3.63  0.10  0.12  0.78   1.65
+     NQ mié       2  2.48  3.62  0.51  0.64  0.56   0.30
+     ZS jue       3  3.17  3.52 -0.45 -0.54  0.33   2.50
+     ZN lun       8  1.49  3.34 -0.16 -0.35  0.44   1.80
+     ZC vie       2  3.19  3.31  0.11  0.15  0.67   6.60
