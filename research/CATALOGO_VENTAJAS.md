@@ -41,6 +41,11 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Efecto otoño del oro (Baur 2013) | C40 | Invertido tras publicarse (t −2,88) |
 | E1 con órdenes limitadas | E5 | Peor (selección adversa): se queda a mercado |
 | Reloj de E1 en semanas de desfase horario | E6 | Apunta a Frankfurt, sin significación: se mantiene NY |
+| Hora previa al informe EIA en el crudo (comprobación del mecanismo de F1b) | C41 | Nada: el patrón es propio del gas |
+| Reversión semanal en sección cruzada de divisas | C42 | Nada (t −0,19) |
+| Gas tras el informe EIA: deriva o reversión | C43 | El signo cambia entre periodos |
+| Estacionalidad del mismo mes en materias primas (KLN 2016) | C44 | Invertida (t −3,43); no se invierte la regla |
+| **Gas natural jueves 09:00-10:00 NY (F1b)** | descomposición de F1 | **En forward (a posteriori, sin certificar): −12 pb, 17/17 años** |
 | Reversión de fin de día (Baltussen-Da-Soebhag 2025) | — | Solo acciones individuales en sección cruzada: no operable en CFD/futuros |
 | Presión por pago de dividendos (Hartzmark-Solomon 2025) | — | Sin fechas de pago gratuitas del NYSE: no probable |
 
