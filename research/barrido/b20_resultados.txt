@@ -1,0 +1,5 @@
+PRINCIPAL platino VIE 16:30-17:00 largo 2010-26: n 627 2.07 pb (t 3.38) años+ 14/17 → PASA
+BARRIDO: 109 reglas; seleccionadas (|t| >= 3): 2; umbral Bonferroni 1.96
+mercado dia inicio  n_d  m_d  t_d  n_c   m_c   t_c  años  coste  pasa
+     HG VIE  16:30  327 1.54 3.03  386  0.67  0.87  0.67   1.65 False
+     RB VIE  15:00  104 9.24 3.84  121 -1.25 -0.94  0.33   3.00 False
