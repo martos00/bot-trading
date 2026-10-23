@@ -80,6 +80,7 @@ input group "Sistema"
 input ENUM_DST_SERVIDOR InpDSTServidor = DST_EUROPA;
 input bool   InpSoloDemo             = true;   // negarse a operar si la cuenta no es DEMO (en el Probador no aplica)
 input int    InpOffsetServidorInv    = 2;      // SOLO Probador: hora servidor - UTC en invierno (MetaQuotes/FTMO: 2)
+input int    InpMinAntesCierre       = 5;      // cierra todo lo que siga abierto estos minutos antes de un cierre largo del simbolo (fin de semana)
 input double InpMaxSpreadPb          = 0;      // >0: no entrar si el spread (pb del precio) supera esto
 input ulong  InpMagicoBase           = 61000;  // magico de cada estrategia = base + numero
 input string InpArchivoCSV           = "Cartera_6_Ventajas_log.csv";
@@ -298,6 +299,26 @@ bool DiaValido(const Estrategia &e, datetime dNY)
      }
    return false;
   }
+// minutos hasta el final de la sesion de trading actual del simbolo, solo si tras ella el mercado
+// queda cerrado mas de 20 horas (fin de semana; los cierres nocturnos diarios no cuentan). 99999 = no hay cierre largo cerca; -1 = fuera de sesion.
+int MinutosACierreLargo(string sim)
+  {
+   MqlDateTime t; TimeToStruct(TimeTradeServer(), t);
+   int seg = t.hour * 3600 + t.min * 60 + t.sec, fin = -1;
+   datetime de, a;
+   for(uint k = 0; k < 10 && SymbolInfoSessionTrade(sim, (ENUM_DAY_OF_WEEK)t.day_of_week, k, de, a); k++)
+      if(seg >= (int)de && seg < (int)a) { fin = (int)a; break; }
+   if(fin < 0) return -1;
+   int prox = -1;
+   for(int dd = 0; dd < 5 && prox < 0; dd++)
+      for(uint k = 0; k < 10 && SymbolInfoSessionTrade(sim, (ENUM_DAY_OF_WEEK)((t.day_of_week + dd) % 7), k, de, a); k++)
+        {
+         int ini = (int)de + dd * 86400;
+         if(ini >= fin && (prox < 0 || ini < prox)) prox = ini;
+        }
+   if(prox >= 0 && prox - fin < 20 * 3600) return 99999;
+   return (fin - seg) / 60;
+  }
 ulong Magico(const Estrategia &e) { return InpMagicoBase + e.numero; }
 int PosicionesEstr(const Estrategia &e)
   {
@@ -328,7 +349,7 @@ void CerrarEstr(const Estrategia &e, string motivo)
       else Registrar(e.nombre, sim, "error_cierre_" + IntegerToString(g_trade.ResultRetcode()), vol, 0, bid, 0, 0);
      }
   }
-void Entrar(Estrategia &e, datetime dNY)
+void Entrar(Estrategia &e, datetime dNY, int minHastaSalida)
   {
    string sims[]; int ns = StringSplit(e.simbolos, ',', sims);
    if(ns <= 0) return;
@@ -341,6 +362,8 @@ void Entrar(Estrategia &e, datetime dNY)
       double bid = SymbolInfoDouble(sim, SYMBOL_BID), ask = SymbolInfoDouble(sim, SYMBOL_ASK);
       if(bid <= 0 || ask <= 0 || !SymbolInfoInteger(sim, SYMBOL_TRADE_MODE)) { Registrar(e.nombre, sim, "sin_precio_o_cerrado", 0, 0, 0, 0, 0); continue; }
       double spreadPb = (ask - bid) / ((ask + bid) / 2) * 1e4;
+      int minCierre = MinutosACierreLargo(sim);
+      if(minCierre >= 0 && minCierre < minHastaSalida + InpMinAntesCierre) { Registrar(e.nombre, sim, "sin_entrada_cierre_sesion_" + IntegerToString(minCierre) + "min", 0, 0, bid, spreadPb, 0); continue; }
       if(InpMaxSpreadPb > 0 && spreadPb > InpMaxSpreadPb) { Registrar(e.nombre, sim, "sin_entrada_spread", 0, 0, bid, spreadPb, 0); continue; }
       double sg = Sigma(sim, e.hIni, e.hFin, e.filtroSigma, e.nSigma, e.pasaNoche ? 1 : 0);
       if(sg <= 0) { Registrar(e.nombre, sim, "sin_entrada_sigma", 0, 0, bid, spreadPb, 0); continue; }
@@ -432,6 +455,10 @@ void OnTimer()
       // --- salida
       if(abiertas > 0)
         {
+         bool cierreCerca = false;
+         string ss[]; int nss = StringSplit(e.simbolos, ',', ss);
+         for(int j = 0; j < nss; j++) { StringTrimLeft(ss[j]); StringTrimRight(ss[j]); int m = MinutosACierreLargo(ss[j]); if(m >= 0 && m <= InpMinAntesCierre) cierreCerca = true; }
+         if(cierreCerca) { CerrarEstr(e, "antes_cierre_sesion"); continue; }
          bool tocaSalir;
          if(e.pasaNoche) tocaSalir = (dNY > g_fechaEntradaNY[i] && hm >= e.hFin) || (dNY > g_fechaEntradaNY[i] + 4 * 86400) || g_fechaEntradaNY[i] == 0;
          else            tocaSalir = (hm >= e.hFin) || (g_diaEntrada[i] != idDia);
@@ -450,7 +477,7 @@ void OnTimer()
       datetime tSalida = e.pasaNoche ? NYenUTC(HabilNYSESiguiente(dNY), e.hFin) : NYenUTC(dNY, e.hFin);
       if(NoticiaCerca(e.divisas, utc) || NoticiaCerca(e.divisas, tSalida)) { Registrar(e.nombre, e.simbolos, "sin_entrada_noticia", 0, 0, 0, 0, 0); continue; }
       g_fechaEntradaNY[i] = dNY;
-      Entrar(e, dNY);
+      Entrar(e, dNY, (int)((tSalida - utc) / 60));
      }
   }
 

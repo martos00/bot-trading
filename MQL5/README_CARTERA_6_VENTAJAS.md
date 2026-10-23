@@ -46,6 +46,7 @@
 - Pérdida total: si se pierde `InpPerdidaTotalMaxPct` desde el balance inicial, deja de operar.
 - Stop de catástrofe en cada operación a 4 desviaciones de la franja.
 - `InpSoloDemo = true`: no opera en cuentas reales.
+- Cierre de fin de semana: si un simbolo va a cerrar mas de 20 h (fin de semana) en menos de `InpMinAntesCierre` (5) minutos, el EA cierra lo que tenga abierto en el ("cierre_antes_cierre_sesion"), y no entra si ese cierre llega antes de la hora de salida ("sin_entrada_cierre_sesion_Xmin"). En FTMO el oro/plata del viernes podrian cerrar antes de las 16:55 NY: el registro lo mostrara.
 - E12 nunca mantiene posiciones durante el fin de semana (si la víspera es lunes, ese festivo no se opera).
 
 ## Diferencias conocidas con el backtest
