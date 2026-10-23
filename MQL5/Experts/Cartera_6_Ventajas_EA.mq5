@@ -56,7 +56,7 @@ input double InpBalanceInicial       = 0;      // 0 = el balance al arrancar el 
 input group "Estrategias (activar / desactivar)"
 input bool   InpE2_Euro              = true;   // E2 euro mediodia europeo
 input bool   InpE8_OroViernes        = true;   // E8 oro viernes
-input bool   InpE10_PlataVispera     = true;   // E10 plata vispera de festivo
+input bool   InpE10_PlataVispera     = false;  // E10 plata vispera de festivo (desactivada: en FTMO el spread a esa hora ~14 pb > ventaja 9,9 pb -> CARO)
 input bool   InpE9_YenFinMes         = true;   // E9 yen fin de mes
 input bool   InpE11_YenFinTrimestre  = true;   // E11 cesta del yen fin de trimestre
 input bool   InpE12_MateriasVispera  = true;   // E12 materias primas vispera de festivo
