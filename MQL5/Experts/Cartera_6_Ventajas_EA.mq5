@@ -45,7 +45,7 @@ enum ENUM_MODO
 input group "Riesgo"
 input ENUM_MODO InpModo              = MODO_FONDEADO;
 input double InpRiesgoPct            = 0.5;    // riesgo por operacion = volatilidad objetivo, % del balance
-input double InpMultExamen           = 2.0;    // multiplicador de riesgo en modo EXAMEN
+input double InpMultExamen           = 1.0;    // multiplicador de riesgo en modo EXAMEN (1 = mismo riesgo que fondeada)
 input double InpStopSigmas           = 4.0;    // stop de catastrofe en sigmas
 input double InpTopeExposicionFX     = 10.0;   // exposicion maxima por operacion (x balance) en divisas
 input double InpTopeExposicionOtros  = 6.0;    // idem en metales y materias primas

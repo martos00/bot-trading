@@ -17,7 +17,7 @@
 ## Paso 2 — EA en demo
 1. Copia el EA a `MQL5/Experts`, compílalo y ponlo en **un solo gráfico** (cualquiera). Activa "Algo Trading".
 2. Parámetros importantes:
-   - `InpModo`: **FONDEADO** (riesgo normal) o **EXAMEN** (riesgo × `InpMultExamen`, por defecto ×2).
+   - `InpModo`: **FONDEADO** (riesgo normal) o **EXAMEN** (riesgo × `InpMultExamen`, por defecto ×1: mismo riesgo 0,5).
    - `InpRiesgoPct` = 0,5 % por operación (riesgo = volatilidad objetivo).
    - `InpPerdidaDiariaMaxPct` = 3,5 % (por debajo del 5 % de FTMO) y `InpPerdidaTotalMaxPct` = 8 % (por debajo del 10 %).
    - Nombres de los símbolos (igual que en el script) y `InpCestaE12`.
