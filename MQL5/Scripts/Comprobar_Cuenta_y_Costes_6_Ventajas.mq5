@@ -33,7 +33,7 @@ input string InpPlata = "XAGUSD";
 input string InpGas   = "NATGAS";   // p. ej. NATGAS, NGAS, XNGUSD... (mira la Observacion de mercado)
 input string InpEURJPY = "EURJPY";
 input string InpGBPJPY = "GBPJPY";
-input string InpCestaE12 = "USOIL,UKOIL,NATGAS,CORN,SOYBEAN,WHEAT"; // las que existan en la cuenta
+input string InpCestaE12 = "USOIL.cash,HEATOIL.c,NATGAS.cash,CORN.c,SOYBEAN.c,WHEAT.c"; // las que existan en la cuenta
 input int    InpDias  = 400;        // dias naturales hacia atras (cuanto mas, mas visperas de festivo)
 input ENUM_DST_SERVIDOR InpDSTServidor = DST_EUROPA; // cambio de hora del servidor
 

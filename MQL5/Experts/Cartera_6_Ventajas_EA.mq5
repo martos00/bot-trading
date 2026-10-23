@@ -68,7 +68,7 @@ input string InpSimEURJPY            = "EURJPY";
 input string InpSimGBPJPY            = "GBPJPY";
 input string InpSimOro               = "XAUUSD";
 input string InpSimPlata             = "XAGUSD";
-input string InpCestaE12             = "USOIL,UKOIL,NATGAS"; // materias primas no metalicas disponibles (anade CORN,SOYBEAN,WHEAT... si existen)
+input string InpCestaE12             = "USOIL.cash,HEATOIL.c,NATGAS.cash,CORN.c,SOYBEAN.c,WHEAT.c"; // nombres FTMO; solo miembros de la cesta preregistrada (C69): CL HO NG ZC ZS ZW
 
 input group "Calendario"
 input string InpFechasBCE            = "";     // dias de reunion de politica monetaria del BCE, "AAAA.MM.DD,..." (ecb.europa.eu)

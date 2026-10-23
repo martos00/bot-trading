@@ -9,7 +9,7 @@
 2. Abre un gráfico **M1** de cada símbolo (EURUSD, USDJPY, EURJPY, GBPJPY, XAUUSD, XAGUSD, petróleo, gas, cereales…) y desplázate unos meses hacia atrás
    para que MT5 descargue el historial.
 3. Arrastra el script a cualquier gráfico. En los parámetros escribe el **nombre exacto** de cada símbolo en tu cuenta (en FTMO pueden llevar sufijo)
-   y, en `InpCestaE12`, las materias primas que existan (por ejemplo `USOIL,UKOIL,NATGAS,CORN,SOYBEAN,WHEAT`).
+   y, en `InpCestaE12`, las materias primas que existan (en FTMO: `USOIL.cash,HEATOIL.c,NATGAS.cash,CORN.c,SOYBEAN.c,WHEAT.c`; solo los de la cesta preregistrada C69, sin Brent, cacao, cafe, azucar ni algodon).
 4. Mándame el diario "Expertos" y el fichero `MQL5/Files/costes_6_ventajas.csv`.
    - El script indica para cada ventaja si el coste es **OK** (≤ 1/3 de la ventaja), **JUSTO** o **CARO**.
    - También dice el **apalancamiento efectivo** de cada símbolo (el oro necesita de media unas 5 veces el capital).
