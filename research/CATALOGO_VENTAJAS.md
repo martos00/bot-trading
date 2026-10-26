@@ -25,7 +25,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Noise Area / ORB (Zarattini et al.) | H74, H76, ORB | Débil o desaparecida tras publicación |
 | Connors / RSI(2) / IBS / Bollinger / VWAP / reversión asiática | H75, P1, G1, varios | Negativas o rompen la pérdida diaria |
 | Perfil de mercado: regla del 80% y setups de zona de valor | C9, C14 | Regla del 80%: candidata débil (solo S&P 2018-26); resto negativo |
-| SMC / ICT (barrido, MSS, FVG, oferta-demanda) | H2, Sweep-MSS-FVG MT5 | Sobreajuste; negativas |
+| SMC / ICT (barrido, MSS, FVG, oferta-demanda; modelo TJR de NY) | H2, Sweep-MSS-FVG MT5, C74 | Sobreajuste; negativas (C74: bruto negativo en ES, EURUSD y oro) |
 | Trend following, TSMOM, carry, value, momentum, COT, REER | H70, varias, AQR | Sin ventaja desde 2012 |
 | VIX (estructura de plazos, reversión), oro y tipos reales, materias primas → FX | N1, N3, varias | Negativas |
 | Barridos de franjas horarias en 17+ mercados | B1, H80 | Solo artefactos del BID |
