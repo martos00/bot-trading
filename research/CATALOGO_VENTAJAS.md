@@ -74,6 +74,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | **Gas natural jueves 09:00-10:00 NY (F1b)** | descomposición de F1 | **En forward (a posteriori, sin certificar): −12 pb, 17/17 años** |
 | Reversión de fin de día (Baltussen-Da-Soebhag 2025) | — | Solo acciones individuales en sección cruzada: no operable en CFD/futuros |
 | Presión por pago de dividendos (Hartzmark-Solomon 2025) | — | Sin fechas de pago gratuitas del NYSE: no probable |
+| Acciones de FTMO alrededor de resultados: subida previa, prima del anuncio, deriva posterior (Frazzini-Lamont; Barber et al.; PEAD) | C75 | Nada: prima solo hasta 2018; subida previa < coste; deriva no significativa |
 
 ## B. Pendientes (se completa con la búsqueda bibliográfica)
 Búsqueda bibliográfica (agente, 21-oct-2026; casi todo a partir de resúmenes, no de textos completos: cada prueba se

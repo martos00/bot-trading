@@ -1,0 +1,23 @@
+Eventos: 2438 en 45 acciones; 2012-01-17 a 2026-10-14
+
+== A1 (coste supuesto 8 pb) ==
+  2012-2018: n 1104 (576 fechas)  exceso ajustado +5.7 pb (t +1.75)  neto -2.3 pb   [rentab. bruta sin ajustar +12.6 pb]
+  2019-2026: n 1334 (697 fechas)  exceso ajustado +6.7 pb (t +0.42)  neto -1.3 pb   [rentab. bruta sin ajustar +21.3 pb]
+  todo: n 2438 (1273 fechas)  exceso ajustado +6.3 pb (t +1.07)  neto -1.7 pb   [rentab. bruta sin ajustar +17.3 pb]
+  por año (pb): 2012:+8, 2013:+20, 2014:-4, 2015:+0, 2016:+10, 2017:+7, 2018:-0, 2019:+14, 2020:+17, 2021:-24, 2022:-8, 2023:+28, 2024:+36, 2025:+12, 2026:-30
+  VEREDICTO A1: NO PASA
+
+== A2 (coste supuesto 8 pb) ==
+  2012-2018: n 1104 (576 fechas)  exceso ajustado +38.7 pb (t +2.19)  neto +30.7 pb   [rentab. bruta sin ajustar +49.3 pb]
+  2019-2026: n 1334 (697 fechas)  exceso ajustado +6.4 pb (t -1.01)  neto -1.6 pb   [rentab. bruta sin ajustar +14.6 pb]
+  todo: n 2438 (1273 fechas)  exceso ajustado +21.0 pb (t +0.28)  neto +13.0 pb   [rentab. bruta sin ajustar +30.3 pb]
+  por año (pb): 2012:+4, 2013:+81, 2014:-49, 2015:+116, 2016:+88, 2017:-6, 2018:+33, 2019:+28, 2020:+23, 2021:-111, 2022:-39, 2023:+93, 2024:+27, 2025:-0, 2026:+37
+  VEREDICTO A2: NO PASA
+
+== B (coste supuesto 20 pb) ==
+  2012-2018: n 1104 (576 fechas)  exceso ajustado +20.3 pb (t +1.50)  neto +0.3 pb   [rentab. bruta sin ajustar +24.3 pb]
+  2019-2026: n 1334 (697 fechas)  exceso ajustado +25.9 pb (t +0.82)  neto +5.9 pb   [rentab. bruta sin ajustar +18.8 pb]
+  todo: n 2438 (1273 fechas)  exceso ajustado +23.4 pb (t +1.42)  neto +3.4 pb   [rentab. bruta sin ajustar +21.3 pb]
+  por año (pb): 2012:+17, 2013:+37, 2014:+47, 2015:-2, 2016:+12, 2017:+29, 2018:+3, 2019:+3, 2020:-27, 2021:+43, 2022:+62, 2023:-11, 2024:+67, 2025:+16, 2026:+58
+  VEREDICTO B: NO PASA
+
