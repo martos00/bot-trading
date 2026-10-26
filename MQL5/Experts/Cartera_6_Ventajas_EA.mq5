@@ -251,9 +251,17 @@ double Lotes(string sim, double riesgoFrac, double sigma, double precio)
    double tope = EsFX(sim) ? InpTopeExposicionFX : InpTopeExposicionOtros;
    double expos = MathMin(riesgoFrac / sigma, tope);
    double nocional = expos * AccountInfoDouble(ACCOUNT_BALANCE);          // en divisa de la cuenta
-   double tv = SymbolInfoDouble(sim, SYMBOL_TRADE_TICK_VALUE), ts = SymbolInfoDouble(sim, SYMBOL_TRADE_TICK_SIZE);
-   if(tv <= 0 || ts <= 0 || precio <= 0) return 0;
-   double nocLote = precio / ts * tv;                                    // nocional de 1 lote en divisa de la cuenta
+   if(precio <= 0) return 0;
+   // nocional de 1 lote en divisa de la cuenta = 100 x beneficio de un movimiento del 1 % (no depende del tick value,
+   // que en algunos servidores/probador no cuadra con el tamanio de contrato del oro)
+   double pr = 0, nocLote = 0;
+   if(OrderCalcProfit(ORDER_TYPE_BUY, sim, 1.0, precio, precio * 1.01, pr) && pr > 0) nocLote = pr * 100.0;
+   else
+     {
+      double tv = SymbolInfoDouble(sim, SYMBOL_TRADE_TICK_VALUE), ts = SymbolInfoDouble(sim, SYMBOL_TRADE_TICK_SIZE);
+      if(tv <= 0 || ts <= 0) return 0;
+      nocLote = precio / ts * tv;
+     }
    double lot = nocional / nocLote;
    double paso = SymbolInfoDouble(sim, SYMBOL_VOLUME_STEP);
    lot = MathFloor(lot / paso) * paso;
