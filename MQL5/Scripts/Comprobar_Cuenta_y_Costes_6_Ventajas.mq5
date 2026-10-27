@@ -4,11 +4,12 @@
 //| el spread real a las horas exactas de las cinco estrategias:      |
 //|   E1/E2  EURUSD  todos los dias       06:00 -> 08:00 NY            |
 //|   E9     USDJPY  antepenultimo dia habil del mes 07:00 -> 08:00 NY |
-//|   E8     XAUUSD  viernes              16:00 -> 16:55 NY            |
+//|   E8     XAUUSD  viernes              16:00 -> 16:45 NY            |
 //|   E10    XAGUSD  vispera de festivo NYSE 16:00 -> 16:55 NY          |
 //|          (y todos los viernes, informativo)                        |
 //|   E11    USDJPY,EURJPY,GBPJPY ultimo dia del trimestre 00:30->02:00|
 //|   E12    materias primas: 13:55 dia antes de vispera -> 13:55 vispera|
+//|   E13    JP225   2.o dia habil del trimestre 15:00 -> 16:00 NY       |
 //|   F1b    gas     jueves 09:00 -> 10:00 NY (informativo, no certif.)|
 //| Usa el ultimo tick de los 60 s anteriores (historico de ticks).   |
 //| NO abre ninguna operacion.                                         |
@@ -33,6 +34,7 @@ input string InpPlata = "XAGUSD";
 input string InpGas   = "NATGAS";   // p. ej. NATGAS, NGAS, XNGUSD... (mira la Observacion de mercado)
 input string InpEURJPY = "EURJPY";
 input string InpGBPJPY = "GBPJPY";
+input string InpNikkei = "JP225.cash"; // Nikkei 225 (E13)
 input string InpCestaE12 = "USOIL.cash,HEATOIL.c,NATGAS.cash,CORN.c,SOYBEAN.c,WHEAT.c"; // las que existan en la cuenta
 input int    InpDias  = 400;        // dias naturales hacia atras (cuanto mas, mas visperas de festivo)
 input ENUM_DST_SERVIDOR InpDSTServidor = DST_EUROPA; // cambio de hora del servidor
@@ -98,6 +100,14 @@ bool EsDiaAntesDeVispera(datetime dia)                  // y la vispera es el di
    if(!EsHabil(dia) || EsFestivo(dia)) return false;
    datetime s = dia + 86400; return EsHabil(s) && EsVispera(s);
   }
+bool EsQmas2(datetime dia)                             // 2.o laborable de ene/abr/jul/oct (sin el 1 de enero)
+  {
+   MqlDateTime x; TimeToStruct(dia, x);
+   if(!EsHabil(dia) || x.mon % 3 != 1 || (x.mon == 1 && x.day == 1)) return false;
+   int n = 0;
+   for(datetime s = dia - x.day * 86400 + 86400; s <= dia; s += 86400) { MqlDateTime y; TimeToStruct(s, y); if(EsHabil(s) && !(y.mon == 1 && y.day == 1)) n++; }
+   return n == 2;
+  }
 bool EsDmenos2(datetime dia)                           // antepenultimo dia laborable (lun-vie) del mes
   {
    if(!EsHabil(dia)) return false;
@@ -149,7 +159,7 @@ void Cuenta(string s)
                SymbolInfoDouble(s, SYMBOL_VOLUME_MIN), SymbolInfoDouble(s, SYMBOL_VOLUME_STEP));
   }
 
-// tipo: 0 todos los dias habiles, 1 D-2, 2 viernes, 3 vispera de festivo, 4 jueves, 5 Q0, 6 dia antes de vispera (sale al dia siguiente)
+// tipo: 0 todos los dias habiles, 1 D-2, 2 viernes, 3 vispera de festivo, 4 jueves, 5 Q0, 6 dia antes de vispera (sale al dia siguiente), 7 Q+2
 void Medir(string s, int tipo, int h0, int m0, int h1, int m1, string etiqueta, double refBruto, int fh, datetime hoy)
   {
    if(!SymbolSelect(s, true)) return;
@@ -165,6 +175,7 @@ void Medir(string s, int tipo, int h0, int m0, int h1, int m1, string etiqueta, 
       if(tipo == 4 && x.day_of_week != 4) continue;
       if(tipo == 5 && !EsQ0(dia)) continue;
       if(tipo == 6 && !EsDiaAntesDeVispera(dia)) continue;
+      if(tipo == 7 && !EsQmas2(dia)) continue;
       datetime diaSal = (tipo == 6) ? dia + 86400 : dia;
       double a, b;
       if(!SpreadPb(s, AServidor(NuevaYork(dia, h0, m0)), a) || !SpreadPb(s, AServidor(NuevaYork(diaSal, h1, m1)), b)) continue;
@@ -198,7 +209,7 @@ void OnStart()
    Print("=== Costes a las horas de cada estrategia (sin comision) ===");
    Medir(InpEUR,   0, 6, 0, 8, 0,   "E1 diario 06:00->08:00 NY",            1.7,  fh, hoy);
    Medir(InpJPY,   1, 7, 0, 8, 0,   "E9 D-2 07:00->08:00 NY",               3.4,  fh, hoy);
-   Medir(InpOro,   2, 16, 0, 16, 55, "E8 viernes 16:00->16:55 NY",           3.3,  fh, hoy);
+   Medir(InpOro,   2, 16, 0, 16, 45, "E8 viernes 16:00->16:45 NY",           2.3,  fh, hoy);
    Medir(InpPlata, 3, 16, 0, 16, 55, "E10 vispera festivo 16:00->16:55 NY",  9.9,  fh, hoy);
    Medir(InpPlata, 2, 16, 0, 16, 55, "plata viernes (informativo)",          6.3,  fh, hoy);
    Medir(InpJPY,   5, 0, 30, 2, 0,   "E11 Q0 00:30->02:00 NY (corto)",       4.4,  fh, hoy);
@@ -206,6 +217,9 @@ void OnStart()
    Medir(InpGBPJPY, 5, 0, 30, 2, 0,  "E11 Q0 00:30->02:00 NY (corto)",       4.4,  fh, hoy);
    string ces[]; int nc = StringSplit(InpCestaE12, ',', ces);
    for(int i = 0; i < nc; i++) { string c = ces[i]; StringTrimLeft(c); StringTrimRight(c); Cuenta(c); Medir(c, 6, 13, 55, 13, 55, "E12 13:55 dia antes de vispera -> 13:55 vispera", 12.0, fh, hoy); }
+   Cuenta(InpNikkei);
+   Medir(InpNikkei, 7, 15, 0, 16, 0,  "E13 Q+2 15:00->16:00 NY",              11.0, fh, hoy);
+   Medir(InpNikkei, 0, 15, 0, 16, 0,  "E13 misma hora todos los dias (informativo, mas muestra)", 11.0, fh, hoy);
    Medir(InpGas,   4, 9, 0, 10, 0,   "F1b jueves 09:00->10:00 NY (informativo)", 12.0, fh, hoy);
    FileClose(fh);
    Print("Envia el diario 'Expertos' y MQL5/Files/costes_6_ventajas.csv. Recuerda sumar la comision de la cuenta (FTMO divisas: 5 $ por lote ida y vuelta; metales: consulta).");
