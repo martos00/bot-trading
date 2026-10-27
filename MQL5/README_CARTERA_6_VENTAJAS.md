@@ -33,7 +33,7 @@
 | Estrategia | Símbolo(s) | Días | Entrada → salida |
 |---|---|---|---|
 | E2 euro | EURUSD corto | laborables salvo festivos TARGET / Inglaterra / BCE | 06:00 → 08:00 |
-| E8 oro | XAUUSD largo | viernes (no festivos) | 16:00 → 16:55 |
+| E8 oro | XAUUSD largo | viernes (no festivos) | 16:00 → 16:45 (`InpE8_Salida`; 16:55 en la regla original) |
 | E10 plata | XAGUSD largo | víspera de festivo NYSE | 16:00 → 16:55 |
 | E9 yen fin de mes | USDJPY largo | antepenúltimo día laborable del mes | 07:00 → 08:00 |
 | E11 yen fin de trimestre | USDJPY, EURJPY, GBPJPY corto (1/3 c/u) | último día laborable de mar/jun/sep/dic | 00:30 → 02:00 |
@@ -46,7 +46,7 @@
 - Pérdida total: si se pierde `InpPerdidaTotalMaxPct` desde el balance inicial, deja de operar.
 - Stop de catástrofe en cada operación a 4 desviaciones de la franja.
 - `InpSoloDemo = true`: no opera en cuentas reales.
-- Cierre de fin de semana: si un simbolo va a cerrar mas de 20 h (fin de semana) en menos de `InpMinAntesCierre` (5) minutos, el EA cierra lo que tenga abierto en el ("cierre_antes_cierre_sesion"), y no entra si ese cierre llega antes de la hora de salida ("sin_entrada_cierre_sesion_Xmin"). En FTMO el oro/plata del viernes podrian cerrar antes de las 16:55 NY: el registro lo mostrara.
+- Cierre de fin de semana: si un simbolo va a cerrar mas de 20 h (fin de semana) en menos de `InpMinAntesCierre` (5) minutos, el EA cierra lo que tenga abierto en el ("cierre_antes_cierre_sesion"), y no entra si ese cierre llega antes de la hora de salida ("sin_entrada_cierre_sesion_Xmin"). En FTMO el oro cierra el viernes a las 16:50 NY (23:50 servidor): por eso E8 sale a las 16:45 (E8b, preregistrada y validada el 27-oct-2026). En la demo de MetaQuotes el oro cierra a las 16:00 NY: alli E8 no puede operar (desactivala).
 - E12 nunca mantiene posiciones durante el fin de semana (si la víspera es lunes, ese festivo no se opera).
 
 ## Diferencias conocidas con el backtest

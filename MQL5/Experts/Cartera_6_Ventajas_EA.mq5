@@ -56,6 +56,7 @@ input double InpBalanceInicial       = 0;      // 0 = el balance al arrancar el 
 input group "Estrategias (activar / desactivar)"
 input bool   InpE2_Euro              = true;   // E2 euro mediodia europeo
 input bool   InpE8_OroViernes        = true;   // E8 oro viernes
+input int    InpE8_Salida            = 1645;   // hora NY de salida del oro (HHMM): 1645 (E8b; el oro de FTMO cierra el viernes a las 16:50 NY); 1655 = regla original
 input bool   InpE10_PlataVispera     = false;  // E10 plata vispera de festivo (desactivada: en FTMO el spread a esa hora ~14 pb > ventaja 9,9 pb -> CARO)
 input bool   InpE9_YenFinMes         = true;   // E9 yen fin de mes
 input bool   InpE11_YenFinTrimestre  = true;   // E11 cesta del yen fin de trimestre
@@ -413,7 +414,7 @@ void Configurar()
   {
    Estrategia e;
    e.nombre = "E2_euro";        e.activa = InpE2_Euro;             e.tipoDia = 0; e.hIni = 600;  e.hFin = 800;  e.lado = -1; e.simbolos = InpSimEURUSD; e.divisas = "EUR,USD"; e.numero = 0; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; g_E[0] = e;
-   e.nombre = "E8_oro_viernes"; e.activa = InpE8_OroViernes;       e.tipoDia = 1; e.hIni = 1600; e.hFin = 1655; e.lado = 1;  e.simbolos = InpSimOro;    e.divisas = "USD";     e.numero = 1; e.filtroSigma = 5; e.nSigma = 52; e.pasaNoche = false; g_E[1] = e;
+   e.nombre = "E8_oro_viernes"; e.activa = InpE8_OroViernes;       e.tipoDia = 1; e.hIni = 1600; e.hFin = InpE8_Salida; e.lado = 1;  e.simbolos = InpSimOro;    e.divisas = "USD";     e.numero = 1; e.filtroSigma = 5; e.nSigma = 52; e.pasaNoche = false; g_E[1] = e;
    e.nombre = "E10_plata_vispera"; e.activa = InpE10_PlataVispera; e.tipoDia = 2; e.hIni = 1600; e.hFin = 1655; e.lado = 1;  e.simbolos = InpSimPlata;  e.divisas = "USD";     e.numero = 2; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; g_E[2] = e;
    e.nombre = "E9_yen_fin_mes"; e.activa = InpE9_YenFinMes;        e.tipoDia = 3; e.hIni = 700;  e.hFin = 800;  e.lado = 1;  e.simbolos = InpSimUSDJPY; e.divisas = "USD,JPY"; e.numero = 3; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; g_E[3] = e;
    e.nombre = "E11_yen_fin_trim"; e.activa = InpE11_YenFinTrimestre; e.tipoDia = 4; e.hIni = 30; e.hFin = 200;  e.lado = -1; e.simbolos = InpSimUSDJPY + "," + InpSimEURJPY + "," + InpSimGBPJPY; e.divisas = "JPY,USD,EUR,GBP"; e.numero = 4; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; g_E[4] = e;
