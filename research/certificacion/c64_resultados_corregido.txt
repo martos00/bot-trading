@@ -1,0 +1,7 @@
+  P['F1 MSCI ES/NQ/RTY 15-16'] = (pd.Series({d: np.nanmean([es_tramo(d, 15, 0, 16, 0), h1_tramo(NQ, d, 15, 16), h1_tramo(RTY, d, 15, 16)]) for d in MSCI}), 0.75)
+F3 Triple hechicería ES 15-16: n 66 -9.37 pb (t -2.54) años con el signo 65% | Holm False → no
+F5b Dividendos JP JPX 01-02 (día siguiente): n 32 +14.30 pb (t 1.94) años con el signo 69% | Holm False → no
+F1 MSCI ES/NQ/RTY 15-16: n 60 +9.57 pb (t 1.55) años con el signo 59% | Holm False → no
+F5a Dividendos JP JPX 01-02 (último día con derecho): n 32 +9.47 pb (t 1.48) años con el signo 62% | Holm False → no
+F4 Vencimiento VIX ES 09:30-10:00: n 196 +1.80 pb (t 1.11) años con el signo 59% | Holm False → no
+F2 Russell RTY 15-16: n 9 -3.26 pb (t -0.22) años con el signo 56% | Holm False → no

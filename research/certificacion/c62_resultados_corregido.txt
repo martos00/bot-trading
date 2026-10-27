@@ -1,0 +1,4 @@
+  df = pd.concat([np.log(A).rename('a'), np.log(B).rename('b')], axis=1).dropna()
+  df = pd.concat([np.log(A).rename('a'), np.log(B).rename('b')], axis=1).dropna()
+Brent/WTI: 2010-17 n 35 neto 10.8 pb/op | 2018-26 n 40 neto 71.5 pb/op (t 2.40) años+ 6/7 días medios 13.1 peor -1372 pb | Holm True → CERTIFICADA
+oro/plata: 2010-17 n 34 neto 35.5 pb/op | 2018-26 n 36 neto -7.0 pb/op (t -0.10) años+ 4/9 días medios 18.6 peor -1210 pb | Holm False → no

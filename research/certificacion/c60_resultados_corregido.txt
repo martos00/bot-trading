@@ -1,0 +1,6 @@
+JPXJPY Q+2 15-16 largo (principal): n 60 16.24 pb (t 4.12) años+ 15/16 | 2018-26 10.67 pb (t 3.65)
+   → PASA
+   inf. Q+1: n 62 2.95 pb (t 1.05) años+ 11/16 | 2018-26 2.84 pb (t 0.87)
+   inf. Q+3: n 60 -0.75 pb (t -0.29) años+ 8/16 | 2018-26 -2.01 pb (t -0.53)
+   inf. D+2 meses normales: n 123 4.06 pb (t 2.21) años+ 13/17 | 2018-26 6.07 pb (t 2.03)
+   inf. resto de días 0.45 pb

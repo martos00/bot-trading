@@ -3,6 +3,8 @@
 Objetivo: no repetir pruebas y ordenar las que quedan por mecanismo y fecha de publicación (las recientes han tenido menos
 tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Contador acumulado de pruebas ≈ 1.168.
 
+**27-oct-2026: auditoría de la hora de HistData** (`research/certificacion/AUDITORIA_HORA_HISTDATA.md`): las confirmaciones con HistData medían una hora antes en verano. Corregido: todas las ventajas certificadas siguen confirmadas (casi todas más fuertes); dos descartadas pasan a candidatas (EURUSD Q+1 15-16 NY; Nikkei Q+2 15-16 NY), pendientes de otra fuente.
+
 ## A. Ya probadas
 | Familia | Pruebas | Resultado |
 |---|---|---|

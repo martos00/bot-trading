@@ -1,0 +1,4 @@
+1a EURUSD Q+1 15-16 largo 2012-2026-09: n 48 2.33 pb (t 4.91) años con signo 13/15 → PASA
+1b EURUSD Q+1 15-16 largo 2003-2011: n 29 -0.02 pb (t -0.01) años con signo 4/9 → NO PASA
+2  EURJPY Q0 01-02 corto 2012-2026-09: n 59 4.33 pb (t 6.07) años con signo 14/15 → PASA
+3  WTIUSD Q-1 16-17 largo (inf. para HO) 2010-2026-09: n 50 6.73 pb (t 2.53) años con signo 8/15 → NO PASA

@@ -1,0 +1,6 @@
+USDJPY corto Q0 01-02: n 58 3.37 pb (t 3.59) años+ 13/15
+GBPJPY corto Q0 01-02: n 58 3.40 pb (t 3.37) años+ 12/15
+EURJPY corto Q0 01-02: n 58 4.50 pb (t 5.47) años+ 14/15
+AUDJPY corto Q0 01-02: n 55 2.92 pb (t 2.48) años+ 11/14
+PRINCIPAL media USDJPY+GBPJPY+AUDJPY: n 60 3.22 pb (t 4.07) → PASA
+dosis-respuesta (4 pares): marzo 2.44 pb (n 15) | jun/sep/dic 3.82 pb
