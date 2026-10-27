@@ -1,0 +1,2 @@
+W1 13:00->14:00: dias de subasta n 800 | 2012-18 -0.12 pb (t -0.28) -> signo 0 | 2019-26 +0.17 pb (t con signo +nan) | informativo dias sin subasta +0.08 pb -> NO PASA
+W2 13:00->13:00 dia siguiente: dias de subasta n 799 | 2012-18 -0.05 pb (t -0.03) -> signo 0 | 2019-26 +0.70 pb (t con signo +nan) | informativo dias sin subasta +0.00 pb -> NO PASA
