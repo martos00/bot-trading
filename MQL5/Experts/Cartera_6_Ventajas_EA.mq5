@@ -294,6 +294,7 @@ Estrategia g_E[6];
 int      g_diaEntrada[6];         // fecha NY (dia del anio + 1000*anio) en que se entro
 datetime g_fechaEntradaNY[6];
 double   g_sigmaUsada[6];
+int      g_avisoAlgo = -1;        // dia del ultimo aviso de trading algoritmico desactivado
 
 bool DiaValido(const Estrategia &e, datetime dNY)
   {
@@ -445,6 +446,8 @@ int OnInit()
    PrintFormat("Cartera de 6 ventajas iniciada%s. Modo %s (riesgo %.2f%% por operacion). Servidor invierno UTC%+d. Balance inicial de referencia %.2f.",
                EnProbador() ? " en el PROBADOR" : "", InpModo == MODO_EXAMEN ? "EXAMEN" : "FONDEADO",
                InpRiesgoPct * (InpModo == MODO_EXAMEN ? InpMultExamen : 1.0), OffsetInvierno(), BalanceInicial());
+   if(!EnProbador() && (!TerminalInfoInteger(TERMINAL_TRADE_ALLOWED) || !MQLInfoInteger(MQL_TRADE_ALLOWED)))
+      Alert("Cartera 6 ventajas: el TRADING ALGORITMICO esta desactivado. Activalo (boton verde) o el bot no puede operar.");
    EventSetTimer(1);
    return INIT_SUCCEEDED;
   }
@@ -482,6 +485,13 @@ void OnTimer()
       if(!e.activa || g_paradoHoy || g_paradoTotal) continue;
       if(hm < e.hIni || hm >= e.hIni + 5 || g_diaEntrada[i] == idDia) continue;
       if(!DiaValido(e, dNY)) continue;
+      if(!EnProbador() && (!TerminalInfoInteger(TERMINAL_TRADE_ALLOWED) || !MQLInfoInteger(MQL_TRADE_ALLOWED)))
+        {
+         if(g_avisoAlgo != idDia) { g_avisoAlgo = idDia; Alert("Cartera 6 ventajas: el TRADING ALGORITMICO esta desactivado. Activalo (boton verde) o el bot no puede operar."); }
+         Registrar(e.nombre, e.simbolos, "sin_entrada_trading_algoritmico_desactivado", 0, 0, 0, 0, 0);
+         g_diaEntrada[i] = idDia;
+         continue;
+        }
       g_diaEntrada[i] = idDia;
       datetime tSalida = e.pasaNoche ? NYenUTC(HabilNYSESiguiente(dNY), e.hFin) : NYenUTC(dNY, e.hFin);
       if(NoticiaCerca(e.divisas, utc) || NoticiaCerca(e.divisas, tSalida)) { Registrar(e.nombre, e.simbolos, "sin_entrada_noticia", 0, 0, 0, 0, 0); continue; }
