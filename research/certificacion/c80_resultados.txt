@@ -1,0 +1,4 @@
+BoJ -> Nikkei: n 158 D-2..D-1 +38.3 pb (t +2.07) | 2010-17 +47.4 | 2018-26 +26.9 (t +0.88) | años con el signo 12/17 | inf. D0 +12.2 pb (t +1.26) -> NO PASA
+BoE -> FTSE (2015-26): n 75 D-2..D-1 +31.5 pb (t +2.31) | 2010-17 +27.1 | 2018-26 +32.0 (t +2.10) | años con el signo 8/10 | inf. D0 -4.0 pb (t -0.36) -> PASA
+  RBA -> ASX: descubrimiento 2010-17 -15.5 pb (t -1.28) -> signo 0
+  RBA -> ASX: NO PASA (sin signo en el descubrimiento)

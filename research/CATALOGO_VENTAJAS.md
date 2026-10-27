@@ -53,6 +53,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Momentum de horas tras EIA (WTI) y tras NFP/FOMC (EURUSD) | C77 | Nada (con la hora de HistData corregida; FXCM tampoco) |
 | Candidatas de la auditoría: EURUSD Q+1 15-16 NY; Nikkei Q+2 15-16 NY | C78 | EURUSD: FXCM confirma 2012-26 (t 4,15) pero no existía en 2003-11 → no certificada. **Nikkei: pasa C60 con la hora corregida (t 4,12, 15/16 años)**: falta medir coste en FTMO |
 | El dólar tras las subastas del Tesoro (FX) | C79 | Nada (t ≈ 0 en 800 subastas) |
+| Bolsa local antes de BoJ, BoE y RBA (Quantpedia 2025) | C80 | **BoE → FTSE pasa** (+31,5 pb D−2..D−1, t 2,31; ICE y Yahoo coinciden): candidata, sin validación posterior a la publicación. BoJ (t 2,07, débil desde 2018) y RBA no |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |
@@ -93,7 +94,7 @@ contrasta con la fuente antes de pre-registrarla). Prioridad: mecanismo claro + 
 | 2 | Ciclo del FOMC: la prima de la bolsa se gana en las semanas pares | Cieslak, Morse y Vissing-Jorgensen, JF 2019 | S&P 500 | Diarios + fechas FOMC | — |
 | 3 | Ventana de 3 días del FOMC en bonos largos | Hillenbrand, RFS 2025 | ZN/ZB | Diarios | Régimen de tipos bajando |
 | 4 | Deriva previa a datos macro (no NFP/IPC) | Kurov et al., JFQA 2019 | ES, bonos | M1 + calendario | Posibles cambios de embargo |
-| 5 | Deriva previa al BCE, BoE, BoJ y SNB | Quantpedia 2025 | DAX, FTSE, Nikkei | Diarios | Contradicha por Brusa et al. 2020 |
+| 5 | ~~Deriva previa al BCE, BoE, BoJ y SNB~~ → probada en C18 y C80 | Quantpedia 2025 | DAX, FTSE, Nikkei | Diarios | BoE candidata |
 | 6 | Presión del pago de dividendos | Hartzmark y Solomon, AER 2025 | Índices | Calendario de pagos (no gratuito completo) | — |
 | 7 | Vencimiento de futuros de BTC en el CME | Blasco et al. 2023 | BTC | Diarios | El signo cambió en 2021 |
 | 8 | Rebalanceo anual de índices de materias primas (enero) | JPMorgan/Saxo (práctica) | Oro, plata | Diarios | Sin estudio académico |
