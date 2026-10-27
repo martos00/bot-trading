@@ -61,6 +61,7 @@ input bool   InpE10_PlataVispera     = false;  // E10 plata vispera de festivo (
 input bool   InpE9_YenFinMes         = true;   // E9 yen fin de mes
 input bool   InpE11_YenFinTrimestre  = true;   // E11 cesta del yen fin de trimestre
 input bool   InpE12_MateriasVispera  = true;   // E12 materias primas vispera de festivo
+input bool   InpE14_FTSEantesBoE     = false;  // E14 FTSE largo del cierre de Londres 3 dias habiles antes de la decision del Banco de Inglaterra al cierre del dia anterior (C80: CANDIDATA, sin validar tras publicarse; solo para vigilar)
 input bool   InpE13_NikkeiTrimestre  = false;  // E13 Nikkei largo el 2.o dia habil del trimestre 15:00-16:00 NY (C60/C78; desactivada hasta medir el coste del JP225 en la cuenta)
 
 input group "Simbolos (nombre exacto en la cuenta)"
@@ -71,9 +72,11 @@ input string InpSimGBPJPY            = "GBPJPY";
 input string InpSimOro               = "XAUUSD";
 input string InpSimPlata             = "XAGUSD";
 input string InpSimNikkei            = "JP225.cash"; // nombre FTMO del Nikkei 225
+input string InpSimUK100             = "UK100.cash"; // nombre FTMO del FTSE 100 (E14)
 input string InpCestaE12             = "USOIL.cash,HEATOIL.c,NATGAS.cash,CORN.c,SOYBEAN.c,WHEAT.c"; // nombres FTMO; solo miembros de la cesta preregistrada (C69): CL HO NG ZC ZS ZW
 
 input group "Calendario"
+input string InpFechasBoE            = "2026.11.05,2026.12.17,2027.02.04,2027.03.18,2027.04.29,2027.06.17,2027.07.29,2027.09.16,2027.11.04,2027.12.16"; // decisiones del Banco de Inglaterra (bankofengland.co.uk, "Upcoming MPC dates"; ampliar cada anio)
 input string InpFechasBCE            = "";     // dias de reunion de politica monetaria del BCE, "AAAA.MM.DD,..." (ecb.europa.eu)
 input string InpFestivosNYSE         = "2025.01.01,2025.01.09,2025.01.20,2025.02.17,2025.04.18,2025.05.26,2025.06.19,2025.07.04,2025.09.01,2025.11.27,2025.12.25,2026.01.01,2026.01.19,2026.02.16,2026.04.03,2026.05.25,2026.06.19,2026.07.03,2026.09.07,2026.11.26,2026.12.25,2027.01.01,2027.01.18,2027.02.15,2027.03.26,2027.05.31,2027.06.18,2027.07.05,2027.09.06,2027.11.25,2027.12.24"; // festivos NYSE (ampliar cada anio)
 input int    InpMinNoticias          = 2;      // no abrir ni cerrar a +- estos minutos de una noticia de alto impacto
@@ -183,6 +186,8 @@ bool FestivoInglaterra(datetime d)
 bool EnLista(string lista, datetime d) { return StringLen(lista) > 0 && StringFind(lista, Fecha(d)) >= 0; }
 bool FestivoNYSE(datetime d) { return EnLista(InpFestivosNYSE, d); }
 datetime HabilNYSESiguiente(datetime d) { datetime s = d + 86400; while(!EsLaborable(s) || FestivoNYSE(s)) s += 86400; return s; }
+datetime SumarLaborables(datetime d, int n) { datetime s = d; for(int k = 0; k < n; k++) { s += 86400; while(!EsLaborable(s)) s += 86400; } return s; }
+int LaborablesEntre(datetime a, datetime b) { int n = 0; for(datetime s = a + 86400; s <= b; s += 86400) if(EsLaborable(s)) n++; return n; }
 bool EsVispera(datetime d) { return EsLaborable(d) && !FestivoNYSE(d) && FestivoNYSE(HabilNYSESiguiente(d)); }
 bool EsDiaAntesDeVispera(datetime d)   // y la vispera es el dia siguiente (nunca se mantiene el fin de semana)
   { datetime s = HabilNYSESiguiente(d); return EsLaborable(d) && !FestivoNYSE(d) && s == d + 86400 && EsVispera(s); }
@@ -244,7 +249,7 @@ double Sigma(string sim, int hIni, int hFin, int filtroDia, int nDias, int finDi
       MqlDateTime x; TimeToStruct(d, x);
       if(!EsLaborable(d)) continue;
       if(filtroDia == 5 && x.day_of_week != 5) continue;
-      datetime d2 = d; if(finDiaSiguiente) { d2 = d + 86400; while(!EsLaborable(d2)) d2 += 86400; }
+      datetime d2 = SumarLaborables(d, finDiaSiguiente);
       double p0 = PrecioEn(sim, UTCaServidor(NYenUTC(d, hIni))), p1 = PrecioEn(sim, UTCaServidor(NYenUTC(d2, hFin)));
       if(p0 <= 0 || p1 <= 0) continue;
       ArrayResize(r, n + 1); r[n++] = MathLog(p1 / p0);
@@ -295,15 +300,16 @@ void Registrar(string estr, string sim, string evento, double lotes, double sigm
   }
 
 //==================== estrategias ====================
-// tipoDia: 0 E2, 1 viernes, 2 vispera, 3 D-2, 4 Q0, 5 dia antes de vispera (sale al dia siguiente), 6 Q+2 (2.o laborable de ene/abr/jul/oct)
+// tipoDia: 0 E2, 1 viernes, 2 vispera, 3 D-2, 4 Q0, 5 dia antes de vispera (sale al dia siguiente), 6 Q+2 (2.o laborable de ene/abr/jul/oct),
+//          7 tres laborables antes de una decision del Banco de Inglaterra (sale 2 laborables despues; 11:30 NY ~ cierre de Londres 16:30)
 struct Estrategia
   {
-   string nombre; bool activa; int tipoDia; int hIni; int hFin; int lado; string simbolos; string divisas; int numero; int filtroSigma; int nSigma; bool pasaNoche;
+   string nombre; bool activa; int tipoDia; int hIni; int hFin; int lado; string simbolos; string divisas; int numero; int filtroSigma; int nSigma; bool pasaNoche; int noches;
   };
-Estrategia g_E[7];
-int      g_diaEntrada[7];         // fecha NY (dia del anio + 1000*anio) en que se entro
-datetime g_fechaEntradaNY[7];
-double   g_sigmaUsada[7];
+Estrategia g_E[8];
+int      g_diaEntrada[8];         // fecha NY (dia del anio + 1000*anio) en que se entro
+datetime g_fechaEntradaNY[8];
+double   g_sigmaUsada[8];
 int      g_avisoAlgo = -1;        // dia del ultimo aviso de trading algoritmico desactivado
 
 bool DiaValido(const Estrategia &e, datetime dNY)
@@ -317,6 +323,7 @@ bool DiaValido(const Estrategia &e, datetime dNY)
       case 4: return EsQ0(dNY);
       case 5: return EsDiaAntesDeVispera(dNY);
       case 6: return EsQmas2(dNY);
+      case 7: return EsLaborable(dNY) && EnLista(InpFechasBoE, SumarLaborables(dNY, 3));
      }
    return false;
   }
@@ -386,7 +393,7 @@ void Entrar(Estrategia &e, datetime dNY, int minHastaSalida)
       int minCierre = MinutosACierreLargo(sim);
       if(minCierre >= 0 && minCierre < minHastaSalida + InpMinAntesCierre) { Registrar(e.nombre, sim, "sin_entrada_cierre_sesion_" + IntegerToString(minCierre) + "min", 0, 0, bid, spreadPb, 0); continue; }
       if(InpMaxSpreadPb > 0 && spreadPb > InpMaxSpreadPb) { Registrar(e.nombre, sim, "sin_entrada_spread", 0, 0, bid, spreadPb, 0); continue; }
-      double sg = Sigma(sim, e.hIni, e.hFin, e.filtroSigma, e.nSigma, e.pasaNoche ? 1 : 0);
+      double sg = Sigma(sim, e.hIni, e.hFin, e.filtroSigma, e.nSigma, e.noches);
       if(sg <= 0) { Registrar(e.nombre, sim, "sin_entrada_sigma", 0, 0, bid, spreadPb, 0); continue; }
       g_sigmaUsada[e.numero] = sg;
       double precio = e.lado > 0 ? ask : bid;
@@ -409,7 +416,7 @@ double BalanceInicial()
    if(!GlobalVariableCheck(k)) GlobalVariableSet(k, AccountInfoDouble(ACCOUNT_BALANCE));
    return GlobalVariableGet(k);
   }
-void CerrarTodo(string motivo) { for(int i = 0; i < 7; i++) CerrarEstr(g_E[i], motivo); }
+void CerrarTodo(string motivo) { for(int i = 0; i < 8; i++) CerrarEstr(g_E[i], motivo); }
 void Protecciones()
   {
    datetime srvDia = SoloFecha(TimeCurrent());
@@ -425,13 +432,14 @@ void Protecciones()
 void Configurar()
   {
    Estrategia e;
-   e.nombre = "E2_euro";        e.activa = InpE2_Euro;             e.tipoDia = 0; e.hIni = 600;  e.hFin = 800;  e.lado = -1; e.simbolos = InpSimEURUSD; e.divisas = "EUR,USD"; e.numero = 0; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; g_E[0] = e;
-   e.nombre = "E8_oro_viernes"; e.activa = InpE8_OroViernes;       e.tipoDia = 1; e.hIni = 1600; e.hFin = InpE8_Salida; e.lado = 1;  e.simbolos = InpSimOro;    e.divisas = "USD";     e.numero = 1; e.filtroSigma = 5; e.nSigma = 52; e.pasaNoche = false; g_E[1] = e;
-   e.nombre = "E10_plata_vispera"; e.activa = InpE10_PlataVispera; e.tipoDia = 2; e.hIni = 1600; e.hFin = 1655; e.lado = 1;  e.simbolos = InpSimPlata;  e.divisas = "USD";     e.numero = 2; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; g_E[2] = e;
-   e.nombre = "E9_yen_fin_mes"; e.activa = InpE9_YenFinMes;        e.tipoDia = 3; e.hIni = 700;  e.hFin = 800;  e.lado = 1;  e.simbolos = InpSimUSDJPY; e.divisas = "USD,JPY"; e.numero = 3; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; g_E[3] = e;
-   e.nombre = "E11_yen_fin_trim"; e.activa = InpE11_YenFinTrimestre; e.tipoDia = 4; e.hIni = 30; e.hFin = 200;  e.lado = -1; e.simbolos = InpSimUSDJPY + "," + InpSimEURJPY + "," + InpSimGBPJPY; e.divisas = "JPY,USD,EUR,GBP"; e.numero = 4; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; g_E[4] = e;
-   e.nombre = "E12_materias_vispera"; e.activa = InpE12_MateriasVispera; e.tipoDia = 5; e.hIni = 1355; e.hFin = 1355; e.lado = 1; e.simbolos = InpCestaE12; e.divisas = "USD"; e.numero = 5; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = true; g_E[5] = e;
-   e.nombre = "E13_nikkei_trim"; e.activa = InpE13_NikkeiTrimestre; e.tipoDia = 6; e.hIni = 1500; e.hFin = 1600; e.lado = 1; e.simbolos = InpSimNikkei; e.divisas = "JPY,USD"; e.numero = 6; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; g_E[6] = e;
+   e.nombre = "E2_euro";        e.activa = InpE2_Euro;             e.tipoDia = 0; e.hIni = 600;  e.hFin = 800;  e.lado = -1; e.simbolos = InpSimEURUSD; e.divisas = "EUR,USD"; e.numero = 0; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; e.noches = 0; g_E[0] = e;
+   e.nombre = "E8_oro_viernes"; e.activa = InpE8_OroViernes;       e.tipoDia = 1; e.hIni = 1600; e.hFin = InpE8_Salida; e.lado = 1;  e.simbolos = InpSimOro;    e.divisas = "USD";     e.numero = 1; e.filtroSigma = 5; e.nSigma = 52; e.pasaNoche = false; e.noches = 0; g_E[1] = e;
+   e.nombre = "E10_plata_vispera"; e.activa = InpE10_PlataVispera; e.tipoDia = 2; e.hIni = 1600; e.hFin = 1655; e.lado = 1;  e.simbolos = InpSimPlata;  e.divisas = "USD";     e.numero = 2; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; e.noches = 0; g_E[2] = e;
+   e.nombre = "E9_yen_fin_mes"; e.activa = InpE9_YenFinMes;        e.tipoDia = 3; e.hIni = 700;  e.hFin = 800;  e.lado = 1;  e.simbolos = InpSimUSDJPY; e.divisas = "USD,JPY"; e.numero = 3; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; e.noches = 0; g_E[3] = e;
+   e.nombre = "E11_yen_fin_trim"; e.activa = InpE11_YenFinTrimestre; e.tipoDia = 4; e.hIni = 30; e.hFin = 200;  e.lado = -1; e.simbolos = InpSimUSDJPY + "," + InpSimEURJPY + "," + InpSimGBPJPY; e.divisas = "JPY,USD,EUR,GBP"; e.numero = 4; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; e.noches = 0; g_E[4] = e;
+   e.nombre = "E12_materias_vispera"; e.activa = InpE12_MateriasVispera; e.tipoDia = 5; e.hIni = 1355; e.hFin = 1355; e.lado = 1; e.simbolos = InpCestaE12; e.divisas = "USD"; e.numero = 5; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = true; e.noches = 1; g_E[5] = e;
+   e.nombre = "E13_nikkei_trim"; e.activa = InpE13_NikkeiTrimestre; e.tipoDia = 6; e.hIni = 1500; e.hFin = 1600; e.lado = 1; e.simbolos = InpSimNikkei; e.divisas = "JPY,USD"; e.numero = 6; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = false; e.noches = 0; g_E[6] = e;
+   e.nombre = "E14_ftse_antes_boe"; e.activa = InpE14_FTSEantesBoE; e.tipoDia = 7; e.hIni = 1130; e.hFin = 1130; e.lado = 1; e.simbolos = InpSimUK100; e.divisas = "GBP"; e.numero = 7; e.filtroSigma = 0; e.nSigma = 60; e.pasaNoche = true; e.noches = 2; g_E[7] = e;
   }
 
 int OnInit()
@@ -439,14 +447,14 @@ int OnInit()
    if(InpSoloDemo && !EnProbador() && AccountInfoInteger(ACCOUNT_TRADE_MODE) != ACCOUNT_TRADE_MODE_DEMO)
      { Print("Cuenta no DEMO e InpSoloDemo=true: el EA no operara."); return INIT_FAILED; }
    Configurar();
-   for(int i = 0; i < 7; i++) { g_diaEntrada[i] = -1; g_fechaEntradaNY[i] = 0; g_sigmaUsada[i] = 0; }
+   for(int i = 0; i < 8; i++) { g_diaEntrada[i] = -1; g_fechaEntradaNY[i] = 0; g_sigmaUsada[i] = 0; }
    // si el EA se reinicia con posiciones abiertas, se reconocen (respeta su hora de salida en vez de cerrarlas)
    datetime nyAhora = UTCaNY(AhoraUTC()); MqlDateTime ta; TimeToStruct(nyAhora, ta);
    for(int p = PositionsTotal() - 1; p >= 0; p--)
      {
       ulong tk = PositionGetTicket(p); if(tk == 0) continue;
       long mg = PositionGetInteger(POSITION_MAGIC);
-      if(mg < (long)InpMagicoBase || mg > (long)InpMagicoBase + 6) continue;
+      if(mg < (long)InpMagicoBase || mg > (long)InpMagicoBase + 7) continue;
       int i = (int)(mg - (long)InpMagicoBase);
       datetime tSrv = (datetime)PositionGetInteger(POSITION_TIME);
       datetime tUtc = tSrv - (OffsetInvierno() + (VeranoServidor(tSrv - OffsetInvierno() * 3600) ? 1 : 0)) * 3600;
@@ -472,7 +480,7 @@ void OnTimer()
    datetime dNY = SoloFecha(ny);
    MqlDateTime t; TimeToStruct(ny, t);
    int hm = t.hour * 100 + t.min, idDia = t.year * 1000 + t.day_of_year;
-   for(int i = 0; i < 7; i++)
+   for(int i = 0; i < 8; i++)
      {
       Estrategia e = g_E[i];
       int abiertas = PosicionesEstr(e);
@@ -484,7 +492,7 @@ void OnTimer()
          for(int j = 0; j < nss; j++) { StringTrimLeft(ss[j]); StringTrimRight(ss[j]); int m = MinutosACierreLargo(ss[j]); if(m >= 0 && m <= InpMinAntesCierre) cierreCerca = true; }
          if(cierreCerca) { CerrarEstr(e, "antes_cierre_sesion"); continue; }
          bool tocaSalir;
-         if(e.pasaNoche) tocaSalir = (dNY > g_fechaEntradaNY[i] && hm >= e.hFin) || (dNY > g_fechaEntradaNY[i] + 4 * 86400) || g_fechaEntradaNY[i] == 0;
+         if(e.noches > 0) tocaSalir = (LaborablesEntre(g_fechaEntradaNY[i], dNY) >= e.noches && hm >= e.hFin) || (dNY > g_fechaEntradaNY[i] + (e.noches + 4) * 86400) || g_fechaEntradaNY[i] == 0;
          else            tocaSalir = (hm >= e.hFin) || (g_diaEntrada[i] != idDia);
          if(tocaSalir)
            {
@@ -505,7 +513,7 @@ void OnTimer()
          continue;
         }
       g_diaEntrada[i] = idDia;
-      datetime tSalida = e.pasaNoche ? NYenUTC(HabilNYSESiguiente(dNY), e.hFin) : NYenUTC(dNY, e.hFin);
+      datetime tSalida = e.noches > 0 ? NYenUTC(SumarLaborables(dNY, e.noches), e.hFin) : NYenUTC(dNY, e.hFin);
       if(NoticiaCerca(e.divisas, utc) || NoticiaCerca(e.divisas, tSalida)) { Registrar(e.nombre, e.simbolos, "sin_entrada_noticia", 0, 0, 0, 0, 0); continue; }
       g_fechaEntradaNY[i] = dNY;
       Entrar(e, dNY, (int)((tSalida - utc) / 60));
@@ -516,7 +524,7 @@ void OnTradeTransaction(const MqlTradeTransaction &tr, const MqlTradeRequest &rq
   {
    if(tr.type != TRADE_TRANSACTION_DEAL_ADD || !HistoryDealSelect(tr.deal)) return;
    long mg = HistoryDealGetInteger(tr.deal, DEAL_MAGIC);
-   if(mg < (long)InpMagicoBase || mg > (long)InpMagicoBase + 6) return;
+   if(mg < (long)InpMagicoBase || mg > (long)InpMagicoBase + 7) return;
    if(HistoryDealGetInteger(tr.deal, DEAL_REASON) == DEAL_REASON_SL)
       Registrar(g_E[(int)(mg - (long)InpMagicoBase)].nombre, HistoryDealGetString(tr.deal, DEAL_SYMBOL), "stop_catastrofe", HistoryDealGetDouble(tr.deal, DEAL_VOLUME), 0,
                 HistoryDealGetDouble(tr.deal, DEAL_PRICE), 0, HistoryDealGetDouble(tr.deal, DEAL_PROFIT) + HistoryDealGetDouble(tr.deal, DEAL_COMMISSION) + HistoryDealGetDouble(tr.deal, DEAL_SWAP));
