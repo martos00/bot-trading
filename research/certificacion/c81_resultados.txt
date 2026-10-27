@@ -1,0 +1,4 @@
+FTSE: n 126 +15.7 pb (t +2.57) | 2010-17 +20.5 | 2018-26 +11.7 (t +1.40) | años+ 11/17 | inf. resto de días +1.1 pb -> PASA
+DAX: n 121 +17.4 pb (t +1.93) | 2010-17 +8.4 | 2018-26 +25.3 (t +1.91) | años+ 11/17 | inf. resto de días +2.9 pb -> NO PASA
+Nikkei: n 126 +21.5 pb (t +1.84) | 2010-17 +22.5 | 2018-26 +20.7 (t +2.52) | años+ 15/17 | inf. resto de días +4.1 pb -> NO PASA
+ASX: n 109 +8.2 pb (t +1.30) | 2010-17 +3.6 | 2018-26 +12.5 (t +1.39) | años+ 12/16 | inf. resto de días +1.5 pb -> NO PASA

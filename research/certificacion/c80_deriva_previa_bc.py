@@ -27,10 +27,11 @@ def prueba(nom, cie, fechas, signo, corte_desc):
     pasa = t >= 2.13 and (np.sign(an) == signo).mean() >= 0.6 and b.mean() * signo > 6
     print(f'{nom}: n {len(r)} D-2..D-1 {r.mean():+.1f} pb (t {t_nw(r.values):+.2f}) | 2010-17 {r.loc[:"2017"].mean():+.1f} | 2018-26 {b.mean():+.1f} (t {t_nw(b.values):+.2f}) '
           f'| años con el signo {(np.sign(an)==signo).sum()}/{len(an)} | inf. D0 {r0.mean():+.1f} pb (t {t_nw(r0.values):+.2f}) -> {"PASA" if pasa else "NO PASA"}')
-hd, fe = sys.argv[1:3]
-F = {k: pd.DatetimeIndex(pd.to_datetime(pd.read_csv(os.path.join(fe, k + '.csv')).iloc[:, 0])) for k in ('boj', 'boe', 'rba')}
-rba = F['rba'][F['rba'].dayofweek == 1]
-boe = pd.DatetimeIndex([d + pd.Timedelta(days=(3 - d.dayofweek) % 7) for d in F['boe']])
-prueba('BoJ -> Nikkei', cierres(os.path.join(hd, 'JPXJPY'), 'Asia/Tokyo', 15, 0), F['boj'], 1, None)
-prueba('BoE -> FTSE (2015-26)', cierres(os.path.join(hd, 'UKXGBP'), 'Europe/London', 16, 30), boe, 1, None)
-prueba('RBA -> ASX', cierres(os.path.join(hd, 'AUXAUD'), 'Australia/Sydney', 16, 0), rba, 0, '2017')
+if __name__ == "__main__":
+    hd, fe = sys.argv[1:3]
+    F = {k: pd.DatetimeIndex(pd.to_datetime(pd.read_csv(os.path.join(fe, k + '.csv')).iloc[:, 0])) for k in ('boj', 'boe', 'rba')}
+    rba = F['rba'][F['rba'].dayofweek == 1]
+    boe = pd.DatetimeIndex([d + pd.Timedelta(days=(3 - d.dayofweek) % 7) for d in F['boe']])
+    prueba('BoJ -> Nikkei', cierres(os.path.join(hd, 'JPXJPY'), 'Asia/Tokyo', 15, 0), F['boj'], 1, None)
+    prueba('BoE -> FTSE (2015-26)', cierres(os.path.join(hd, 'UKXGBP'), 'Europe/London', 16, 30), boe, 1, None)
+    prueba('RBA -> ASX', cierres(os.path.join(hd, 'AUXAUD'), 'Australia/Sydney', 16, 0), rba, 0, '2017')

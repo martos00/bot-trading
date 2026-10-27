@@ -54,6 +54,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Candidatas de la auditoría: EURUSD Q+1 15-16 NY; Nikkei Q+2 15-16 NY | C78 | EURUSD: FXCM confirma 2012-26 (t 4,15) pero no existía en 2003-11 → no certificada. **Nikkei: pasa C60 con la hora corregida (t 4,12, 15/16 años)**: falta medir coste en FTMO |
 | El dólar tras las subastas del Tesoro (FX) | C79 | Nada (t ≈ 0 en 800 subastas) |
 | Bolsa local antes de BoJ, BoE y RBA (Quantpedia 2025) | C80 | **BoE → FTSE pasa** (+31,5 pb D−2..D−1, t 2,31; ICE y Yahoo coinciden): candidata, sin validación posterior a la publicación. BoJ (t 2,07, débil desde 2018) y RBA no |
+| Deriva previa al FOMC en FTSE, DAX, Nikkei y ASX | C81 | FTSE pasa en HistData (t 2,57) pero Yahoo (t 1,86) e ICE (t 0,86) no confirman; resto no pasa. Patrón débil |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |
