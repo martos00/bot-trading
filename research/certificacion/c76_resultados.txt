@@ -1,8 +1,8 @@
 Fechas NFP identificadas: 195 (viernes 97 %); ejemplo 2019-2020: 2019-10-04, 2019-11-01, 2019-12-06, 2020-01-10, 2020-02-07, 2020-03-06, 2020-04-03, 2020-05-08, 2020-06-05, 2020-07-02
 
 FOMC comunicado 14:00 | oro: n 108  continuacion +5.41 pb (t +1.69), aciertos 57 %  | antes de 2020 +9.86 (n 55)  desde 2020 +0.78 (n 53)  | coste 2.9 pb  -> no pasa   [informativo reversion: -5.41 pb]
-FOMC comunicado 14:00 | EURUSD: n 104  continuacion +0.88 pb (t +1.00), aciertos 56 %  | antes de 2020 +0.45 (n 55)  desde 2020 +1.36 (n 49)  | coste 1.1 pb  -> no pasa   [informativo reversion: -0.88 pb]
+FOMC comunicado 14:00 | EURUSD: n 103  continuacion +4.13 pb (t +3.05), aciertos 61 %  | antes de 2020 +5.28 (n 55)  desde 2020 +2.82 (n 48)  | coste 1.1 pb  -> PASA   [informativo reversion: -4.13 pb]
 FOMC rueda de prensa 14:30 | oro: n 61  continuacion -16.10 pb (t -2.34), aciertos 41 %  | antes de 2023 -24.22 (n 31)  desde 2023 -7.72 (n 30)  | coste 2.9 pb  -> no pasa   [informativo reversion: +16.10 pb]
-FOMC rueda de prensa 14:30 | EURUSD: n 56  continuacion -6.72 pb (t -2.02), aciertos 41 %  | antes de 2023 -7.44 (n 30)  desde 2023 -5.89 (n 26)  | coste 1.1 pb  -> no pasa   [informativo reversion: +6.72 pb]
+FOMC rueda de prensa 14:30 | EURUSD: n 60  continuacion -5.85 pb (t -1.48), aciertos 52 %  | antes de 2023 -8.99 (n 31)  desde 2023 -2.49 (n 29)  | coste 1.1 pb  -> no pasa   [informativo reversion: +5.85 pb]
 Empleo NFP 08:30 | oro: n 188  continuacion -3.08 pb (t -1.17), aciertos 48 %  | antes de 2020 -4.68 (n 111)  desde 2020 -0.78 (n 77)  | coste 2.9 pb  -> no pasa   [informativo reversion: +3.08 pb]
-Empleo NFP 08:30 | EURUSD: n 188  continuacion -2.10 pb (t -1.60), aciertos 43 %  | antes de 2020 -0.52 (n 113)  desde 2020 -4.47 (n 75)  | coste 1.1 pb  -> no pasa   [informativo reversion: +2.10 pb]
+Empleo NFP 08:30 | EURUSD: n 191  continuacion -1.54 pb (t -1.16), aciertos 49 %  | antes de 2020 -2.43 (n 114)  desde 2020 -0.22 (n 77)  | coste 1.1 pb  -> no pasa   [informativo reversion: +1.54 pb]

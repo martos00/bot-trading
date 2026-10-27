@@ -16,3 +16,7 @@ Fechas NFP identificadas con el ES: 195, 97 % viernes; comprobadas a mano 2019-2
   mercados y en las dos mitades (oro +16 pb, EURUSD +6,7 pb en reversión, |t| ≈ 2-2,3, n ≈ 60). No era la hipótesis
   preregistrada y la muestra es pequeña: solo podría tratarse como candidata con un preregistro nuevo y confirmación en
   otros mercados/fuentes. Contador +6.
+
+
+## Corrección 27-oct-2026 (hora de HistData)
+Repetido con la hora de HistData corregida (`c76_resultados.txt`). Cambia EURUSD: comunicado del FOMC **+4,13 pb (t 3,05)**, >0 en ambas mitades, 2.ª mitad +2,82 pb → pasaba en HistData. **Segunda fuente FXCM (punto medio, `c76b_resultados.txt`): +2,84 pb (t 1,92), desde 2020 +0,60 pb < coste 1,1 → NO CONFIRMA.** Rueda de prensa EURUSD: −5,85 pb (t −1,48). NFP EURUSD: −1,54 pb. Oro sin cambios. Resultado final de C76: **ninguna certificada**.

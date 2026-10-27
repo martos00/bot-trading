@@ -5,8 +5,9 @@ import numpy as np, pandas as pd
 from c1_certificacion import t_nw
 def carga(d):
     x = pd.concat([pd.read_csv(f, sep=';', header=None, names=['t', 'o', 'h', 'l', 'c', 'v']) for f in sorted(glob.glob(os.path.join(d, '*.csv')))])
-    t = pd.to_datetime(x.t, format='%Y%m%d %H%M%S') + pd.Timedelta(hours=5)          # EST fijo → UTC
-    s = pd.Series(x.c.values, index=t.dt.tz_localize('UTC').dt.tz_convert('America/New_York')).sort_index()
+    t = pd.to_datetime(x.t, format='%Y%m%d %H%M%S')        # HistData: hora de NY con cambio de hora (corregido 27-oct-2026; antes EST fijo)
+    s = pd.Series(x.c.values, index=t.dt.tz_localize('America/New_York', ambiguous='NaT', nonexistent='NaT')).sort_index()
+    s = s[s.index.notna()]
     return s[~s.index.duplicated()]
 def tramo(s, h0, m0, h1, m1):
     """cierre del minuto anterior a h0:m0 → cierre del último minuto ≤ h1:m1, por día."""

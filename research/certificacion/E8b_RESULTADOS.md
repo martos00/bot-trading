@@ -11,3 +11,7 @@ Reglas congeladas en PREREGISTRO_E8b (commit b7a99fc). Script `e8b_oro_viernes_1
 (`InpE8_Salida = 1645`). Margen neto estrecho (+0,8 pb por viernes en 2018-26). Sharpe de la cartera con costes FTMO,
 2018-26: sin oro 1,16; con E8b 1,28 (con la regla original 16:55 sería 1,46). Pendiente: el coste del oro en FTMO solo se midió en
 4 viernes de desfase horario; hay que medirlo en viernes normales a las 16:00-16:45 NY (el registro del EA lo anota).
+
+
+## Corrección 27-oct-2026 (hora de HistData)
+Con la hora de HistData corregida (ver C45): contado 16:00→16:45 **+2,16 pb (t 5,03)**, 14/17 años, 2018-26 +1,86 pb (t 3,26). Sigue PASANDO; el futuro no cambia (Databento).

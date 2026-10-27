@@ -29,8 +29,8 @@ def cargar_histdata(carpeta):
         p = pd.read_csv(f, sep=';', header=None, names=['t', 'open', 'high', 'low', 'close', 'v'])
         piezas.append(p)
     p = pd.concat(piezas, ignore_index=True)
-    ts = (pd.to_datetime(p['t'], format='%Y%m%d %H%M%S') + pd.Timedelta(hours=5)).dt.tz_localize('UTC')
-    ts = ts.dt.tz_convert('America/New_York').dt.tz_localize(None)
+    # HistData viene en hora de NY CON cambio de hora (comprobado contra FXCM: desfase de 60 min en verano si se trata como EST fijo)
+    ts = pd.to_datetime(p['t'], format='%Y%m%d %H%M%S')
     df = pd.DataFrame({'open': p['open'].values, 'high': p['high'].values, 'low': p['low'].values,
                        'close': p['close'].values}, index=ts)
     df['inst'] = 0

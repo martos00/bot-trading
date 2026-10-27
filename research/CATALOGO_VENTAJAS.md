@@ -48,6 +48,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | **Oro largo viernes 16:00-16:55 NY** | B4 + C45 + E8 | **CERTIFICADA (2.ª ventaja)**: futuro t 4,38 en 2018-26, 9/9 años; contado independiente t 3,78; Sharpe 1,0-1,5 según coste |
 | Oro viernes con salida 16:45 NY (horario de FTMO) | E8b | **Pasa**: futuro +2,26 pb en 2018-26 (t 3,68), contado t 3,76; neto ≈ +0,8 pb; EA `InpE8_Salida = 1645` |
 | Continuación 5 min tras noticias (FOMC, rueda de prensa, NFP) en oro y EURUSD | C76 | Nada; informativo: reversión tras la rueda de prensa del FOMC (|t| ≈ 2, n ≈ 60) |
+| Momentum de horas tras EIA (WTI) y tras NFP/FOMC (EURUSD) | C77 | Nada (con la hora de HistData corregida; FXCM tampoco) |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |

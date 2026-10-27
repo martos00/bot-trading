@@ -1,0 +1,16 @@
+ORO: viernes n 759 2.84 pb (t 4.80) años+ 12/17 | 2010-17 2.92 pb (t 3.93) | 2018-26 2.76 pb (t 3.03)
+   informativo lun 16:00-16:58: -0.56 pb (t -1.41)
+   informativo mar 16:00-16:58: -0.67 pb (t -1.84)
+   informativo mié 16:00-16:58: -0.08 pb (t -0.19)
+   informativo jue 16:00-16:58: -0.22 pb (t -0.52)
+   informativo viernes (16, 0)→(16, 29): 1.19 pb (t 3.49)
+   informativo viernes (16, 30)→(16, 58): 1.67 pb (t 4.59)
+   por año (pb): {2010: 77.0, 2011: 387.0, 2012: 29.0, 2013: 424.0, 2014: 131.0, 2015: 156.0, 2016: -20.0, 2017: -95.0, 2018: -70.0, 2019: -62.0, 2020: -42.0, 2021: 262.0, 2022: 348.0, 2023: 87.0, 2024: 252.0, 2025: 123.0, 2026: 167.0}
+CRITERIOS: {'1 t>=2': np.True_, '2 años>=60%': np.True_, '3 2018-26>0': np.True_} → CONFIRMADA
+PLATA (informativo): viernes n 751 1.35 pb (t 1.04) años+ 10/17 | 2010-17 4.49 pb (t 3.19) | 2018-26 -1.57 pb (t -0.76)
+   informativo lun 16:00-16:58: -2.72 pb (t -2.28)
+   informativo mar 16:00-16:58: -2.32 pb (t -3.03)
+   informativo mié 16:00-16:58: -0.65 pb (t -0.77)
+   informativo jue 16:00-16:58: -2.33 pb (t -2.52)
+   informativo viernes (16, 0)→(16, 29): 0.99 pb (t 1.40)
+   informativo viernes (16, 30)→(16, 58): 0.36 pb (t 0.40)

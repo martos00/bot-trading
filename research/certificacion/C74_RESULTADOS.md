@@ -14,3 +14,7 @@ Reglas congeladas en PREREGISTRO_C74 (commit 8e56287). Script `c74_modelo_tjr_ny
   las reglas preregistradas, no un error del código. Potencia baja, pero el signo es negativo en todo.
 - **Cerrada.** No se prueban variantes de esta regla sobre estos datos (sería buscar hasta que algo salga por azar).
   Contador de pruebas +3.
+
+
+## Corrección 27-oct-2026 (hora de HistData)
+Repetido con la hora de HistData corregida: EURUSD n 23, +0,07 R bruto (t 0,37), neto +0,02 R, 2019-26 −0,12 R; XAUUSD n 57, −0,10 R bruto, neto −0,16 R (t −1,85). ES no cambia (Databento). **Sigue sin pasar en los tres.**

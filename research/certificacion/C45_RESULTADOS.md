@@ -25,3 +25,7 @@ con el futuro a minuto (análisis descriptivo siguiente) antes de definir la est
 El efecto NO depende de los últimos minutos. La debilidad reciente del contado de HistData (BID) no aparece en el futuro; lo más
 probable es el sesgo del BID al ampliarse el spread por la tarde del viernes (va en contra del largo). Dispersión ≈ 15 pb por viernes:
 Sharpe anual bruto ≈ 1,5; neto con 0,74 pb ≈ 1,2 (futuro); con CFD a 1-1,5 pb ≈ 0,9-1,1. Coste real del CFD pendiente de medir en MT5.
+
+
+## Corrección 27-oct-2026 (hora de HistData)
+El cargador trataba HistData como hora EST fija; en realidad viene en hora de NY con cambio de hora (comprobado contra FXCM: desfase de 60 min en verano). Repetido con la hora correcta (`c45_resultados_corregido.txt`): oro viernes 16:00→16:58 **+2,84 pb (t 4,80)**, 12/17 años, 2018-26 +2,76 pb (t 3,03): **sigue CONFIRMADA** (más fuerte en el tramo reciente). Plata: 2018-26 −1,57 pb (informativo).

@@ -1,0 +1,3 @@
+EURUSD FXCM: n 105 +2.84 pb (t +1.92) aciertos 57 % | antes 2020 +4.87 (t +2.21) | desde 2020 +0.60 (t +0.38) | años+ 10/14 -> NO CONFIRMA
+GBPUSD FXCM: n 105 +1.75 pb (t +1.60) aciertos 51 % | antes 2020 +3.09 (t +2.01) | desde 2020 +0.27 (t +0.20) | años+ 10/14 (informativo)
+USDJPY FXCM: n 105 +1.11 pb (t +1.05) aciertos 50 % | antes 2020 +2.20 (t +1.45) | desde 2020 -0.10 (t -0.07) | años+ 8/14 (informativo)
