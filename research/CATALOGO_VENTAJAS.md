@@ -71,6 +71,8 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Gamma de las 0DTE del S&P (SPXW) y el ES 15-16 NY | C89 | +0,36 pb (t 0,40): no |
 | Ruptura del día anterior (regla C93-B) en SI, CL, 6E, 6B, 6J, 6A, 6C, 6S, NKD | C94 | Ninguno pasa; SI y NKD positivos sin significación en la fuente principal |
 | ETF apalancados de energía: continuación 14:00-14:30 NY antes de la liquidación (NG, CL; controles HO, RB) | C95 | NG pasa justo (+4,79 pb, t 2,75; coste 4 pb), candidata sin 2.ª fuente; 2026 negativo. CL no |
+| Continuación antes de la liquidación en ZB, ZN, ZC, ZS, ZW, HG | C96 | Ninguno; ZN real (+0,58 pb, t 4,29) pero < coste 1,8 pb |
+| Nikkei última media hora de Tokio (ETF apalancados japoneses) | C97 | −0,29 pb desde 2018: no |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |
