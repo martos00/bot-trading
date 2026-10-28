@@ -7,7 +7,7 @@ E1 sigue en el EA de FTMO (CFD), que queda aparcado.
 ## Composición (escenario E: firma que permite bots y mantener hasta las 17:00 NY / de noche)
 Yen (E2/E11), cesta del yen fin de mes, materias primas en víspera de festivo (E12), oro viernes 16:00-16:55, oro D−2 09:30-10:00 (corto),
 Nikkei Q+2 (largo) y Q−2 (corto), plata víspera de festivo 16:00-16:55, plata viernes 16:30-17:00, bitcoin 21-23 UTC (MBT, días laborables).
-Pendiente de forward: C93 oro ruptura del día anterior (no suma en este escenario: 2,10 → ~2,10).
+Pendiente de forward: C93 oro ruptura del día anterior (con euro no sumaba: 2,04 → 2,01-2,05; sin euro no calculado).
 
 ## Backtest 2018-03 → 2026-09 (0,5 % de riesgo por operación en cada estrategia; script `certificacion/escenario_cartera_futuros.py`)
 | | Con euro | Sin euro |
