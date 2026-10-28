@@ -97,6 +97,13 @@ bool EsQ0(datetime dia)                                 // ultimo dia laborable 
    for(datetime s = dia + 86400; ; s += 86400) { MqlDateTime y; TimeToStruct(s, y); if(y.mon != x.mon) break; if(EsHabil(s)) return false; }
    return true;
   }
+bool EsQmenos2(datetime dia)                            // penultimo dia laborable de mar/jun/sep/dic
+  {
+   if(!EsHabil(dia)) return false;
+   datetime s = dia + 86400; while(!EsHabil(s)) s += 86400;
+   MqlDateTime x, y; TimeToStruct(dia, x); TimeToStruct(s, y);
+   return x.mon % 3 == 0 && y.mon == x.mon && EsQ0(s);
+  }
 bool EsDiaAntesDeVispera(datetime dia)                  // y la vispera es el dia siguiente
   {
    if(!EsHabil(dia) || EsFestivo(dia)) return false;
@@ -161,7 +168,7 @@ void Cuenta(string s)
                SymbolInfoDouble(s, SYMBOL_VOLUME_MIN), SymbolInfoDouble(s, SYMBOL_VOLUME_STEP));
   }
 
-// tipo: 0 todos los dias habiles, 1 D-2, 2 viernes, 3 vispera de festivo, 4 jueves, 5 Q0, 6 dia antes de vispera (sale al dia siguiente), 7 Q+2
+// tipo: 0 todos los dias habiles, 1 D-2, 2 viernes, 3 vispera de festivo, 4 jueves, 5 Q0, 6 dia antes de vispera (sale al dia siguiente), 7 Q+2, 8 Q-2
 void Medir(string s, int tipo, int h0, int m0, int h1, int m1, string etiqueta, double refBruto, int fh, datetime hoy)
   {
    if(!SymbolSelect(s, true)) return;
@@ -178,6 +185,7 @@ void Medir(string s, int tipo, int h0, int m0, int h1, int m1, string etiqueta, 
       if(tipo == 5 && !EsQ0(dia)) continue;
       if(tipo == 6 && !EsDiaAntesDeVispera(dia)) continue;
       if(tipo == 7 && !EsQmas2(dia)) continue;
+      if(tipo == 8 && !EsQmenos2(dia)) continue;
       datetime diaSal = (tipo == 6) ? dia + 86400 : dia;
       double a, b;
       if(!SpreadPb(s, AServidor(NuevaYork(dia, h0, m0)), a) || !SpreadPb(s, AServidor(NuevaYork(diaSal, h1, m1)), b)) continue;
@@ -222,6 +230,10 @@ void OnStart()
    Cuenta(InpNikkei);
    Medir(InpNikkei, 7, 15, 0, 16, 0,  "E13 Q+2 15:00->16:00 NY",              11.0, fh, hoy);
    Medir(InpNikkei, 0, 15, 0, 16, 0,  "E13 misma hora todos los dias (informativo, mas muestra)", 11.0, fh, hoy);
+   Medir(InpOro,   1, 9, 30, 10, 0,  "E15 oro D-2 09:30->10:00 NY (corto)",  5.9, fh, hoy);
+   Medir(InpOro,   0, 9, 30, 10, 0,  "E15 misma hora todos los dias (informativo)", 5.9, fh, hoy);
+   Medir(InpNikkei, 8, 20, 0, 21, 0, "E16 Nikkei Q-2 20:00->21:00 NY (corto)", 13.0, fh, hoy);
+   Medir(InpNikkei, 0, 20, 0, 21, 0, "E16 misma hora todos los dias (informativo)", 13.0, fh, hoy);
    Cuenta(InpUK100);
    Medir(InpUK100, 0, 11, 30, 11, 30, "E14 spread a las 11:30 NY (cierre de Londres) todos los dias; sumar 2 noches de swap", 32.0, fh, hoy);
    Medir(InpGas,   4, 9, 0, 10, 0,   "F1b jueves 09:00->10:00 NY (informativo)", 12.0, fh, hoy);

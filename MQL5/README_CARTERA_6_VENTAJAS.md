@@ -37,6 +37,8 @@
 | E10 plata | XAGUSD largo | víspera de festivo NYSE | 16:00 → 16:55 |
 | E13 Nikkei | JP225.cash largo | 2.º día hábil de ene/abr/jul/oct | 15:00 → 16:00 (`InpE13_NikkeiTrimestre`, **desactivada por defecto** hasta medir su coste) |
 | E14 FTSE | UK100.cash largo | 3 días hábiles antes de cada decisión del Banco de Inglaterra (`InpFechasBoE`) | 11:30 NY (≈ cierre de Londres) → 11:30 NY dos días hábiles después (`InpE14_FTSEantesBoE`, **desactivada**: candidata C80 sin validar tras publicarse) |
+| E15 oro | XAUUSD corto | antepenúltimo día hábil del mes | 09:30 → 10:00 (`InpE15_OroDmenos2`, desactivada hasta medir coste) |
+| E16 Nikkei | JP225.cash corto | penúltimo día hábil del trimestre | 20:00 → 21:00 (`InpE16_NikkeiQmenos2`, desactivada hasta medir coste) |
 | E9 yen fin de mes | USDJPY largo | antepenúltimo día laborable del mes | 07:00 → 08:00 |
 | E11 yen fin de trimestre | USDJPY, EURJPY, GBPJPY corto (1/3 c/u) | último día laborable de mar/jun/sep/dic | 00:30 → 02:00 |
 | E12 materias primas | cesta larga (igual riesgo) | día antes de la víspera de festivo | 13:55 → 13:55 del día siguiente |
