@@ -58,6 +58,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Nasdaq 01:00-03:00 NY diario (overnight drift, candidata de B2) | C82 | Fuerte 2010-2021 (t 4,17); tras publicarse +0,58 pb (t 1,02) < coste: no |
 | **Oro corto D−2 09:30-10:00 NY** y **Nikkei corto Q−2 20:00-21:00 NY** (candidatas de futuros B18/B14) | C83 | **Pasan con HistData** (oro +6,3 pb t 3,08; Nikkei +13,6 pb t 4,08): E15/E16 en el EA, desactivadas hasta medir coste |
 | Minutos previos a la liquidación diaria (GC, SI, ES; todos los días y fin de mes) | C84 | Nada; S&P fin de mes −6 pb hasta 2017, casi desaparecido |
+| Noche frente a día en 13 futuros de metales, energía y cereales | C85 | Nada (solo ZM noche en descubrimiento; no confirma) |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |
