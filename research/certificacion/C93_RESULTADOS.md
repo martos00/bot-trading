@@ -24,3 +24,15 @@ Lectura honesta:
 - Solo la variante B queda confirmada, y en el límite. Siguiente paso: forward test en demo, sin tocar parámetros.
 
 Contador de pruebas +2.
+
+## Aporte a la cartera (informativo, 2018-2026; tamaño 0,5 % de riesgo por operación como el resto)
+Script: `escen_c93.py` (scratchpad, reutiliza el escenario de futuros). Correlación con la cartera de futuros: 0,04.
+
+| Cartera | Sin C93 | + C93 (contado) | + C93 (GC) |
+|---|---|---|---|
+| A. Firma de futuros normal (cierre 16:45) | 1,32 | 1,46 | 1,35 |
+| B. A + plata víspera (E10b) | 1,43 | 1,55 | 1,44 |
+| E. Firma que permite mantener + plata + bitcoin | 2,04 | 2,05 | 2,01 |
+| FTMO (CFD, coste 1,5 pb) | 1,51 | 1,50 | 1,44 |
+
+C93 sola en futuros: Sharpe 0,70 (contado) / 0,49 (GC).
