@@ -36,3 +36,16 @@ E = firma que permite bots y mantener hasta las 17:00/de noche y cripto, Sharpe 
 | P(caída > 20 % en 8 años) | 48 % | 6 % |
 | Cuenta de fondeo (−4 % arrastrado, objetivo 6 %): aprueba / tarda / quema en 1 año | 68 % / 1,5 meses / 42 % | 70 % / 2 meses / 35 % |
 Más prudente en fondeo: E al 10 %/año (0,21 %/op.): aprueba 80 % en ~6 meses, quema 9 % al año.
+
+## Ciclo completo en cuenta de fondeo de futuros (`certificacion/mc_fondeo_futuros.py`; 4.000 simulaciones de 24 meses)
+Supuestos (cuenta típica, no de una firma concreta): 50.000 $, objetivo +6 %, pérdida máxima arrastrada 4 % (fin de día, se bloquea en el
+saldo inicial), 150 $ por examen, fondeada con la misma regla, retiro mensual de lo que pase de +4 %, reparto 90 %. Sin límite diario ni
+regla de consistencia. Con tope de 2.000 $ por retiro los resultados apenas cambian.
+
+| Cartera B | Riesgo/op | Aprueba 1.er examen | Exámenes en 24 m | Meses a fondeada | Pierde la fondeada (24 m) | Retirado 24 m (media) | P(perder dinero) |
+|---|---|---|---|---|---|---|---|
+| 6 % | 0,12 % | 93 % | 1,0 | 11,0 | 1 % | 1.275 $ | 39 % |
+| 10 % | 0,21 % | 91 % | 1,3 | 6,7 | 16 % | 4.489 $ | 11 % |
+| 15 % | 0,31 % | 81 % | 1,9 | 4,3 | 46 % | 8.451 $ | 5 % |
+| 25 % | 0,52 % | 68 % | 3,8 | 2,5 | 87 % | 15.838 $ | 2 % |
+(Cartera A con el mismo objetivo: 86/83/76/67 % de aprobados; 1,2/1,7/2,6/4,9 exámenes; retirado 1.470/4.623/8.815/17.159 $.)
