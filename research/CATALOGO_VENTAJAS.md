@@ -62,6 +62,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Momentum de la última media hora (Baltussen 2021) en oro y plata | C86 | Existía (plata t 3,83 total) pero nulo/negativo desde 2021 |
 | Calendario × 30 min en 22 futuros del CME, solo ventanas de fondeo de futuros (QuantConnect, 11.220 reglas) | B22 | Nada: 6 seleccionadas en 2012-17, ninguna confirma |
 | Pinning al strike de mayor interés abierto el día de vencimiento de opciones (oro, crudo; QuantConnect) | C87 | Oro +11 pb hasta 2018 y −11 pb desde 2019; crudo negativo: no |
+| **Plata en víspera de festivo con salida 16:45 (para fondeo de futuros)** | E10b | **Pasa** con HistData (+3,4 pb, t 2,42; 2018-26 +4,5); solo en futuros (en CFD el spread la mata) |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |
