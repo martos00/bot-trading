@@ -27,3 +27,10 @@ ES 0,73 · NQ 0,30 · RTY 1,2 · YM 0,8 · CL 2,0 · NG 4,7 · HO 2,5 · RB 3,0 
   media bruta ≥ 2 × coste.
 - Lo que pase: segunda fuente (HistData o Databento ya descargado) y comprobación del mecanismo antes de nada. Contador +≈12.000.
 - Si un mercado no tiene datos desde 2012 en QuantConnect, se usa lo que haya y se informa.
+
+## Anexo (28-oct-2026, antes de calcular el barrido; correcciones de datos)
+Calibración de la hora de QuantConnect contra Databento (cierres horarios de 2016-01-27 y 2022-07-27, y 6J en 2015 y 2023): ES, NQ, RTY,
+YM, CL, NG, HO, RB, GC, SI y HG coinciden exactamente; **6E, 6J, 6B, 6A, 6C, ZN, ZB, ZF, ZC, ZS y ZW vienen con 1 h de adelanto** (su
+marca "h" es la hora h+1 real) y se corrigen sumando 1 h. **PL se excluye**: datos muy incompletos en QuantConnect (correlación horaria
+0,63-0,85 con Databento). Universo final: 22 mercados. Validación previa obligatoria: con la hora corregida, 6J D−2 07:00-08:00 debe
+reproducir el signo de E9/B7 (negativo). Antes de este anexo solo se ejecutaron las pruebas de ES y 6J sin corregir (descartadas).
