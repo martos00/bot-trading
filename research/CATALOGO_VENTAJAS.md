@@ -75,6 +75,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Nikkei última media hora de Tokio (ETF apalancados japoneses) | C97 | −0,29 pb desde 2018: no |
 | «El hueco del CME de bitcoin se cierra» (BTC, ETH) | C98 | Pierde: −32 pb (BTC); 55 % se cierran el lunes pero los no cerrados pierden más |
 | **Ruptura del rango asiático (London breakout)** en oro, EURUSD, GBPUSD, USDJPY | C99 | **Oro pasa** (+3,58 pb t 3,98; GC 1 h +2,80 t 3,11); divisas no confirman |
+| Bitcoin: seguir el movimiento del fin de semana (espejo de C98), con Bitstamp 2012-17 no visto | C100 | −16,5 pb fuera de muestra: no |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |
