@@ -65,6 +65,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | **Plata en víspera de festivo con salida 16:45 (para fondeo de futuros)** | E10b | **Pasa** con HistData (+3,4 pb, t 2,42; 2018-26 +4,5); solo en futuros (en CFD el spread la mata) |
 | Bitcoin 21-23 UTC recortado a la ventana del CME (fondeo de futuros) | C90 | +1,5 pb (t 0,91) < coste del MBT: no |
 | Régimen de gamma de opciones del oro (GEX) y dirección intradía | C88 | No (−1,25 pb; al revés de la teoría) |
+| Cripto 21-23 UTC en SOL, XRP (y LTC, ADA, BNB informativos) | C91 | No: el efecto es general pero tras publicarse solo es significativo en BTC, ETH y BNB |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |

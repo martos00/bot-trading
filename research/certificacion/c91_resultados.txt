@@ -1,0 +1,7 @@
+SOL: tras publicarse n 1700 +4.69 pb (t +1.35) años+ 4/5 | antes +2.84 (t +0.29, desde 2020-09-01) | otras horas 2h media +0.07 -> NO PASA
+XRP: tras publicarse n 1700 -0.26 pb (t -0.10) años+ 2/5 | antes +14.55 (t +3.22, desde 2018-05-04) | otras horas 2h media +0.44 -> NO PASA
+LTC: tras publicarse n 1700 +3.57 pb (t +1.25) años+ 4/5 | antes +12.56 (t +3.71, desde 2017-12-13) | otras horas 2h media -0.24 (informativo)
+ADA: tras publicarse n 1700 +3.30 pb (t +1.05) años+ 4/5 | antes +6.19 (t +1.47, desde 2018-04-17) | otras horas 2h media -0.71 (informativo)
+BNB: tras publicarse n 1700 +4.94 pb (t +2.60) años+ 4/5 | antes +20.21 (t +5.21, desde 2017-11-06) | otras horas 2h media +0.36 (informativo)
+BTC (ref.): tras publicarse n 1700 +4.94 pb (t +2.87) años+ 3/5 | antes +11.77 (t +4.40, desde 2017-08-17) | otras horas 2h media +0.40 (informativo)
+ETH (ref.): tras publicarse n 1700 +6.35 pb (t +2.76) años+ 4/5 | antes +12.35 (t +3.79, desde 2017-08-17) | otras horas 2h media -0.00 (informativo)
