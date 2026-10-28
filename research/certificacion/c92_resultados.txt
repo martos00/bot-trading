@@ -1,0 +1,6 @@
+BTC 00:00 UTC: n 701 desc 2019-22 +5.23 pb (t +0.79, n 420) | conf 2023-26 -2.82 (t -0.84, n 281) años+ 1/4 | inf. hora siguiente +0.01 -> NO PASA
+BTC 08:00 UTC: n 701 desc 2019-22 +1.60 pb (t +0.36, n 404) | conf 2023-26 +0.74 (t +0.32, n 297) años+ 3/4 | inf. hora siguiente +1.05 -> NO PASA
+BTC 16:00 UTC: n 677 desc 2019-22 +3.55 pb (t +0.85, n 416) | conf 2023-26 +8.88 (t +2.18, n 261) años+ 4/4 | inf. hora siguiente +1.47 -> NO PASA
+ETH 00:00 UTC: n 750 desc 2019-22 +5.67 pb (t +1.03, n 456) | conf 2023-26 -1.64 (t -0.43, n 294) años+ 2/4 | inf. hora siguiente -0.76 -> NO PASA
+ETH 08:00 UTC: n 743 desc 2019-22 +1.47 pb (t +0.27, n 439) | conf 2023-26 +7.61 (t +1.96, n 304) años+ 4/4 | inf. hora siguiente -1.75 -> NO PASA
+ETH 16:00 UTC: n 749 desc 2019-22 -4.30 pb (t -0.86, n 458) | conf 2023-26 +5.10 (t +1.05, n 291) años+ 3/4 | inf. hora siguiente -6.30 -> NO PASA
