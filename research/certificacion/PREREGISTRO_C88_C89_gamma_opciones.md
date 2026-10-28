@@ -19,3 +19,8 @@ Convención (SqueezeMetrics): creadores de mercado largos en calls y cortos en p
 ## Criterio (2 pruebas)
 Media > 0 con t (Newey-West) ≥ 2,24; > 0 en las dos mitades (C88: ≤ 2018 / ≥ 2019; C89: mitad de los días disponibles); media de la
 segunda mitad > coste del futuro (GC 0,74 pb; ES 0,73 pb); y mejor que el control sin condicionar. Contador +2.
+
+## Anexo (antes de calcular; motivo técnico)
+Con opciones a 1 minuto, C88 tardaría ~7 h en QuantConnect gratis. Se usan opciones con resolución horaria: la gamma y la señal se
+calculan a las **10:00 NY** (no 09:31) y la posición va de 10:00 a 13:30. Señal s = signo de 13:30 del día anterior → 10:00. Resto igual.
+Solo se ha visto marzo de 2022 como prueba técnica de funcionamiento (GEX positiva todo el mes).
