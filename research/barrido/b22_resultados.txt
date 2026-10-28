@@ -1,0 +1,73 @@
+ES datos 2012-01-03 -> 2026-10-01 dias 3833
+TOP vie 0200 +1.74 t3.6 | mie 0200 +1.36 t3.4 | POST 0500 +1.82 t3.3 | mar 1600 +1.63 t3.2 | D-1 0200 +2.33 t3.1 | D-2 2100 +1.55 t3.0
+ES reglas 528 seleccionadas 0
+NQ datos 2012-01-03 -> 2026-10-01 dias 3833
+TOP vie 0200 +1.91 t4.0 | mie 0200 +1.42 t3.5 | mar 1100 +3.26 t3.1 | D+1 2100 +2.31 t3.1 | mie 0000 +1.15 t2.9 | PRE 1200 -4.52 t2.9
+NQ reglas 528 seleccionadas 1
+SEL NQ vie 0200 nd 307 md +1.91 td +4.05 nc 447 mc +0.18 tc +0.28 anos 0.56
+RTY datos 2017-07-10 -> 2026-10-01 dias 2400
+TOP 
+RTY reglas 528 seleccionadas 0
+YM datos 2012-01-03 -> 2026-10-01 dias 3835
+TOP POST 0500 +1.44 t4.0 | mie 0200 +1.40 t3.8 | mie 0000 +1.81 t3.8 | vie 0200 +1.57 t3.6 | mar 1600 +1.73 t3.5 | D-1 0200 +2.36 t3.1
+YM reglas 528 seleccionadas 0
+CL datos 2012-01-03 -> 2026-10-01 dias 3833
+TOP vie 1430 -3.70 t3.5 | D0 2130 +4.49 t3.3 | lun 1430 -4.38 t3.2 | D-2 1430 -9.85 t3.0 | D-2 0300 -7.55 t2.9 | D0 1430 -10.75 t2.9
+CL reglas 528 seleccionadas 0
+NG datos 2012-01-03 -> 2026-10-01 dias 3833
+TOP vie 0700 -8.88 t4.9 | jue 0900 -11.73 t3.8 | jue 1000 +8.85 t3.8 | mar 1600 +3.72 t3.6 | D+2 0930 +18.46 t3.5 | PRE 1500 -6.41 t3.4
+NG reglas 528 seleccionadas 1
+SEL NG vie 0700 nd 305 md -8.88 td -4.86 nc 444 mc -1.70 tc +0.74 anos 0.56
+HO datos 2012-01-03 -> 2026-10-01 dias 3833
+TOP D+2 1500 +4.14 t3.2 | lun 1400 -9.02 t3.2 | mar 0430 +4.55 t3.2 | D0 2130 +3.27 t3.1 | jue 1500 +2.81 t2.9 | mar 0530 +3.51 t2.9
+HO reglas 528 seleccionadas 0
+RB datos 2012-01-03 -> 2026-10-01 dias 3833
+TOP vie 1500 +4.44 t3.5 | lun 0400 -6.22 t3.5 | vie 0400 -5.80 t3.4 | lun 1400 -10.28 t3.2 | D0 1430 -10.54 t3.1 | vie 1400 +8.76 t2.9
+RB reglas 528 seleccionadas 0
+GC datos 2012-10-31 -> 2026-10-01 dias 3624
+TOP D-2 0530 -4.04 t3.7 | vie 0500 -2.35 t3.6 | mie 2030 +2.07 t3.3 | D-2 1330 +3.26 t3.3 | D0 0800 -6.44 t3.2 | D-1 1500 -3.66 t3.2
+GC reglas 528 seleccionadas 0
+SI datos 2012-01-27 -> 2026-10-01 dias 3820
+TOP vie 1500 +4.24 t3.1 | mie 1530 -3.45 t3.0 | mar 2230 -1.92 t3.0 | vie 0600 +2.57 t2.8 | vie 1030 -6.29 t2.7 | jue 0900 -6.22 t2.7
+SI reglas 528 seleccionadas 0
+HG datos 2012-01-12 -> 2026-10-01 dias 3825
+TOP jue 1900 +1.55 t3.6 | lun 0000 +1.74 t3.5 | mie 0800 +4.86 t3.1 | PRE 0300 -6.31 t3.0 | D-1 2230 -3.98 t2.8 | D0 0800 -5.48 t2.8
+HG reglas 528 seleccionadas 0
+6E datos 2012-01-16 -> 2026-10-01 dias 3628
+TOP D0 0130 -1.59 t4.2 | vie 0730 -1.68 t3.9 | mie 0630 -1.59 t3.5 | D+1 1430 -1.71 t3.4 | mar 0900 +1.56 t3.3 | mar 2200 +0.57 t3.2
+6E reglas 528 seleccionadas 1
+SEL 6E D0 0130 nd 71 md -1.59 td -4.17 nc 104 mc +0.59 tc -1.31 anos 0.22
+6J datos 2012-01-16 -> 2026-10-01 dias 3628
+TOP D0 2100 +2.56 t4.3 | D-2 1600 +1.47 t3.3 | jue 0730 -1.54 t3.3 | jue 1600 -0.86 t3.1 | vie 2200 +1.29 t3.1 | D-2 0700 -2.16 t3.0
+6J reglas 528 seleccionadas 1
+SEL 6J D0 2100 nd 71 md +2.56 td +4.31 nc 105 mc +1.38 tc +1.44 anos 0.67
+6B datos 2012-01-16 -> 2026-10-01 dias 3628
+TOP D0 1400 +1.38 t4.0 | D-1 0800 +2.12 t3.8 | vie 1230 +1.26 t3.7 | vie 0730 -1.56 t3.6 | D0 0130 -1.54 t3.1 | mie 1930 -0.67 t3.0
+6B reglas 528 seleccionadas 0
+6A datos 2012-01-16 -> 2026-10-01 dias 3628
+TOP D+1 1430 -2.89 t5.3 | D-1 1430 +3.05 t3.9 | jue 2000 +1.73 t3.1 | D0 0800 -1.82 t2.7 | D0 0600 -1.97 t2.7 | D+1 0530 -1.66 t2.6
+6A reglas 528 seleccionadas 1
+SEL 6A D+1 1430 nd 51 md -2.89 td -5.31 nc 98 mc +0.48 tc -0.35 anos 0.44
+6C datos 2012-01-18 -> 2026-10-01 dias 3601
+TOP mie 0830 -1.93 t3.3 | jue 2000 +0.96 t3.3 | D+2 1230 +2.88 t3.1 | D+1 1230 -1.41 t3.0 | D+1 1030 +3.04 t3.0 | lun 2230 +0.60 t3.0
+6C reglas 528 seleccionadas 0
+ZN datos 2012-01-03 -> 2026-10-01 dias 3834
+TOP mar 1130 +0.97 t3.7 | D0 0300 -1.63 t3.5 | lun 0800 +1.02 t3.5 | lun 0030 +0.35 t3.2 | PRE 0330 +1.42 t3.2 | D+1 1430 -1.67 t3.2
+ZN reglas 528 seleccionadas 0
+ZB datos 2012-01-03 -> 2026-10-01 dias 3834
+TOP D0 0300 -3.19 t3.6 | D+1 1430 -3.23 t3.5 | PRE 0330 +2.68 t3.5 | D+2 2200 +1.13 t3.2 | D-2 1400 +3.56 t3.1 | mar 1130 +1.93 t3.1
+ZB reglas 528 seleccionadas 0
+ZF datos 2012-01-03 -> 2026-10-01 dias 3834
+TOP D0 0300 -1.09 t3.8 | lun 0800 +0.66 t3.7 | D-2 1430 +1.19 t3.5 | lun 1430 -0.46 t3.5 | PRE 0330 +0.86 t3.3 | mar 1130 +0.48 t3.3
+ZF reglas 528 seleccionadas 0
+ZC datos 2012-01-03 -> 2026-10-01 dias 3751
+TOP PRE 2100 -2.13 t3.6 | D0 2030 +4.50 t3.5 | PRE 0000 +2.65 t3.5 | vie 0000 +1.62 t3.4 | mar 0800 -3.45 t3.3 | PRE 0230 +3.48 t3.2
+ZC reglas 396 seleccionadas 0
+ZS datos 2012-01-03 -> 2026-10-01 dias 3695
+TOP mar 0230 +2.89 t3.8 | PRE 0000 +1.79 t3.5 | jue 1330 -4.71 t3.4 | D-2 0630 -3.48 t3.3 | mie 2100 +3.53 t3.2 | PRE 0730 -3.09 t3.1
+ZS reglas 396 seleccionadas 0
+ZW datos 2012-01-03 -> 2026-10-01 dias 3751
+TOP PRE 0330 +6.43 t4.2 | POST 1030 -28.70 t3.3 | D-2 0730 -4.53 t3.2 | jue 0200 +2.02 t3.1 | lun 2030 +3.44 t3.0 | D+2 0530 -3.75 t3.0
+ZW reglas 396 seleccionadas 1
+SEL ZW PRE 0330 nd 55 md +6.43 td +4.16 nc 84 mc +1.09 tc +0.48 anos 0.67
+FIN
