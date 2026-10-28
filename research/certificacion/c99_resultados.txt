@@ -1,0 +1,4 @@
+ORO: HistData n 4015 +3.58 pb (t 3.98) años+ 12/17 | 2010-19 +2.61 | 2020-26 +4.98 || GC 1h n 3841 +2.80 (t 3.11) → PASA
+EURUSD: HistData n 4169 +0.58 pb (t 1.32) años+ 11/17 | 2010-19 +0.21 | 2020-26 +1.10 || 6E 1h n 3867 -1.46 (t -2.99) → no pasa: t>=2.50,>coste,Databento
+GBPUSD: HistData n 4177 +0.89 pb (t 2.12) años+ 13/17 | 2010-19 +1.20 | 2020-26 +0.45 || 6B 1h n 3866 -0.02 (t -0.04) → no pasa: t>=2.50,Databento
+USDJPY: HistData n 3846 +2.05 pb (t 4.23) años+ 15/17 | 2010-19 +2.36 | 2020-26 +1.62 || 6J 1h n 3639 -0.97 (t -1.72) → no pasa: Databento

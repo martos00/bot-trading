@@ -1,0 +1,6 @@
+BTCUSDT: n 476 -32.48 pb (t -2.50) años+ 3/10 | 2017-21 -7.85 | 2022-26 -55.32 | huecos cerrados antes del lunes 16:00 55 %, antes del viernes 79 %
+   por año: {2017: 88.1, 2018: -30.4, 2019: -35.3, 2020: -11.2, 2021: 8.4, 2022: -73.6, 2023: -92.2, 2024: -89.2, 2025: 1.4, 2026: -12.2}
+   CRITERIOS: {'t>=2.24': np.False_, 'años>=60%': np.False_, '>3pb': np.False_, '2017-21>0': np.False_, '2022-26>0': np.False_} → NO PASA
+ETHUSDT: n 476 -23.19 pb (t -1.42) años+ 4/10 | 2017-21 -19.71 | 2022-26 -26.42 | huecos cerrados antes del lunes 16:00 53 %, antes del viernes 76 %
+   por año: {2017: -115.6, 2018: -20.2, 2019: 0.3, 2020: -55.0, 2021: 31.9, 2022: -43.5, 2023: -59.3, 2024: -53.9, 2025: 24.3, 2026: 9.1}
+   CRITERIOS: {'t>=2.24': np.False_, 'años>=60%': np.False_, '>4pb': np.False_, '2017-21>0': np.False_, '2022-26>0': np.False_} → NO PASA
