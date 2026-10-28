@@ -20,3 +20,19 @@ Pendiente de forward: C93 oro ruptura del día anterior (con euro no sumaba: 2,0
 | Escalado a caída máxima 10 % | 11,2 %/año | 13,6 %/año |
 
 Recordatorio: la caída máxima de 8,5 años es mayor que la de un año típico; es la cifra a usar con los límites de las firmas.
+
+## Plan para el 25 % anual (28-oct-2026; `certificacion/plan_25_por_ciento.py`, bootstrap por bloques de 20 días sobre 2018-2026)
+Carteras sin euro y con las dos del oro (C93 y C99, con el 15-25 % del riesgo estándar). A = firma normal (cierre 16:45), Sharpe 1,77.
+E = firma que permite bots y mantener hasta las 17:00/de noche y cripto, Sharpe 2,15.
+
+| Para 25 %/año | A | E |
+|---|---|---|
+| Riesgo base por operación | 1,45 % | 0,52 % |
+| Caída máx. histórica 2018-26 | 31,8 % | 17,0 % |
+| Peor año | −8,9 % (2026) | +7,5 % |
+| 1 año simulado: mediana / 10 % peor | 25 % / 5 % | 24 % / 8 % |
+| P(año negativo) | 5,9 % | 2,5 % |
+| P(caída > 10 % en un año) | 32 % | 15 % |
+| P(caída > 20 % en 8 años) | 48 % | 6 % |
+| Cuenta de fondeo (−4 % arrastrado, objetivo 6 %): aprueba / tarda / quema en 1 año | 68 % / 1,5 meses / 42 % | 70 % / 2 meses / 35 % |
+Más prudente en fondeo: E al 10 %/año (0,21 %/op.): aprueba 80 % en ~6 meses, quema 9 % al año.
