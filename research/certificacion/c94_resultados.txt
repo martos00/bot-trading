@@ -1,0 +1,11 @@
+SI: HistData n 3158 +3.89 pb (t 1.56) años+ 10/17 | 2010-19 +2.51 | 2020-26 +5.80 | largos +2.59 cortos +5.35 || Databento 1h n 3050 +5.59 pb (t 2.27) | coste 2.3 → no pasa: t>=2.54,años>=60%
+CL: HistData n 2751 +6.10 pb (t 1.98) años+ 10/15 | 2010-19 +8.28 | 2020-26 +1.48 | largos +6.16 cortos +6.03 || Databento 1h n 3147 +3.12 pb (t 1.10) | coste 1.6 → no pasa: t>=2.54,Databento t>=2 y >coste
+6E: HistData n 3224 +0.49 pb (t 0.82) años+ 9/17 | 2010-19 +0.66 | 2020-26 +0.26 | largos +1.19 cortos -0.18 || Databento 1h n 3069 -0.75 pb (t -1.19) | coste 0.6 → no pasa: t>=2.54,años>=60%,>coste,Databento t>=2 y >coste
+6B: HistData n 3205 +0.92 pb (t 1.58) años+ 12/17 | 2010-19 +0.92 | 2020-26 +0.91 | largos +1.79 cortos +0.02 || Databento 1h n 3053 +0.10 pb (t 0.17) | coste 0.8 → no pasa: t>=2.54,Databento t>=2 y >coste
+6J: HistData n 3049 +1.62 pb (t 2.53) años+ 12/17 | 2010-19 +1.76 | 2020-26 +1.41 | largos +2.99 cortos -0.02 || Databento 1h n 2908 +0.50 pb (t 0.74) | coste 0.8 → no pasa: t>=2.54,Databento t>=2 y >coste
+6A: HistData n 314 +1.52 pb (t 0.54) años+ 1/2 | 2010-19 +1.52 | 2020-26 +nan | largos +6.07 cortos -4.21 || Databento 1h n 3006 -3.12 pb (t -3.86) | coste 1.0 → no pasa: t>=2.54,años>=60%,2020-26>0,Databento t>=2 y >coste
+6C: HistData n 3339 -0.88 pb (t -1.58) años+ 7/17 | 2010-19 -1.53 | 2020-26 +0.01 | largos -1.42 cortos -0.31 || Databento 1h n 3187 -1.76 pb (t -3.01) | coste 1.0 → no pasa: t>=2.54,años>=60%,2010-19>0,>coste,Databento t>=2 y >coste
+6S: HistData n 290 +6.21 pb (t 1.82) años+ 2/2 | 2010-19 +6.21 | 2020-26 +nan | largos +7.65 cortos +5.15 || Databento 1h n 3095 +0.37 pb (t 0.53) | coste 1.0 → no pasa: t>=2.54,2020-26>0,Databento t>=2 y >coste
+NKD: HistData n 2885 +2.23 pb (t 1.70) años+ 11/17 | 2010-19 +4.87 | 2020-26 -1.23 | largos +5.23 cortos -1.34 || Databento 1h n 2889 +3.13 pb (t 2.54) | coste 1.5 → no pasa: t>=2.54,2020-26>0
+  k = pd.concat(cesta, axis=1).fillna(0); s = k.sum(axis=1); s = s[s != 0]
+informativo cesta igual riesgo (bruta): media por día 0.116 (t 2.61); Sharpe bruto anual 0.62

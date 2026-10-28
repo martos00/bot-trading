@@ -69,6 +69,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Presión antes del pago de funding de perpetuos (BTC, ETH) | C92 | No pasa; BTC 16:00 UTC (+8,9 pb, t 2,18) y ETH 08:00 (+7,6, t 1,96) desde 2023, a vigilar |
 | Oro: ruptura del máximo/mínimo de la sesión anterior (vídeo TikTok mgp.quant), ventana 08-15 NY, cierre 17:00 (o 16:45) | C93 | Pasa al límite: HistData +3,5 pb (t 2,80), GC +2,95 (t 2,24); válida también 2010-19 (fuera de la muestra del vídeo). Variante 07-14 NY no confirmada en GC (t 1,96). Sharpe neto ~0,4; 2026 negativo en GC |
 | Gamma de las 0DTE del S&P (SPXW) y el ES 15-16 NY | C89 | +0,36 pb (t 0,40): no |
+| Ruptura del día anterior (regla C93-B) en SI, CL, 6E, 6B, 6J, 6A, 6C, 6S, NKD | C94 | Ninguno pasa; SI y NKD positivos sin significación en la fuente principal |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |
