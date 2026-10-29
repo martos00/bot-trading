@@ -113,3 +113,13 @@ backtest: 15,9× y 10,7×. Pasar de Kelly reduce el crecimiento y dispara la rui
 | 2× Kelly | +76 % / −100 % / 79 % | 32×: +77 % / −100 % / 62 % |
 Límites reales no modelados: capacidad (minutos concretos en NKD, HG, plata), tamaño mínimo de un micro con poco capital, márgenes
 nocturnos, deslizamiento al crecer, y que el Sharpe real sea menor que el del backtest.
+
+## Capital mínimo por contratos enteros (29-oct-2026)
+Con el riesgo del backtest (0,5 %; diarias 0,1 %) y precios 2025-26, cada estrategia necesita un capital mínimo para ≥ 1 contrato
+(tabla en `NinjaTrader/README_NINJATRADER.md`). Sharpe de lo operable (con control de volatilidad):
+| Capital | A | B | Caída B al 25 % | Fuera |
+|---|---|---|---|---|
+| 50.000 $ | 1,85 | 2,33 | 10,3 % | Nikkei (todas), C93, C99, cobre, cesta E12 |
+| 100.000-150.000 $ | 1,95 | 2,48 | 11,3 % | Nikkei Q−2 y C101, C93, C99, cesta E12 |
+| 300.000 $ | 2,11 | 2,55 | 9,5 % | C101, cesta E12 |
+Las estrategias diarias nuevas (C93, C99, C101) apenas cuentan en cuentas pequeñas; lo que sostiene la cartera son las franjas.
