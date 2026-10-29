@@ -1,0 +1,4 @@
+SI: principal n 3933 +3.59 pb (t 2.16) años+ 12/17 | 2010-19 +3.15 | 2020-26 +4.23 || confirmación n 4008 +2.01 (t 1.23) → no pasa: t>=2.50,confirmación
+CL: principal n 3389 +1.53 pb (t 0.77) años+ 9/15 | 2010-19 +1.08 | 2020-26 +2.52 || confirmación n 3738 +2.88 (t 1.53) → no pasa: t>=2.50,>coste,confirmación
+NKD: principal n 2984 +4.91 pb (t 3.72) años+ 14/17 | 2010-19 +6.17 | 2020-26 +3.30 || confirmación n 3026 +5.94 (t 4.36) → PASA
+ES: principal n 4055 +1.11 pb (t 1.44) años+ 10/17 | 2010-19 +0.86 | 2020-26 +1.45 || sin segunda fuente → no pasa: t>=2.50,años>=60%
