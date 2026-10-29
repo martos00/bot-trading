@@ -65,3 +65,13 @@ estándar (peso fijo, no optimizado).** Scripts: `escenario_carteras_v3.py`, `pl
 | P(caída > 20 % en 8 años) | 14 % | 20 % | 3 % | 3 % |
 | Fondeo al 15 %: aprueba 1.º / exámenes / pierde fondeada 24 m / retirado 24 m | 78 % / 2,2 / 55 % / 8.472 $ | 77 % / 2,3 / 59 % / 8.704 $ | 81 % / 1,8 / 43 % / 8.167 $ | 83 % / 1,8 / 42 % / 8.394 $ |
 Las candidatas no aportan (gas: margen neto mínimo; paladio: coste alto). No se añaden.
+
+## Si hubiera una firma de futuros con reglas tipo FTMO (`certificacion/mc_fondeo_ftmo_like.py`)
+100.000 $, fase 1 +10 % y fase 2 +5 %, pérdida máx. 10 % fija y diaria 5 %, 500 $ por intento, retiro mensual 80 %. 24 meses.
+| | Objetivo 25 %: riesgo/op | Aprueba a la 1.ª | Pierde la fondeada | Retirado 24 m | P(perder dinero) |
+|---|---|---|---|---|---|
+| A confirmadas | 1,10 % | 89 % | 25 % | 27.014 $ | 4 % |
+| B confirmadas | 0,49 % | 89 % | 19 % | 26.401 $ | 3 % |
+Búsqueda (29-oct-2026, blogs comparativos, sin verificar en las firmas): en futuros del CME casi todas usan pérdida arrastrada; las de 10 %
+fijo son de CFD/forex (FTMO, FundedNext, FXIFY). Hay opciones fijas parciales (Phidias en evaluación —prohíbe bots según la revisión
+anterior—; Purdia y For Traders fijas solo en la fondeada).
