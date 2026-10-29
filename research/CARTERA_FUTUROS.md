@@ -75,3 +75,18 @@ Las candidatas no aportan (gas: margen neto mínimo; paladio: coste alto). No se
 Búsqueda (29-oct-2026, blogs comparativos, sin verificar en las firmas): en futuros del CME casi todas usan pérdida arrastrada; las de 10 %
 fijo son de CFD/forex (FTMO, FundedNext, FXIFY). Hay opciones fijas parciales (Phidias en evaluación —prohíbe bots según la revisión
 anterior—; Purdia y For Traders fijas solo en la fondeada).
+
+## Puntos 4 y 5 (29-oct-2026; `certificacion/puntos45.py`, `escen_comp.py`)
+Punto 5 (quitar lo que no aporta): en A todas las estrategias suman (de +0,01 a +0,26). En B todas suman salvo bitcoin (−0,04): no por
+mala, sino por exceso de tamaño (254 operaciones/año al 0,5 %). Con bitcoin al 20 %, como las demás diarias, B sube a 2,41 (decisión
+tomada tras ver que restaba: optimista).
+Punto 4 (reparto del riesgo; 2019-2026): control de volatilidad de la cartera (escala = vol. total / vol. de los 60 días anteriores,
+limitada a 0,5-2; parámetros fijados sin probar alternativas):
+| | Sharpe | Caída máx. al 25 % |
+|---|---|---|
+| A actual → con control de volatilidad | 1,99 → 2,12 | 21,4 % → 13,7 % |
+| B (bitcoin 20 %) → con control de volatilidad | 2,51 → 2,69 | 20,3 % → 8,5 % |
+Igual riesgo por estrategia con volatilidad pasada no mejora el Sharpe (A 1,79; B 2,35) aunque reduce la caída.
+Fondeo típico (−4 % arrastrado) con A + control de volatilidad al 15 %: aprueba 82 %, 1,8 exámenes, pierde la fondeada 44 % en 24 m,
+retira ~8.400 $. Tipo FTMO al 25 %: aprueba 96 %, pierde la fondeada 9 %, retira ~27.500 $ (100.000 $).
+Aviso: el remuestreo por bloques de 20 días conserva solo en parte la dinámica de volatilidad.
