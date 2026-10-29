@@ -1,0 +1,7 @@
+HG: Databento 1 h n 3754 +6.49 pb (t 4.48) años+ 13/17 | 2010-19 +6.62 | 2020-26 +6.30 || sin 2.ª fuente → PASA
+6A: Databento 1 h n 3657 -3.67 pb (t -4.97) años+ 5/17 | 2010-19 -6.40 | 2020-26 +0.03 || HistData 1 min n 3862 +0.76 (t 1.27) → no pasa: t>=2.58,años>=60%,2010-19>0,>coste,confirmación
+6N: Databento 1 h n 3730 -0.73 pb (t -1.02) años+ 8/17 | 2010-19 -2.12 | 2020-26 +1.16 || HistData 1 min n 3919 +0.87 (t 1.35) → no pasa: t>=2.58,años>=60%,2010-19>0,>coste,confirmación
+PL: Databento 1 h n 3905 +2.33 pb (t 1.51) años+ 8/17 | 2010-19 +1.90 | 2020-26 +2.93 || sin 2.ª fuente → no pasa: t>=2.58,años>=60%,>coste
+PA: Databento 1 h n 3924 +8.18 pb (t 4.39) años+ 16/17 | 2010-19 +7.79 | 2020-26 +8.71 || sin 2.ª fuente → PASA
+informativo Hang Seng: HistData n 2361 +4.93 pb (t 4.29) | 2020-26 +3.04
+informativo ASX 200: HistData n 3011 +0.69 pb (t 0.64) | 2020-26 +1.44
