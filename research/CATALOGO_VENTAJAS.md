@@ -78,6 +78,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Bitcoin: seguir el movimiento del fin de semana (espejo de C98), con Bitstamp 2012-17 no visto | C100 | −16,5 pb fuera de muestra: no |
 | **Ruptura del rango asiático en otros futuros** (SI, CL, NKD, ES) | C101 | **NKD pasa** (+4,91 pb t 3,72; Databento +5,94 t 4,36); 2019-22 ≈ 0. SI, CL, ES no |
 | **Ruptura del rango asiático en HG, 6A, 6N, PL, PA** | C102 | **Cobre pasa** (+6,49 pb t 4,48; QuantConnect +4,91 t 3,44); paladio fuerte pero sin confirmar; divisas no |
+| Ruptura del rango europeo (mañana europea rota en la apertura de EE. UU.) en DAX, CAC, FTSE | C103 | No: +0,7 a +1,7 pb sin significación; FTSE negativo desde 2020 |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |
