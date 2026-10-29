@@ -99,3 +99,17 @@ Aviso: el remuestreo por bloques de 20 días conserva solo en parte la dinámica
 | + plata viernes recortada 16:30-16:50 (sin validar) | 1,32 | 1,44 | 22,5 % |
 Los 5 minutos extra no aportan. Plata del viernes: 16:30-16:50 +1,77 pb frente a +4,9 pb hasta las 17:00 (lo bueno está en los últimos
 10 minutos). La ventaja de B solo existe con salida a las 17:00, noches (materias primas) y bitcoin 17-19 NY.
+
+## Cuenta propia con apalancamiento alto (`certificacion/apalancamiento.py`; bootstrap 20 días, 4.000 caminos, interés compuesto)
+Kelly (crecimiento máximo teórico) = 26,5× el tamaño del 25 % en B (Sharpe 2,58) y 17,8× en A (2,11); con Sharpe real al 60 % del
+backtest: 15,9× y 10,7×. Pasar de Kelly reduce el crecimiento y dispara la ruina.
+| B + control vol. | Backtest: crecimiento mediano / 1 de cada 10 años / P(ruina 3 años) | Sharpe al 60 %: ídem |
+|---|---|---|
+| 1× (25 %) | +28 % / +11 % / 0 % | +16 % / +1 % / 0 % |
+| 2× (50 %) | +62 % / +23 % / 0 % | +34 % / +1 % / 0 % |
+| 4× (100 %) | +155 % / +48 % / 0 % | +73 % / 0 % / 0 % |
+| ½ Kelly | +1.208 % / +134 % / 0 % (caída mediana 63 %) | 8×: +161 % / −12 % / 0 % (55 %) |
+| Kelly | +3.802 % / −33 % / 15 % (caída 94 %) | +306 % / −53 % / 6 % (84 %) |
+| 2× Kelly | +76 % / −100 % / 79 % | 32×: +77 % / −100 % / 62 % |
+Límites reales no modelados: capacidad (minutos concretos en NKD, HG, plata), tamaño mínimo de un micro con poco capital, márgenes
+nocturnos, deslizamiento al crecer, y que el Sharpe real sea menor que el del backtest.
