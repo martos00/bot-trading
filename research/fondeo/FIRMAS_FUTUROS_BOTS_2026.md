@@ -8,3 +8,11 @@ Fuente principal: prop-memo.com (21-25 sept 2026, 28 firmas; parte final del tex
 - Drawdown: casi todas EOD arrastrado ~2.000 $ en 50K; fijo solo Phidias Express (650 $; semi-automático).
 - No consta en ninguna fuente qué firmas ofrecen MBT/MET, NKD o HG: hay que preguntarlo.
 Para la cartera A (salida 16:45) encajan Lucid, Tradeify y TradeDay; con firmas de cierre 16:10 el oro del viernes se recorta.
+
+## Firmas para la cartera B (29-oct-2026)
+- Ninguna confirmada para la B completa (noches + bitcoin 17-19 NY + bots). Permiten noches: Elite Trader Funding Diamond Hands (bots solo
+  con permiso escrito), Phidias Premium (semi-automático), Alpha Futures (solo cuenta real Prime; semi-automático), Goat (marca de
+  futuros con examen EOD; política de bots desconocida).
+- Con 50.000-150.000 $ la cesta E12 no se opera por capital, y lo que más aporta de B es salir a las 16:55-16:59. **Tradeify**: sus
+  páginas dicen cierre a las 16:59 NY (FundedSim dice 16:45: contradicción, confirmar), sin cripto, bots propios con prueba de autoría
+  (prop-memo). B sin bitcoin en 50K: Sharpe 2,22 con control de volatilidad (A: 1,85). Apex cierra a las 16:59 pero prohíbe bots.

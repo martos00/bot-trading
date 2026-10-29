@@ -47,6 +47,13 @@ Sharpe de lo que se puede operar (2018-2026, con control de volatilidad; `resear
 
 Lo que no llega a 1 contrato se registra como `sin_entrada_0_contratos` y no se opera.
 
+## Configuración para Tradeify (la firma que mejor encaja con B hoy, sin confirmar)
+Según sus propias páginas (oct-2026): cierre obligatorio 16:59 NY (12:59 en días de cierre anticipado), sin cripto; bots propios con
+prueba de autoría según terceros. Configuración: Modo = B_completa, Operar bitcoin = false, Operar cesta E12 = false, salida de la plata
+del viernes = 1657. Cuenta de 50.000 $: Sharpe 2,22 con control de volatilidad (A con cierre 16:45: 1,85). Confirmar por escrito antes.
+**Ojo:** en días de cierre anticipado (12:59) el bot no conoce la regla de la firma; la víspera de festivo la plata entra a las 16:00:
+si la firma cierra a las 12:59 ese día, desactiva E10 a mano o el bot no entrará si la sesión del CME cierra antes.
+
 ## Instalación
 1. Copia `CarteraFuturosB.cs` en `Documentos\NinjaTrader 8\bin\Custom\Strategies\`.
 2. En NinjaTrader: New → NinjaScript Editor → pulsa F5 (compilar). Mándame cualquier error.

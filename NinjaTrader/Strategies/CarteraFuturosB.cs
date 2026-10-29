@@ -78,6 +78,12 @@ namespace NinjaTrader.NinjaScript.Strategies
         public bool SoloSimulacion { get; set; }
         [NinjaScriptProperty][Display(Name = "Operar también en el histórico (Strategy Analyzer)", Order = 8, GroupName = "1. General")]
         public bool PermitirHistorico { get; set; }
+        [NinjaScriptProperty][Display(Name = "Modo B: operar bitcoin 21-23 UTC (Tradeify no ofrece cripto)", Order = 9, GroupName = "1. General")]
+        public bool OperarBitcoin { get; set; }
+        [NinjaScriptProperty][Display(Name = "Modo B: operar la cesta E12 (posición de una noche)", Order = 10, GroupName = "1. General")]
+        public bool OperarCestaE12 { get; set; }
+        [NinjaScriptProperty][Range(1630, 1659)][Display(Name = "Modo B: salida de la plata del viernes (HHMM NY; firma con cierre 16:59 → 1657)", Order = 11, GroupName = "1. General")]
+        public int SalidaPlataViernes { get; set; }
 
         [NinjaScriptProperty][Range(0, 50)][Display(Name = "Pérdida diaria máxima (% del capital; 0 = sin límite)", Order = 1, GroupName = "2. Protecciones")]
         public double PerdidaDiariaMaxPct { get; set; }
@@ -120,7 +126,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 TraceOrders = false;
                 Modo = ModoCarteraFuturos.B_completa;
                 RiesgoPct = 0.5; PesoDiarias = 0.2; ControlVolatilidad = true; CapitalUSD = 0; RedondeoMin = 0.5;
-                SoloSimulacion = true; PermitirHistorico = false;
+                SoloSimulacion = true; PermitirHistorico = false; OperarBitcoin = true; OperarCestaE12 = true; SalidaPlataViernes = 1657;
                 PerdidaDiariaMaxPct = 3.0; StopSigmas = 4.0; TopeExposicion = 6.0;
                 InstOro = "MGC 12-26"; InstPlata = "SIL 12-26"; InstCobre = "MHG 12-26"; InstNikkei = "NKD 12-26"; InstYen = "MJY 12-26"; InstBitcoin = "MBT 11-26";
                 InstCesta = "MCL 12-26,HO 12-26,RB 12-26,QG 12-26,ZC 12-26,ZS 01-27,ZW 12-26,ZL 12-26,ZM 12-26,KE 12-26,LE 12-26,HE 12-26";
@@ -167,8 +173,8 @@ namespace NinjaTrader.NinjaScript.Strategies
             ventanas.Add(new Ventana { Nombre = "E8_oro_viernes", Mercado = ORO, Tipo = 1, HIni = 1600, HFin = salidaViernes, Lado = 1, Peso = 1, Activa = true });
             // E10 plata víspera de festivo (E10/E10b): largo 16:00 → 16:55 (B) / 16:45 (A)
             ventanas.Add(new Ventana { Nombre = "E10_plata_vispera", Mercado = PLATA, Tipo = 2, HIni = 1600, HFin = salidaViernes, Lado = 1, Peso = 1, Activa = true });
-            // plata viernes 16:30 → 17:00 (solo B; sale a las 16:59 por la pausa del CME)
-            ventanas.Add(new Ventana { Nombre = "plata_viernes", Mercado = PLATA, Tipo = 1, HIni = 1630, HFin = 1659, Lado = 1, Peso = 1, Activa = b });
+            // plata viernes 16:30 → 17:00 (solo B; sale a la hora del parámetro, por defecto 16:57, antes de la pausa del CME y del cierre de 16:59 de Tradeify)
+            ventanas.Add(new Ventana { Nombre = "plata_viernes", Mercado = PLATA, Tipo = 1, HIni = 1630, HFin = SalidaPlataViernes, Lado = 1, Peso = 1, Activa = b });
             // E9 yen fin de mes: USDJPY largo 07:00 → 08:00 el D-2  ⇒  futuro del yen (JPY/USD) CORTO
             ventanas.Add(new Ventana { Nombre = "E9_yen_fin_mes", Mercado = YEN, Tipo = 3, HIni = 700, HFin = 800, Lado = -1, Peso = 1, Activa = true });
             // E11 yen fin de trimestre: USDJPY corto 00:30 → 02:00 el Q0  ⇒  futuro del yen LARGO; 1/3 del riesgo (solo la pata USDJPY de la cesta)
@@ -180,9 +186,9 @@ namespace NinjaTrader.NinjaScript.Strategies
             // E12 materias primas víspera de festivo: largo 13:55 del día anterior a la víspera → 13:55 de la víspera (1 noche; solo B); 1/12 del riesgo por mercado
             for (int k = CESTA0; k < BarsArray.Length; k++)
                 ventanas.Add(new Ventana { Nombre = "E12_cesta_" + nombres[k].Split(' ')[0], Mercado = k, Tipo = 5, HIni = 1355, HFin = 1355, Lado = 1, Noches = 1,
-                                           Peso = 1.0 / Math.Max(1, BarsArray.Length - CESTA0), Activa = b });
+                                           Peso = 1.0 / Math.Max(1, BarsArray.Length - CESTA0), Activa = b && OperarCestaE12 });
             // bitcoin 21:00 → 23:00 UTC los laborables (C2; solo B); peso de estrategia diaria
-            ventanas.Add(new Ventana { Nombre = "bitcoin_21_23_UTC", Mercado = BITCOIN, Tipo = 9, HIni = 2100, HFin = 2300, Lado = 1, Peso = PesoDiarias, Activa = b });
+            ventanas.Add(new Ventana { Nombre = "bitcoin_21_23_UTC", Mercado = BITCOIN, Tipo = 9, HIni = 2100, HFin = 2300, Lado = 1, Peso = PesoDiarias, Activa = b && OperarBitcoin });
 
             rupturas.Add(new Ruptura { Nombre = "C93_oro_dia_anterior", Mercado = ORO, Asiatica = false, Activa = true });
             rupturas.Add(new Ruptura { Nombre = "C99_oro_rango_asia", Mercado = ORO, Asiatica = true, Activa = true });
