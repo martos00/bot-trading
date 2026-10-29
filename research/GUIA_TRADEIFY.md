@@ -34,3 +34,7 @@ diario, cuota 30 días 34,70 $ (promoción) o 347 $, activación 247 $, retiro m
 - 0,30 %/op: aprueba 89 %, pierde fondeada 19 %, neto +15.800 $ / +13.300 $; Sharpe al 60 %: +6.500 $ / +2.700 $.
 Condiciones: ETF prohíbe bots salvo aprobación escrita; en planes que no son Diamond Hands hay que cerrar 1 minuto antes del cierre del
 instrumento (≈ 16:59 en metales). Diamond Hands 100K (3,5 % / 1,5 % diario, cuota mensual): peor (`mc_etf.py`).
+- Objetivo 25 %/año en ETF 150K (0,65 %/op; `mc_150k_25.py`): peor día histórico −6.983 $ (> límite de 5.000 $); aprueba al 1.er intento
+  39 %; ~2,4 intentos; pierde la fondeada en < 12 meses 40 %; neto 2 años ~+28.000-30.000 $ (backtest). Mismo riesgo con Sharpe real al
+  60 %: aprueba al 1.º 13 %, ~4,6 intentos, pierde la fondeada en < 12 m 67 %, neto +15.000-18.000 $, P(perder dinero) 8-20 %.
+  El tope de 2.250 $/pago limita lo retirable a ~24.300 $/año. Simulación diaria: el arrastre en vivo real es más duro.
