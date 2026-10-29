@@ -49,3 +49,19 @@ regla de consistencia. Con tope de 2.000 $ por retiro los resultados apenas camb
 | 15 % | 0,31 % | 81 % | 1,9 | 4,3 | 46 % | 8.451 $ | 5 % |
 | 25 % | 0,52 % | 68 % | 3,8 | 2,5 | 87 % | 15.838 $ | 2 % |
 (Cartera A con el mismo objetivo: 86/83/76/67 % de aprobados; 1,2/1,7/2,6/4,9 exámenes; retirado 1.470/4.623/8.815/17.159 $.)
+
+## Actualización v3 (29-oct-2026): con Nikkei (C101) y cobre (C102); candidatas aparte
+Composición A (firma normal, cierre 16:45): yen, cesta yen, oro viernes 16:45, oro D−2, Nikkei Q+2/Q−2, plata víspera 16:45 (E10b) +
+diarias C93, C99, C101 NKD, C102 HG. B (permisiva): lo de B anterior + las mismas diarias. Candidatas sin confirmar: gas natural C95
+(serie exportada de QuantConnect, coste 4 pb) y paladio C102 (Databento 1 h, coste 6 pb). **Todas las diarias al 20 % del riesgo
+estándar (peso fijo, no optimizado).** Scripts: `escenario_carteras_v3.py`, `plan25_v3.py`, `mc_fondeo_v3.py`.
+
+| | A confirmadas | A + candidatas | B confirmadas | B + candidatas |
+|---|---|---|---|---|
+| Sharpe 2018-26 | 1,98 | 1,97 | 2,24 | 2,26 |
+| Riesgo/op para 25 % | 1,10 % | 1,01 % | 0,49 % | 0,47 % |
+| Caída máx. histórica a 25 % | 22,1 % | 22,7 % | 15,8 % | 16,3 % |
+| P(caída > 10 % en 1 año) | 24 % | 28 % | 12 % | 13 % |
+| P(caída > 20 % en 8 años) | 14 % | 20 % | 3 % | 3 % |
+| Fondeo al 15 %: aprueba 1.º / exámenes / pierde fondeada 24 m / retirado 24 m | 78 % / 2,2 / 55 % / 8.472 $ | 77 % / 2,3 / 59 % / 8.704 $ | 81 % / 1,8 / 43 % / 8.167 $ | 83 % / 1,8 / 42 % / 8.394 $ |
+Las candidatas no aportan (gas: margen neto mínimo; paladio: coste alto). No se añaden.
