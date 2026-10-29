@@ -26,3 +26,11 @@ Meses negativos 34 %; la racha más larga sin nuevos máximos, ~12 meses (2018-1
 | 0,28 % | 95 % / 1,1 / 9 % / 4.468 $ | 76 % / 1,5 / 22 % / ~1.900 $ |
 | 0,42-0,46 % | 87 % / 1,6 / 34 % / 8.459 $ | 64 % / 2,8 / 69 % / ~4.900 $ |
 | 0,69 % | 76 % / 3,0 / 79 % / 16.313 $ | 57 % / 4,7 / 93 % / ~9.000 $ |
+
+## Comparación: Elite Trader Funding 150K «en vivo» (condiciones pegadas por el usuario, 29-oct-2026; `certificacion/mc_150k.py`)
+Objetivo 9.000 $, pérdida máx. 5.000 $ arrastrada en vivo (incluye beneficio abierto: la simulación diaria es optimista), sin límite
+diario, cuota 30 días 34,70 $ (promoción) o 347 $, activación 247 $, retiro máx. 2.250 $/pago. Cartera 150K sin bitcoin (Sharpe 2,34).
+- 0,25 %/op: aprueba 93 %, pierde fondeada 11 %, neto 2 años +11.700 $ (cuota 34,70) / +8.800 $ (347); Sharpe al 60 %: +4.300 $ / −80 $.
+- 0,30 %/op: aprueba 89 %, pierde fondeada 19 %, neto +15.800 $ / +13.300 $; Sharpe al 60 %: +6.500 $ / +2.700 $.
+Condiciones: ETF prohíbe bots salvo aprobación escrita; en planes que no son Diamond Hands hay que cerrar 1 minuto antes del cierre del
+instrumento (≈ 16:59 en metales). Diamond Hands 100K (3,5 % / 1,5 % diario, cuota mensual): peor (`mc_etf.py`).
