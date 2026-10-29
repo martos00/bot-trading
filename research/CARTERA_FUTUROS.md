@@ -90,3 +90,12 @@ Igual riesgo por estrategia con volatilidad pasada no mejora el Sharpe (A 1,79; 
 Fondeo típico (−4 % arrastrado) con A + control de volatilidad al 15 %: aprueba 82 %, 1,8 exámenes, pierde la fondeada 44 % en 24 m,
 retira ~8.400 $. Tipo FTMO al 25 %: aprueba 96 %, pierde la fondeada 9 %, retira ~27.500 $ (100.000 $).
 Aviso: el remuestreo por bloques de 20 días conserva solo en parte la dinámica de volatilidad.
+
+## Versión intermedia (firma con cierre 16:50, p. ej. TradeDay) — `certificacion/escen_intermedia.py`
+| | Sharpe | Con control de volatilidad | Caída al 25 % |
+|---|---|---|---|
+| A (salidas 16:45) | 1,98 | 2,11 | 13,9 % |
+| Intermedia (oro y plata víspera hasta 16:50) | 1,92 | 2,10 | 14,4 % |
+| + plata viernes recortada 16:30-16:50 (sin validar) | 1,32 | 1,44 | 22,5 % |
+Los 5 minutos extra no aportan. Plata del viernes: 16:30-16:50 +1,77 pb frente a +4,9 pb hasta las 17:00 (lo bueno está en los últimos
+10 minutos). La ventaja de B solo existe con salida a las 17:00, noches (materias primas) y bitcoin 17-19 NY.
