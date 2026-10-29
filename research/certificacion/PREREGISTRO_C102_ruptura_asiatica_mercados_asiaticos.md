@@ -13,3 +13,8 @@ Costes (pb): HG 2,0; 6A 1,0; 6N 1,2; PL 3,0; PA 4,0.
 ## Criterio (Bonferroni unilateral 0,05/5 → t ≥ 2,58)
 Principal: media > 0 con t (Newey-West) ≥ 2,58; ≥ 60 % de años positivos; > 0 en 2010-19 y 2020-26; media > coste. Confirmación (6A, 6N):
 media > coste con t ≥ 2,0. HG, PL, PA sin segunda fuente: pasan como candidatas. Contador +5.
+
+## Anexo (29-oct-2026, tras ver los resultados horarios; NO cambia la regla ni los criterios)
+HG y PA pasan en la fuente principal sin segunda fuente. Confirmación añadida antes de calcularla: QuantConnect 1 min (2010-06 → 2026-09,
+contrato frontal por interés abierto), misma regla C99; criterio media > coste con t ≥ 2,0. Hora de PA calibrada antes contra Databento
+(cierres horarios de 2016-01-27 y 2022-07-27); HG ya calibrado (desfase 0). Aviso de coste del PA: el spread real puede ser 5-10 pb.
