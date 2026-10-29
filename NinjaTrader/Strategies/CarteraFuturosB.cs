@@ -54,6 +54,7 @@ namespace NinjaTrader.NinjaScript.Strategies
         private readonly List<Pos> posiciones = new List<Pos>();
         private readonly Dictionary<string, DateTime> hechoHoy = new Dictionary<string, DateTime>();
         private bool[] pendiente;
+        private double[] precioRef;   // precio de referencia al enviar la orden neta (para medir el deslizamiento)
         private SessionIterator[] sesiones;
         private HashSet<DateTime> festivos = new HashSet<DateTime>();
         private DateTime diaActualNY = DateTime.MinValue, ultimoCierreDiario = DateTime.MinValue;
@@ -146,6 +147,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 tzNY = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time");
                 tzNT = Core.Globals.GeneralOptions.TimeZoneInfo;
                 pendiente = new bool[BarsArray.Length];
+                precioRef = new double[BarsArray.Length];
                 sesiones = new SessionIterator[BarsArray.Length];
                 for (int i = 0; i < BarsArray.Length; i++) sesiones[i] = new SessionIterator(BarsArray[i]);
                 foreach (string f in FestivosNYSE.Split(','))
@@ -559,9 +561,22 @@ namespace NinjaTrader.NinjaScript.Strategies
                 OrderAction acc; int q;
                 if (dif > 0) { if (actual < 0) { acc = OrderAction.BuyToCover; q = Math.Min(dif, -actual); } else { acc = OrderAction.Buy; q = dif; } }
                 else { if (actual > 0) { acc = OrderAction.Sell; q = Math.Min(-dif, actual); } else { acc = OrderAction.SellShort; q = -dif; } }
-                pendiente[i] = true;
+                pendiente[i] = true; precioRef[i] = Closes[i][0];
                 SubmitOrderUnmanaged(i, acc, OrderType.Market, q, 0, 0, "", "neto_" + i);
             }
+        }
+
+        // cada ejecución: precio obtenido frente al de referencia, en ticks y en pb (positivo = peor de lo esperado), y comisión
+        protected override void OnExecutionUpdate(Execution execution, string executionId, double price, int quantity, MarketPosition marketPosition,
+                                                  string orderId, DateTime time)
+        {
+            if (execution == null || execution.Order == null || execution.Order.Name == null || !execution.Order.Name.StartsWith("neto_")) return;
+            int i; if (!int.TryParse(execution.Order.Name.Substring(5), out i) || i >= precioRef.Length || precioRef[i] <= 0) return;
+            bool compra = execution.Order.OrderAction == OrderAction.Buy || execution.Order.OrderAction == OrderAction.BuyToCover;
+            double desliz = (compra ? price - precioRef[i] : precioRef[i] - price);
+            double ticks = desliz / Instruments[i].MasterInstrument.TickSize;
+            Registrar(ANY(time), "ejecucion", i, string.Format(CultureInfo.InvariantCulture, "fill_{0}_desliz_{1:F1}_ticks_{2:F2}_pb_comision_{3:F2}",
+                      compra ? "compra" : "venta", ticks, desliz / precioRef[i] * 1e4, execution.Commission), quantity, 0, price, -execution.Commission);
         }
 
         protected override void OnOrderUpdate(Order order, double limitPrice, double stopPrice, int quantity, int filled, double averageFillPrice,
