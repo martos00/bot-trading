@@ -1,0 +1,5 @@
+ORO: n 609 +0.32 pb (t 0.20) años+ 9/17 | 2010-17 -0.19 | 2018-26 +0.74 | acierto 14 % | R medio +0.018 → no pasa: >coste y t>=2.58,años>=60%,2010-17>0
+EURUSD: n 667 -0.21 pb (t -0.26) años+ 11/17 | 2010-17 -0.45 | 2018-26 +0.04 | acierto 15 % | R medio -0.011 → no pasa: >coste y t>=2.58,2010-17>0
+USDJPY: n 477 -0.27 pb (t -0.28) años+ 6/17 | 2010-17 +0.63 | 2018-26 -0.97 | acierto 13 % | R medio -0.040 → no pasa: >coste y t>=2.58,años>=60%,2018-26>0
+GBPUSD: n 669 -0.26 pb (t -0.29) años+ 9/17 | 2010-17 +0.61 | 2018-26 -1.01 | acierto 18 % | R medio +0.068 → no pasa: >coste y t>=2.58,años>=60%,2018-26>0
+ES: n 576 -3.07 pb (t -1.50) años+ 4/17 | 2010-17 -1.70 | 2018-26 -4.42 | acierto 18 % | R medio -0.063 → no pasa: >coste y t>=2.58,años>=60%,2010-17>0,2018-26>0

@@ -1,0 +1,10 @@
+nivel 38.2 % FIB: n 888 -12.57 pb (t -1.94) | llega al objetivo 51.5 %
+nivel 50.0 % FIB: n 669 -10.25 pb (t -1.39) | llega al objetivo 41.7 %
+nivel 61.8 % FIB: n 523  +5.70 pb (t  0.60) | llega al objetivo 35.0 %
+nivel 30.0 % control: n 1181 -15.68 pb (t -3.10) | llega al objetivo 61.0 %
+nivel 45.0 % control: n 749  -5.79 pb (t -0.85) | llega al objetivo 44.9 %
+nivel 55.0 % control: n 608 -11.97 pb (t -1.54) | llega al objetivo 37.2 %
+nivel 70.0 % control: n 469  -1.96 pb (t -0.22) | llega al objetivo 30.7 %
+PRUEBA CENTRAL Fibonacci − control: +3.10 pb (t aprox. 0.24) | objetivo 44.2 % vs 47.4 %
+ESTRATEGIA Fibonacci (38,2/50/61,8 con confirmación): n 2080 -7.23 pb (t -1.42) | 2010-17 -2.30 | 2018-26 -11.08 → NO PASA
+   por mercado: {'AUDUSD': -1.4, 'ES': -34.5, 'EURUSD': 7.0, 'GBPUSD': -3.7, 'USDJPY': -9.1, 'bono10': -3.7, 'oro': -11.9, 'plata': -12.6}
