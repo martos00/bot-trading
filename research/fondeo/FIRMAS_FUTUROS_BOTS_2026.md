@@ -16,3 +16,12 @@ Para la cartera A (salida 16:45) encajan Lucid, Tradeify y TradeDay; con firmas 
 - Con 50.000-150.000 $ la cesta E12 no se opera por capital, y lo que más aporta de B es salir a las 16:55-16:59. **Tradeify**: sus
   páginas dicen cierre a las 16:59 NY (FundedSim dice 16:45: contradicción, confirmar), sin cripto, bots propios con prueba de autoría
   (prop-memo). B sin bitcoin en 50K: Sharpe 2,22 con control de volatilidad (A: 1,85). Apex cierra a las 16:59 pero prohíbe bots.
+
+## Respuesta de Tradeify (asistente de IA de Tradeify, 30-oct-2026; pegada por el usuario)
+- Select 300K V2 (edición limitada): 349 $, KYC antes de comprar, máx. 3 de por vida (V1+V2), sin resets, fuera del límite de 15
+  evaluaciones/30 días; las 300K fondeadas pueden sumarse a las demás hasta 8 fondeadas en total.
+- Select 150K: 459 $ pago único, reset 299 $, consistencia en evaluación 40 % (opcional 50 %); al aprobar se elige Flex o Daily.
+- Máx. 5 fondeadas activas (+ hasta 3 de 300K = 8). Plataformas: Tradovate, Rithmic, WealthCharts, TradingView (vía Tradovate).
+- SIN responder: bots, hora de cierre, productos (MGC, SIL, MJY, MHG, NKD), drawdown de 150K/300K, topes de cobro.
+Efecto de la consistencia del 40 % en el bot (simulación, 150K, 0,65 %): aprobar tarda ~3,2 meses en vez de 2,4 (backtest) y ~4,5 en
+vez de 3,1 (al 60 %); con la opción del 50 %: 2,8 / 3,6 meses. No cambia la probabilidad de aprobar.
