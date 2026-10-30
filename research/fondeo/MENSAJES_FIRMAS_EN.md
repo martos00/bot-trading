@@ -16,8 +16,9 @@ not copy trading, not martingale, and it never hedges between accounts. It trade
 - Day before US market holidays: Micro Silver 4:00-4:55 PM ET.
 - Month-end / quarter-end days: Micro JPY (MJY or 6J) 7:00-8:00 AM ET and 12:30-2:00 AM ET; Micro Gold 9:30-10:00 AM ET.
 - Some days: Micro Copper (MHG) and Nikkei (NKD) between 3:00 AM and 4:45 PM ET; Nikkei 8:00-9:00 PM ET.
-About 130 trades per year on about 65 days; several positions can be open at the same time in different markets; it never holds
-positions past the daily close.
+On 100K-150K accounts: about 360 trades per year on about 230 days (one small Micro Copper trade most days, plus the scheduled
+gold/silver/yen/Nikkei trades); on 50K accounts about 130 trades per year on about 65 days. Several positions can be open at the
+same time in different markets; it never holds positions past the daily close.
 
 **Questions**
 1. Can you approve this automated strategy in writing for the DTF and 1-Step accounts? What do you need from me (description,
@@ -92,7 +93,7 @@ Hello,
 
 I would like to purchase Lucid accounts (150K) and run a fully automated strategy I developed myself (own code, NinjaTrader 8),
 always flat by 4:45 PM ET, trading Micro Gold, Micro Silver, Micro JPY, Micro Copper and Nikkei on a fixed schedule
-(~130 trades per year).
+(about 360 trades per year on 150K accounts).
 
 1. Is fully automated trading with my own strategy allowed on evaluation and funded accounts? Any approval needed?
 2. Are MGC, SIL, MJY or 6J, MHG and NKD tradable?
