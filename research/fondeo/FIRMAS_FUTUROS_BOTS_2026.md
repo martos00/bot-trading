@@ -25,3 +25,15 @@ Para la cartera A (salida 16:45) encajan Lucid, Tradeify y TradeDay; con firmas 
 - SIN responder: bots, hora de cierre, productos (MGC, SIL, MJY, MHG, NKD), drawdown de 150K/300K, topes de cobro.
 Efecto de la consistencia del 40 % en el bot (simulación, 150K, 0,65 %): aprobar tarda ~3,2 meses en vez de 2,4 (backtest) y ~4,5 en
 vez de 3,1 (al 60 %); con la opción del 50 %: 2,8 / 3,6 meses. No cambia la probabilidad de aprobar.
+
+## Segunda respuesta de Tradeify (asistente de IA, 05-nov-2026)
+- Bots: permitidos si la estrategia es propia y exclusiva, no compartida, no HFT, con prueba de autoría si la piden. Regla de
+  microscalping (fondeada): > 50 % de operaciones y beneficio en operaciones de > 10 s (el bot cumple de sobra).
+- Sesión 18:00 → 17:00 ET; no hay hora de cierre específica por contrato.
+- Productos: MGC sí; **SIL no (solo SI grande)**; MJY, 6J, MHG, NKD **no confirmados**.
+- Select 150K Flex: DD 4.500 $ EOD, sin límite diario, cobro tras 5 días ganadores ≥ 250 $, máx. 50 % del beneficio y 4.500 $.
+- Select 150K Daily: DD 3.500 $ EOD, límite diario 1.750 $, cobro diario sobre colchón de 3.600 $, máx. 2.500 $.
+- Select 300K Daily: DD 6.000 $ EOD, límite diario 3.000 $, colchón 6.100 $, máx. 4.000 $/día. 300K Flex: día ganador ≥ 750 $,
+  máx. 50 % del beneficio y 10.000 $ por cobro (DD no indicado).
+Cartera posible en Tradeify (solo MGC + SI): Sharpe 2,01 en 150K (~117 ops/año en ~63 días) y 2,00 en 300K (con C93 y C99).
+Recomendación: planes Flex (sin límite diario); Daily obliga a ≤ 0,3 % (150K) o ≤ 0,2 % (300K) por el límite diario.
