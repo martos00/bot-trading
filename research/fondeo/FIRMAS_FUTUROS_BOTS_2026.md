@@ -44,3 +44,14 @@ Recomendación: planes Flex (sin límite diario); Daily obliga a ≤ 0,3 % (150K
 Cartera Tradeify: 150K oro + plata SI + yen 6J + Nikkei NKD → Sharpe 2,37 (~140 ops/año en ~72 días); 300K + oro diario → 2,38
 (~555 ops/año en ~242 días). El cobre HG (10 × MHG) no cabe ni en 300K (necesitaría ~600.000 $).
 Configuración del bot en Tradeify: InstPlata = SI, InstYen = 6J, InstNikkei = NKD, Operar cobre = false, bitcoin y cesta E12 = false.
+
+## Respuesta de Elite Trader Funding (Alex, soporte, 05-nov-2026)
+- Bots: el equipo de riesgos revisa y aprueba cada estrategia; cuestionario de 5 puntos (respuesta preparada en
+  `ETF_CUESTIONARIO_BOT_EN.md`).
+- 1 paso: plano a las 16:59 ET (1 min antes del cierre en festivos cortos). DTF: permite noche y fin de semana.
+- DTF: "3 minis (3 micros)" = 3 contratos en total, grandes o micro (relación 1:1). Máx. 5 DTF en total (todos los tamaños).
+- 20 cuentas fondeadas en total, incluidas hasta 5 DTF (el límite de evaluaciones y la aprobación en varias cuentas, aparte).
+- 150K: el arrastre incluye beneficio abierto; en fondeada deja de arrastrar al llegar a 5.100 $ de beneficio realizado (suelo 150.100 $).
+- Cuota 150K: 34,70 $ el 1.er mes, 69,40 $ el 2.º y 104,10 $ desde el 3.º (BULLTOBER).
+- Cobros lunes y miércoles, hasta el 100 % del beneficio elegible; límites por ciclo en las tablas de cada plan.
+- DTF 100K: solo se retira el beneficio por encima de 105.100 $; 95.000 $ es el umbral de suspenso.
