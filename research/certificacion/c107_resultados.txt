@@ -1,0 +1,6 @@
+ZC A prima día de informe: n 234 -2.14 pb (t -0.11) | 2010-17 +0.89 | 2018-26 -4.79 | control +1.20 (dif t -0.18) → no pasa
+ZC B continuación tras el dato: n 234 +5.03 pb (t 1.48) | 2010-17 +4.24 | 2018-26 +5.72 → no pasa
+ZS A prima día de informe: n 238 +13.67 pb (t 0.97) | 2010-17 -4.22 | 2018-26 +29.05 | control +0.21 (dif t 1.06) → no pasa
+ZS B continuación tras el dato: n 238 -0.85 pb (t -0.34) | 2010-17 -1.62 | 2018-26 -0.19 → no pasa
+ZW A prima día de informe: n 239 -20.60 pb (t -1.27) | 2010-17 -23.55 | 2018-26 -18.00 | control +2.86 (dif t -1.42) → no pasa
+ZW B continuación tras el dato: n 239 +3.09 pb (t 0.82) | 2010-17 +2.57 | 2018-26 +3.56 → no pasa
