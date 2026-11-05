@@ -55,6 +55,7 @@ namespace NinjaTrader.NinjaScript.Strategies
         private readonly List<Pos> posiciones = new List<Pos>();
         private readonly Dictionary<string, DateTime> hechoHoy = new Dictionary<string, DateTime>();
         private bool[] pendiente;
+        private Order[] proteccion;   // stop de protección en el servidor, uno por mercado
         private double[] precioRef;   // precio de referencia al enviar la orden neta (para medir el deslizamiento)
         private SessionIterator[] sesiones;
         private HashSet<DateTime> festivos = new HashSet<DateTime>();
@@ -101,6 +102,10 @@ namespace NinjaTrader.NinjaScript.Strategies
         public double StopSigmas { get; set; }
         [NinjaScriptProperty][Range(1, 50)][Display(Name = "Exposición máxima por operación (× capital)", Order = 3, GroupName = "2. Protecciones")]
         public double TopeExposicion { get; set; }
+        [NinjaScriptProperty][Range(0, 1000)][Display(Name = "Máximo de contratos abiertos en total (0 = sin límite; DTF de Elite Trader Funding: 3)", Order = 4, GroupName = "2. Protecciones")]
+        public int MaxContratosTotales { get; set; }
+        [NinjaScriptProperty][Display(Name = "Stop de protección en el servidor (se mantiene si se cae el PC)", Order = 5, GroupName = "2. Protecciones")]
+        public bool StopEnServidor { get; set; }
 
         [NinjaScriptProperty][Display(Name = "Oro (p. ej. MGC 12-26)", Order = 1, GroupName = "3. Contratos (cambiar al vencimiento)")]
         public string InstOro { get; set; }
@@ -133,11 +138,12 @@ namespace NinjaTrader.NinjaScript.Strategies
                 MaximumBarsLookBack = MaximumBarsLookBack.Infinite;
                 StartBehavior = StartBehavior.ImmediatelySubmit;
                 RealtimeErrorHandling = RealtimeErrorHandling.StopCancelClose;
+                ConnectionLossHandling = ConnectionLossHandling.KeepRunning;   // tras una desconexión sigue con su estado (no recalcula ni olvida posiciones)
                 TraceOrders = false;
                 Modo = ModoCarteraFuturos.B_completa;
                 RiesgoPct = 0.5; PesoDiarias = 0.2; ControlVolatilidad = true; CapitalUSD = 0; RedondeoMin = 0.5;
                 SoloSimulacion = true; PermitirHistorico = false; OperarBitcoin = true; OperarCestaE12 = true; SalidaPlataViernes = 1657; OperarPlata = true; OperarYen = true; OperarCobre = true; OperarNikkei = true;
-                PerdidaDiariaMaxPct = 3.0; StopSigmas = 4.0; TopeExposicion = 6.0;
+                PerdidaDiariaMaxPct = 3.0; StopSigmas = 4.0; TopeExposicion = 6.0; MaxContratosTotales = 0; StopEnServidor = true;
                 InstOro = "MGC 12-26"; InstPlata = "SIL 12-26"; InstCobre = "MHG 12-26"; InstNikkei = "NKD 12-26"; InstYen = "MJY 12-26"; InstBitcoin = "MBT 11-26";
                 InstCesta = "MCL 12-26,HO 12-26,RB 12-26,QG 12-26,ZC 12-26,ZS 01-27,ZW 12-26,ZL 12-26,ZM 12-26,KE 12-26,LE 12-26,HE 12-26";
                 FestivosNYSE = "2026-01-01,2026-01-19,2026-02-16,2026-04-03,2026-05-25,2026-06-19,2026-07-03,2026-09-07,2026-11-26,2026-12-25," +
@@ -163,6 +169,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 tzNT = Core.Globals.GeneralOptions.TimeZoneInfo;
                 pendiente = new bool[BarsArray.Length];
                 precioRef = new double[BarsArray.Length];
+                proteccion = new Order[BarsArray.Length];
                 sesiones = new SessionIterator[BarsArray.Length];
                 for (int i = 0; i < BarsArray.Length; i++) sesiones[i] = new SessionIterator(BarsArray[i]);
                 foreach (string f in FestivosNYSE.Split(','))
@@ -427,6 +434,24 @@ namespace NinjaTrader.NinjaScript.Strategies
         private bool Hecho(string clave, DateTime dia) { DateTime d; return hechoHoy.TryGetValue(clave, out d) && d == dia.Date; }
         private void Marcar(string clave, DateTime dia) { hechoHoy[clave] = dia.Date; }
 
+        // recorta los contratos de una entrada nueva para no pasar del máximo total de contratos abiertos (suma de |neto| por mercado)
+        private int LimitarContratos(int i, int q)
+        {
+            if (MaxContratosTotales <= 0 || q == 0) return q;
+            int sg = Math.Sign(q);
+            for (int k = Math.Abs(q); k >= 1; k--)
+            {
+                int total = 0;
+                for (int m = 1; m < BarsArray.Length; m++)
+                {
+                    int neto = posiciones.Where(p => p.Mercado == m).Sum(p => p.Contratos) + (m == i ? sg * k : 0);
+                    total += Math.Abs(neto);
+                }
+                if (total <= MaxContratosTotales) return sg * k;
+            }
+            return 0;
+        }
+
         // ---------- franjas horarias ----------
         private void EntradaVentana(Ventana v, DateTime ny, DateTime ahoraNT)
         {
@@ -453,6 +478,9 @@ namespace NinjaTrader.NinjaScript.Strategies
             double precio = Closes[i][0];
             int q = Contratos(i, RiesgoPct / 100.0 * v.Peso, sg, precio);
             if (q <= 0) { Registrar(ny, v.Nombre, i, "sin_entrada_0_contratos", 0, sg, precio, 0); return; }
+            int qlim = LimitarContratos(i, v.Lado * q);
+            if (qlim == 0) { Registrar(ny, v.Nombre, i, "sin_entrada_limite_de_contratos", q, sg, precio, 0); return; }
+            if (Math.Abs(qlim) < q) { Registrar(ny, v.Nombre, i, "contratos_recortados_por_limite_" + q + "_a_" + Math.Abs(qlim), Math.Abs(qlim), sg, precio, 0); q = Math.Abs(qlim); }
             posiciones.Add(new Pos { Estrategia = v.Nombre, Mercado = i, Contratos = v.Lado * q, Entrada = precio,
                                      Stop = precio * (1 - v.Lado * StopSigmas * sg), Objetivo = double.NaN, SalidaNY = salida, Sigma = sg, EntradaNY = ny });
             Registrar(ny, v.Nombre, i, v.Lado > 0 ? "compra" : "venta", q, sg, precio, 0);
@@ -495,6 +523,9 @@ namespace NinjaTrader.NinjaScript.Strategies
             double stop, obj;
             if (r.Asiatica) { double w = r.H - r.L; stop = lado > 0 ? r.L : r.H; obj = precio + lado * w; }
             else { stop = precio - lado * r.Atr; obj = precio + lado * 3 * r.Atr; }
+            int qlim = LimitarContratos(i, lado * q);
+            if (qlim == 0) { Registrar(ny, r.Nombre, i, "sin_entrada_limite_de_contratos", q, sg, precio, 0); return; }
+            q = Math.Abs(qlim);
             posiciones.Add(new Pos { Estrategia = r.Nombre, Mercado = i, Contratos = lado * q, Entrada = precio, Stop = stop, Objetivo = obj, SalidaNY = salida, Sigma = sg, EntradaNY = ny });
             Registrar(ny, r.Nombre, i, (lado > 0 ? "compra_ruptura_" : "venta_ruptura_") + r.H.ToString(CultureInfo.InvariantCulture) + "_" + r.L.ToString(CultureInfo.InvariantCulture), q, sg, precio, 0);
         }
@@ -575,7 +606,10 @@ namespace NinjaTrader.NinjaScript.Strategies
                 int objetivo = posiciones.Where(p => p.Mercado == i).Sum(p => p.Contratos);
                 int actual = Positions[i].MarketPosition == MarketPosition.Long ? Positions[i].Quantity
                            : Positions[i].MarketPosition == MarketPosition.Short ? -Positions[i].Quantity : 0;
-                int dif = objetivo - actual; if (dif == 0) continue;
+                int dif = objetivo - actual;
+                if (dif == 0) { Proteger(i, actual); continue; }
+                // antes de cambiar la posición se retira el stop del servidor (si no, podría ejecutarse a la vez y dar la vuelta a la posición)
+                if (proteccion[i] != null) { if (proteccion[i].OrderState != OrderState.CancelPending) CancelOrder(proteccion[i]); continue; }
                 OrderAction acc; int q;
                 if (dif > 0) { if (actual < 0) { acc = OrderAction.BuyToCover; q = Math.Min(dif, -actual); } else { acc = OrderAction.Buy; q = dif; } }
                 else { if (actual > 0) { acc = OrderAction.Sell; q = Math.Min(-dif, actual); } else { acc = OrderAction.SellShort; q = -dif; } }
@@ -584,10 +618,40 @@ namespace NinjaTrader.NinjaScript.Strategies
             }
         }
 
+        // stop de protección en el servidor para la posición neta del mercado i: un poco más lejos que el stop interno más alejado,
+        // para que normalmente salte antes el interno; solo actúa si el PC o la conexión fallan.
+        private void Proteger(int i, int actual)
+        {
+            if (!StopEnServidor) return;
+            if (actual == 0) { if (proteccion[i] != null && proteccion[i].OrderState != OrderState.CancelPending) CancelOrder(proteccion[i]); return; }
+            var mismas = posiciones.Where(p => p.Mercado == i && Math.Sign(p.Contratos) == Math.Sign(actual)).ToList();
+            if (mismas.Count == 0) return;
+            double tick = Instruments[i].MasterInstrument.TickSize;
+            double st = actual > 0 ? mismas.Min(p => p.Stop) - 2 * tick : mismas.Max(p => p.Stop) + 2 * tick;
+            st = Instruments[i].MasterInstrument.RoundToTickSize(st);
+            double px = Closes[i][0];
+            if (actual > 0 ? st >= px : st <= px) return;      // el stop interno ya está a punto de saltar: lo gestiona el bot
+            int q = Math.Abs(actual);
+            if (proteccion[i] == null)
+                proteccion[i] = SubmitOrderUnmanaged(i, actual > 0 ? OrderAction.Sell : OrderAction.BuyToCover, OrderType.StopMarket, q, 0, st, "", "proteccion_" + i);
+            else if ((proteccion[i].OrderState == OrderState.Working || proteccion[i].OrderState == OrderState.Accepted) &&
+                     (proteccion[i].Quantity != q || Math.Abs(proteccion[i].StopPrice - st) > tick / 2))
+                ChangeOrder(proteccion[i], q, 0, st);
+        }
+
         // cada ejecución: precio obtenido frente al de referencia, en ticks y en pb (positivo = peor de lo esperado), y comisión
         protected override void OnExecutionUpdate(Execution execution, string executionId, double price, int quantity, MarketPosition marketPosition,
                                                   string orderId, DateTime time)
         {
+            if (execution != null && execution.Order != null && execution.Order.Name != null && execution.Order.Name.StartsWith("proteccion_"))
+            {
+                int k; if (int.TryParse(execution.Order.Name.Substring(11), out k) && k < proteccion.Length)
+                {
+                    foreach (var p in posiciones.Where(p => p.Mercado == k).ToList()) posiciones.Remove(p);
+                    Registrar(ANY(time), "cartera", k, "stop_del_servidor_ejecutado_posiciones_cerradas", quantity, 0, price, -execution.Commission);
+                }
+                return;
+            }
             if (execution == null || execution.Order == null || execution.Order.Name == null || !execution.Order.Name.StartsWith("neto_")) return;
             int i; if (!int.TryParse(execution.Order.Name.Substring(5), out i) || i >= precioRef.Length || precioRef[i] <= 0) return;
             bool compra = execution.Order.OrderAction == OrderAction.Buy || execution.Order.OrderAction == OrderAction.BuyToCover;
@@ -600,6 +664,16 @@ namespace NinjaTrader.NinjaScript.Strategies
         protected override void OnOrderUpdate(Order order, double limitPrice, double stopPrice, int quantity, int filled, double averageFillPrice,
                                               OrderState orderState, DateTime time, ErrorCode error, string comment)
         {
+            if (order != null && order.Name != null && order.Name.StartsWith("proteccion_"))
+            {
+                int k; if (int.TryParse(order.Name.Substring(11), out k) && k < proteccion.Length &&
+                           (orderState == OrderState.Filled || orderState == OrderState.Cancelled || orderState == OrderState.Rejected))
+                {
+                    proteccion[k] = null;
+                    if (orderState == OrderState.Rejected) Registrar(ANY(time), "cartera", k, "stop_del_servidor_rechazado_" + error, quantity, 0, stopPrice, 0);
+                }
+                return;
+            }
             if (order == null || order.Name == null || !order.Name.StartsWith("neto_")) return;
             int i; if (!int.TryParse(order.Name.Substring(5), out i) || i >= pendiente.Length) return;
             if (orderState == OrderState.Filled || orderState == OrderState.Cancelled || orderState == OrderState.Rejected)
