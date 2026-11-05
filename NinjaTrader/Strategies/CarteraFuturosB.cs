@@ -46,7 +46,8 @@ namespace NinjaTrader.NinjaScript.Strategies
         }
 
         // índices de mercado (orden de AddDataSeries + 1; el 0 es el instrumento del gráfico, no se usa para operar)
-        private const int ORO = 1, PLATA = 2, COBRE = 3, NIKKEI = 4, YEN = 5, BITCOIN = 6, CESTA0 = 7;   // CESTA0..CESTA0+11: E12
+        // se asignan al cargar las series; −1 = mercado desactivado (no se carga ni se opera). CESTA0..final: cesta E12
+        private int ORO = -1, PLATA = -1, COBRE = -1, NIKKEI = -1, YEN = -1, BITCOIN = -1, CESTA0 = int.MaxValue;
         private string[] nombres;
         private TimeZoneInfo tzNY, tzNT;
         private readonly List<Ventana> ventanas = new List<Ventana>();
@@ -83,6 +84,14 @@ namespace NinjaTrader.NinjaScript.Strategies
         public bool OperarBitcoin { get; set; }
         [NinjaScriptProperty][Display(Name = "Modo B: operar la cesta E12 (posición de una noche)", Order = 10, GroupName = "1. General")]
         public bool OperarCestaE12 { get; set; }
+        [NinjaScriptProperty][Display(Name = "Operar plata (SIL; en Tradeify: SI grande)", Order = 12, GroupName = "1. General")]
+        public bool OperarPlata { get; set; }
+        [NinjaScriptProperty][Display(Name = "Operar yen (MJY / 6J)", Order = 13, GroupName = "1. General")]
+        public bool OperarYen { get; set; }
+        [NinjaScriptProperty][Display(Name = "Operar cobre (MHG)", Order = 14, GroupName = "1. General")]
+        public bool OperarCobre { get; set; }
+        [NinjaScriptProperty][Display(Name = "Operar Nikkei (NKD)", Order = 15, GroupName = "1. General")]
+        public bool OperarNikkei { get; set; }
         [NinjaScriptProperty][Range(1630, 1659)][Display(Name = "Modo B: salida de la plata del viernes (HHMM NY; firma con cierre 16:59 → 1657)", Order = 11, GroupName = "1. General")]
         public int SalidaPlataViernes { get; set; }
 
@@ -127,7 +136,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 TraceOrders = false;
                 Modo = ModoCarteraFuturos.B_completa;
                 RiesgoPct = 0.5; PesoDiarias = 0.2; ControlVolatilidad = true; CapitalUSD = 0; RedondeoMin = 0.5;
-                SoloSimulacion = true; PermitirHistorico = false; OperarBitcoin = true; OperarCestaE12 = true; SalidaPlataViernes = 1657;
+                SoloSimulacion = true; PermitirHistorico = false; OperarBitcoin = true; OperarCestaE12 = true; SalidaPlataViernes = 1657; OperarPlata = true; OperarYen = true; OperarCobre = true; OperarNikkei = true;
                 PerdidaDiariaMaxPct = 3.0; StopSigmas = 4.0; TopeExposicion = 6.0;
                 InstOro = "MGC 12-26"; InstPlata = "SIL 12-26"; InstCobre = "MHG 12-26"; InstNikkei = "NKD 12-26"; InstYen = "MJY 12-26"; InstBitcoin = "MBT 11-26";
                 InstCesta = "MCL 12-26,HO 12-26,RB 12-26,QG 12-26,ZC 12-26,ZS 01-27,ZW 12-26,ZL 12-26,ZM 12-26,KE 12-26,LE 12-26,HE 12-26";
@@ -136,8 +145,14 @@ namespace NinjaTrader.NinjaScript.Strategies
             }
             else if (State == State.Configure)
             {
-                var lista = new List<string> { InstOro, InstPlata, InstCobre, InstNikkei, InstYen, InstBitcoin };
-                lista.AddRange(InstCesta.Split(',').Select(s => s.Trim()).Where(s => s.Length > 0));
+                // solo se cargan los mercados activados (si la firma no ofrece un contrato, desactívalo y no se pide su serie)
+                bool b = Modo == ModoCarteraFuturos.B_completa;
+                var lista = new List<string>();
+                Func<bool, string, int> anadir = (activo, inst) => { if (!activo || string.IsNullOrWhiteSpace(inst)) return -1; lista.Add(inst.Trim()); return lista.Count; };
+                ORO = anadir(true, InstOro); PLATA = anadir(OperarPlata, InstPlata); COBRE = anadir(OperarCobre, InstCobre);
+                NIKKEI = anadir(OperarNikkei, InstNikkei); YEN = anadir(OperarYen, InstYen); BITCOIN = anadir(b && OperarBitcoin, InstBitcoin);
+                CESTA0 = lista.Count + 1;
+                if (b && OperarCestaE12) lista.AddRange(InstCesta.Split(',').Select(x => x.Trim()).Where(x => x.Length > 0));
                 nombres = new string[lista.Count + 1];
                 nombres[0] = "grafico";
                 for (int i = 0; i < lista.Count; i++) { AddDataSeries(lista[i], BarsPeriodType.Minute, 1); nombres[i + 1] = lista[i]; }
@@ -196,6 +211,9 @@ namespace NinjaTrader.NinjaScript.Strategies
             rupturas.Add(new Ruptura { Nombre = "C99_oro_rango_asia", Mercado = ORO, Asiatica = true, Activa = true });
             rupturas.Add(new Ruptura { Nombre = "C101_nikkei_rango_asia", Mercado = NIKKEI, Asiatica = true, Activa = true });
             rupturas.Add(new Ruptura { Nombre = "C102_cobre_rango_asia", Mercado = COBRE, Asiatica = true, Activa = true });
+            foreach (var v in ventanas) if (v.Mercado < 1 || v.Mercado >= BarsArray.Length) v.Activa = false;
+            foreach (var r in rupturas) if (r.Mercado < 1 || r.Mercado >= BarsArray.Length) r.Activa = false;
+            Print("CarteraFuturosB: estrategias activas: " + string.Join(", ", ventanas.Where(v => v.Activa).Select(v => v.Nombre).Concat(rupturas.Where(r => r.Activa).Select(r => r.Nombre))));
         }
 
         // ================= horas y calendario =================
