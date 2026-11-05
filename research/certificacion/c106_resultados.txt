@@ -1,0 +1,15 @@
+ORO viernes 16:00-16:55: n 298 -0.13 pb (t -0.24) años+ 2/7 | por año {2003: -2.1, 2004: -0.8, 2005: -0.7, 2006: -2.5, 2007: 2.2, 2008: -1.4, 2009: 2.8}
+   CRITERIOS: {'t>=2.24': np.False_, 'años>=60%': np.False_} → NO CONFIRMADA
+PLATA viernes 16:30-16:55: n 237 -3.87 pb (t -1.77) años+ 2/7 | por año {2003: -14.1, 2004: -0.4, 2005: -13.4, 2006: -12.4, 2007: -4.4, 2008: 2.2, 2009: 4.8}
+   CRITERIOS: {'t>=2.24': np.False_, 'años>=60%': np.False_} → NO CONFIRMADA
+   placebo oro lun: +0.40 pb (t 0.72)
+   placebo oro mar: -0.97 pb (t -1.36)
+   placebo oro mié: +1.01 pb (t 1.38)
+   placebo oro jue: +0.82 pb (t 0.93)
+   placebo plata lun: -4.37 pb (t -1.43)
+   placebo plata mar: +0.12 pb (t 0.05)
+   placebo plata mié: -2.85 pb (t -0.97)
+   placebo plata jue: -2.24 pb (t -0.86)
+informativo plata víspera 16:00-16:55: n 48 +4.56 pb (t 0.72) años+ 4/7 | por año {2003: 0.0, 2004: 34.9, 2005: 10.8, 2006: 11.7, 2007: -3.8, 2008: -12.4, 2009: 7.1}
+   spread medio oro viernes 16:00-17:00: 7.7 pb
+   spread medio plata viernes 16:00-17:00: 136.6 pb
