@@ -1,0 +1,8 @@
+C93 oro: días de noticias n 268 media -0.013 | resto n 2879 media +0.058 | dif t -0.84
+C99 oro: días de noticias n 309 media -0.006 | resto n 3706 media +0.070 | dif t -1.26
+C101 Nikkei: días de noticias n 225 media +0.127 | resto n 2759 media +0.060 | dif t +0.85
+C102 cobre: días de noticias n 288 media +0.107 | resto n 3466 media +0.073 | dif t +0.50
+JUNTAS: noticias +0.050 (n 1090) vs resto +0.066 (n 12810) | dif t -0.45
+   2010-17: Sharpe sin filtro 1.82 | con filtro 1.86
+   2018-26: Sharpe sin filtro 1.51 | con filtro 1.44
+NO SE ADOPTA (el filtro no está justificado)

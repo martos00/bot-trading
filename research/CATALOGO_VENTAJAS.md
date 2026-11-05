@@ -83,6 +83,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Retrocesos de Fibonacci (vídeo TikTok) | C105 | Los niveles Fibonacci no difieren de niveles de control (+3 pb, t 0,24); estrategia −7 pb |
 | Oro y plata del viernes en 2003-2009 (Dukascopy, fuera de muestra) | C106 | **Oro: no existía antes de 2009** (−0,13 pb, t −0,24); aparece en 2009. Plata: datos no fiables |
 | Cereales en días de informes del USDA (WASDE y existencias): prima del día y continuación tras el dato | C107 | Nada (maíz continuación +5 pb, t 1,5) |
+| Filtro de noticias (no operar días de FOMC y NFP) en las estrategias diarias | C108 | No mejora (dif t −0,45; Sharpe 2018-26 baja de 1,51 a 1,44) |
 | Día × hora en 15 futuros | B4 | Solo pasa el oro del viernes |
 | **USDJPY largo el antepenúltimo día hábil del mes, 07:00-08:00 NY** | B7 + C48 + E9 | **CERTIFICADA (3.ª ventaja)**: futuro t −4,82 en 2018-26; contado FXCM neto +2,76 pb (t 4,55), 13/15 años; Sharpe 1,1 |
 | **Plata larga la última hora antes de un festivo de la NYSE** | B8 + C49 + E10 | **CERTIFICADA (4.ª ventaja)**: futuro t 3,84 en 2018-26, 100 % de años; contado t 2,35; Sharpe ~1,0 |
