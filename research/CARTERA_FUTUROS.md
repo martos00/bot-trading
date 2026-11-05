@@ -123,3 +123,13 @@ Con el riesgo del backtest (0,5 %; diarias 0,1 %) y precios 2025-26, cada estrat
 | 100.000-150.000 $ | 1,95 | 2,48 | 11,3 % | Nikkei Q−2 y C101, C93, C99, cesta E12 |
 | 300.000 $ | 2,11 | 2,55 | 9,5 % | C101, cesta E12 |
 Las estrategias diarias nuevas (C93, C99, C101) apenas cuentan en cuentas pequeñas; lo que sostiene la cartera son las franjas.
+
+## DTF 100K con el límite real de 3 contratos (05-nov-2026)
+Elite Trader Funding confirma 3 contratos en total (grandes o micro). Con contratos grandes (GC, SI, 6J, NKD) y redondeo:
+| Riesgo/op | Sharpe | Neto 2 años por cuenta (backtest / al 60 %) |
+|---|---|---|
+| 0,50 % | 1,85 | 35.200 $ / 23.700 $ |
+| 0,65 % | 1,99 | 41.000 $ / 27.200 $ |
+| 0,80 % | 2,14 | 48.400 $ / 32.600 $ |
+A 0,65 %: oro viernes 1 GC, plata 1 SI, Nikkei Q+2 1 NKD, yen hasta 3 6J; oro D-2 y Nikkei Q-2 quedan a 0 contratos. Se configura
+con «Máximo de contratos abiertos» = 3 y contratos grandes. Resultado parecido a lo estimado antes (≈ 37.000 / 23.700 $).
