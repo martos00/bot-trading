@@ -47,12 +47,13 @@ Sharpe de lo que se puede operar (2018-2026, con control de volatilidad; `resear
 
 Lo que no llega a 1 contrato se registra como `sin_entrada_0_contratos` y no se opera.
 
-## Configuración para Tradeify (la firma que mejor encaja con B hoy, sin confirmar)
-Según sus propias páginas (oct-2026): cierre obligatorio 16:59 NY (12:59 en días de cierre anticipado), sin cripto; bots propios con
-prueba de autoría según terceros. Configuración: Modo = B_completa, Operar bitcoin = false, Operar cesta E12 = false, salida de la plata
-del viernes = 1657. Cuenta de 50.000 $: Sharpe 2,22 con control de volatilidad (A con cierre 16:45: 1,85). Confirmar por escrito antes.
-**Ojo:** en días de cierre anticipado (12:59) el bot no conoce la regla de la firma; la víspera de festivo la plata entra a las 16:00:
-si la firma cierra a las 12:59 ese día, desactiva E10 a mano o el bot no entrará si la sesión del CME cierra antes.
+## Configuración para Tradeify (confirmado por su asistente, 05-nov-2026)
+Bots propios permitidos (estrategia exclusiva, no compartida, no HFT; prueba de autoría si la piden). Sesión 18:00 → 17:00 NY.
+No tienen SIL, MJY ni MHG: solo los contratos grandes SI, 6J y HG; sí MGC y NKD.
+- Modo = B_completa · Operar bitcoin = false · Operar cesta E12 = false · Operar cobre = false (HG es demasiado grande)
+- Contratos: Oro `MGC mm-aa` · Plata `SI mm-aa` · Yen `6J mm-aa` · Nikkei `NKD mm-aa` · Salida plata viernes 1657
+- Cuentas: **Select Flex** (150K: DD 4.500 $ al cierre, sin límite diario; 300K: DD 8.000 $). Evitar Daily (límite diario estrecho).
+- Sharpe de esta cartera: 150K 2,37; 300K 2,38 (incluye el oro diario C93/C99).
 
 ## Instalación
 1. Copia `CarteraFuturosB.cs` en `Documentos\NinjaTrader 8\bin\Custom\Strategies\`.

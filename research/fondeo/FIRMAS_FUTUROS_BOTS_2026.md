@@ -37,3 +37,10 @@ vez de 3,1 (al 60 %); con la opción del 50 %: 2,8 / 3,6 meses. No cambia la pro
   máx. 50 % del beneficio y 10.000 $ por cobro (DD no indicado).
 Cartera posible en Tradeify (solo MGC + SI): Sharpe 2,01 en 150K (~117 ops/año en ~63 días) y 2,00 en 300K (con C93 y C99).
 Recomendación: planes Flex (sin límite diario); Daily obliga a ≤ 0,3 % (150K) o ≤ 0,2 % (300K) por el límite diario.
+
+## Tercera respuesta de Tradeify (asistente de IA, 05-nov-2026)
+- 6J ✅, HG ✅, NKD ✅; MJY y MHG ❌ (solo contratos grandes). Select 300K Flex: DD 8.000 $ EOD (aplicado en tiempo real).
+- Límite diario = suspensión blanda: pausa el resto del día, no suspende la cuenta.
+Cartera Tradeify: 150K oro + plata SI + yen 6J + Nikkei NKD → Sharpe 2,37 (~140 ops/año en ~72 días); 300K + oro diario → 2,38
+(~555 ops/año en ~242 días). El cobre HG (10 × MHG) no cabe ni en 300K (necesitaría ~600.000 $).
+Configuración del bot en Tradeify: InstPlata = SI, InstYen = 6J, InstNikkei = NKD, Operar cobre = false, bitcoin y cesta E12 = false.
