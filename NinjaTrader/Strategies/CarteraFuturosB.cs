@@ -439,7 +439,9 @@ namespace NinjaTrader.NinjaScript.Strategies
             }
             int bip = BarsInProgress;
             // hora actual: el bar en formación lleva la marca de su cierre; la hora "real" es un minuto antes como mucho
-            DateTime ahoraNT = State == State.Realtime ? Core.Globals.Now : Times[bip][0].AddMinutes(-1);
+            // reloj = hora de la barra en curso (marca de cierre − 1 min). Sirve igual en histórico, en tiempo real y en Playback
+            // (con Core.Globals.Now el Playback usaba la hora real del PC en vez de la de la reproducción)
+            DateTime ahoraNT = Times[bip][0].AddMinutes(-1);
             DateTime ny = ANY(ahoraNT);
             NuevoDia(ny);
             Protecciones(ny);
