@@ -1,0 +1,37 @@
+
+######## Cartera 150K (bot ETF/Tradeify) — riesgo 0,65 % por operación, cuenta 150.000 $ ########
+días de noticias (FOMC + empleo) en el periodo: 168 (20/año)
+
+[OPERA TODO] Sharpe 2.39 | rent. anual 25.8 % (~38,648 $/año) | caída máx -11.7 % | peor mes -6.2 % | meses negativos 27 % | operaciones/año 366
+   por año %: {2018: 3.7, 2019: 2.7, 2020: 40.8, 2021: 44.2, 2022: 45.9, 2023: 30.0, 2024: 31.3, 2025: 8.1, 2026: 9.8}
+
+[NO OPERA EN NOTICIAS] Sharpe 1.97 | rent. anual 20.1 % (~30,143 $/año) | caída máx -13.5 % | peor mes -6.4 % | meses negativos 34 % | operaciones/año 322
+   por año %: {2018: 5.0, 2019: 1.0, 2020: 33.2, 2021: 37.9, 2022: 36.5, 2023: 25.3, 2024: 18.3, 2025: 6.5, 2026: 5.3}
+
+Lo que hace cada estrategia SOLO en días de noticias (riesgo 0,65 %, sin control de vol.):
+   yen                ops noticias   10 ( 1.2/año) | media noticias +19.5 pb de cuenta vs resto +18.3 | total en noticias +2,928 $ en 8.5 años | dif t +0.06
+   cesta_yen          ops noticias    1 ( 0.1/año) | media noticias +27.7 pb de cuenta vs resto +6.1 | total en noticias +415 $ en 8.5 años | dif t +nan
+   oro_vie_1655       ops noticias   96 (11.3/año) | media noticias +17.5 pb de cuenta vs resto +12.8 | total en noticias +25,265 $ en 8.5 años | dif t +0.71
+   oro_D-2            ops noticias   10 ( 1.2/año) | media noticias -0.0 pb de cuenta vs resto +13.0 | total en noticias -3 $ en 8.5 años | dif t -0.67
+   plata_visp_1655    ops noticias    8 ( 0.9/año) | media noticias +20.3 pb de cuenta vs resto +23.6 | total en noticias +2,435 $ en 8.5 años | dif t -0.13
+   plata_viernes      ops noticias   96 (11.3/año) | media noticias +18.9 pb de cuenta vs resto +8.3 | total en noticias +27,188 $ en 8.5 años | dif t +1.64
+   cobre_asia_C102    ops noticias  154 (18.1/año) | media noticias +2.0 pb de cuenta vs resto +0.4 | total en noticias +4,683 $ en 8.5 años | dif t +1.42
+   nikkei_Q+2         ops noticias    4 ( 0.5/año) | media noticias -12.5 pb de cuenta vs resto +32.4 | total en noticias -752 $ en 8.5 años | dif t -2.11
+   nikkei_Q-2         no opera nunca en días de noticias
+
+######## Cartera 50K — riesgo 0,65 % por operación, cuenta 150.000 $ ########
+días de noticias (FOMC + empleo) en el periodo: 168 (20/año)
+
+[OPERA TODO] Sharpe 2.22 | rent. anual 23.5 % (~35,229 $/año) | caída máx -12.3 % | peor mes -6.0 % | meses negativos 34 % | operaciones/año 133
+   por año %: {2018: 2.4, 2019: -4.2, 2020: 38.2, 2021: 37.3, 2022: 45.3, 2023: 28.1, 2024: 33.3, 2025: 7.8, 2026: 9.1}
+
+[NO OPERA EN NOTICIAS] Sharpe 1.82 | rent. anual 18.2 % (~27,286 $/año) | caída máx -11.7 % | peor mes -5.8 % | meses negativos 36 % | operaciones/año 107
+   por año %: {2018: 4.0, 2019: -5.0, 2020: 31.2, 2021: 30.2, 2022: 35.9, 2023: 23.2, 2024: 20.9, 2025: 7.8, 2026: 4.8}
+
+Lo que hace cada estrategia SOLO en días de noticias (riesgo 0,65 %, sin control de vol.):
+   yen                ops noticias   10 ( 1.2/año) | media noticias +19.5 pb de cuenta vs resto +18.3 | total en noticias +2,928 $ en 8.5 años | dif t +0.06
+   cesta_yen          ops noticias    1 ( 0.1/año) | media noticias +27.7 pb de cuenta vs resto +6.1 | total en noticias +415 $ en 8.5 años | dif t +nan
+   oro_vie_1655       ops noticias   96 (11.3/año) | media noticias +17.5 pb de cuenta vs resto +12.8 | total en noticias +25,265 $ en 8.5 años | dif t +0.71
+   oro_D-2            ops noticias   10 ( 1.2/año) | media noticias -0.0 pb de cuenta vs resto +13.0 | total en noticias -3 $ en 8.5 años | dif t -0.67
+   plata_visp_1655    ops noticias    8 ( 0.9/año) | media noticias +20.3 pb de cuenta vs resto +23.6 | total en noticias +2,435 $ en 8.5 años | dif t -0.13
+   plata_viernes      ops noticias   96 (11.3/año) | media noticias +18.9 pb de cuenta vs resto +8.3 | total en noticias +27,188 $ en 8.5 años | dif t +1.64
