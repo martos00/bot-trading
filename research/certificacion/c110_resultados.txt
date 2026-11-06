@@ -1,0 +1,6 @@
+V0 actual                Sharpe 2.38 | 2018-21 2.11 | 2022-26 2.56 | caída (en desv. diarias)  -17.1 | referencia
+V1 sin control de vol.   Sharpe 2.11 | 2018-21 2.34 | 2022-26 1.98 | caída (en desv. diarias)  -35.8 | no mejora
+V2 paridad de riesgo     Sharpe 1.85 | 2018-21 1.90 | 2022-26 1.86 | caída (en desv. diarias)  -10.6 | no mejora
+V3 + cobre               Sharpe 2.45 | 2018-21 2.46 | 2022-26 2.45 | caída (en desv. diarias)  -17.1 | no mejora
+V4 + cobre con paridad   Sharpe 1.93 | 2018-21 2.23 | 2022-26 1.80 | caída (en desv. diarias)   -9.8 | no mejora
+periodo común desde 2018-11-05
