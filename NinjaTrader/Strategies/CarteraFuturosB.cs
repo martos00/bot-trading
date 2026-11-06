@@ -221,8 +221,8 @@ namespace NinjaTrader.NinjaScript.Strategies
             // bitcoin 21:00 → 23:00 UTC los laborables (C2; solo B); peso de estrategia diaria
             ventanas.Add(new Ventana { Nombre = "bitcoin_21_23_UTC", Mercado = BITCOIN, Tipo = 9, HIni = 2100, HFin = 2300, Lado = 1, Peso = PesoDiarias, Activa = b && OperarBitcoin });
 
-            // C113 oro largo en la sesión asiática: 18:00 → 03:00 del día siguiente (domingo → lunes ... jueves → viernes); peso de estrategia diaria
-            ventanas.Add(new Ventana { Nombre = "C113_oro_asia", Mercado = ORO, Tipo = 10, HIni = 1800, HFin = 300, Lado = 1, Noches = 1, Peso = PesoDiarias, Activa = OperarOroAsia });
+            // C113 oro largo en la sesión asiática: 18:01 (primera barra tras la pausa del CME; a las 18:00 no hay precio) → 03:00 del día siguiente (domingo → lunes ... jueves → viernes); peso de estrategia diaria
+            ventanas.Add(new Ventana { Nombre = "C113_oro_asia", Mercado = ORO, Tipo = 10, HIni = 1801, HFin = 300, Lado = 1, Noches = 1, Peso = PesoDiarias, Activa = OperarOroAsia });
 
             rupturas.Add(new Ruptura { Nombre = "C93_oro_dia_anterior", Mercado = ORO, Asiatica = false, Activa = true });
             rupturas.Add(new Ruptura { Nombre = "C99_oro_rango_asia", Mercado = ORO, Asiatica = true, Activa = true });
