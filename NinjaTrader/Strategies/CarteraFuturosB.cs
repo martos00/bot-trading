@@ -102,6 +102,8 @@ namespace NinjaTrader.NinjaScript.Strategies
         public double StopSigmas { get; set; }
         [NinjaScriptProperty][Range(1, 50)][Display(Name = "Exposición máxima por operación (× capital)", Order = 3, GroupName = "2. Protecciones")]
         public double TopeExposicion { get; set; }
+        [NinjaScriptProperty][Range(0, 5)][Display(Name = "Volatilidad diaria objetivo de la cartera (% a riesgo 0,5; 0 = automática: A 0,36 · B 0,45)", Order = 6, GroupName = "2. Protecciones")]
+        public double VolObjetivo { get; set; }
         [NinjaScriptProperty][Range(0, 1000)][Display(Name = "Máximo de contratos abiertos en total (0 = sin límite; DTF de Elite Trader Funding: 3)", Order = 4, GroupName = "2. Protecciones")]
         public int MaxContratosTotales { get; set; }
         [NinjaScriptProperty][Display(Name = "Stop de protección en el servidor (se mantiene si se cae el PC)", Order = 5, GroupName = "2. Protecciones")]
@@ -143,7 +145,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 Modo = ModoCarteraFuturos.B_completa;
                 RiesgoPct = 0.5; PesoDiarias = 0.2; ControlVolatilidad = true; CapitalUSD = 0; RedondeoMin = 0.5;
                 SoloSimulacion = true; PermitirHistorico = false; OperarBitcoin = true; OperarCestaE12 = true; SalidaPlataViernes = 1657; OperarPlata = true; OperarYen = true; OperarCobre = true; OperarNikkei = true;
-                PerdidaDiariaMaxPct = 3.0; StopSigmas = 4.0; TopeExposicion = 6.0; MaxContratosTotales = 0; StopEnServidor = true;
+                PerdidaDiariaMaxPct = 3.0; StopSigmas = 4.0; TopeExposicion = 6.0; VolObjetivo = 0; MaxContratosTotales = 0; StopEnServidor = true;
                 InstOro = "MGC 12-26"; InstPlata = "SIL 12-26"; InstCobre = "MHG 12-26"; InstNikkei = "NKD 12-26"; InstYen = "MJY 12-26"; InstBitcoin = "MBT 11-26";
                 InstCesta = "MCL 12-26,HO 12-26,RB 12-26,QG 12-26,ZC 12-26,ZS 01-27,ZW 12-26,ZL 12-26,ZM 12-26,KE 12-26,LE 12-26,HE 12-26";
                 FestivosNYSE = "2025-01-01,2025-01-09,2025-01-20,2025-02-17,2025-04-18,2025-05-26,2025-06-19,2025-07-04,2025-09-01,2025-11-27,2025-12-25," +
@@ -292,6 +294,14 @@ namespace NinjaTrader.NinjaScript.Strategies
             if (r.Count < Math.Min(30, n * 2 / 3)) return 0;
             double m = r.Average(); return Math.Sqrt(r.Sum(x => (x - m) * (x - m)) / (r.Count - 1));
         }
+        // la mayor de la sigma de 60 y de 250 laborables: en el backtest el tamaño usaba la sigma de toda la muestra; con solo 60 días,
+        // una racha tranquila baja la sigma y dispara el apalancamiento justo antes de que vuelva la volatilidad
+        private double SigmaRobusta(int i, int hIni, int hFin, int noches, DateTime hoyNY, bool utc = false)
+        {
+            double s60 = Sigma(i, hIni, hFin, noches, 60, hoyNY, utc);
+            if (s60 <= 0) return 0;
+            return Math.Max(s60, Sigma(i, hIni, hFin, noches, 250, hoyNY, utc));
+        }
         private DateTime UTCaNY(DateTime tUtc) { return TimeZoneInfo.ConvertTimeFromUtc(DateTime.SpecifyKind(tUtc, DateTimeKind.Utc), tzNY); }
 
         // ¿la sesión del mercado i sigue abierta (sin cierre largo, >2 h) hasta tNY? (vísperas con cierre anticipado, fines de semana)
@@ -324,7 +334,8 @@ namespace NinjaTrader.NinjaScript.Strategies
         {
             if (sigma <= 0 || precio <= 0) return 0;
             double pv = Instruments[i].MasterInstrument.PointValue;
-            double nocional = Math.Min(riesgoFrac / sigma, TopeExposicion) * Capital() * escalaVol;
+            // el tope de exposición se aplica después de la escala de volatilidad (nunca más de TopeExposicion × capital por operación)
+            double nocional = Math.Min(riesgoFrac / sigma * escalaVol, TopeExposicion) * Capital();
             double x = nocional / (precio * pv);
             int q = (int)Math.Floor(x); if (x - q >= RedondeoMin) q++;
             return q;
@@ -342,12 +353,14 @@ namespace NinjaTrader.NinjaScript.Strategies
             escalaVol = 1.0;
             if (!ControlVolatilidad || !File.Exists(archivoPnl)) return;
             var x = File.ReadAllLines(archivoPnl).Skip(1).Select(l => l.Split(',')).Where(c => c.Length >= 2)
-                        .Select(c => double.Parse(c[1], CultureInfo.InvariantCulture)).ToList();
+                        .Select(c => double.Parse(c[1], CultureInfo.InvariantCulture)).SkipWhile(v => v == 0).ToList();   // sin los días antes de la primera operación
             if (x.Count < 40) return;
             var u = x.Skip(Math.Max(0, x.Count - 60)).ToList(); double m = u.Average();
             double sd = Math.Sqrt(u.Sum(v => (v - m) * (v - m)) / (u.Count - 1));
             // volatilidad diaria de la cartera a riesgo base 0,5 % en 2018-2026 (escenario_comp / puntos45): A 0,36 %, B 0,50 %
-            double objetivo = (Modo == ModoCarteraFuturos.B_completa ? 0.50 : 0.36) * RiesgoPct / 0.5 / 100.0;
+            // (B completa con cesta y bitcoin 0,71 %; B de 50K-150K sin ellas 0,44-0,46 %: por eso 0,45 por defecto)
+            double vo = VolObjetivo > 0 ? VolObjetivo : (Modo == ModoCarteraFuturos.B_completa ? 0.45 : 0.36);
+            double objetivo = vo * RiesgoPct / 0.5 / 100.0;
             if (sd > 0) escalaVol = Math.Max(0.5, Math.Min(2.0, objetivo / sd));
         }
 
@@ -480,7 +493,7 @@ namespace NinjaTrader.NinjaScript.Strategies
             if (i >= BarsArray.Length || CurrentBars[i] < 1) { Registrar(ny, v.Nombre, i, "sin_datos", 0, 0, 0, 0); return; }
             if ((ahoraNT - Times[i][0]).TotalMinutes > 10) { Registrar(ny, v.Nombre, i, "sin_precio_reciente", 0, 0, 0, 0); return; }
             if (!SesionCubre(i, ahoraNT, salida)) { Registrar(ny, v.Nombre, i, "sin_entrada_cierre_de_sesion_antes_de_la_salida", 0, 0, Closes[i][0], 0); return; }
-            double sg = v.Tipo == 9 ? Sigma(i, v.HIni, v.HFin, 0, 60, ny, true) : Sigma(i, v.HIni, v.HFin, v.Noches, 60, ny);
+            double sg = v.Tipo == 9 ? SigmaRobusta(i, v.HIni, v.HFin, 0, ny, true) : SigmaRobusta(i, v.HIni, v.HFin, v.Noches, ny);
             if (sg <= 0) { Registrar(ny, v.Nombre, i, "sin_entrada_sigma_faltan_datos_historicos", 0, 0, Closes[i][0], 0); return; }
             double precio = Closes[i][0];
             int q = Contratos(i, RiesgoPct / 100.0 * v.Peso, sg, precio);
@@ -524,7 +537,7 @@ namespace NinjaTrader.NinjaScript.Strategies
             int lado = arriba ? 1 : -1; double precio = Closes[i][0];
             DateTime salida = Hora(dia, 1645);
             if (!SesionCubre(i, ahoraNT, salida)) { Registrar(ny, r.Nombre, i, "sin_entrada_cierre_de_sesion_antes_de_la_salida", 0, 0, precio, 0); return; }
-            double sg = Sigma(i, hIni, 1645, 0, 60, ny);
+            double sg = SigmaRobusta(i, hIni, 1645, 0, ny);
             int q = Contratos(i, RiesgoPct / 100.0 * PesoDiarias, sg, precio);
             if (q <= 0) { Registrar(ny, r.Nombre, i, "sin_entrada_0_contratos", 0, sg, precio, 0); return; }
             double stop, obj;

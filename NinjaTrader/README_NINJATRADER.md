@@ -62,7 +62,7 @@ No tienen SIL, MJY ni MHG: solo los contratos grandes SI, 6J y HG; sí MGC y NKD
    las firmas, o una prueba gratuita de una firma. Sin datos en tiempo real el bot no puede operar.
 4. Tools → Options → General → zona horaria: la que uses. El bot convierte a la hora de Nueva York por su cuenta.
 5. Abre un gráfico de 1 minuto de **MGC** (el contrato actual) y añade la estrategia CarteraFuturosB (o desde la pestaña Strategies).
-   - Days to load: **150** como mínimo (necesita 60 días de historia para el tamaño y 15 sesiones para el ATR).
+   - Days to load: **400** (el tamaño usa la mayor sigma de 60 y de 250 laborables; con menos historia usa la que haya, mínimo 30 días).
    - Account: **Sim101** (o la cuenta de simulación que uses).
    - Contratos: escribe el **vencimiento actual** de cada mercado (p. ej. `MGC 12-26`). **Cámbialos al vencer** (oro, plata y cobre:
      cada 2 meses; bitcoin: cada mes; Nikkei y yen: cada trimestre). Si un contrato no existe, NinjaTrader avisa al cargar.
@@ -75,7 +75,7 @@ No tienen SIL, MJY ni MHG: solo los contratos grandes SI, 6J y HG; sí MGC y NKD
 `CarteraFuturos_pnl_diario.csv`: resultado de cada día (lo usa el control de volatilidad a partir de 40 días).
 
 ## Diferencias conocidas con el backtest
-- El tamaño usa la sigma de los últimos 60 laborables de la franja (el oro del viernes, de todos los días y no solo de los viernes).
+- El tamaño usa la mayor sigma de los últimos 60 y 250 laborables de la franja (el oro del viernes, de todos los días y no solo de los viernes). El tope de exposición (6 × capital por operación) se aplica después del control de volatilidad, cuyo objetivo es 0,45 % diario a riesgo 0,5 (modo B).
 - Las rupturas entran a mercado al tocar el nivel; en el backtest, al nivel exacto. Puede costar algo de deslizamiento.
 - No hay filtro de noticias (NinjaTrader no trae calendario).
 - Si reinicias la estrategia con posiciones abiertas, el bot no las reconoce: ciérralas a mano antes de reiniciar.
