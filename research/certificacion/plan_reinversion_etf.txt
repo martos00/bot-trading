@@ -1,0 +1,24 @@
+
+######## BACKTEST
+Todo desde el 1.er cobro (70 % reinvertido, 30 % impuestos)
+   12 meses: cuentas 18.6 (fondeadas 13.7) | dinero para ti -2,906 $ (10 % peor -6,217)
+   24 meses: cuentas 19.9 (fondeadas 17.3) | dinero para ti 490,452 $ (mediana 489,519; 10 % peor 119,766) | P(acabar perdiendo) 3 %
+Propuesta: 50 % los 6 primeros meses, luego 70 %
+   12 meses: cuentas 18.6 (fondeadas 13.8) | dinero para ti -54 $ (10 % peor -5,693)
+   24 meses: cuentas 20.0 (fondeadas 16.9) | dinero para ti 497,525 $ (mediana 483,117; 10 % peor 120,160) | P(acabar perdiendo) 3 %
+Sin reinvertir (1 cuenta)
+   12 meses: cuentas 1.0 (fondeadas 0.8) | dinero para ti 13,030 $ (10 % peor 1,138)
+   24 meses: cuentas 1.0 (fondeadas 0.9) | dinero para ti 35,214 $ (mediana 36,265; 10 % peor 13,988) | P(acabar perdiendo) 0 %
+
+######## REAL AL 60 %
+Todo desde el 1.er cobro (70 % reinvertido, 30 % impuestos)
+   12 meses: cuentas 15.4 (fondeadas 8.2) | dinero para ti -2,964 $ (10 % peor -7,025)
+   24 meses: cuentas 19.1 (fondeadas 11.9) | dinero para ti 216,221 $ (mediana 158,851; 10 % peor -4,688) | P(acabar perdiendo) 19 %
+Propuesta: 50 % los 6 primeros meses, luego 70 %
+   12 meses: cuentas 15.4 (fondeadas 8.1) | dinero para ti -1,717 $ (10 % peor -6,595)
+   24 meses: cuentas 19.2 (fondeadas 12.1) | dinero para ti 213,728 $ (mediana 161,360; 10 % peor -5,115) | P(acabar perdiendo) 19 %
+Sin reinvertir (1 cuenta)
+   12 meses: cuentas 1.0 (fondeadas 0.6) | dinero para ti 7,071 $ (10 % peor -817)
+   24 meses: cuentas 1.0 (fondeadas 0.6) | dinero para ti 18,934 $ (mediana 16,889; 10 % peor 1,636) | P(acabar perdiendo) 7 %
+
+"Dinero para ti" = lo que te queda tras reinvertir y tras apartar el 30 % para impuestos (ya descontado), menos lo que pusiste de tu bolsillo.
