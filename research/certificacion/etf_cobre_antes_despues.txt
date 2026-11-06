@@ -1,0 +1,21 @@
+
+##### Antes (8 estrategias) — 1 paso 150K, riesgo 0,65 %
+Backtest: Sharpe 2.38 | rentabilidad 25.8 %/año (38,722 $) | caída máx. -11.7 % (-17,539 $) | peor día -7,423 $ | peor mes -8,958 $ | meses negativos 32 % | operaciones/año 139
+  [backtest] aprueba al 1.º 72 % | meses hasta fondeada 2.5 | exámenes en 24 m 2.9 | pierde la fondeada en 24 m 68 % | 24 m: pagado 827 $, cobrado 47,590 $ (mediana 47,613), neto 46,763 $ | P(perder dinero) 1 %
+  [real al 60 %] aprueba al 1.º 54 % | meses hasta fondeada 3.0 | exámenes en 24 m 5.1 | pierde la fondeada en 24 m 90 % | 24 m: pagado 1,218 $, cobrado 26,743 $ (mediana 23,642), neto 25,524 $ | P(perder dinero) 6 %
+  [backtest, riesgo 0,45 %] aprueba al 1.º 81 % | meses hasta fondeada 3.7 | exámenes en 24 m 2.2 | pierde la fondeada en 24 m 58 % | 24 m: pagado 728 $, cobrado 31,501 $ (mediana 30,429), neto 30,774 $ | P(perder dinero) 2 %
+  [real al 60 %, riesgo 0,45 %] aprueba al 1.º 60 % | meses hasta fondeada 4.7 | exámenes en 24 m 3.4 | pierde la fondeada en 24 m 80 % | 24 m: pagado 997 $, cobrado 15,813 $ (mediana 12,871), neto 14,817 $ | P(perder dinero) 15 %
+
+##### Ahora (+ oro en Asia) — 1 paso 150K, riesgo 0,65 %
+Backtest: Sharpe 2.49 | rentabilidad 27.7 %/año (41,604 $) | caída máx. -11.8 % (-17,755 $) | peor día -7,718 $ | peor mes -8,449 $ | meses negativos 27 % | operaciones/año 332
+  [backtest] aprueba al 1.º 70 % | meses hasta fondeada 2.3 | exámenes en 24 m 3.1 | pierde la fondeada en 24 m 70 % | 24 m: pagado 858 $, cobrado 50,441 $ (mediana 50,971), neto 49,583 $ | P(perder dinero) 0 %
+  [real al 60 %] aprueba al 1.º 54 % | meses hasta fondeada 2.9 | exámenes en 24 m 5.5 | pierde la fondeada en 24 m 91 % | 24 m: pagado 1,271 $, cobrado 27,989 $ (mediana 24,955), neto 26,718 $ | P(perder dinero) 6 %
+  [backtest, riesgo 0,45 %] aprueba al 1.º 79 % | meses hasta fondeada 3.2 | exámenes en 24 m 2.2 | pierde la fondeada en 24 m 58 % | 24 m: pagado 726 $, cobrado 34,651 $ (mediana 33,781), neto 33,925 $ | P(perder dinero) 1 %
+  [real al 60 %, riesgo 0,45 %] aprueba al 1.º 59 % | meses hasta fondeada 4.6 | exámenes en 24 m 3.6 | pierde la fondeada en 24 m 81 % | 24 m: pagado 1,021 $, cobrado 17,238 $ (mediana 14,357), neto 16,217 $ | P(perder dinero) 12 %
+
+##### Con cobre (+ cobre) — 1 paso 150K, riesgo 0,65 %
+Backtest: Sharpe 2.56 | rentabilidad 28.6 %/año (42,950 $) | caída máx. -11.1 % (-16,636 $) | peor día -7,424 $ | peor mes -8,800 $ | meses negativos 26 % | operaciones/año 558
+  [backtest] aprueba al 1.º 73 % | meses hasta fondeada 2.2 | exámenes en 24 m 3.1 | pierde la fondeada en 24 m 69 % | 24 m: pagado 848 $, cobrado 52,336 $ (mediana 52,795), neto 51,488 $ | P(perder dinero) 0 %
+  [real al 60 %] aprueba al 1.º 54 % | meses hasta fondeada 2.9 | exámenes en 24 m 5.4 | pierde la fondeada en 24 m 91 % | 24 m: pagado 1,259 $, cobrado 29,655 $ (mediana 27,207), neto 28,395 $ | P(perder dinero) 4 %
+  [backtest, riesgo 0,45 %] aprueba al 1.º 79 % | meses hasta fondeada 3.2 | exámenes en 24 m 2.2 | pierde la fondeada en 24 m 57 % | 24 m: pagado 723 $, cobrado 36,430 $ (mediana 36,101), neto 35,707 $ | P(perder dinero) 1 %
+  [real al 60 %, riesgo 0,45 %] aprueba al 1.º 59 % | meses hasta fondeada 4.4 | exámenes en 24 m 3.6 | pierde la fondeada en 24 m 83 % | 24 m: pagado 1,026 $, cobrado 18,189 $ (mediana 15,980), neto 17,163 $ | P(perder dinero) 11 %
