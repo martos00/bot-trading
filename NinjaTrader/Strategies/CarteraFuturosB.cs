@@ -146,7 +146,8 @@ namespace NinjaTrader.NinjaScript.Strategies
                 PerdidaDiariaMaxPct = 3.0; StopSigmas = 4.0; TopeExposicion = 6.0; MaxContratosTotales = 0; StopEnServidor = true;
                 InstOro = "MGC 12-26"; InstPlata = "SIL 12-26"; InstCobre = "MHG 12-26"; InstNikkei = "NKD 12-26"; InstYen = "MJY 12-26"; InstBitcoin = "MBT 11-26";
                 InstCesta = "MCL 12-26,HO 12-26,RB 12-26,QG 12-26,ZC 12-26,ZS 01-27,ZW 12-26,ZL 12-26,ZM 12-26,KE 12-26,LE 12-26,HE 12-26";
-                FestivosNYSE = "2026-01-01,2026-01-19,2026-02-16,2026-04-03,2026-05-25,2026-06-19,2026-07-03,2026-09-07,2026-11-26,2026-12-25," +
+                FestivosNYSE = "2025-01-01,2025-01-09,2025-01-20,2025-02-17,2025-04-18,2025-05-26,2025-06-19,2025-07-04,2025-09-01,2025-11-27,2025-12-25," +
+                               "2026-01-01,2026-01-19,2026-02-16,2026-04-03,2026-05-25,2026-06-19,2026-07-03,2026-09-07,2026-11-26,2026-12-25," +
                                "2027-01-01,2027-01-18,2027-02-15,2027-03-26,2027-05-31,2027-06-18,2027-07-05,2027-09-06,2027-11-25,2027-12-24";
             }
             else if (State == State.Configure)
@@ -236,8 +237,10 @@ namespace NinjaTrader.NinjaScript.Strategies
         {
             int n = 0; for (DateTime s = d.Date.AddDays(1); s.Month == d.Month; s = s.AddDays(1)) if (Laborable(s)) n++; return n;
         }
-        private bool EsVispera(DateTime d) { return Laborable(d) && !Festivo(d) && Festivo(HabilSiguiente(d)); }
-        private bool EsDiaAntesDeVispera(DateTime d) { DateTime s = HabilSiguiente(d); return Laborable(d) && !Festivo(d) && s == d.Date.AddDays(1) && EsVispera(s); }
+        // siguiente día de lunes a viernes (sin saltar festivos: así se puede comprobar si ese día es festivo)
+        private static DateTime SiguienteLaborable(DateTime d) { DateTime s = d.Date.AddDays(1); while (!Laborable(s)) s = s.AddDays(1); return s; }
+        private bool EsVispera(DateTime d) { return Laborable(d) && !Festivo(d) && Festivo(SiguienteLaborable(d)); }
+        private bool EsDiaAntesDeVispera(DateTime d) { DateTime s = SiguienteLaborable(d); return Laborable(d) && !Festivo(d) && s == d.Date.AddDays(1) && EsVispera(s); }
         private static bool EsQmas2(DateTime d)
         {
             if (!Laborable(d) || d.Month % 3 != 1 || (d.Month == 1 && d.Day == 1)) return false;
@@ -395,12 +398,16 @@ namespace NinjaTrader.NinjaScript.Strategies
 
         private void NuevoDia(DateTime ny)
         {
-            // cierre diario a las 17:00 NY: guarda el resultado del día para el control de volatilidad
-            DateTime corte = ny.Hour >= 17 ? ny.Date : ny.Date.AddDays(-1);
-            if (corte != ultimoCierreDiario)
+            // cierre diario a las 17:00 NY: guarda el resultado de la sesión que termina para el control de volatilidad.
+            // Sesión = día de cotización (de 17:00 del día anterior a 17:00; la del domingo por la tarde es la del lunes),
+            // así el viernes también se guarda aunque la siguiente barra llegue el domingo.
+            DateTime sesion = ny.Hour >= 17 ? ny.Date.AddDays(1) : ny.Date;
+            while (!Laborable(sesion)) sesion = sesion.AddDays(1);
+            if (sesion != ultimoCierreDiario)
             {
                 double p = PnlTotal();
-                if (!double.IsNaN(pnlInicioDia) && Laborable(corte))
+                DateTime corte = ultimoCierreDiario;   // la sesión que acaba de terminar
+                if (!double.IsNaN(pnlInicioDia) && corte != DateTime.MinValue)
                 {
                     try
                     {
@@ -413,7 +420,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                     }
                     catch { }
                 }
-                pnlInicioDia = p; ultimoCierreDiario = corte; paradoHoy = false;
+                pnlInicioDia = p; ultimoCierreDiario = sesion; paradoHoy = false;
                 ActualizarEscalaVol();
             }
             if (ny.Date != diaActualNY) diaActualNY = ny.Date;
@@ -647,7 +654,12 @@ namespace NinjaTrader.NinjaScript.Strategies
             {
                 int k; if (int.TryParse(execution.Order.Name.Substring(11), out k) && k < proteccion.Length)
                 {
-                    foreach (var p in posiciones.Where(p => p.Mercado == k).ToList()) posiciones.Remove(p);
+                    double pv = Instruments[k].MasterInstrument.PointValue;
+                    foreach (var p in posiciones.Where(p => p.Mercado == k).ToList())
+                    {
+                        posiciones.Remove(p);
+                        Registrar(ANY(time), p.Estrategia, k, "cierre_stop_servidor", Math.Abs(p.Contratos), p.Sigma, price, (price - p.Entrada) * p.Contratos * pv);
+                    }
                     Registrar(ANY(time), "cartera", k, "stop_del_servidor_ejecutado_posiciones_cerradas", quantity, 0, price, -execution.Commission);
                 }
                 return;

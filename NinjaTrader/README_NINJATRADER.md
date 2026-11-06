@@ -67,7 +67,7 @@ No tienen SIL, MJY ni MHG: solo los contratos grandes SI, 6J y HG; sí MGC y NKD
    - Contratos: escribe el **vencimiento actual** de cada mercado (p. ej. `MGC 12-26`). **Cámbialos al vencer** (oro, plata y cobre:
      cada 2 meses; bitcoin: cada mes; Nikkei y yen: cada trimestre). Si un contrato no existe, NinjaTrader avisa al cargar.
    - Capital (USD): 0 = saldo de la cuenta; en una cuenta de fondeo pon el tamaño de la cuenta (p. ej. 50000).
-   - Festivos NYSE: ya lleva 2026 y 2027; ampliar cada año.
+   - Festivos NYSE: ya lleva 2025, 2026 y 2027; ampliar cada año.
 6. Activa la estrategia (Enabled). El PC/VPS tiene que estar encendido: los stops los vigila el bot, no el servidor.
 
 ## Registro (lo que tienes que mandarme)
