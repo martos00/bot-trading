@@ -1,0 +1,8 @@
+
+######## BACKTEST — 20 cuentas ETF 150K, riesgo 0,65 %, dinero ya descontado el 30 % de impuestos y los costes
+Cobra lo que haya (hasta 2.250 $)  | al mes: media 32,947 $ / mediana 39,458 $ | meses con menos de 0 $ 20 % | meses > 20.000 $ 63 % | 24 m: media 790,737 $ (10 % peor 326,386) | fondeadas perdidas al año 13.6 de 20 | peor racha de 6 meses 22,917 $ (mediana)
+Solo cobra 2.250 $ completos       | al mes: media 32,709 $ / mediana 28,350 $ | meses con menos de 0 $ 17 % | meses > 20.000 $ 64 % | 24 m: media 785,022 $ (10 % peor 341,942) | fondeadas perdidas al año 11.7 de 20 | peor racha de 6 meses 22,022 $ (mediana)
+
+######## REAL AL 60 % — 20 cuentas ETF 150K, riesgo 0,65 %, dinero ya descontado el 30 % de impuestos y los costes
+Cobra lo que haya (hasta 2.250 $)  | al mes: media 19,195 $ / mediana 0 $ | meses con menos de 0 $ 39 % | meses > 20.000 $ 39 % | 24 m: media 460,678 $ (10 % peor 96,416) | fondeadas perdidas al año 22.8 de 20 | peor racha de 6 meses -9,350 $ (mediana)
+Solo cobra 2.250 $ completos       | al mes: media 18,852 $ / mediana 0 $ | meses con menos de 0 $ 37 % | meses > 20.000 $ 41 % | 24 m: media 452,443 $ (10 % peor 65,291) | fondeadas perdidas al año 20.7 de 20 | peor racha de 6 meses -9,350 $ (mediana)
