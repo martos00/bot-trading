@@ -221,8 +221,8 @@ namespace NinjaTrader.NinjaScript.Strategies
             // bitcoin 21:00 → 23:00 UTC los laborables (C2; solo B); peso de estrategia diaria
             ventanas.Add(new Ventana { Nombre = "bitcoin_21_23_UTC", Mercado = BITCOIN, Tipo = 9, HIni = 2100, HFin = 2300, Lado = 1, Peso = PesoDiarias, Activa = b && OperarBitcoin });
 
-            // C113 oro largo en la sesión asiática: 18:01 (primera barra tras la pausa del CME; a las 18:00 no hay precio) → 03:00 del día siguiente (domingo → lunes ... jueves → viernes); peso de estrategia diaria
-            ventanas.Add(new Ventana { Nombre = "C113_oro_asia", Mercado = ORO, Tipo = 10, HIni = 1801, HFin = 300, Lado = 1, Noches = 1, Peso = PesoDiarias, Activa = OperarOroAsia });
+            // C113 oro largo en la sesión asiática: 18:00 (en tiempo real, en el primer precio tras la pausa del CME) → 03:00 del día siguiente (domingo → lunes ... jueves → viernes); peso de estrategia diaria
+            ventanas.Add(new Ventana { Nombre = "C113_oro_asia", Mercado = ORO, Tipo = 10, HIni = 1800, HFin = 300, Lado = 1, Noches = 1, Peso = PesoDiarias, Activa = OperarOroAsia });
 
             rupturas.Add(new Ruptura { Nombre = "C93_oro_dia_anterior", Mercado = ORO, Asiatica = false, Activa = true });
             rupturas.Add(new Ruptura { Nombre = "C99_oro_rango_asia", Mercado = ORO, Asiatica = true, Activa = true });
@@ -297,6 +297,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 if (utc) { t0 = UTCaNY(Hora(d, hIni)); t1 = UTCaNY(Hora(d, hFin)); }
                 else { t0 = Hora(d, hIni); t1 = Hora(SumarLaborables(d, noches), hFin); }
                 double p0 = PrecioEn(i, t0), p1 = PrecioEn(i, t1);
+                if (p0 <= 0) p0 = PrecioEn(i, t0.AddMinutes(2));   // tras una pausa (p. ej. 17:00-18:00) no hay barra que cierre a la hora exacta
                 if (p0 > 0 && p1 > 0) r.Add(Math.Log(p1 / p0));
             }
             if (r.Count < Math.Min(30, n * 2 / 3)) return 0;
