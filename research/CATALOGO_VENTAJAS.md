@@ -81,6 +81,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | USDJPY 08:00-09:55 JST antes de festivos de Japón (sin gotobi) | C111 | Nada (+0,44 pb, t 0,29); con gotobi +3,70 (t 2,37) = efecto gotobi |
 | Momentum entre sesiones en oro y plata (Wei 2026) | C112 | La señal no aporta; plata no en futuros |
 | **Oro largo en la sesión asiática 18:00-03:00 NY** | C112 + C113 | **CANDIDATA AÑADIDA AL BOT (peso 0,2)**: contado 2010-26 t 5,39; GC +2,41 pb t 2,84; Dukascopy 2003-09 +5,34 t 4,12, 7/7; cartera 150K 2,32 → 2,40 |
+| Bitcoin 21-23 UTC recortado a 16:00-16:59 NY (invierno) para cuentas con cierre 16:59 | C114 | No (−1,9 pb): la ventaja está después del cierre del CME |
 | **Ruptura del rango asiático en HG, 6A, 6N, PL, PA** | C102 | **Cobre pasa** (+6,49 pb t 4,48; QuantConnect +4,91 t 3,44); paladio fuerte pero sin confirmar; divisas no |
 | Ruptura del rango europeo (mañana europea rota en la apertura de EE. UU.) en DAX, CAC, FTSE | C103 | No: +0,7 a +1,7 pb sin significación; FTSE negativo desde 2020 |
 | Barrido del máximo/mínimo de ayer con vela de confirmación (vídeo TikTok) | C104 | Nada: ~0 pb en oro y divisas, −3 pb en ES; acierto 13-18 % |
