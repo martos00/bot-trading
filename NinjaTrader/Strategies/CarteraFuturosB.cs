@@ -93,6 +93,8 @@ namespace NinjaTrader.NinjaScript.Strategies
         public bool OperarCobre { get; set; }
         [NinjaScriptProperty][Display(Name = "Operar Nikkei (NKD)", Order = 15, GroupName = "1. General")]
         public bool OperarNikkei { get; set; }
+        [NinjaScriptProperty][Display(Name = "Operar oro en la sesión asiática C113 (18:00 → 03:00, domingo a jueves)", Order = 16, GroupName = "1. General")]
+        public bool OperarOroAsia { get; set; }
         [NinjaScriptProperty][Range(1630, 1659)][Display(Name = "Modo B: salida de la plata del viernes (HHMM NY; firma con cierre 16:59 → 1657)", Order = 11, GroupName = "1. General")]
         public int SalidaPlataViernes { get; set; }
 
@@ -146,7 +148,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 TraceOrders = false;
                 Modo = ModoCarteraFuturos.B_completa;
                 RiesgoPct = 0.5; PesoDiarias = 0.2; ControlVolatilidad = true; CapitalUSD = 0; RedondeoMin = 0.5;
-                SoloSimulacion = true; PermitirHistorico = false; OperarBitcoin = true; OperarCestaE12 = true; SalidaPlataViernes = 1657; OperarPlata = true; OperarYen = true; OperarCobre = true; OperarNikkei = true;
+                SoloSimulacion = true; PermitirHistorico = false; OperarBitcoin = true; OperarCestaE12 = true; SalidaPlataViernes = 1657; OperarPlata = true; OperarYen = true; OperarCobre = true; OperarNikkei = true; OperarOroAsia = true;
                 PerdidaDiariaMaxPct = 3.0; StopSigmas = 4.0; TopeExposicion = 6.0; VolObjetivo = 0; ServicioAvisos = ""; MaxContratosTotales = 0; StopEnServidor = true;
                 InstOro = "MGC 12-26"; InstPlata = "SIL 12-26"; InstCobre = "MHG 12-26"; InstNikkei = "NKD 12-26"; InstYen = "MJY 12-26"; InstBitcoin = "MBT 11-26";
                 InstCesta = "MCL 12-26,HO 12-26,RB 12-26,QG 12-26,ZC 12-26,ZS 01-27,ZW 12-26,ZL 12-26,ZM 12-26,KE 12-26,LE 12-26,HE 12-26";
@@ -193,7 +195,7 @@ namespace NinjaTrader.NinjaScript.Strategies
         // ================= definición de las estrategias =================
         // Tipo de día: 1 viernes, 2 víspera de festivo NYSE, 3 D-2 (quedan 2 laborables en el mes), 4 Q0 (último laborable del trimestre),
         // 5 día antes de la víspera (1 noche), 6 Q+2 (2.º laborable de ene/abr/jul/oct), 8 Q-2 (penúltimo laborable de mar/jun/sep/dic),
-        // 9 bitcoin (todos los laborables, horas UTC).
+        // 9 bitcoin (todos los laborables, horas UTC), 10 domingo a jueves (oro en Asia, C113).
         private void Configurar()
         {
             bool b = Modo == ModoCarteraFuturos.B_completa;
@@ -218,6 +220,9 @@ namespace NinjaTrader.NinjaScript.Strategies
                                            Peso = 1.0 / Math.Max(1, BarsArray.Length - CESTA0), Activa = b && OperarCestaE12 });
             // bitcoin 21:00 → 23:00 UTC los laborables (C2; solo B); peso de estrategia diaria
             ventanas.Add(new Ventana { Nombre = "bitcoin_21_23_UTC", Mercado = BITCOIN, Tipo = 9, HIni = 2100, HFin = 2300, Lado = 1, Peso = PesoDiarias, Activa = b && OperarBitcoin });
+
+            // C113 oro largo en la sesión asiática: 18:00 → 03:00 del día siguiente (domingo → lunes ... jueves → viernes); peso de estrategia diaria
+            ventanas.Add(new Ventana { Nombre = "C113_oro_asia", Mercado = ORO, Tipo = 10, HIni = 1800, HFin = 300, Lado = 1, Noches = 1, Peso = PesoDiarias, Activa = OperarOroAsia });
 
             rupturas.Add(new Ruptura { Nombre = "C93_oro_dia_anterior", Mercado = ORO, Asiatica = false, Activa = true });
             rupturas.Add(new Ruptura { Nombre = "C99_oro_rango_asia", Mercado = ORO, Asiatica = true, Activa = true });
@@ -263,6 +268,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 case 5: return EsDiaAntesDeVispera(dNY);
                 case 6: return EsQmas2(dNY);
                 case 8: return Laborable(dNY) && dNY.Month % 3 == 0 && LaborablesRestantesMes(dNY) == 1;
+                case 10: return dNY.DayOfWeek != DayOfWeek.Friday && dNY.DayOfWeek != DayOfWeek.Saturday;   // domingo a jueves por la tarde
                 default: return false;
             }
         }

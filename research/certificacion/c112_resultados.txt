@@ -1,0 +1,18 @@
+
+ORO (coste 0.74 pb) — señal: Asia larga si el día anterior > 0
+  HistData: n 1669 media neta +4.66 pb (t 4.32) | 2010-17 +3.87 | 2018-26 +5.38 | desde 2023 +8.89 | años+ 16/17 | Sharpe anual 1.07
+  Futuros GC 1 h: n 1690 media neta +2.50 pb (t 2.38) | 2018-26 +2.22 | desde 2023 +4.08
+  Control todos los días: HistData +4.42 pb (t 5.39), 2018-26 +5.50 | futuros +2.41 (t 2.84)
+  Control día anterior < 0: HistData +4.20 pb (t 3.44) | futuros +2.39
+  Diferencia señal − días negativos (HistData): +0.46 pb
+  por año (suma pb): {2010: 363, 2011: 612, 2012: 398, 2013: 35, 2014: 424, 2015: 328, 2016: 206, 2017: 709, 2018: -453, 2019: 35, 2020: 345, 2021: 923, 2022: 663, 2023: 744, 2024: 864, 2025: 850, 2026: 734}
+  RESULTADO: PASA
+
+PLATA (coste 2.3 pb) — señal: Asia larga si el día anterior > 0
+  HistData: n 1620 media neta +6.78 pb (t 3.17) | 2010-17 +6.37 | 2018-26 +7.17 | desde 2023 +9.11 | años+ 15/17 | Sharpe anual 0.75
+  Futuros SI 1 h: n 1629 media neta -0.88 pb (t -0.41) | 2018-26 -1.49 | desde 2023 +0.05
+  Control todos los días: HistData +6.61 pb (t 4.25), 2018-26 +8.53 | futuros -1.39 (t -0.93)
+  Control día anterior < 0: HistData +6.38 pb (t 2.46) | futuros -2.36
+  Diferencia señal − días negativos (HistData): +0.40 pb
+  por año (suma pb): {2010: 1770, 2011: 1482, 2012: 546, 2013: -1187, 2014: 600, 2015: 151, 2016: 1118, 2017: 548, 2018: -17, 2019: 1042, 2020: 1155, 2021: 75, 2022: 573, 2023: 830, 2024: 417, 2025: 977, 2026: 909}
+  RESULTADO: NO PASA: falla futuros

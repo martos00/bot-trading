@@ -5,7 +5,7 @@ import numpy as np, pandas as pd
 
 ESPERADO = {'E8_oro_viernes': 0.128, 'plata_viernes': 0.099, 'E10_plata_vispera': 0.215, 'E9_yen_fin_mes': 0.159,
             'E11_yen_fin_trim': 0.208, 'E15_oro_Dmenos2': 0.108, 'E13_nikkei_Qmas2': 0.243, 'E16_nikkei_Qmenos2': 0.120,
-            'C102_cobre_rango_asia': 0.023, 'C93_oro_dia_anterior': 0.022, 'C99_oro_rango_asia': 0.015, 'C101_nikkei_rango_asia': 0.012}
+            'C102_cobre_rango_asia': 0.023, 'C93_oro_dia_anterior': 0.022, 'C99_oro_rango_asia': 0.015, 'C101_nikkei_rango_asia': 0.012, 'C113_oro_asia': 0.028}
 CALENDARIO = {'E10_plata_vispera', 'E9_yen_fin_mes', 'E11_yen_fin_trim', 'E15_oro_Dmenos2', 'E13_nikkei_Qmas2', 'E16_nikkei_Qmenos2'}
 COSTE_PB = {'MGC': 0.74, 'GC': 0.74, 'SIL': 2.3, 'SI': 2.3, 'MJY': 0.8, '6J': 0.8, 'NKD': 1.5, 'MHG': 2.0, 'HG': 2.0}
 

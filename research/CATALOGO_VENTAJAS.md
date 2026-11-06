@@ -79,6 +79,8 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | **Ruptura del rango asiático en otros futuros** (SI, CL, NKD, ES) | C101 | **NKD pasa** (+4,91 pb t 3,72; Databento +5,94 t 4,36); 2019-22 ≈ 0. SI, CL, ES no |
 | Configuración de la cartera de 150K: sin control de vol., paridad de riesgo, + cobre | C110 | Se queda la actual (2,38); + cobre 2,45 pero no mejora 2022-26: opcional |
 | USDJPY 08:00-09:55 JST antes de festivos de Japón (sin gotobi) | C111 | Nada (+0,44 pb, t 0,29); con gotobi +3,70 (t 2,37) = efecto gotobi |
+| Momentum entre sesiones en oro y plata (Wei 2026) | C112 | La señal no aporta; plata no en futuros |
+| **Oro largo en la sesión asiática 18:00-03:00 NY** | C112 + C113 | **CANDIDATA AÑADIDA AL BOT (peso 0,2)**: contado 2010-26 t 5,39; GC +2,41 pb t 2,84; Dukascopy 2003-09 +5,34 t 4,12, 7/7; cartera 150K 2,32 → 2,40 |
 | **Ruptura del rango asiático en HG, 6A, 6N, PL, PA** | C102 | **Cobre pasa** (+6,49 pb t 4,48; QuantConnect +4,91 t 3,44); paladio fuerte pero sin confirmar; divisas no |
 | Ruptura del rango europeo (mañana europea rota en la apertura de EE. UU.) en DAX, CAC, FTSE | C103 | No: +0,7 a +1,7 pb sin significación; FTSE negativo desde 2020 |
 | Barrido del máximo/mínimo de ayer con vela de confirmación (vídeo TikTok) | C104 | Nada: ~0 pb en oro y divisas, −3 pb en ES; acierto 13-18 % |

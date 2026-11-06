@@ -1,0 +1,13 @@
+ORO: Asia n 1369 media neta +5.34 pb (t 4.12) | años+ 7/7 {2003: 3.3, 2004: 1.7, 2005: 4.8, 2006: 6.0, 2007: 8.1, 2008: 2.6, 2009: 10.0}
+   por hora: Asia +0.676 pb/h | resto del día +0.255 pb/h (resto total +3.58 pb, t 0.98)
+   RESULTADO: PASA
+PLATA (informativo): Asia n 1301 media neta +22.93 pb (t 7.11) | años+ 7/7 {2003: 36.0, 2004: 41.4, 2005: 45.7, 2006: 15.8, 2007: 7.7, 2008: 9.2, 2009: 16.2}
+   por hora: Asia +2.630 pb/h | resto del día -0.919 pb/h (resto total -12.86 pb, t -1.93)
+
+Cartera 150K (futuros GC, 2018-26):
+sigma media por operación 49.4 pb → R esperado al 60 %: +0.028
+oro Asia futuros 2018-26: media neta +2.33 pb, correlación con la cartera actual -0.02, con C99 +0.03
+peso 0.0: Sharpe 2.32 | 2018-21 2.01 | 2022-26 2.56 | caída -17.3 desv.
+peso 0.2: Sharpe 2.40 | 2018-21 2.03 | 2022-26 2.68 | caída -17.0 desv.
+peso 0.5: Sharpe 2.33 | 2018-21 1.96 | 2022-26 2.62 | caída -14.7 desv.
+peso 1.0: Sharpe 2.07 | 2018-21 1.69 | 2022-26 2.37 | caída -12.9 desv.

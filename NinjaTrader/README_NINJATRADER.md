@@ -16,6 +16,7 @@ bitcoin, y saca el oro del viernes y la plata de víspera a las 16:45.
 | C99_oro_rango_asia | MGC | rompe el rango 19:00-03:00 entre 03:00 y 11:00; stop al otro lado, objetivo 1 rango; sale 16:45 | A y B |
 | C102_cobre_rango_asia | MHG | igual que C99 | A y B |
 | C101_nikkei_rango_asia | NKD | igual que C99 | A y B |
+| C113_oro_asia | MGC | domingo a jueves, largo 18:00 → 03:00 del día siguiente (peso de diaria 0,2; ~1 MGC en 150K) | A y B |
 | E13_nikkei_Qmas2 / E16_nikkei_Qmenos2 | NKD | 2.º laborable del trimestre largo 15-16; penúltimo del trimestre corto 20-21 | A y B |
 | E9_yen_fin_mes / E11_yen_fin_trim | MJY | antepenúltimo laborable del mes corto 07-08; último del trimestre largo 00:30-02:00 | A y B |
 | E10_plata_vispera | SIL | víspera de festivo NYSE, largo 16:00 → 16:55 (A: 16:45) | A y B |
