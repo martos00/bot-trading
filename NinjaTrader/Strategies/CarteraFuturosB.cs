@@ -381,6 +381,38 @@ namespace NinjaTrader.NinjaScript.Strategies
             }
             catch (Exception e) { Print("CarteraFuturosB: no se pudo escribir el registro: " + e.Message); }
             Print(string.Format("{0:yyyy-MM-dd HH:mm} NY | {1} | {2} | {3} | {4}", ny, estr, i > 0 ? nombres[i] : "", evento, q));
+            // aviso en la ventana Alerts de NinjaTrader (con sonido) para lo que hay que mirar en el momento
+            if (State == State.Realtime && (evento.StartsWith("aviso_") || evento.StartsWith("stop_del_servidor") || evento.StartsWith("parada_")
+                || evento.StartsWith("sin_datos") || evento.StartsWith("sin_precio_reciente") || evento.Contains("rechazad")))
+            {
+                try
+                {
+                    Alert("cartera_" + evento + "_" + i, NinjaTrader.NinjaScript.Priority.High, "CarteraFuturosB: " + estr + " " + (i > 0 ? nombres[i] : "") + " " + evento,
+                          Path.Combine(NinjaTrader.Core.Globals.InstallDir, "sounds", "Alert1.wav"), 60,
+                          System.Windows.Media.Brushes.Red, System.Windows.Media.Brushes.White);
+                }
+                catch { }
+            }
+        }
+
+        // una vez por sesión: avisa si a un contrato le queda poco para vencer (metales: 35 días, por el primer aviso de entrega; resto: 10)
+        private void AvisoVencimientos(DateTime ny)
+        {
+            if (State != State.Realtime) return;
+            for (int i = 1; i < BarsArray.Length; i++)
+            {
+                try
+                {
+                    DateTime exp = Instruments[i].Expiry;
+                    if (exp == DateTime.MinValue || exp.Year < 2000) continue;
+                    string raiz = Instruments[i].MasterInstrument.Name;
+                    bool metal = raiz == "MGC" || raiz == "GC" || raiz == "SIL" || raiz == "SI" || raiz == "MHG" || raiz == "HG";
+                    int dias = (int)(exp.Date - ny.Date).TotalDays;
+                    if (dias <= (metal ? 35 : 10))
+                        Registrar(ny, "cartera", i, "aviso_vencimiento_en_" + dias + "_dias_cambiar_al_siguiente_contrato", 0, 0, 0, 0);
+                }
+                catch { }
+            }
         }
 
         // ================= bucle principal =================
@@ -435,6 +467,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 }
                 pnlInicioDia = p; ultimoCierreDiario = sesion; paradoHoy = false;
                 ActualizarEscalaVol();
+                AvisoVencimientos(ny);
             }
             if (ny.Date != diaActualNY) diaActualNY = ny.Date;
         }
