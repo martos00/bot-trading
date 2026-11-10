@@ -55,3 +55,8 @@ Configuración del bot en Tradeify: InstPlata = SI, InstYen = 6J, InstNikkei = N
 - Cuota 150K: 34,70 $ el 1.er mes, 69,40 $ el 2.º y 104,10 $ desde el 3.º (BULLTOBER).
 - Cobros lunes y miércoles, hasta el 100 % del beneficio elegible; límites por ciclo en las tablas de cada plan.
 - DTF 100K: solo se retira el beneficio por encima de 105.100 $; 95.000 $ es el umbral de suspenso.
+
+## FuturesElite (revisado 10-nov-2026): NO SIRVE
+Su página oficial de prácticas permitidas pone en «Not allowed»: "Fully automated trading with AI or bots, and high-frequency trading."
+(faq.futureselite.com, artículo 17584626). También prohíbe "buying many accounts and gambling until one hits" y exige avisar antes a
+soporte si se usa VPN/VPS. Reseñas mixtas (quejas de cobros denegados por temas de IP/VPS).
