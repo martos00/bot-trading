@@ -1,0 +1,6 @@
+regla mejor día 20 % | REAL AL 60 % | riesgo 0,40 % | neto 24 m     2,852 $ (~   119 $/mes) | cobros 0.7 | meses entre cobros 9.6
+regla mejor día 20 % | BACKTEST     | riesgo 0,40 % | neto 24 m    10,367 $ (~   432 $/mes) | cobros 1.7 | meses entre cobros 7.9
+regla mejor día 30 % | REAL AL 60 % | riesgo 0,40 % | neto 24 m     9,299 $ (~   387 $/mes) | cobros 1.5 | meses entre cobros 6.3
+regla mejor día 30 % | BACKTEST     | riesgo 0,40 % | neto 24 m    32,521 $ (~ 1,355 $/mes) | cobros 3.5 | meses entre cobros 4.8
+regla mejor día sin regla | REAL AL 60 % | riesgo 0,40 % | neto 24 m    92,538 $ (~ 3,856 $/mes) | cobros 7.1 | meses entre cobros 2.0
+regla mejor día sin regla | BACKTEST     | riesgo 0,40 % | neto 24 m   208,966 $ (~ 8,707 $/mes) | cobros 14.3 | meses entre cobros 1.3
