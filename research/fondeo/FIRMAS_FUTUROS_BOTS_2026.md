@@ -118,3 +118,9 @@ Conclusión: ninguna firma permite cobrar sin límite de muchas cuentas simulada
 | Blue Guardian | Sí | no encontrado | mínimo 2 min por operación |
 | Maven | NO | — | prohíbe EA |
 Capital inicial sumando FTMO, FundedNext, FXIFY, E8, Alpha y FundingPips: ~2,4 M$ (sin contar escalados ni The5ers).
+
+## Upcomers y 4PropTrader (10-nov-2026; terceros, sin verificar)
+- Upcomers: CFD (TradeLocker, cuentas de hasta 1 M$) y futuros simulados. Bots: fuentes OPUESTAS (thetrustedprop: EA propios permitidos si
+  son únicos; thegodfunded: prohibidos). Tope total 1,5 M$ por persona entre todos sus programas (una reseña de 2025 decía 2,5 M$).
+  ¿MT5? No confirmado (aparece en TradeLocker).
+- 4PropTrader: «empresa de consultoría» registrada en zona franca de EAU; hasta 250.000 $; Traders Union 4,39/10 con muchas quejas. No recomendable.
