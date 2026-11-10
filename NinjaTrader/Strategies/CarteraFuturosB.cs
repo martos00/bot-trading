@@ -652,7 +652,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                     bool largo = p.Contratos > 0;
                     if (largo ? lo <= p.Stop : hi >= p.Stop) motivo = "cierre_stop";
                     else if (!double.IsNaN(p.Objetivo) && (largo ? hi >= p.Objetivo : lo <= p.Objetivo)) motivo = "cierre_objetivo";
-                    else if (IsFirstTickOfBar && !SesionCubre(i, Times[i][0], p.SalidaNY.AddMinutes(5))) motivo = "cierre_antes_de_cierre_de_sesion";
+                    else if (IsFirstTickOfBar && !SesionCubre(i, Times[i][0], p.SalidaNY)) motivo = "cierre_antes_de_cierre_de_sesion";   // sin margen: la plata del viernes sale a las 16:57 y el CME cierra a las 17:00
                 }
                 if (motivo == null) continue;
                 double px = Closes[i][0];
