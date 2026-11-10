@@ -104,3 +104,17 @@ Conclusión: ninguna firma permite cobrar sin límite de muchas cuentas simulada
 - BluSky: liquidación 15 min antes del cierre → modo A (o justo); bots apoyados según una fuente; tope solo en el primer cobro; nº de cuentas no encontrado.
 - Goat Funded Futures: bots (fuentes contradictorias); según una fuente permite mantener el fin de semana; cada cobro hasta el 50 % del
   beneficio; 5 cuentas.
+
+## Firmas de CFD que aceptan EA (búsqueda 10-nov-2026; blogs de terceros, SIN VERIFICAR)
+| Firma | EA | Capital máx. por persona | Notas |
+|---|---|---|---|
+| FTMO | Sí | 400.000 $ por estrategia (600K Prime / 1M Supreme) | sin aprobación previa |
+| FundedNext | Sí (MT4/MT5, posible coste extra) | 300.000 $ por estrategia | lista de EA comerciales prohibidos |
+| The5ers | Sí, código propio | Hyper Growth hasta 4 M$ escalando; High Stakes 500K | |
+| FXIFY | Sí según una fuente (otras: aprobación / no en algunos planes) | 400.000 $ (escalado 4 M$ según una tabla) | |
+| E8 Markets | Sí, incluso de terceros, si nadie más usa la misma | 500.000 $ (escalado 1 M$) | restringido en E8 Signature |
+| Alpha Capital Group | Sí en MT5 con aprobación | 400.000 $ combinado | |
+| FundingPips | Solo EA propio demostrable (fuentes contradictorias) | 400.000 $ (Prime hasta 2 M$) | política mal explicada |
+| Blue Guardian | Sí | no encontrado | mínimo 2 min por operación |
+| Maven | NO | — | prohíbe EA |
+Capital inicial sumando FTMO, FundedNext, FXIFY, E8, Alpha y FundingPips: ~2,4 M$ (sin contar escalados ni The5ers).
