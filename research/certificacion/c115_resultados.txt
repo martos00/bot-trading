@@ -1,0 +1,15 @@
+
+ORO — contado HistData 2010-2026 (bruto, pb por viernes)
+  viernes alcistas n 418 media +1.84 | bajistas n 338 media +4.01 | diferencia t -2.73
+  2010-17: Sharpe sin filtro 2.07 | con filtro 1.13 | media alcistas +2.29 / bajistas +3.71
+  2018-26: Sharpe sin filtro 1.65 | con filtro 0.67 | media alcistas +1.48 / bajistas +4.35
+  Futuros 2018-26 (neto): Sharpe sin filtro 1.54 | con filtro 0.78 | media alcistas +7.16 / bajistas +15.52 (en unidades de la cartera ×1e4)
+
+PLATA — contado HistData 2010-2026 (bruto, pb por viernes)
+  viernes alcistas n 377 media -2.48 | bajistas n 371 media -1.15 | diferencia t -1.05
+  2010-17: Sharpe sin filtro 1.67 | con filtro 1.17 | media alcistas +3.34 / bajistas +2.92
+  2018-26: Sharpe sin filtro -2.40 | con filtro -1.80 | media alcistas -7.05 / bajistas -5.56
+  Futuros 2018-26 (neto): Sharpe sin filtro 1.19 | con filtro 0.60 | media alcistas +5.42 / bajistas +11.62 (en unidades de la cartera ×1e4)
+
+Cartera 150K: Sharpe actual 2.32 (2018-21 2.01, 2022-26 2.56) | con filtro 1.87 (2018-21 1.78, 2022-26 1.94)
+RESULTADO: NO SE ADOPTA (el bot sigue comprando todos los viernes)
