@@ -1,0 +1,4 @@
+BACKTEST: llega a 10.000 $/mes cobrados (media de 3 meses) en 4 años 99 % | mes mediano 13 (25 % más rápido: 9; 25 % más lento: 20)
+   cobro medio por año (antes de impuestos): ['79,027 $', '219,046 $', '262,259 $', '277,542 $']
+REAL AL 60 %: llega a 10.000 $/mes cobrados (media de 3 meses) en 4 años 77 % | mes mediano 22 (25 % más rápido: 14; 25 % más lento: 32)
+   cobro medio por año (antes de impuestos): ['25,182 $', '68,016 $', '104,384 $', '120,798 $']
