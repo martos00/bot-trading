@@ -94,3 +94,13 @@ Conclusión: ninguna firma permite cobrar sin límite de muchas cuentas simulada
 - Cada cuenta fondeada se cierra tras 6 cobros (150K: 2.500-5.000 $ por cobro, ~20.500 $ en total por cuenta); hasta 20 cuentas (sin verificar).
 - Para cada cobro: 5 días con ≥ 350 $ netos (150K) y ningún día con ≥ 50 % del beneficio desde el último cobro → choca con una estrategia
   que gana sobre todo los viernes. Copiar entre cuentas propias: no aclarado.
+
+## Otras firmas «como Apex» (búsqueda 10-nov-2026; fuentes de terceros contradictorias, SIN VERIFICAR)
+- Ninguna otra permite 10+ cuentas fondeadas a la vez: casi todas 5 (Tradeify, Lucid, TPT, TradeDay, Bulenox, Topstep, Goat).
+- Bulenox: 5 cuentas en total entre productos; los 3 primeros cobros con tope y luego sin tope, pero tras 3 cobros pasa a cuenta
+  «Funded» (si no aceptas, se cierra); consistencia 40 %; cobros semanales.
+- TradeDay (2.0, mayo 2026): liquidación automática 15:50 CT = 16:50 NY → modo A; Quick Pay sin tope según una fuente; paso a real
+  tras el 3.er cobro o 20.000 $ (a su criterio); 1 o 5 cuentas reales según la fuente.
+- BluSky: liquidación 15 min antes del cierre → modo A (o justo); bots apoyados según una fuente; tope solo en el primer cobro; nº de cuentas no encontrado.
+- Goat Funded Futures: bots (fuentes contradictorias); según una fuente permite mantener el fin de semana; cada cobro hasta el 50 % del
+  beneficio; 5 cuentas.
