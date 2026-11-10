@@ -132,3 +132,8 @@ Capital inicial sumando FTMO, FundedNext, FXIFY, E8, Alpha y FundingPips: ~2,4 M
   thetrustedprop: EA propios permitidos si son únicos; prohíbe HFT, operaciones < 2 min, rejilla, martingala, cobertura; plataformas MT5,
   cTrader, TradeLocker...; reglas de cobro: mayor día ≤ 20 % del beneficio, pérdida máx. por operación ≤ 3 %; topes de cobro que suben
   (100K: 1k → 7,5k y sin tope desde el 8.º); capital máx. 1,5 M$ de inicio, 4 M$ con escalado. Falta leer su artículo oficial de EA.
+- Upcomers FUTUROS (centro de ayuda, 10-nov-2026): programas Thunderbolt Classic (mejor día 35 %), Vanguard (20 %) y Horizon (sin
+  consistencia), hasta 400K. Cierre automático 16:50 NY todos los días (sin noche ni fin de semana) → modo A. Plataforma propia
+  «Upcomers X» (NO NinjaTrader): el bot no funciona allí tal cual. Productos: MGC, SI/SIL, 6J, MHG sí; NKD NO. Bots permitidos.
+  Fondeada Horizon: 4 % arrastrada fin de día, diaria 2 %, máx. por operación 1,5 %; cobro con 3 % de beneficio y 5 días de 0,5 %;
+  topes por cobro 150K-400K: 1.750 $ (1.º-3.º) y 3.000 $ después, NUNCA sin tope. Mucho peor que su CFD.
