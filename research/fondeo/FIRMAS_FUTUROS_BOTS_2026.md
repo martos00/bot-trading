@@ -60,3 +60,15 @@ Configuración del bot en Tradeify: InstPlata = SI, InstYen = 6J, InstNikkei = N
 Su página oficial de prácticas permitidas pone en «Not allowed»: "Fully automated trading with AI or bots, and high-frequency trading."
 (faq.futureselite.com, artículo 17584626). También prohíbe "buying many accounts and gambling until one hits" y exige avisar antes a
 soporte si se usa VPN/VPS. Reseñas mixtas (quejas de cobros denegados por temas de IP/VPS).
+
+## Elite Trader Funding — reputación y tope de cobros (revisado 10-nov-2026) — CAMBIA LOS CÁLCULOS
+- Página de pagos de la firma (elitetraderfunding.app/payouts, «© 2026 Elite Trader Funding, LLC»): "Sim payout cap $25,000 per trader";
+  "You keep requesting cycle after cycle until your cumulative payouts reach $25,000 per trader." Después pasa a LIVE ELITE (capital real,
+  80/20, sin tope). Por ciclo: mínimo 100 $ y un máximo que crece con el tamaño y los ciclos; días activos 8 (1.er ciclo) y 10 (siguientes).
+- Reseñas de terceros (sin verificar): ETF puede pasar a LIVE ELITE en cualquier momento (tras 1 cobro, 5 días activos o 1.000 $); al
+  pasar se desactivan TODAS las cuentas sim y la cuenta real parte del saldo de la mejor. Trustpilot ~3,8/5 (~1.150 reseñas); quejas
+  repetidas: 2.º cobro denegado y paso forzoso a cuenta real el día del cobro.
+- CONSECUENCIA: las simulaciones de 20 cuentas ETF (plan_reinversion_etf.py, flota_20_etf*.py: ~460.000 $ en 2 años al 60 %) NO son
+  realistas: el total cobrable en sim está limitado a 25.000 $ por persona; luego se depende de una cuenta real. Hay que confirmarlo por escrito.
+- Tradeify: Trustpilot ~4,5/5 (~2.800 reseñas; quejas sobre todo del alta KYC con Rise). Tiene un «Tradeify Elite Program» (página no
+  accesible): sus condiciones de paso a real y topes están SIN COMPROBAR.
