@@ -80,3 +80,17 @@ soporte si se usa VPN/VPS. Reseñas mixtas (quejas de cobros denegados por temas
   Ya descartada por la hora de cierre (16:10 NY), que impide oro/plata del viernes.
 - Apex y Phidias: la cuenta se cierra tras el 6.º cobro. TradeDay: pasa a real en el 5.º cobro. FTMO Futures: tope de 5.000 $.
 Conclusión: ninguna firma permite cobrar sin límite de muchas cuentas simuladas; el modelo «20 cuentas para siempre» no existe.
+
+## Firmas SIN bots pero operables A MANO (revisado 10-nov-2026; fuentes de terceros: crosstrade.io, proea.app)
+### Take Profit Trader (TPT) — la más interesante
+- Bots prohibidos en todas las cuentas: "all trades must be manually executed by the trader".
+- Cierre automático 16:55 NY → sirve el MODO A (salida 16:45); la plata del viernes (16:57) no.
+- PRO: reparto 80/20, cobros diarios desde el día 1, SIN tope por cobro ni de por vida (según las dos fuentes), sin regla de consistencia;
+  hay que estar por encima del colchón (150K: saldo > 154.500 $). Hasta 5 cuentas PRO/PRO+ por persona.
+- Copiador permitido solo entre cuentas propias y de su lista aprobada.
+- PRO+ (cuenta real) por invitación: empieza en 0 $, congela 5.000 $ de la PRO, reparto 90/10, cobros diarios sin límite.
+### Apex
+- Bots prohibidos ("No Automation or Algorithm Usage allowed"). Cierre 16:59:59 → cartera B completa a mano.
+- Cada cuenta fondeada se cierra tras 6 cobros (150K: 2.500-5.000 $ por cobro, ~20.500 $ en total por cuenta); hasta 20 cuentas (sin verificar).
+- Para cada cobro: 5 días con ≥ 350 $ netos (150K) y ningún día con ≥ 50 % del beneficio desde el último cobro → choca con una estrategia
+  que gana sobre todo los viernes. Copiar entre cuentas propias: no aclarado.
