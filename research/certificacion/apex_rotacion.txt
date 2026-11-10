@@ -1,0 +1,12 @@
+
+######## BACKTEST
+Evaluación: aprueba 71 % | dura de media 1.9 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 66 % | se pierde antes 34 % | vida media 11.1 meses (mediana 11.2) | cobros medios 4.1 | cobrado medio 13,702 $ (100 % tuyo)
+  meses entre cobros (media) 2.7
+Para mantener ~18 fondeadas: se cierran/pierden ~1.6 al mes → comprar ~2.3 evaluaciones al mes (≈ una cada 13 días), con ~4 evaluaciones en curso a la vez | cobro medio de la flota ~22,207 $/mes
+
+######## REAL AL 60 %
+Evaluación: aprueba 54 % | dura de media 1.9 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 43 % | se pierde antes 57 % | vida media 13.3 meses (mediana 6.5) | cobros medios 2.9 | cobrado medio 9,415 $ (100 % tuyo)
+  meses entre cobros (media) 4.7
+Para mantener ~18 fondeadas: se cierran/pierden ~1.4 al mes → comprar ~2.5 evaluaciones al mes (≈ una cada 12 días), con ~5 evaluaciones en curso a la vez | cobro medio de la flota ~12,765 $/mes
