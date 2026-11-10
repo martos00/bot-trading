@@ -1,0 +1,24 @@
+Horizon 1 fase (9 %)         REAL AL 60 % riesgo 0.40 % con topes | neto 24 m    29,108 $ (~ 1,213 $/mes; mediana    14,948; 10 % peor   -1,600) | pierde  29 % | cobros 3.0
+Horizon 1 fase (9 %)         REAL AL 60 % riesgo 0.40 % sin topes | neto 24 m    69,345 $ (~ 2,889 $/mes; mediana    54,188; 10 % peor   -1,600) | pierde  49 % | cobros 2.9
+Horizon 1 fase (9 %)         REAL AL 60 % riesgo 0.50 % con topes | neto 24 m    56,531 $ (~ 2,355 $/mes; mediana    26,891; 10 % peor   -1,600) | pierde  38 % | cobros 4.0
+Horizon 1 fase (9 %)         REAL AL 60 % riesgo 0.50 % sin topes | neto 24 m   101,474 $ (~ 4,228 $/mes; mediana    84,443; 10 % peor   -1,126) | pierde  73 % | cobros 3.8
+Horizon 1 fase (9 %)         REAL AL 60 % riesgo 0.65 % con topes | neto 24 m    97,555 $ (~ 4,065 $/mes; mediana    41,509; 10 % peor      854) | pierde  62 % | cobros 5.2
+Horizon 1 fase (9 %)         REAL AL 60 % riesgo 0.65 % sin topes | neto 24 m   142,230 $ (~ 5,926 $/mes; mediana   124,937; 10 % peor   11,385) | pierde  91 % | cobros 4.7
+Horizon 1 fase (9 %)         BACKTEST     riesgo 0.40 % con topes | neto 24 m    93,493 $ (~ 3,896 $/mes; mediana    43,955; 10 % peor    8,111) | pierde  22 % | cobros 5.6
+Horizon 1 fase (9 %)         BACKTEST     riesgo 0.40 % sin topes | neto 24 m   148,323 $ (~ 6,180 $/mes; mediana   141,591; 10 % peor   33,057) | pierde  42 % | cobros 5.4
+Horizon 1 fase (9 %)         BACKTEST     riesgo 0.50 % con topes | neto 24 m   168,235 $ (~ 7,010 $/mes; mediana    86,820; 10 % peor   15,892) | pierde  31 % | cobros 7.2
+Horizon 1 fase (9 %)         BACKTEST     riesgo 0.50 % sin topes | neto 24 m   203,691 $ (~ 8,487 $/mes; mediana   192,799; 10 % peor   64,206) | pierde  61 % | cobros 6.7
+Horizon 1 fase (9 %)         BACKTEST     riesgo 0.65 % con topes | neto 24 m   232,910 $ (~ 9,705 $/mes; mediana   268,773; 10 % peor   24,803) | pierde  61 % | cobros 8.6
+Horizon 1 fase (9 %)         BACKTEST     riesgo 0.65 % sin topes | neto 24 m   275,921 $ (~11,497 $/mes; mediana   265,179; 10 % peor   96,181) | pierde  85 % | cobros 8.1
+Odyssey 2 fases (6 % + 6 %)  REAL AL 60 % riesgo 0.40 % con topes | neto 24 m    20,487 $ (~   854 $/mes; mediana     8,111; 10 % peor   -1,600) | pierde  14 % | cobros 2.3
+Odyssey 2 fases (6 % + 6 %)  REAL AL 60 % riesgo 0.40 % sin topes | neto 24 m    47,441 $ (~ 1,977 $/mes; mediana    28,350; 10 % peor   -1,600) | pierde  33 % | cobros 2.0
+Odyssey 2 fases (6 % + 6 %)  REAL AL 60 % riesgo 0.50 % con topes | neto 24 m    38,236 $ (~ 1,593 $/mes; mediana    15,720; 10 % peor   -2,400) | pierde  24 % | cobros 3.1
+Odyssey 2 fases (6 % + 6 %)  REAL AL 60 % riesgo 0.50 % sin topes | neto 24 m    74,337 $ (~ 3,097 $/mes; mediana    51,560; 10 % peor   -2,400) | pierde  58 % | cobros 2.8
+Odyssey 2 fases (6 % + 6 %)  REAL AL 60 % riesgo 0.65 % con topes | neto 24 m    73,360 $ (~ 3,057 $/mes; mediana    25,973; 10 % peor   -3,200) | pierde  48 % | cobros 4.2
+Odyssey 2 fases (6 % + 6 %)  REAL AL 60 % riesgo 0.65 % sin topes | neto 24 m   107,757 $ (~ 4,490 $/mes; mediana    83,368; 10 % peor   -2,400) | pierde  83 % | cobros 3.6
+Odyssey 2 fases (6 % + 6 %)  BACKTEST     riesgo 0.40 % con topes | neto 24 m    73,338 $ (~ 3,056 $/mes; mediana    43,955; 10 % peor    3,080) | pierde   6 % | cobros 4.9
+Odyssey 2 fases (6 % + 6 %)  BACKTEST     riesgo 0.40 % sin topes | neto 24 m   129,703 $ (~ 5,404 $/mes; mediana   123,319; 10 % peor   25,145) | pierde  27 % | cobros 4.7
+Odyssey 2 fases (6 % + 6 %)  BACKTEST     riesgo 0.50 % con topes | neto 24 m   140,715 $ (~ 5,863 $/mes; mediana    63,437; 10 % peor    8,911) | pierde  17 % | cobros 6.4
+Odyssey 2 fases (6 % + 6 %)  BACKTEST     riesgo 0.50 % sin topes | neto 24 m   176,188 $ (~ 7,341 $/mes; mediana   164,137; 10 % peor   36,815) | pierde  53 % | cobros 5.8
+Odyssey 2 fases (6 % + 6 %)  BACKTEST     riesgo 0.65 % con topes | neto 24 m   223,556 $ (~ 9,315 $/mes; mediana   260,236; 10 % peor   15,892) | pierde  48 % | cobros 7.9
+Odyssey 2 fases (6 % + 6 %)  BACKTEST     riesgo 0.65 % sin topes | neto 24 m   232,102 $ (~ 9,671 $/mes; mediana   219,516; 10 % peor   59,962) | pierde  80 % | cobros 6.9
