@@ -124,3 +124,5 @@ Capital inicial sumando FTMO, FundedNext, FXIFY, E8, Alpha y FundingPips: ~2,4 M
   son únicos; thegodfunded: prohibidos). Tope total 1,5 M$ por persona entre todos sus programas (una reseña de 2025 decía 2,5 M$).
   ¿MT5? No confirmado (aparece en TradeLocker).
 - 4PropTrader: «empresa de consultoría» registrada en zona franca de EAU; hasta 250.000 $; Traders Union 4,39/10 con muchas quejas. No recomendable.
+- Atmos Funded: EA permitidos en general (con restricciones); MT5 según una fuente; tope 200.000-400.000 $ (fuentes contradictorias);
+  80-90 %; cobros cada 14 días; noticias ±2 min; consistencia 45 % en la fondeada (choca con la concentración en viernes); reputación mixta.
