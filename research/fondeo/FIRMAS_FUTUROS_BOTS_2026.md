@@ -72,3 +72,11 @@ soporte si se usa VPN/VPS. Reseñas mixtas (quejas de cobros denegados por temas
   realistas: el total cobrable en sim está limitado a 25.000 $ por persona; luego se depende de una cuenta real. Hay que confirmarlo por escrito.
 - Tradeify: Trustpilot ~4,5/5 (~2.800 reseñas; quejas sobre todo del alta KYC con Rise). Tiene un «Tradeify Elite Program» (página no
   accesible): sus condiciones de paso a real y topes están SIN COMPROBAR.
+
+## Topes y paso a cuenta real en otras firmas (búsqueda 10-nov-2026; fuentes de terceros, SIN VERIFICAR en las webs oficiales)
+- Tradeify: «Elite Live» tras 10 cobros (elegible, no automático); el paso es obligatorio y cierra las cuentas sim; la cuenta real empieza
+  en 0 $ (sin colchón), reparto 80 %; hasta 5 cuentas Elite.
+- My Funded Futures: bots permitidos (según una fuente); tope sim 100.000 $ por persona; Rapid pasa a real con 10.000 $ en un día.
+  Ya descartada por la hora de cierre (16:10 NY), que impide oro/plata del viernes.
+- Apex y Phidias: la cuenta se cierra tras el 6.º cobro. TradeDay: pasa a real en el 5.º cobro. FTMO Futures: tope de 5.000 $.
+Conclusión: ninguna firma permite cobrar sin límite de muchas cuentas simuladas; el modelo «20 cuentas para siempre» no existe.
