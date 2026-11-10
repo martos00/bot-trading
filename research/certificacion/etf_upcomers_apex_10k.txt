@@ -1,0 +1,4 @@
+sin las extra   | REAL AL 60 % | 10.000 $ cobrados: mes 18 (rápido 12, lento 25; llega en 4 años 74 %) | 10.000 $ limpios: mes 18 (72 %) | cobrado por año: 36,229, 126,176, 212,829, 230,697
+sin las extra   | BACKTEST     | 10.000 $ cobrados: mes 13 (rápido 9, lento 17; llega en 4 años 96 %) | 10.000 $ limpios: mes 13 (95 %) | cobrado por año: 86,039, 383,720, 547,944, 496,951
+con las 2 extra | REAL AL 60 % | 10.000 $ cobrados: mes 18 (rápido 12, lento 26; llega en 4 años 71 %) | 10.000 $ limpios: mes 19 (70 %) | cobrado por año: 32,271, 116,370, 259,863, 291,076
+con las 2 extra | BACKTEST     | 10.000 $ cobrados: mes 12 (rápido 9, lento 17; llega en 4 años 97 %) | 10.000 $ limpios: mes 13 (97 %) | cobrado por año: 92,847, 487,273, 861,056, 733,696
