@@ -126,3 +126,9 @@ Capital inicial sumando FTMO, FundedNext, FXIFY, E8, Alpha y FundingPips: ~2,4 M
 - 4PropTrader: «empresa de consultoría» registrada en zona franca de EAU; hasta 250.000 $; Traders Union 4,39/10 con muchas quejas. No recomendable.
 - Atmos Funded: EA permitidos en general (con restricciones); MT5 según una fuente; tope 200.000-400.000 $ (fuentes contradictorias);
   80-90 %; cobros cada 14 días; noticias ±2 min; consistencia 45 % en la fondeada (choca con la concentración en viernes); reputación mixta.
+- Upcomers (ampliado 10-nov-2026): ficha oficial en TradeLocker Hub — 1M «Thunderbolt» 1 fase 799 $ (90 % dto.; precio 7.990 $),
+  objetivo 5 %, diaria 3 %, total 6 % (arrastrada según thetrustedprop), 100 % de reparto, cobros a demanda, examen devuelto con el
+  3.er cobro; «Trading bots: Yes»; copiar entre cuentas propias permitido. 1M «Phoenix» 2 fases 679 $: 3 % + 3 %, diaria 4 %, 6 % arrastrada.
+  thetrustedprop: EA propios permitidos si son únicos; prohíbe HFT, operaciones < 2 min, rejilla, martingala, cobertura; plataformas MT5,
+  cTrader, TradeLocker...; reglas de cobro: mayor día ≤ 20 % del beneficio, pérdida máx. por operación ≤ 3 %; topes de cobro que suben
+  (100K: 1k → 7,5k y sin tope desde el 8.º); capital máx. 1,5 M$ de inicio, 4 M$ con escalado. Falta leer su artículo oficial de EA.
