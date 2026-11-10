@@ -1,0 +1,20 @@
+
+=== reinvirtiendo el 100 % de cada cobro ===
+BACKTEST: tope de ETF (25.000 $) en el mes 9 (mediana; lo alcanza 100 %)
+   10.000 $/mes COBRADOS: mes mediano 11 (25 % rápido 8, 25 % lento 16; llega en 4 años 100 %)
+   ~10.000 $/mes LIMPIOS (14.300 cobrados): mes mediano 11 (llega en 4 años 100 %)
+   cobro medio por año: ['108,529 $', '256,128 $', '275,275 $', '280,740 $']
+REAL AL 60 %: tope de ETF (25.000 $) en el mes 15 (mediana; lo alcanza 98 %)
+   10.000 $/mes COBRADOS: mes mediano 17 (25 % rápido 12, 25 % lento 26; llega en 4 años 91 %)
+   ~10.000 $/mes LIMPIOS (14.300 cobrados): mes mediano 18 (llega en 4 años 90 %)
+   cobro medio por año: ['39,700 $', '111,550 $', '135,430 $', '145,285 $']
+
+=== reinvirtiendo el 70 % de cada cobro ===
+BACKTEST: tope de ETF (25.000 $) en el mes 9 (mediana; lo alcanza 100 %)
+   10.000 $/mes COBRADOS: mes mediano 11 (25 % rápido 8, 25 % lento 16; llega en 4 años 100 %)
+   ~10.000 $/mes LIMPIOS (14.300 cobrados): mes mediano 12 (llega en 4 años 100 %)
+   cobro medio por año: ['101,353 $', '256,241 $', '271,651 $', '274,885 $']
+REAL AL 60 %: tope de ETF (25.000 $) en el mes 14 (mediana; lo alcanza 98 %)
+   10.000 $/mes COBRADOS: mes mediano 17 (25 % rápido 11, 25 % lento 27; llega en 4 años 85 %)
+   ~10.000 $/mes LIMPIOS (14.300 cobrados): mes mediano 18 (llega en 4 años 83 %)
+   cobro medio por año: ['41,082 $', '105,767 $', '127,951 $', '128,171 $']
