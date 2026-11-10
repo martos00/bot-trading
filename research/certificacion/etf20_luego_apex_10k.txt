@@ -1,0 +1,8 @@
+BACKTEST: tope de ETF (25.000 $) en el mes 9 (mediana; lo alcanza 100 %)
+   10.000 $/mes COBRADOS: mes mediano 16 (25 % rápido 12, 25 % lento 24; llega en 4 años 96 %)
+   ~10.000 $/mes LIMPIOS (14.300 cobrados): mes mediano 16 (llega en 4 años 96 %)
+   cobro medio por año: ['50,385 $', '192,262 $', '243,227 $', '266,696 $']
+REAL AL 60 %: tope de ETF (25.000 $) en el mes 13 (mediana; lo alcanza 99 %)
+   10.000 $/mes COBRADOS: mes mediano 24 (25 % rápido 16, 25 % lento 34; llega en 4 años 62 %)
+   ~10.000 $/mes LIMPIOS (14.300 cobrados): mes mediano 24 (llega en 4 años 59 %)
+   cobro medio por año: ['18,785 $', '57,166 $', '81,216 $', '101,339 $']
