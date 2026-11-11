@@ -1,0 +1,8 @@
+REAL AL 60 % riesgo 0.20 %: neto 2 años   1,796 $ (~   75 $/mes; mediana   1,600) | cobros 3.0 | cuentas compradas 1.6 | P(perder)   5 %
+REAL AL 60 % riesgo 0.30 %: neto 2 años   3,084 $ (~  129 $/mes; mediana   2,800) | cobros 4.9 | cuentas compradas 2.8 | P(perder)   4 %
+REAL AL 60 % riesgo 0.40 %: neto 2 años   4,043 $ (~  168 $/mes; mediana   3,600) | cobros 6.6 | cuentas compradas 4.2 | P(perder)   2 %
+REAL AL 60 % riesgo 0.65 %: neto 2 años   5,622 $ (~  234 $/mes; mediana   5,200) | cobros 10.2 | cuentas compradas 8.1 | P(perder)   1 %
+BACKTEST     riesgo 0.20 %: neto 2 años   3,623 $ (~  151 $/mes; mediana   3,000) | cobros 4.6 | cuentas compradas 1.2 | P(perder)   0 %
+BACKTEST     riesgo 0.30 %: neto 2 años   5,666 $ (~  236 $/mes; mediana   5,400) | cobros 6.9 | cuentas compradas 1.9 | P(perder)   0 %
+BACKTEST     riesgo 0.40 %: neto 2 años   7,116 $ (~  297 $/mes; mediana   7,000) | cobros 8.8 | cuentas compradas 2.8 | P(perder)   0 %
+BACKTEST     riesgo 0.65 %: neto 2 años   9,753 $ (~  406 $/mes; mediana   9,600) | cobros 13.1 | cuentas compradas 5.7 | P(perder)   0 %
