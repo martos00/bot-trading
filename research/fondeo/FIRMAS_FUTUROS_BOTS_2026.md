@@ -137,3 +137,12 @@ Capital inicial sumando FTMO, FundedNext, FXIFY, E8, Alpha y FundingPips: ~2,4 M
   «Upcomers X» (NO NinjaTrader): el bot no funciona allí tal cual. Productos: MGC, SI/SIL, 6J, MHG sí; NKD NO. Bots permitidos.
   Fondeada Horizon: 4 % arrastrada fin de día, diaria 2 %, máx. por operación 1,5 %; cobro con 3 % de beneficio y 5 días de 0,5 %;
   topes por cobro 150K-400K: 1.750 $ (1.º-3.º) y 3.000 $ después, NUNCA sin tope. Mucho peor que su CFD.
+
+## RESPUESTA DE ETF (11-nov-2026): BOT RECHAZADO
+- «Unable to approve it because fully automated strategies aren't permitted on our platform... Please don't run the strategy on any of
+  your accounts.» (ya lo habían comunicado el 5-nov).
+- Productos: MGC, MJY, 6J y NKD en su lista. Cobros 150K 1 paso (compradas desde 28-jul-2026): ciclo 1 (8 días activos) 250-1.500 $;
+  ciclo 2 (10) hasta 1.750 $; ciclo 3 (10) hasta 2.000 $; ciclo 4+ (10) hasta 2.250 $. Pagos lunes y miércoles.
+- Tope de 25.000 $ por persona entre todas las cuentas. Condiciones: tras 1 cobro, 5 días activos o 1.000 $ (lo primero) se te
+  considera AUTOMÁTICAMENTE para LIVE ELITE.
+- Conclusión: ETF descartada para el bot. A mano, tras el primer cobro pasas a la revisión de cuenta real: poco valor.
