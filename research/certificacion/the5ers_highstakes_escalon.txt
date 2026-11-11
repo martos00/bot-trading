@@ -1,0 +1,10 @@
+REAL AL 60 % riesgo 0.25 %: sube el escalón 100 % | tarda (mediana) 16.4 meses | prob. de subir 3 escalones seguidos  99 % | 5 seguidos  99 %
+REAL AL 60 % riesgo 0.35 %: sube el escalón  99 % | tarda (mediana) 11.3 meses | prob. de subir 3 escalones seguidos  97 % | 5 seguidos  95 %
+REAL AL 60 % riesgo 0.45 %: sube el escalón  97 % | tarda (mediana)  8.5 meses | prob. de subir 3 escalones seguidos  91 % | 5 seguidos  85 %
+REAL AL 60 % riesgo 0.55 %: sube el escalón  95 % | tarda (mediana)  6.6 meses | prob. de subir 3 escalones seguidos  85 % | 5 seguidos  76 %
+REAL AL 60 % riesgo 0.65 %: sube el escalón  86 % | tarda (mediana)  5.0 meses | prob. de subir 3 escalones seguidos  64 % | 5 seguidos  48 %
+BACKTEST     riesgo 0.25 %: sube el escalón 100 % | tarda (mediana) 10.5 meses | prob. de subir 3 escalones seguidos 100 % | 5 seguidos 100 %
+BACKTEST     riesgo 0.35 %: sube el escalón 100 % | tarda (mediana)  7.5 meses | prob. de subir 3 escalones seguidos 100 % | 5 seguidos 100 %
+BACKTEST     riesgo 0.45 %: sube el escalón 100 % | tarda (mediana)  5.9 meses | prob. de subir 3 escalones seguidos 100 % | 5 seguidos  99 %
+BACKTEST     riesgo 0.55 %: sube el escalón 100 % | tarda (mediana)  4.6 meses | prob. de subir 3 escalones seguidos  99 % | 5 seguidos  98 %
+BACKTEST     riesgo 0.65 %: sube el escalón  94 % | tarda (mediana)  3.6 meses | prob. de subir 3 escalones seguidos  82 % | 5 seguidos  72 %
