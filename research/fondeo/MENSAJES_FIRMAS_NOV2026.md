@@ -108,3 +108,6 @@ session close. I can provide proof of authorship if needed.
 Thank you.
 Best regards,
 Miguel
+
+## 7. VERSIÓN FINAL PARA ENVIAR (11-nov-2026): Tradeify (inglés) y Upcomers (español)
+(ver respuesta en la conversación; sustituyen a los mensajes 4 y 6)
