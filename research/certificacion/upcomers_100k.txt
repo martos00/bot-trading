@@ -1,0 +1,12 @@
+Horizon 1 fase (9 %)         REAL AL 60 % riesgo 0.40 % con topes | neto 24 m     5,522 $ (~   230 $/mes; mediana     3,688; 10 % peor     -430) | pierde  35 % | cobros 2.9
+Horizon 1 fase (9 %)         REAL AL 60 % riesgo 0.50 % con topes | neto 24 m     8,731 $ (~   364 $/mes; mediana     6,537; 10 % peor     -430) | pierde  49 % | cobros 4.0
+Horizon 1 fase (9 %)         REAL AL 60 % riesgo 0.65 % con topes | neto 24 m    13,091 $ (~   545 $/mes; mediana     9,977; 10 % peor     -309) | pierde  71 % | cobros 5.2
+Horizon 1 fase (9 %)         BACKTEST     riesgo 0.40 % con topes | neto 24 m    14,195 $ (~   591 $/mes; mediana    13,244; 10 % peor    1,802) | pierde  29 % | cobros 5.7
+Horizon 1 fase (9 %)         BACKTEST     riesgo 0.50 % con topes | neto 24 m    19,739 $ (~   822 $/mes; mediana    19,739; 10 % peor    4,147) | pierde  39 % | cobros 7.0
+Horizon 1 fase (9 %)         BACKTEST     riesgo 0.65 % con topes | neto 24 m    27,475 $ (~ 1,145 $/mes; mediana    27,503; 10 % peor    7,029) | pierde  66 % | cobros 8.7
+Odyssey 2 fases (6 % + 6 %)  REAL AL 60 % riesgo 0.40 % con topes | neto 24 m     3,900 $ (~   162 $/mes; mediana     1,455; 10 % peor     -430) | pierde  21 % | cobros 2.2
+Odyssey 2 fases (6 % + 6 %)  REAL AL 60 % riesgo 0.50 % con topes | neto 24 m     6,368 $ (~   265 $/mes; mediana     3,135; 10 % peor     -645) | pierde  35 % | cobros 3.1
+Odyssey 2 fases (6 % + 6 %)  REAL AL 60 % riesgo 0.65 % con topes | neto 24 m    10,560 $ (~   440 $/mes; mediana     6,861; 10 % peor     -745) | pierde  57 % | cobros 4.3
+Odyssey 2 fases (6 % + 6 %)  BACKTEST     riesgo 0.40 % con topes | neto 24 m    11,640 $ (~   485 $/mes; mediana    10,795; 10 % peor      545) | pierde  11 % | cobros 4.8
+Odyssey 2 fases (6 % + 6 %)  BACKTEST     riesgo 0.50 % con topes | neto 24 m    17,119 $ (~   713 $/mes; mediana    16,163; 10 % peor    1,870) | pierde  23 % | cobros 6.1
+Odyssey 2 fases (6 % + 6 %)  BACKTEST     riesgo 0.65 % con topes | neto 24 m    24,356 $ (~ 1,015 $/mes; mediana    23,901; 10 % peor    3,517) | pierde  54 % | cobros 7.7
