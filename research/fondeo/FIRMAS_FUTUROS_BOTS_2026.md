@@ -146,3 +146,13 @@ Capital inicial sumando FTMO, FundedNext, FXIFY, E8, Alpha y FundingPips: ~2,4 M
 - Tope de 25.000 $ por persona entre todas las cuentas. Condiciones: tras 1 cobro, 5 días activos o 1.000 $ (lo primero) se te
   considera AUTOMÁTICAMENTE para LIVE ELITE.
 - Conclusión: ETF descartada para el bot. A mano, tras el primer cobro pasas a la revisión de cuenta real: poco valor.
+
+## Respuesta de Tradeify (asistente de IA, 11-nov-2026) — 50K Select
+- Bot permitido si es propio, exclusivo, no HFT y se puede demostrar autoría; pueden comprobar que no haya órdenes iguales en otras cuentas.
+- Sin hora de cierre diaria documentada; 18:00 → 03:00 permitido. Contratos: MGC, SI, 6J, NKD sí; SIL NO.
+- 50K Select Flex: pérdida 2.000 $ fin de día, sin límite diario, SIN consistencia; tamaño inicial 2 minis / 20 micros, máximo 4 / 40.
+  Select Daily: igual con límite diario 1.000 $. Cobros Flex: 90 %, cada 5 días ganadores de ≥ 150 $, hasta el 50 % del beneficio y
+  2.500 $ por cobro (compradas desde 1-sep-2026); hay que estar en positivo en el nuevo ciclo.
+- Elite Live: te pueden elegir tras 3 cobros en una cuenta o 10 en total; obligatorio; se cierran todas las sim y evaluaciones; la real
+  empieza en 0 $. Varias cuentas con la misma estrategia: sí.
+- Bot actualizado: nuevo parámetro «Máximo de minis equivalentes» (micro = 0,1) para el límite de 2 minis / 20 micros.

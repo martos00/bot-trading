@@ -110,6 +110,8 @@ namespace NinjaTrader.NinjaScript.Strategies
         public string ServicioAvisos { get; set; }
         [NinjaScriptProperty][Range(0, 1000)][Display(Name = "Máximo de contratos abiertos en total (0 = sin límite; DTF de Elite Trader Funding: 3)", Order = 4, GroupName = "2. Protecciones")]
         public int MaxContratosTotales { get; set; }
+        [NinjaScriptProperty][Range(0, 1000)][Display(Name = "Máximo de minis equivalentes (micro = 0,1; 0 = sin límite; Tradeify 50K: 2 al empezar, 4 al máximo)", Order = 8, GroupName = "2. Protecciones")]
+        public double MaxMinisEquivalentes { get; set; }
         [NinjaScriptProperty][Display(Name = "Stop de protección en el servidor (se mantiene si se cae el PC)", Order = 5, GroupName = "2. Protecciones")]
         public bool StopEnServidor { get; set; }
 
@@ -149,7 +151,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 Modo = ModoCarteraFuturos.B_completa;
                 RiesgoPct = 0.5; PesoDiarias = 0.2; ControlVolatilidad = true; CapitalUSD = 0; RedondeoMin = 0.5;
                 SoloSimulacion = true; PermitirHistorico = false; OperarBitcoin = true; OperarCestaE12 = true; SalidaPlataViernes = 1657; OperarPlata = true; OperarYen = true; OperarCobre = true; OperarNikkei = true; OperarOroAsia = true;
-                PerdidaDiariaMaxPct = 3.0; StopSigmas = 4.0; TopeExposicion = 6.0; VolObjetivo = 0; ServicioAvisos = ""; MaxContratosTotales = 0; StopEnServidor = true;
+                PerdidaDiariaMaxPct = 3.0; StopSigmas = 4.0; TopeExposicion = 6.0; VolObjetivo = 0; ServicioAvisos = ""; MaxContratosTotales = 0; MaxMinisEquivalentes = 0; StopEnServidor = true;
                 InstOro = "MGC 12-26"; InstPlata = "SIL 12-26"; InstCobre = "MHG 12-26"; InstNikkei = "NKD 12-26"; InstYen = "MJY 12-26"; InstBitcoin = "MBT 11-26";
                 InstCesta = "MCL 12-26,HO 12-26,RB 12-26,QG 12-26,ZC 12-26,ZS 01-27,ZW 12-26,ZL 12-26,ZM 12-26,KE 12-26,LE 12-26,HE 12-26";
                 FestivosNYSE = "2025-01-01,2025-01-09,2025-01-20,2025-02-17,2025-04-18,2025-05-26,2025-06-19,2025-07-04,2025-09-01,2025-11-27,2025-12-25," +
@@ -501,19 +503,26 @@ namespace NinjaTrader.NinjaScript.Strategies
         private void Marcar(string clave, DateTime dia) { hechoHoy[clave] = dia.Date; }
 
         // recorta los contratos de una entrada nueva para no pasar del máximo total de contratos abiertos (suma de |neto| por mercado)
+        // los micros cuentan como 0,1 minis (norma de Tradeify: «2 minis / 20 micros»)
+        private double PesoMini(int m)
+        {
+            string r = Instruments[m].MasterInstrument.Name;
+            return (r == "MGC" || r == "SIL" || r == "MJY" || r == "MHG" || r == "MBT" || r == "MES" || r == "MNQ" || r == "M2K" || r == "MYM" || r == "MCL" || r == "M6E") ? 0.1 : 1.0;
+        }
         private int LimitarContratos(int i, int q)
         {
-            if (MaxContratosTotales <= 0 || q == 0) return q;
+            if ((MaxContratosTotales <= 0 && MaxMinisEquivalentes <= 0) || q == 0) return q;
             int sg = Math.Sign(q);
             for (int k = Math.Abs(q); k >= 1; k--)
             {
-                int total = 0;
+                int total = 0; double minis = 0;
                 for (int m = 1; m < BarsArray.Length; m++)
                 {
                     int neto = posiciones.Where(p => p.Mercado == m).Sum(p => p.Contratos) + (m == i ? sg * k : 0);
                     total += Math.Abs(neto);
+                    minis += Math.Abs(neto) * PesoMini(m);
                 }
-                if (total <= MaxContratosTotales) return sg * k;
+                if ((MaxContratosTotales <= 0 || total <= MaxContratosTotales) && (MaxMinisEquivalentes <= 0 || minis <= MaxMinisEquivalentes + 1e-9)) return sg * k;
             }
             return 0;
         }
