@@ -1,0 +1,4 @@
+REAL AL 60 % riesgo 0.50 %: aprueba en 2 años  99 % (mediana 5.1 meses) | exámenes 4.8 | pierde la fondeada  87 % | cobros 5.6 | neto 2 años  13,639 $ (mediana  11,048) = ~  568 $/mes | P(perder)  10 %
+REAL AL 60 % riesgo 0.65 %: aprueba en 2 años  99 % (mediana 4.3 meses) | exámenes 6.0 | pierde la fondeada  88 % | cobros 6.2 | neto 2 años  16,655 $ (mediana  14,375) = ~  694 $/mes | P(perder)  10 %
+BACKTEST     riesgo 0.50 %: aprueba en 2 años 100 % (mediana 3.4 meses) | exámenes 3.0 | pierde la fondeada  69 % | cobros 9.2 | neto 2 años  26,074 $ (mediana  28,097) = ~1,086 $/mes | P(perder)   1 %
+BACKTEST     riesgo 0.65 %: aprueba en 2 años 100 % (mediana 3.0 meses) | exámenes 3.8 | pierde la fondeada  72 % | cobros 9.9 | neto 2 años  30,709 $ (mediana  33,452) = ~1,280 $/mes | P(perder)   1 %
