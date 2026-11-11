@@ -81,3 +81,30 @@ Gracias.
 Hello. I use my own Expert Advisor on MT5 (trades lasting 30 minutes to several hours, no HFT, no grid or martingale). Could you
 confirm the commission per lot for XAUUSD, XAGUSD, USDJPY, EURJPY, JP225.cash and EURUSD, and the Friday closing time of gold and
 silver? Thank you. — Miguel
+
+## 6. Tradeify (chat o soporte, inglés) — 11-nov-2026
+Subject: Confirming my automated strategy before buying a 50K account
+
+Hello,
+
+Before purchasing a 50K account, I would like to confirm a few points in writing.
+
+My strategy is my own NinjaTrader 8 strategy (NinjaScript), written by me, used only by me and not shared, sold or copied. It is not
+high-frequency: it trades a few scheduled time windows (for example, long Micro Gold on Fridays from 4:00 to 4:55 PM ET, Silver on
+Fridays from 4:30 to 4:57 PM ET, Japanese yen around month-end, Nikkei on specific quarter days, and Micro Gold from 6:00 PM to
+3:00 AM ET on weekdays). Each position lasts from 30 minutes to several hours, has a stop-loss, and is always closed before the daily
+session close. I can provide proof of authorship if needed.
+
+1. Is this strategy allowed on your evaluation and funded accounts?
+2. What is the latest time I can hold a position each day and on Fridays (I exit at 4:57 PM ET at the latest)? Is holding from
+   6:00 PM to 3:00 AM ET within the same session allowed?
+3. Which of these contracts are available: MGC, SI (or SIL), 6J (or MJY), NKD, MHG/HG?
+4. For the 50K account: current price, profit target, drawdown (end-of-day or intraday), daily loss limit, and any consistency rule
+   in the evaluation and in the funded account.
+5. Payout rules for the funded 50K: maximum per payout, frequency, minimum winning days, and whether there is any total payout cap or
+   a point at which I am moved to a live (Elite) account.
+6. May I later run the same strategy on several of my own Tradeify accounts?
+
+Thank you.
+Best regards,
+Miguel
