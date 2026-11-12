@@ -1,0 +1,5 @@
+F1 2024-01-11 → final (PRINCIPAL)             neto +0.48 pb (t 0.22, n 682) 
+F1 informativo 2021-2023 (antes de los ETF)   neto +3.61 pb (t 1.14, n 753) 
+R1 BTC rev/rev 08:00 UTC                      FUERA de muestra 2025-10 →: neto +4.66 pb/sesión (t 0.75, n 730) NO PASA | informativo 2017-2025: -10.26 pb (t -3.16)
+R2 ETH día rev / noche largo 05:00 UTC        FUERA de muestra 2025-10 →: neto +2.96 pb/sesión (t 0.36, n 730) NO PASA | informativo 2017-2025: -1.52 pb (t -0.36)
+datos BTC hasta 2026-09-30 23:00:00+00:00 ETH hasta 2026-09-30 23:00:00+00:00
