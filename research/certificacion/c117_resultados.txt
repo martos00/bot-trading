@@ -1,0 +1,6 @@
+BASE C116: Sharpe 2.24 | 2018-21 1.80 | 2022-26 2.60
+ETH neto 1,5 pb: +7.70 pb/op (t 3.09, n 2223); 2022-26 +3.23 pb; corr. BTC 0.77
+N1 + ETH peso 0,2 (1,5 pb)         ΔSharpe +0.01 (18-21 +0.08, 22-26 -0.05) | Sharpe 2.25 | NO PASA
+N2 cesta BTC 0,1 + ETH 0,1         ΔSharpe -0.02 (18-21 -0.04, 22-26 +0.00) | Sharpe 2.23 | NO PASA
+(informativo) N1 con ETH a 3 pb    ΔSharpe -0.05 (18-21 +0.02, 22-26 -0.11) | Sharpe 2.20 | 
+FIN
