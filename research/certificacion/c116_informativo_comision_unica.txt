@@ -1,0 +1,2 @@
+Comisión por ejecución (actual)    Sharpe 2.24 | r0.5: 13.8 %/año (60 %: 8.3), caída -6.0 % | r0.65: 18.0 %/año (60 %: 10.8), caída -7.8 % | r0.8: 22.2 %/año (60 %: 13.3), caída -9.6 %
+Comisión por operación completa    Sharpe 2.37 | r0.5: 14.6 %/año (60 %: 8.8), caída -6.0 % | r0.65: 19.0 %/año (60 %: 11.4), caída -7.8 % | r0.8: 23.4 %/año (60 %: 14.1), caída -9.6 %
