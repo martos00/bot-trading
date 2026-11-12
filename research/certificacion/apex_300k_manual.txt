@@ -1,0 +1,88 @@
+================ M1 | Apex 150K | riesgo 0.5
+######## BACKTEST
+Evaluación: aprueba 79 % | dura de media 3.0 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 73 % | se pierde antes 27 % | vida media 14.6 meses (mediana 14.8) | cobros medios 4.5 | cobrado medio 15,084 $ (100 % tuyo)
+  meses entre cobros (media) 3.2
+Para mantener ~18 fondeadas: se cierran/pierden ~1.2 al mes → comprar ~1.6 evaluaciones al mes (≈ una cada 19 días), con ~5 evaluaciones en curso a la vez | cobro medio de la flota ~18,551 $/mes
+######## REAL AL 60 %
+Evaluación: aprueba 59 % | dura de media 3.1 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 46 % | se pierde antes 53 % | vida media 16.4 meses (mediana 11.3) | cobros medios 3.1 | cobrado medio 10,096 $ (100 % tuyo)
+  meses entre cobros (media) 5.3
+Para mantener ~18 fondeadas: se cierran/pierden ~1.1 al mes → comprar ~1.9 evaluaciones al mes (≈ una cada 16 días), con ~6 evaluaciones en curso a la vez | cobro medio de la flota ~11,099 $/mes
+================ M1 | Apex 150K | riesgo 0.65
+######## BACKTEST
+Evaluación: aprueba 73 % | dura de media 2.1 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 69 % | se pierde antes 31 % | vida media 13.5 meses (mediana 13.8) | cobros medios 4.2 | cobrado medio 14,281 $ (100 % tuyo)
+  meses entre cobros (media) 3.2
+Para mantener ~18 fondeadas: se cierran/pierden ~1.3 al mes → comprar ~1.8 evaluaciones al mes (≈ una cada 17 días), con ~4 evaluaciones en curso a la vez | cobro medio de la flota ~19,069 $/mes
+######## REAL AL 60 %
+Evaluación: aprueba 54 % | dura de media 2.1 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 43 % | se pierde antes 56 % | vida media 15.2 meses (mediana 8.4) | cobros medios 2.9 | cobrado medio 9,533 $ (100 % tuyo)
+  meses entre cobros (media) 5.3
+Para mantener ~18 fondeadas: se cierran/pierden ~1.2 al mes → comprar ~2.2 evaluaciones al mes (≈ una cada 14 días), con ~5 evaluaciones en curso a la vez | cobro medio de la flota ~11,308 $/mes
+================ M1 | Apex 300K | riesgo 0.5
+######## BACKTEST
+Evaluación: aprueba 71 % | dura de media 2.9 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 67 % | se pierde antes 33 % | vida media 13.3 meses (mediana 13.7) | cobros medios 4.1 | cobrado medio 27,564 $ (100 % tuyo)
+  meses entre cobros (media) 3.2
+Para mantener ~18 fondeadas: se cierran/pierden ~1.4 al mes → comprar ~1.9 evaluaciones al mes (≈ una cada 16 días), con ~6 evaluaciones en curso a la vez | cobro medio de la flota ~37,313 $/mes
+######## REAL AL 60 %
+Evaluación: aprueba 49 % | dura de media 2.8 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 41 % | se pierde antes 58 % | vida media 14.5 meses (mediana 7.5) | cobros medios 2.8 | cobrado medio 18,084 $ (100 % tuyo)
+  meses entre cobros (media) 5.3
+Para mantener ~18 fondeadas: se cierran/pierden ~1.2 al mes → comprar ~2.5 evaluaciones al mes (≈ una cada 12 días), con ~7 evaluaciones en curso a la vez | cobro medio de la flota ~22,382 $/mes
+================ M1 | Apex 300K | riesgo 0.65
+######## BACKTEST
+Evaluación: aprueba 65 % | dura de media 2.0 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 63 % | se pierde antes 37 % | vida media 12.2 meses (mediana 12.6) | cobros medios 3.9 | cobrado medio 25,966 $ (100 % tuyo)
+  meses entre cobros (media) 3.2
+Para mantener ~18 fondeadas: se cierran/pierden ~1.5 al mes → comprar ~2.3 evaluaciones al mes (≈ una cada 13 días), con ~5 evaluaciones en curso a la vez | cobro medio de la flota ~38,321 $/mes
+######## REAL AL 60 %
+Evaluación: aprueba 47 % | dura de media 2.0 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 40 % | se pierde antes 59 % | vida media 13.6 meses (mediana 5.0) | cobros medios 2.6 | cobrado medio 17,400 $ (100 % tuyo)
+  meses entre cobros (media) 5.2
+Para mantener ~18 fondeadas: se cierran/pierden ~1.3 al mes → comprar ~2.8 evaluaciones al mes (≈ una cada 11 días), con ~5 evaluaciones en curso a la vez | cobro medio de la flota ~23,003 $/mes
+================ M2 | Apex 150K | riesgo 0.5
+######## BACKTEST
+Evaluación: aprueba 78 % | dura de media 2.7 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 72 % | se pierde antes 28 % | vida media 12.5 meses (mediana 12.6) | cobros medios 4.5 | cobrado medio 14,701 $ (100 % tuyo)
+  meses entre cobros (media) 2.8
+Para mantener ~18 fondeadas: se cierran/pierden ~1.4 al mes → comprar ~1.8 evaluaciones al mes (≈ una cada 16 días), con ~5 evaluaciones en curso a la vez | cobro medio de la flota ~21,136 $/mes
+######## REAL AL 60 %
+Evaluación: aprueba 59 % | dura de media 2.9 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 46 % | se pierde antes 53 % | vida media 14.8 meses (mediana 10.2) | cobros medios 3.1 | cobrado medio 10,078 $ (100 % tuyo)
+  meses entre cobros (media) 4.8
+Para mantener ~18 fondeadas: se cierran/pierden ~1.2 al mes → comprar ~2.1 evaluaciones al mes (≈ una cada 14 días), con ~6 evaluaciones en curso a la vez | cobro medio de la flota ~12,273 $/mes
+================ M2 | Apex 150K | riesgo 0.65
+######## BACKTEST
+Evaluación: aprueba 71 % | dura de media 1.9 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 66 % | se pierde antes 34 % | vida media 11.1 meses (mediana 11.2) | cobros medios 4.1 | cobrado medio 13,702 $ (100 % tuyo)
+  meses entre cobros (media) 2.7
+Para mantener ~18 fondeadas: se cierran/pierden ~1.6 al mes → comprar ~2.3 evaluaciones al mes (≈ una cada 13 días), con ~4 evaluaciones en curso a la vez | cobro medio de la flota ~22,207 $/mes
+######## REAL AL 60 %
+Evaluación: aprueba 54 % | dura de media 1.9 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 43 % | se pierde antes 57 % | vida media 13.3 meses (mediana 6.5) | cobros medios 2.9 | cobrado medio 9,415 $ (100 % tuyo)
+  meses entre cobros (media) 4.7
+Para mantener ~18 fondeadas: se cierran/pierden ~1.4 al mes → comprar ~2.5 evaluaciones al mes (≈ una cada 12 días), con ~5 evaluaciones en curso a la vez | cobro medio de la flota ~12,765 $/mes
+================ M2 | Apex 300K | riesgo 0.5
+######## BACKTEST
+Evaluación: aprueba 69 % | dura de media 2.6 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 66 % | se pierde antes 34 % | vida media 11.3 meses (mediana 11.7) | cobros medios 4.1 | cobrado medio 26,879 $ (100 % tuyo)
+  meses entre cobros (media) 2.8
+Para mantener ~18 fondeadas: se cierran/pierden ~1.6 al mes → comprar ~2.3 evaluaciones al mes (≈ una cada 13 días), con ~6 evaluaciones en curso a la vez | cobro medio de la flota ~42,689 $/mes
+######## REAL AL 60 %
+Evaluación: aprueba 50 % | dura de media 2.7 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 41 % | se pierde antes 58 % | vida media 12.9 meses (mediana 6.7) | cobros medios 2.8 | cobrado medio 18,056 $ (100 % tuyo)
+  meses entre cobros (media) 4.6
+Para mantener ~18 fondeadas: se cierran/pierden ~1.4 al mes → comprar ~2.8 evaluaciones al mes (≈ una cada 11 días), con ~7 evaluaciones en curso a la vez | cobro medio de la flota ~25,230 $/mes
+================ M2 | Apex 300K | riesgo 0.65
+######## BACKTEST
+Evaluación: aprueba 64 % | dura de media 1.9 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 62 % | se pierde antes 38 % | vida media 10.3 meses (mediana 10.3) | cobros medios 3.8 | cobrado medio 25,549 $ (100 % tuyo)
+  meses entre cobros (media) 2.7
+Para mantener ~18 fondeadas: se cierran/pierden ~1.8 al mes → comprar ~2.7 evaluaciones al mes (≈ una cada 11 días), con ~5 evaluaciones en curso a la vez | cobro medio de la flota ~44,785 $/mes
+######## REAL AL 60 %
+Evaluación: aprueba 47 % | dura de media 1.8 meses (aprobada o suspendida)
+Fondeada: llega a los 6 cobros 39 % | se pierde antes 61 % | vida media 11.8 meses (mediana 4.1) | cobros medios 2.6 | cobrado medio 16,957 $ (100 % tuyo)
+  meses entre cobros (media) 4.6
+Para mantener ~18 fondeadas: se cierran/pierden ~1.5 al mes → comprar ~3.2 evaluaciones al mes (≈ una cada 9 días), con ~6 evaluaciones en curso a la vez | cobro medio de la flota ~25,961 $/mes
