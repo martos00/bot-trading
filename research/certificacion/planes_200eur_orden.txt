@@ -1,0 +1,12 @@
+PRUDENTE | Tradeify 50K + Upcomers 50K  | R1 futuros 150K primero     | 120k/año: 2 años  12 %, 3 años  20 %, 5 años  25 % | mes mediano (si llega)   24 | sin nada  55 %
+PRUDENTE | Tradeify 50K + Upcomers 50K  | R2 cuentas baratas primero  | 120k/año: 2 años  14 %, 3 años  22 %, 5 años  26 % | mes mediano (si llega)   23 | sin nada  55 %
+PRUDENTE | Tradeify 50K + Upcomers 50K  | R3 la 2M primero            | 120k/año: 2 años  12 %, 3 años  22 %, 5 años  28 % | mes mediano (si llega)   28 | sin nada  56 %
+PRUDENTE | Upcomers 50K ×2              | R1 futuros 150K primero     | 120k/año: 2 años  12 %, 3 años  19 %, 5 años  22 % | mes mediano (si llega)   23 | sin nada  64 %
+PRUDENTE | Upcomers 50K ×2              | R2 cuentas baratas primero  | 120k/año: 2 años  12 %, 3 años  19 %, 5 años  22 % | mes mediano (si llega)   23 | sin nada  64 %
+PRUDENTE | Upcomers 50K ×2              | R3 la 2M primero            | 120k/año: 2 años   9 %, 3 años  18 %, 5 años  23 % | mes mediano (si llega)   27 | sin nada  64 %
+BACKTEST | Tradeify 50K + Upcomers 50K  | R1 futuros 150K primero     | 120k/año: 2 años  45 %, 3 años  55 %, 5 años  57 % | mes mediano (si llega)   17 | sin nada  32 %
+BACKTEST | Tradeify 50K + Upcomers 50K  | R2 cuentas baratas primero  | 120k/año: 2 años  48 %, 3 años  57 %, 5 años  58 % | mes mediano (si llega)   16 | sin nada  32 %
+BACKTEST | Tradeify 50K + Upcomers 50K  | R3 la 2M primero            | 120k/año: 2 años  44 %, 3 años  57 %, 5 años  59 % | mes mediano (si llega)   19 | sin nada  32 %
+BACKTEST | Upcomers 50K ×2              | R1 futuros 150K primero     | 120k/año: 2 años  40 %, 3 años  48 %, 5 años  49 % | mes mediano (si llega)   17 | sin nada  44 %
+BACKTEST | Upcomers 50K ×2              | R2 cuentas baratas primero  | 120k/año: 2 años  40 %, 3 años  48 %, 5 años  49 % | mes mediano (si llega)   17 | sin nada  44 %
+BACKTEST | Upcomers 50K ×2              | R3 la 2M primero            | 120k/año: 2 años  37 %, 3 años  48 %, 5 años  50 % | mes mediano (si llega)   18 | sin nada  44 %
