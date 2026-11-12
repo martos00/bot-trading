@@ -1,0 +1,6 @@
+CFD FTMO (sin diarias)                   Sharpe 1.68 (con costes de futuros sería 1.88) | 2018-21 1.54 | 2022-26 1.80
+    riesgo 0.5 %: rent. 9.5 %/año (al 60 % ≈ 5.7 %) | mes medio 0.79 % | caída máx -7.1 % | meses negativos 34 %
+    riesgo 0.65 %: rent. 12.4 %/año (al 60 % ≈ 7.4 %) | mes medio 1.03 % | caída máx -9.3 % | meses negativos 34 %
+CFD FTMO (con diarias C93, C99, C101)    Sharpe 1.76 (con costes de futuros sería 1.98) | 2018-21 1.27 | 2022-26 2.18
+    riesgo 0.5 %: rent. 10.5 %/año (al 60 % ≈ 6.3 %) | mes medio 0.88 % | caída máx -9.3 % | meses negativos 35 %
+    riesgo 0.65 %: rent. 13.7 %/año (al 60 % ≈ 8.2 %) | mes medio 1.14 % | caída máx -12.2 % | meses negativos 35 %
