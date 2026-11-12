@@ -1,0 +1,8 @@
+PRUDENTE colchón 1 % | sigue operando      | 1.er cobro 5.7 m | cobros 4.7 | neto media  294 $/mes, mediana  274 | exámenes 703 $ | pierde fondeada 100 %
+PRUDENTE colchón 1 % | PAUSA al cumplir    | 1.er cobro 5.3 m | cobros 5.5 | neto media  282 $/mes, mediana  268 | exámenes 658 $ | pierde fondeada 99 %
+PRUDENTE colchón 3 % | sigue operando      | 1.er cobro 5.7 m | cobros 5.3 | neto media  294 $/mes, mediana  265 | exámenes 548 $ | pierde fondeada 93 %
+PRUDENTE colchón 3 % | PAUSA al cumplir    | 1.er cobro 5.4 m | cobros 4.8 | neto media  209 $/mes, mediana  185 | exámenes 496 $ | pierde fondeada 82 %
+BACKTEST colchón 1 % | sigue operando      | 1.er cobro 4.3 m | cobros 7.2 | neto media  492 $/mes, mediana  472 | exámenes 565 $ | pierde fondeada 100 %
+BACKTEST colchón 1 % | PAUSA al cumplir    | 1.er cobro 4.1 m | cobros 8.2 | neto media  453 $/mes, mediana  437 | exámenes 505 $ | pierde fondeada 99 %
+BACKTEST colchón 3 % | sigue operando      | 1.er cobro 4.4 m | cobros 8.1 | neto media  528 $/mes, mediana  512 | exámenes 370 $ | pierde fondeada 83 %
+BACKTEST colchón 3 % | PAUSA al cumplir    | 1.er cobro 4.1 m | cobros 7.2 | neto media  371 $/mes, mediana  375 | exámenes 335 $ | pierde fondeada 74 %
