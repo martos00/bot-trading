@@ -1,0 +1,12 @@
+PRUDENTE examen 1.5 / fondeada 0.8 | colchón 1 % | 1.er cobro mediana 5.7 m (<4 m  31 %, <6 m  52 %) | cobros en 2 años 4.7 | neto media  294 $/mes, mediana  274 $/mes | exámenes 703 $
+PRUDENTE examen 1.5 / fondeada 0.8 | colchón 3 % | 1.er cobro mediana 5.7 m (<4 m  30 %, <6 m  52 %) | cobros en 2 años 5.3 | neto media  294 $/mes, mediana  265 $/mes | exámenes 548 $
+PRUDENTE examen 1.0 / fondeada 0.8 | colchón 1 % | 1.er cobro mediana 7.4 m (<4 m  17 %, <6 m  35 %) | cobros en 2 años 3.7 | neto media  230 $/mes, mediana  209 $/mes | exámenes 464 $
+PRUDENTE examen 1.0 / fondeada 0.8 | colchón 3 % | 1.er cobro mediana 7.5 m (<4 m  17 %, <6 m  35 %) | cobros en 2 años 4.3 | neto media  240 $/mes, mediana  210 $/mes | exámenes 380 $
+PRUDENTE examen 1.5 / fondeada 0.65 | colchón 1 % | 1.er cobro mediana 6.1 m (<4 m  26 %, <6 m  48 %) | cobros en 2 años 4.4 | neto media  252 $/mes, mediana  239 $/mes | exámenes 582 $
+PRUDENTE examen 1.5 / fondeada 0.65 | colchón 3 % | 1.er cobro mediana 6.2 m (<4 m  26 %, <6 m  47 %) | cobros en 2 años 4.7 | neto media  243 $/mes, mediana  223 $/mes | exámenes 443 $
+BACKTEST examen 1.5 / fondeada 0.8 | colchón 1 % | 1.er cobro mediana 4.3 m (<4 m  45 %, <6 m  71 %) | cobros en 2 años 7.2 | neto media  492 $/mes, mediana  472 $/mes | exámenes 565 $
+BACKTEST examen 1.5 / fondeada 0.8 | colchón 3 % | 1.er cobro mediana 4.4 m (<4 m  45 %, <6 m  71 %) | cobros en 2 años 8.1 | neto media  528 $/mes, mediana  512 $/mes | exámenes 370 $
+BACKTEST examen 1.0 / fondeada 0.8 | colchón 1 % | 1.er cobro mediana 5.6 m (<4 m  29 %, <6 m  55 %) | cobros en 2 años 6.0 | neto media  413 $/mes, mediana  393 $/mes | exámenes 404 $
+BACKTEST examen 1.0 / fondeada 0.8 | colchón 3 % | 1.er cobro mediana 5.6 m (<4 m  29 %, <6 m  54 %) | cobros en 2 años 7.2 | neto media  467 $/mes, mediana  451 $/mes | exámenes 279 $
+BACKTEST examen 1.5 / fondeada 0.65 | colchón 1 % | 1.er cobro mediana 4.7 m (<4 m  40 %, <6 m  67 %) | cobros en 2 años 6.6 | neto media  424 $/mes, mediana  408 $/mes | exámenes 457 $
+BACKTEST examen 1.5 / fondeada 0.65 | colchón 3 % | 1.er cobro mediana 4.8 m (<4 m  39 %, <6 m  66 %) | cobros en 2 años 7.2 | neto media  440 $/mes, mediana  432 $/mes | exámenes 287 $
