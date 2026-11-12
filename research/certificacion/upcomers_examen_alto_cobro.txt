@@ -1,0 +1,10 @@
+PRUDENTE 50K  examen 0.80 / fondeada 0,80 | 1.er cobro: mediana 8.9 m; en <4 m  11 %, <6 m  26 %, <9 m  46 %, nunca en 2 años   9 % | neto 24 m: media     201 $/mes, mediana     169 $/mes | gastado en exámenes 321 $
+PRUDENTE 50K  examen 1.25 / fondeada 0,80 | 1.er cobro: mediana 6.4 m; en <4 m  24 %, <6 m  45 %, <9 m  67 %, nunca en 2 años   2 % | neto 24 m: media     268 $/mes, mediana     238 $/mes | gastado en exámenes 476 $
+PRUDENTE 50K  examen 1.50 / fondeada 0,80 | 1.er cobro: mediana 5.5 m; en <4 m  33 %, <6 m  53 %, <9 m  74 %, nunca en 2 años   1 % | neto 24 m: media     288 $/mes, mediana     263 $/mes | gastado en exámenes 553 $
+PRUDENTE 1,5M examen 0.80 / fondeada 0,80 | 1.er cobro: mediana 9.0 m; en <4 m  10 %, <6 m  23 %, <9 m  45 %, nunca en 2 años  10 % | neto 24 m: media   3,034 $/mes, mediana     928 $/mes | gastado en exámenes 5,548 $
+PRUDENTE 1,5M examen 1.00 / fondeada 0,80 | 1.er cobro: mediana 7.4 m; en <4 m  17 %, <6 m  35 %, <9 m  58 %, nunca en 2 años   5 % | neto 24 m: media   4,085 $/mes, mediana   1,170 $/mes | gastado en exámenes 6,310 $
+BACKTEST 50K  examen 0.80 / fondeada 0,80 | 1.er cobro: mediana 6.6 m; en <4 m  19 %, <6 m  43 %, <9 m  70 %, nunca en 2 años   1 % | neto 24 m: media     424 $/mes, mediana     406 $/mes | gastado en exámenes 249 $
+BACKTEST 50K  examen 1.25 / fondeada 0,80 | 1.er cobro: mediana 4.8 m; en <4 m  39 %, <6 m  65 %, <9 m  86 %, nunca en 2 años   0 % | neto 24 m: media     494 $/mes, mediana     481 $/mes | gastado en exámenes 330 $
+BACKTEST 50K  examen 1.50 / fondeada 0,80 | 1.er cobro: mediana 4.2 m; en <4 m  47 %, <6 m  71 %, <9 m  90 %, nunca en 2 años   0 % | neto 24 m: media     520 $/mes, mediana     510 $/mes | gastado en exámenes 373 $
+BACKTEST 1,5M examen 0.80 / fondeada 0,80 | 1.er cobro: mediana 6.5 m; en <4 m  19 %, <6 m  43 %, <9 m  71 %, nunca en 2 años   1 % | neto 24 m: media  10,232 $/mes, mediana   3,555 $/mes | gastado en exámenes 4,224 $
+BACKTEST 1,5M examen 1.00 / fondeada 0,80 | 1.er cobro: mediana 5.5 m; en <4 m  29 %, <6 m  55 %, <9 m  81 %, nunca en 2 años   0 % | neto 24 m: media  11,038 $/mes, mediana   3,621 $/mes | gastado en exámenes 4,713 $
