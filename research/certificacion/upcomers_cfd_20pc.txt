@@ -1,0 +1,6 @@
+BACKTEST     riesgo 0.50 %: rent.  10.5 %/año | caída máx. histórica  -9.3 % | peor día -2.14 % | suspende algún examen  10 % | pierde la fondeada   8 % | neto 24 m    30,415 $ (~ 1,267 $/mes; mediana    14,992)
+BACKTEST     riesgo 0.95 %: rent.  20.0 %/año | caída máx. histórica -17.8 % | peor día -4.07 % | suspende algún examen  47 % | pierde la fondeada  64 % | neto 24 m   216,110 $ (~ 9,005 $/mes; mediana    51,754)
+BACKTEST     riesgo 1.60 %: rent.  33.7 %/año | caída máx. histórica -29.9 % | peor día -6.86 % | suspende algún examen  87 % | pierde la fondeada  99 % | neto 24 m   279,683 $ (~11,653 $/mes; mediana    58,948)
+REAL AL 60 % riesgo 0.50 %: rent.   6.3 %/año | caída máx. histórica -13.9 % | peor día -2.16 % | suspende algún examen  28 % | pierde la fondeada  16 % | neto 24 m     8,041 $ (~   335 $/mes; mediana     1,380)
+REAL AL 60 % riesgo 0.95 %: rent.  12.0 %/año | caída máx. histórica -26.4 % | peor día -4.10 % | suspende algún examen  70 % | pierde la fondeada  66 % | neto 24 m    72,941 $ (~ 3,039 $/mes; mediana    12,492)
+REAL AL 60 % riesgo 1.60 %: rent.  20.2 %/año | caída máx. histórica -44.4 % | peor día -6.91 % | suspende algún examen  96 % | pierde la fondeada  99 % | neto 24 m    91,473 $ (~ 3,811 $/mes; mediana    14,616)
