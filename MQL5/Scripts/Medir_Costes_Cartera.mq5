@@ -29,6 +29,7 @@ input string InpPlata   = "XAGUSD";
 input string InpUSDJPY  = "USDJPY";
 input string InpEURJPY  = "EURJPY";
 input string InpGBPJPY  = "GBPJPY";
+input string InpAUDJPY  = "";        // AUDJPY (candidata para la cesta E11; vacio = no medir)
 input string InpEURUSD  = "EURUSD";
 input string InpNikkei  = "JP225.cash";   // nombre FTMO del Nikkei
 input string InpBitcoin = "BTCUSD";
@@ -192,6 +193,7 @@ void OnStart()
    Medir("E11 yen Q0 (proxy)",       InpUSDJPY, 0,  0, 30,  2,  0, 0, hoy);
    Medir("E11 yen Q0 (proxy)",       InpEURJPY, 0,  0, 30,  2,  0, 0, hoy);
    Medir("E11 yen Q0 (proxy)",       InpGBPJPY, 0,  0, 30,  2,  0, 0, hoy);
+   if(InpAUDJPY != "") Medir("E11 yen Q0 (proxy)", InpAUDJPY, 0,  0, 30,  2,  0, 0, hoy);
    Medir("E13 Nikkei Q+2 (proxy)",   InpNikkei, 0, 15,  0, 16,  0, 0, hoy);
    Medir("E16 Nikkei Q-2 (proxy)",   InpNikkei, 0, 20,  0, 21,  0, 0, hoy);
    Medir("E2 euro manana",           InpEURUSD, 0,  6,  0,  8,  0, 0, hoy);
@@ -216,7 +218,7 @@ void OnStart()
    int fs = FileOpen("costes_cartera_simbolos.csv", FILE_WRITE | FILE_CSV | FILE_ANSI, ',');
    FileWrite(fs, "simbolo", "tamano_contrato", "lote_min", "paso_lote", "lote_max", "tick", "valor_tick", "decimales", "divisa_beneficio", "swap_largo", "swap_corto");
    DatosSimbolo(fs, InpOro); DatosSimbolo(fs, InpPlata); DatosSimbolo(fs, InpUSDJPY); DatosSimbolo(fs, InpEURJPY); DatosSimbolo(fs, InpGBPJPY);
-   DatosSimbolo(fs, InpEURUSD); DatosSimbolo(fs, InpNikkei); DatosSimbolo(fs, InpBitcoin); if(InpCobre != "") DatosSimbolo(fs, InpCobre);
+   DatosSimbolo(fs, InpEURUSD); DatosSimbolo(fs, InpNikkei); DatosSimbolo(fs, InpBitcoin); if(InpCobre != "") DatosSimbolo(fs, InpCobre); if(InpAUDJPY != "") DatosSimbolo(fs, InpAUDJPY);
    FileClose(fs);
    Print("Listo. Manda los 3 CSV de MQL5/Files (costes_cartera_resumen.csv, costes_cartera_detalle.csv, costes_cartera_simbolos.csv) y la COMISION por lote de cada simbolo de tu firma.");
   }
