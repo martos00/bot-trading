@@ -1,0 +1,6 @@
+PRUDENTE 2M examen 1,0 / fondeada 0.5: neto año 1 mediana   -1,177 (media    1,239) | año 2   13,612 (  27,290) | año 3   27,263 ( 105,751) $ | pierde/suspende alguna vez en 3 años 55 %
+PRUDENTE 2M examen 1,0 / fondeada 0.65: neto año 1 mediana      980 (media    4,008) | año 2   17,492 (  65,062) | año 3   35,064 ( 157,898) $ | pierde/suspende alguna vez en 3 años 77 %
+PRUDENTE 2M examen 1,0 / fondeada 0.8: neto año 1 mediana      980 (media    6,396) | año 2   19,482 (  96,748) | año 3   35,064 ( 182,393) $ | pierde/suspende alguna vez en 3 años 89 %
+BACKTEST 2M examen 1,0 / fondeada 0.5: neto año 1 mediana    6,811 (media    8,333) | año 2   40,875 ( 108,380) | año 3  393,743 ( 316,485) $ | pierde/suspende alguna vez en 3 años 35 %
+BACKTEST 2M examen 1,0 / fondeada 0.65: neto año 1 mediana   10,352 (media   15,238) | año 2   58,446 ( 227,330) | año 3  364,363 ( 332,152) $ | pierde/suspende alguna vez en 3 años 64 %
+BACKTEST 2M examen 1,0 / fondeada 0.8: neto año 1 mediana   14,592 (media   25,286) | año 2   77,908 ( 310,288) | año 3  183,099 ( 303,027) $ | pierde/suspende alguna vez en 3 años 86 %
