@@ -1,7 +1,7 @@
 # Cartera CFD (EA `Cartera_6_Ventajas_EA.mq5`, versión del 12-nov-2026)
 
 Versión actualizada con los costes medidos en **Upcomers** (`research/costes_cfd/upcomers_*.csv`) y **FTMO** (`ftmo_*.csv`).
-Backtest de esta cartera con costes de Upcomers (`research/certificacion/cartera_cfd_upcomers.py`): Sharpe 1,82;
+Backtest de esta cartera con costes de Upcomers (`research/certificacion/cartera_cfd_upcomers.py`): Sharpe 1,82 sin bitcoin y con oro a las 16:45; con bitcoin y oro 16:55 (C116) 2,24: riesgo 0,5 % → 13,8 %/año, caída −6,0 %; riesgo 0,65 % → 18,0 %/año, caída −7,8 %. Antes:
 riesgo 0,5 % → 11,0 %/año (al 60 % ≈ 6,6 %), caída máx. −9,0 %; riesgo 0,65 % → 14,2 %/año, caída −11,7 %. Bitcoin no está en esa cifra.
 
 ## Instalación
@@ -28,7 +28,7 @@ riesgo 0,5 % → 11,0 %/año (al 60 % ≈ 6,6 %), caída máx. −9,0 %; riesgo 
 ## Estrategias (hora de Nueva York)
 | Estrategia | Símbolo | Días | Entrada → salida | Peso |
 |---|---|---|---|---|
-| E8 | XAUUSD largo | viernes | 16:00 → 16:45 (`InpE8_Salida`; Upcomers cotiza hasta 16:59) | 1 |
+| E8 | XAUUSD largo | viernes | 16:00 → 16:55 (`InpE8_Salida`; en FTMO 1645) | 1 |
 | E9 | USDJPY largo | antepenúltimo laborable del mes | 07:00 → 08:00 | 1 |
 | E11 | USDJPY+EURJPY+GBPJPY corto | último laborable de mar/jun/sep/dic | 00:30 → 02:00 | 1/3 cada uno |
 | E15 | XAUUSD corto | antepenúltimo laborable del mes | 09:30 → 10:00 | 1 |
@@ -45,7 +45,7 @@ Desactivadas: E2 euro (quitado de la cartera), E10 plata y plata (spread 7–14 
 - **Tamaño** = riesgo × peso / sigma de la franja (la mayor de 60 y 250 días) × escala de volatilidad, con tope de exposición después de la escala.
   Si el broker no tiene historial suficiente, usa la sigma típica ×1,3 y avisa (`aviso_sigma_respaldo_sin_historico`).
 - **Control de volatilidad**: al cerrar cada sesión (17:00 NY) guarda el resultado en `Cartera_CFD_pnl_diario.csv` **dividido por la escala** en vigor;
-  a partir de 40 sesiones la escala = 0,33 % ÷ desviación de las últimas 60 (entre 0,5 y 2). **No borres ese archivo.**
+  a partir de 40 sesiones la escala = 0,35 % ÷ desviación de las últimas 60 (entre 0,5 y 2). **No borres ese archivo.**
 - **Stops**: franjas, stop de catástrofe a 4 sigmas recortado para no perder más de `InpPerdidaMaxOperacionPct`; rupturas, el stop de la regla
   (si la pérdida pasaría del máximo, se reducen los lotes, no se mueve el stop).
 - **Pausas de sesión**: cierra 5 min antes de cualquier pausa de más de 30 min (o del fin de semana en las de varias noches);

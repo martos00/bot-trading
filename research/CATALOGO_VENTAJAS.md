@@ -65,6 +65,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | **Plata en víspera de festivo con salida 16:45 (para fondeo de futuros)** | E10b | **Pasa** con HistData (+3,4 pb, t 2,42; 2018-26 +4,5); solo en futuros (en CFD el spread la mata) |
 | Bitcoin 21-23 UTC recortado a la ventana del CME (fondeo de futuros) | C90 | +1,5 pb (t 0,91) < coste del MBT: no |
 | Filtro de tendencia (media 20 días) en oro y plata del viernes | C115 | No: los viernes en tendencia bajista son mejores (oro t −2,73); cartera 2,32 → 1,87 |
+| Mejoras de la cartera CFD (Upcomers): bitcoin 21-23 UTC, euro E2, C113, oro viernes 16:55 | C116 | **Bitcoin (+0,26 Sharpe, t 3,55) y oro 16:55 (+0,17; tramo t 3,57) pasan**; euro (−0,47) y C113 (t 1,42) no. Cartera CFD 1,82 → 2,24 |
 | Régimen de gamma de opciones del oro (GEX) y dirección intradía | C88 | No (−1,25 pb; al revés de la teoría) |
 | Cripto 21-23 UTC en SOL, XRP (y LTC, ADA, BNB informativos) | C91 | No: el efecto es general pero tras publicarse solo es significativo en BTC, ETH y BNB |
 | Presión antes del pago de funding de perpetuos (BTC, ETH) | C92 | No pasa; BTC 16:00 UTC (+8,9 pb, t 2,18) y ETH 08:00 (+7,6, t 1,96) desde 2023, a vigilar |

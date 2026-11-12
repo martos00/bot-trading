@@ -6,7 +6,7 @@
 //|                                                                    |
 //| ACTIVAS por defecto (costes medidos en Upcomers el 12-nov-2026,   |
 //| research/costes_cfd/upcomers_*.csv; cartera_cfd_upcomers.py):     |
-//|  E8   XAUUSD largo  16:00 -> 16:45  viernes                       |
+//|  E8   XAUUSD largo  16:00 -> 16:55  viernes (FTMO: 16:45)         |
 //|  E9   USDJPY largo  07:00 -> 08:00  antepenultimo laborable mes   |
 //|  E11  USDJPY+EURJPY+GBPJPY corto 00:30 -> 02:00 ultimo laborable  |
 //|       de mar/jun/sep/dic (1/3 del riesgo cada uno)                |
@@ -22,7 +22,7 @@
 //|       solo si el spread al entrar <= InpMaxSpreadBTC              |
 //| DESACTIVADAS: E2 euro (quitado de la cartera el 28-oct-2026),     |
 //|  E10 plata y plata (spread 7-9 pb), E12 cesta, E14 FTSE,          |
-//|  C113 oro Asia (falta comprobar que compensa en CFD).             |
+//|  C113 oro Asia (C116: no pasa con costes CFD).                    |
 //|                                                                    |
 //| Tamano: riesgo% x peso / sigma de la franja (max de 60 y 250 dias)|
 //| x escala del control de volatilidad, con tope de exposicion (el   |
@@ -56,7 +56,7 @@ input double InpRiesgoPct            = 0.5;    // riesgo por operacion = volatil
 input double InpMultExamen           = 1.0;    // multiplicador de riesgo en modo EXAMEN
 input double InpPesoDiarias          = 0.2;    // peso de las diarias (C93, C99, C101, bitcoin, C113) respecto al riesgo normal
 input bool   InpControlVol           = true;   // control de volatilidad de la cartera (escala 0,5-2 segun los ultimos 60 dias)
-input double InpVolObjetivo          = 0.33;   // volatilidad diaria objetivo en % a riesgo 0,5 (backtest de esta cartera CFD 2018-2026: 0,33)
+input double InpVolObjetivo          = 0.35;   // volatilidad diaria objetivo en % a riesgo 0,5 (backtest de esta cartera CFD con bitcoin y oro 16:55, C116: 0,35)
 input double InpStopSigmas           = 4.0;    // stop de catastrofe en sigmas
 input double InpPerdidaMaxOperacionPct = 1.4;  // perdida maxima por operacion si salta el stop, % del balance (Upcomers Horizon: max 1,5 %); 0 = sin limite
 input double InpTopeExposicionFX     = 10.0;   // exposicion maxima por operacion (x balance) en divisas
@@ -69,7 +69,7 @@ input double InpBalanceInicial       = 0;      // 0 = el balance al arrancar el 
 
 input group "Estrategias (activar / desactivar)"
 input bool   InpE8_OroViernes        = true;   // E8 oro viernes
-input int    InpE8_Salida            = 1645;   // hora NY de salida del oro del viernes (HHMM). Upcomers cotiza hasta 16:59: 1655 posible
+input int    InpE8_Salida            = 1655;   // hora NY de salida del oro del viernes (HHMM): 1655 = regla original (C116 la confirma en CFD; Upcomers cotiza hasta 16:59). FTMO: 1645
 input bool   InpE9_YenFinMes         = true;   // E9 yen fin de mes
 input bool   InpE11_YenFinTrimestre  = true;   // E11 cesta del yen fin de trimestre
 input bool   InpE15_OroDmenos2       = true;   // E15 oro corto antepenultimo laborable del mes 09:30-10:00 NY
@@ -80,8 +80,8 @@ input bool   InpC99_OroRangoAsia     = true;   // C99 oro ruptura del rango asia
 input bool   InpC101_NikkeiRangoAsia = true;   // C101 Nikkei ruptura del rango asiatico (diaria)
 input bool   InpBitcoin              = true;   // bitcoin largo 21:00-23:00 UTC laborables (diaria)
 input double InpMaxSpreadBTC         = 1.5;    // bitcoin: no entra si el spread supera esto (pb); mediana medida 0,36, 10 % de los dias ~4
-input bool   InpC113_OroAsia         = false;  // C113 oro largo 18:00 -> 03:00 NY dom-jue (PENDIENTE de comprobar en CFD; no activar aun)
-input bool   InpE2_Euro              = false;  // E2 euro 06-08 NY (quitado de la cartera el 28-oct-2026)
+input bool   InpC113_OroAsia         = false;  // C113 oro largo 18:00 -> 03:00 NY dom-jue (C116: NO pasa con costes CFD, +1,7 pb t 1,4)
+input bool   InpE2_Euro              = false;  // E2 euro 06-08 NY (C116: empeora la cartera CFD, Sharpe -0,47)
 input bool   InpE10_PlataVispera     = false;  // E10 plata vispera de festivo (spread de la plata 7-14 pb: CARO)
 input bool   InpE12_MateriasVispera  = false;  // E12 cesta de materias primas (no compensa en CFD)
 input bool   InpE14_FTSEantesBoE     = false;  // E14 FTSE antes del Banco de Inglaterra (candidata sin validar)

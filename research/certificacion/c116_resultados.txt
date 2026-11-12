@@ -1,0 +1,12 @@
+BASE CFD Upcomers: Sharpe 1.82 | 2018-21 1.33 | 2022-26 2.25 | datos hasta 2026-09-30
+K1 bitcoin (1,2 pb, peso 0,2)          ΔSharpe +0.26 (18-21 +0.41, 22-26 +0.11) | neta +6.53 pb/op (t 3.55, n 2223) | PASA
+K2 euro E2 (0,95 pb)                   ΔSharpe -0.47 (18-21 -0.28, 22-26 -0.65) | neta +0.46 pb/op (t 1.54, n 2064) | NO PASA
+K3 C113 oro Asia (1,36 pb, peso 0,2)   ΔSharpe +0.09 (18-21 -0.03, 22-26 +0.19) | neta +1.71 pb/op (t 1.42, n 1681) | NO PASA
+K4 oro viernes 16:55                   ΔSharpe +0.17 (18-21 +0.07, 22-26 +0.24) | tramo 16:45-16:55 neto +0.93 pb (t 3.57, n 411) | PASA
+  (informativo) K2 euro con 0,52 pb: ΔSharpe -0.05 | neta +0.89 pb (t 2.97)
+
+CARTERA CON LAS QUE PASAN (K1, K4): Sharpe 2.24 | 2018-21 1.80 | 2022-26 2.60
+   base  riesgo 0.5: 11.0 %/año (al 60 % ≈ 6.6) | caída máx -9.0 % | meses negativos 34 %
+   nueva riesgo 0.5: 13.8 %/año (al 60 % ≈ 8.3) | caída máx -6.0 % | meses negativos 32 %
+   base  riesgo 0.65: 14.2 %/año (al 60 % ≈ 8.5) | caída máx -11.7 % | meses negativos 34 %
+   nueva riesgo 0.65: 18.0 %/año (al 60 % ≈ 10.8) | caída máx -7.8 % | meses negativos 32 %
