@@ -474,8 +474,12 @@ namespace NinjaTrader.NinjaScript.Strategies
                         bool nuevo = !File.Exists(archivoPnl);
                         using (var w = new StreamWriter(archivoPnl, true))
                         {
-                            if (nuevo) w.WriteLine("dia,pnl_frac_capital");
-                            w.WriteLine(corte.ToString("yyyy-MM-dd") + "," + ((p - pnlInicioDia) / Capital()).ToString("R", CultureInfo.InvariantCulture));
+                            // se guarda el resultado dividido por la escala en vigor (serie SIN escalar, como en el backtest);
+                            // con el resultado ya escalado la corrección se quedaba en la raíz del objetivo y podía oscilar (corregido 12-nov-2026)
+                            if (nuevo) w.WriteLine("dia,pnl_frac_capital_sin_escala,pnl_frac_capital,escala_vol");
+                            double f = (p - pnlInicioDia) / Capital();
+                            w.WriteLine(corte.ToString("yyyy-MM-dd") + "," + (f / escalaVol).ToString("R", CultureInfo.InvariantCulture) + ","
+                                        + f.ToString("R", CultureInfo.InvariantCulture) + "," + escalaVol.ToString("F3", CultureInfo.InvariantCulture));
                         }
                     }
                     catch { }

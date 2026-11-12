@@ -1,60 +1,54 @@
-# Cartera de 6 ventajas — instrucciones para la demo
+# Cartera CFD (EA `Cartera_6_Ventajas_EA.mq5`, versión del 12-nov-2026)
 
-## Archivos
-- `Scripts/Comprobar_Cuenta_y_Costes_6_Ventajas.mq5`: comprueba la cuenta y mide el coste real de cada ventaja. **No opera.**
-- `Experts/Cartera_6_Ventajas_EA.mq5`: el EA que opera las 6 ventajas (por defecto solo en cuentas **demo**).
+Versión actualizada con los costes medidos en **Upcomers** (`research/costes_cfd/upcomers_*.csv`) y **FTMO** (`ftmo_*.csv`).
+Backtest de esta cartera con costes de Upcomers (`research/certificacion/cartera_cfd_upcomers.py`): Sharpe 1,82;
+riesgo 0,5 % → 11,0 %/año (al 60 % ≈ 6,6 %), caída máx. −9,0 %; riesgo 0,65 % → 14,2 %/año, caída −11,7 %. Bitcoin no está en esa cifra.
 
-## Paso 1 — Medir costes (una vez)
-1. Copia el script a `MQL5/Scripts` de tu MT5 y compílalo en MetaEditor (F7). Si sale algún error, mándamelo.
-2. Abre un gráfico **M1** de cada símbolo (EURUSD, USDJPY, EURJPY, GBPJPY, XAUUSD, XAGUSD, petróleo, gas, cereales…) y desplázate unos meses hacia atrás
-   para que MT5 descargue el historial.
-3. Arrastra el script a cualquier gráfico. En los parámetros escribe el **nombre exacto** de cada símbolo en tu cuenta (en FTMO pueden llevar sufijo)
-   y, en `InpCestaE12`, las materias primas que existan (en FTMO: `USOIL.cash,HEATOIL.c,NATGAS.cash,CORN.c,SOYBEAN.c,WHEAT.c`; solo los de la cesta preregistrada C69, sin Brent, cacao, cafe, azucar ni algodon).
-4. Mándame el diario "Expertos" y el fichero `MQL5/Files/costes_6_ventajas.csv`.
-   - El script indica para cada ventaja si el coste es **OK** (≤ 1/3 de la ventaja), **JUSTO** o **CARO**.
-   - También dice el **apalancamiento efectivo** de cada símbolo (el oro necesita de media unas 5 veces el capital).
+## Instalación
+1. Copia `Experts/Cartera_6_Ventajas_EA.mq5` a `MQL5/Experts` de tu MT5, ábrelo en MetaEditor y compila (F7). Si sale algún error, mándamelo.
+2. **Herramientas > Opciones > Gráficos > Máx. barras en ventana = Unlimited** (la sigma usa hasta 250 días de velas M1).
+3. Abre un gráfico **M1** de XAUUSD, USDJPY, EURJPY, GBPJPY, JPCJPY.c y BTCUSD.nx y retrocede unos meses para que descargue historial.
+4. Pon el EA en **un solo gráfico** (cualquiera) y activa **Algo Trading**. La cuenta tiene que ser de **cobertura (hedging)**: el EA avisa si no.
+5. Revisa la pestaña Expertos: debe decir «Cartera CFD iniciada… Servidor invierno UTC+1» (Upcomers) o UTC+2 (FTMO).
 
-## Paso 2 — EA en demo
-1. Copia el EA a `MQL5/Experts`, compílalo y ponlo en **un solo gráfico** (cualquiera). Activa "Algo Trading".
-2. Parámetros importantes:
-   - `InpModo`: **FONDEADO** (riesgo normal) o **EXAMEN** (riesgo × `InpMultExamen`, por defecto ×1: mismo riesgo 0,5).
-   - `InpRiesgoPct` = 0,5 % por operación (riesgo = volatilidad objetivo).
-   - `InpPerdidaDiariaMaxPct` = 3,5 % (por debajo del 5 % de FTMO) y `InpPerdidaTotalMaxPct` = 8 % (por debajo del 10 %).
-   - Nombres de los símbolos (igual que en el script) y `InpCestaE12`.
-   - `InpFechasBCE`: fechas de reunión de política monetaria del BCE, formato `AAAA.MM.DD,AAAA.MM.DD` (de ecb.europa.eu). Si se deja vacío,
-     la ventaja del euro no se salta esos días (avisa al arrancar).
-   - `InpFestivosNYSE`: viene con 2025-2027; ampliar cuando haga falta.
-   - `InpDSTServidor`: FTMO y MetaQuotes-Demo usan el horario de verano **europeo** (valor por defecto).
-3. Cada estrategia se puede activar o desactivar por separado.
-4. El EA guarda cada evento (entradas, salidas, stops, días sin operar y motivo) en `MQL5/Files/Cartera_6_Ventajas_log.csv`.
-   Mándamelo cada 2-4 semanas para comparar con el backtest.
-
-## Qué hace cada estrategia (hora de Nueva York)
-| Estrategia | Símbolo(s) | Días | Entrada → salida |
+## Parámetros que hay que mirar
+| Parámetro | Upcomers Horizon | Upcomers Odyssey | FTMO |
 |---|---|---|---|
-| E2 euro | EURUSD corto | laborables salvo festivos TARGET / Inglaterra / BCE | 06:00 → 08:00 |
-| E8 oro | XAUUSD largo | viernes (no festivos) | 16:00 → 16:45 (`InpE8_Salida`; 16:55 en la regla original) |
-| E10 plata | XAGUSD largo | víspera de festivo NYSE | 16:00 → 16:55 |
-| E13 Nikkei | JP225.cash largo | 2.º día hábil de ene/abr/jul/oct | 15:00 → 16:00 (`InpE13_NikkeiTrimestre`, **desactivada por defecto** hasta medir su coste) |
-| E14 FTSE | UK100.cash largo | 3 días hábiles antes de cada decisión del Banco de Inglaterra (`InpFechasBoE`) | 11:30 NY (≈ cierre de Londres) → 11:30 NY dos días hábiles después (`InpE14_FTSEantesBoE`, **desactivada**: candidata C80 sin validar tras publicarse) |
-| E15 oro | XAUUSD corto | antepenúltimo día hábil del mes | 09:30 → 10:00 (`InpE15_OroDmenos2`, desactivada hasta medir coste) |
-| E16 Nikkei | JP225.cash corto | penúltimo día hábil del trimestre | 20:00 → 21:00 (`InpE16_NikkeiQmenos2`, desactivada hasta medir coste) |
-| E9 yen fin de mes | USDJPY largo | antepenúltimo día laborable del mes | 07:00 → 08:00 |
-| E11 yen fin de trimestre | USDJPY, EURJPY, GBPJPY corto (1/3 c/u) | último día laborable de mar/jun/sep/dic | 00:30 → 02:00 |
-| E12 materias primas | cesta larga (igual riesgo) | día antes de la víspera de festivo | 13:55 → 13:55 del día siguiente |
+| `InpRiesgoPct` | 0,5 | 0,5–0,65 | 0,5–0,65 |
+| `InpPerdidaDiariaMaxPct` | 2,5 (regla 3 %) | 3,5 (regla 4 %) | 4 (regla 5 %) |
+| `InpPerdidaTotalMaxPct` / `InpPerdidaTotalArrastre` | 5,5 / true | 9 / false | 9 / false |
+| `InpPerdidaMaxOperacionPct` | 1,4 (regla 1,5 %) | 0 o 1,4 | 0 |
+| Nikkei / bitcoin | `JPCJPY.c` / `BTCUSD.nx` | igual | `JP225.cash` / `BTCUSD` (en FTMO bitcoin **no** compensa: desactívalo) |
+| `InpNikkeiCierreViernes` | 1555 | 1555 | revisar |
 
-## Protecciones
-- No abre ni cierra a ±2 minutos de una noticia de **alto impacto** de las divisas implicadas (calendario de MT5): si la hay al entrar, ese día no opera;
-  si la hay al salir, espera hasta 5 minutos.
-- Pérdida diaria: si el día pierde `InpPerdidaDiariaMaxPct`, cierra todo y no opera más ese día.
-- Pérdida total: si se pierde `InpPerdidaTotalMaxPct` desde el balance inicial, deja de operar.
-- Stop de catástrofe en cada operación a 4 desviaciones de la franja.
-- `InpSoloDemo = true`: no opera en cuentas reales.
-- Cierre de fin de semana: si un simbolo va a cerrar mas de 20 h (fin de semana) en menos de `InpMinAntesCierre` (5) minutos, el EA cierra lo que tenga abierto en el ("cierre_antes_cierre_sesion"), y no entra si ese cierre llega antes de la hora de salida ("sin_entrada_cierre_sesion_Xmin"). En FTMO el oro cierra el viernes a las 16:50 NY (23:50 servidor): por eso E8 sale a las 16:45 (E8b, preregistrada y validada el 27-oct-2026). En la demo de MetaQuotes el oro cierra a las 16:00 NY: alli E8 no puede operar (desactivala).
-- E12 nunca mantiene posiciones durante el fin de semana (si la víspera es lunes, ese festivo no se opera).
+- `InpModo` = EXAMEN con `InpMultExamen` = 1 → mismo riesgo en examen y en fondeada.
+- `InpFestivosNYSE` trae 2025-2027.
+- `InpSoloDemo` = false: las cuentas de las prop firms suelen ser demo, pero así el EA no se bloquea si la cuenta figura como real.
 
-## Diferencias conocidas con el backtest
-- Tamaño: E9, E10, E11 y E12 estiman la volatilidad con la misma franja de los últimos 60 días laborables (no solo los días de la señal, que son pocos);
-  E8 usa los últimos 52 viernes y E2 los últimos 60 días, como en el backtest.
-- E12 entra y sale a las 13:55 NY (los cereales cierran a las 14:20); el backtest usó cierres diarios.
-- El EA no está compilado ni probado en este entorno (no hay MetaEditor): la primera compilación y unos días de demo sirven de prueba.
+## Estrategias (hora de Nueva York)
+| Estrategia | Símbolo | Días | Entrada → salida | Peso |
+|---|---|---|---|---|
+| E8 | XAUUSD largo | viernes | 16:00 → 16:45 (`InpE8_Salida`; Upcomers cotiza hasta 16:59) | 1 |
+| E9 | USDJPY largo | antepenúltimo laborable del mes | 07:00 → 08:00 | 1 |
+| E11 | USDJPY+EURJPY+GBPJPY corto | último laborable de mar/jun/sep/dic | 00:30 → 02:00 | 1/3 cada uno |
+| E15 | XAUUSD corto | antepenúltimo laborable del mes | 09:30 → 10:00 | 1 |
+| E13 | Nikkei largo | 2.º laborable de ene/abr/jul/oct | 15:00 → 16:00 | 1 |
+| E16 | Nikkei corto | penúltimo laborable de mar/jun/sep/dic | 20:00 → 21:00 | 1 |
+| C93 | XAUUSD | laborables | ruptura del máx./mín. de la sesión anterior entre 08:00 y 15:00; stop 1 ATR(14), objetivo 3 ATR; salida 16:45 | 0,2 |
+| C99 | XAUUSD | laborables | ruptura del rango 19:00–03:00 entre 03:00 y 11:00; stop en el otro extremo, objetivo 1 anchura; salida 16:45 | 0,2 |
+| C101 | Nikkei | laborables | igual que C99 (el viernes sale a las 15:50 por el cierre del Nikkei) | 0,2 |
+| Bitcoin | BTCUSD largo | laborables | 21:00 → 23:00 **UTC**; no entra si el spread > 1,5 pb | 0,2 |
+
+Desactivadas: E2 euro (quitado de la cartera), E10 plata y plata (spread 7–14 pb), E12 cesta, E14 FTSE, C113 oro Asia (pendiente de comprobar en CFD).
+
+## Cómo funciona
+- **Tamaño** = riesgo × peso / sigma de la franja (la mayor de 60 y 250 días) × escala de volatilidad, con tope de exposición después de la escala.
+  Si el broker no tiene historial suficiente, usa la sigma típica ×1,3 y avisa (`aviso_sigma_respaldo_sin_historico`).
+- **Control de volatilidad**: al cerrar cada sesión (17:00 NY) guarda el resultado en `Cartera_CFD_pnl_diario.csv` **dividido por la escala** en vigor;
+  a partir de 40 sesiones la escala = 0,33 % ÷ desviación de las últimas 60 (entre 0,5 y 2). **No borres ese archivo.**
+- **Stops**: franjas, stop de catástrofe a 4 sigmas recortado para no perder más de `InpPerdidaMaxOperacionPct`; rupturas, el stop de la regla
+  (si la pérdida pasaría del máximo, se reducen los lotes, no se mueve el stop).
+- **Pausas de sesión**: cierra 5 min antes de cualquier pausa de más de 30 min (o del fin de semana en las de varias noches);
+  no entra si la sesión no cubre al menos el 75 % de la franja.
+- **Avisos** con sonido (y al móvil con `InpNotificacionesMovil`): errores, paradas, stops de catástrofe, falta de historial, símbolo no encontrado.
+- **Registro**: `MQL5/Files/Cartera_CFD_log.csv`. Mándamelo cada semana las primeras semanas.
