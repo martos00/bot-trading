@@ -58,7 +58,7 @@ input double InpPesoDiarias          = 0.2;    // peso de las diarias (C93, C99,
 input bool   InpControlVol           = true;   // control de volatilidad de la cartera (escala 0,5-2 segun los ultimos 60 dias)
 input double InpVolObjetivo          = 0.35;   // volatilidad diaria objetivo en % a riesgo 0,5 (backtest de esta cartera CFD con bitcoin y oro 16:55, C116: 0,35)
 input double InpStopSigmas           = 4.0;    // stop de catastrofe en sigmas
-input double InpPerdidaMaxOperacionPct = 1.4;  // perdida maxima por operacion si salta el stop, % del balance (Upcomers Horizon: max 1,5 %); 0 = sin limite
+input double InpPerdidaMaxOperacionPct = 2.9;  // perdida maxima por operacion si salta el stop, % del balance (Upcomers CFD: 3 % segun thetrustedprop, sin confirmar; el 1,5 % es de su Horizon de FUTUROS); 0 = sin limite
 input double InpTopeExposicionFX     = 10.0;   // exposicion maxima por operacion (x balance) en divisas
 input double InpTopeExposicionOtros  = 6.0;    // idem en metales, indices y cripto
 input double InpRedondeoMin          = 0.5;    // fraccion de lote minimo a partir de la cual se redondea hacia arriba (Nikkei: lote minimo 1)
@@ -112,6 +112,8 @@ input bool   InpSoloDemo             = false;  // true: negarse a operar si la c
 input int    InpOffsetServidorInv    = 1;      // SOLO Probador: hora servidor - UTC en invierno (Upcomers 1; FTMO/MetaQuotes 2)
 input int    InpMinAntesCierre       = 5;      // cierra lo abierto estos minutos antes de una pausa de sesion del simbolo
 input double InpMaxSpreadPb          = 0;      // >0: no entrar si el spread (pb del precio) supera esto (todas las estrategias)
+input bool   InpOrdenLimitada        = false;  // PRUEBA EN DEMO: entrar con orden limitada al precio medio; si no se llena en InpSegundosLimitada, el resto a mercado
+input int    InpSegundosLimitada     = 20;     // segundos de espera de la orden limitada (el EA queda parado ese tiempo)
 input bool   InpSigmaRespaldo        = true;   // si el broker no tiene historico suficiente para la sigma, usar la sigma tipica x1,3 (se registra)
 input bool   InpNotificacionesMovil  = false;  // enviar tambien los avisos al movil (MetaQuotes ID en Herramientas > Opciones > Notificaciones)
 input ulong  InpMagicoBase           = 61000;  // magico de cada estrategia = base + numero
@@ -504,12 +506,40 @@ void CerrarMagico(int numero, string motivo)
       else Registrar(g_nombre[numero], sim, "error_cierre_" + IntegerToString(g_trade.ResultRetcode()), vol, 0, SymbolInfoDouble(sim, SYMBOL_BID), 0, 0);
      }
   }
+// orden limitada al precio medio (redondeado a favor del mercado); espera InpSegundosLimitada; devuelve los lotes llenados
+double EntrarLimitada(int numero, string nombre, string sim, int lado, double lot, double sl, double tp, double spreadPb, double sg)
+  {
+   double bid = SymbolInfoDouble(sim, SYMBOL_BID), ask = SymbolInfoDouble(sim, SYMBOL_ASK), tick = SymbolInfoDouble(sim, SYMBOL_TRADE_TICK_SIZE);
+   if(bid <= 0 || ask <= 0 || tick <= 0) return 0;
+   double medio = (bid + ask) / 2, px = lado > 0 ? MathFloor(medio / tick) * tick : MathCeil(medio / tick) * tick;
+   int dig = (int)SymbolInfoInteger(sim, SYMBOL_DIGITS); px = NormalizeDouble(px, dig);
+   if((lado > 0 && px >= ask) || (lado < 0 && px <= bid)) return 0;          // spread de 1 tick: no hay nada que ganar
+   bool ok = lado > 0 ? g_trade.BuyLimit(lot, px, sim, sl, tp, ORDER_TIME_GTC, 0, nombre) : g_trade.SellLimit(lot, px, sim, sl, tp, ORDER_TIME_GTC, 0, nombre);
+   if(!ok) { Registrar(nombre, sim, "aviso_error_orden_limitada_" + IntegerToString(g_trade.ResultRetcode()), lot, sg, px, spreadPb, 0); return 0; }
+   ulong ord = g_trade.ResultOrder();
+   uint t0 = GetTickCount();
+   while(GetTickCount() - t0 < (uint)InpSegundosLimitada * 1000 && OrderSelect(ord)) Sleep(250);
+   if(OrderSelect(ord)) g_trade.OrderDelete(ord);
+   Sleep(300);
+   double llenado = 0;
+   if(HistoryOrderSelect(ord)) llenado = HistoryOrderGetDouble(ord, ORDER_VOLUME_INITIAL) - HistoryOrderGetDouble(ord, ORDER_VOLUME_CURRENT);
+   Registrar(nombre, sim, (lado > 0 ? "compra" : "venta") + string("_limitada_llenado_") + DoubleToString(llenado, 2) + "_de_" + DoubleToString(lot, 2), llenado, sg, px, spreadPb, 0);
+   return llenado;
+  }
 // envia la orden; recorta el stop para no perder mas de InpPerdidaMaxOperacionPct (franjas) y registra
 bool Abrir(int numero, string nombre, string sim, int lado, double lot, double sg, double sl, double tp, double spreadPb, string etiqueta)
   {
    g_trade.SetExpertMagicNumber(Magico(numero));
    int dig = (int)SymbolInfoInteger(sim, SYMBOL_DIGITS);
    sl = NormalizeDouble(sl, dig); if(tp > 0) tp = NormalizeDouble(tp, dig);
+   if(InpOrdenLimitada && !EnProbador())
+     {
+      double llenado = EntrarLimitada(numero, nombre, sim, lado, lot, sl, tp, spreadPb, sg);
+      double paso = SymbolInfoDouble(sim, SYMBOL_VOLUME_STEP); if(paso <= 0) paso = 0.01;
+      double resto = NormalizeDouble(MathFloor((lot - llenado) / paso + 1e-6) * paso, 2);
+      if(resto < SymbolInfoDouble(sim, SYMBOL_VOLUME_MIN) - 1e-9) return llenado > 0;
+      lot = resto; etiqueta = etiqueta + "_resto_a_mercado";
+     }
    bool ok = lado > 0 ? g_trade.Buy(lot, sim, 0, sl, tp, nombre) : g_trade.Sell(lot, sim, 0, sl, tp, nombre);
    double precio = lado > 0 ? SymbolInfoDouble(sim, SYMBOL_ASK) : SymbolInfoDouble(sim, SYMBOL_BID);
    Registrar(nombre, sim, ok ? etiqueta : "error_entrada_" + IntegerToString(g_trade.ResultRetcode()), lot, sg, ok ? g_trade.ResultPrice() : precio, spreadPb, 0);

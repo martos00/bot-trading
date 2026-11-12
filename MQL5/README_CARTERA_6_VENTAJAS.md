@@ -17,7 +17,7 @@ riesgo 0,5 % → 11,0 %/año (al 60 % ≈ 6,6 %), caída máx. −9,0 %; riesgo 
 | `InpRiesgoPct` | 0,5 | 0,5–0,65 | 0,5–0,65 |
 | `InpPerdidaDiariaMaxPct` | 2,5 (regla 3 %) | 3,5 (regla 4 %) | 4 (regla 5 %) |
 | `InpPerdidaTotalMaxPct` / `InpPerdidaTotalArrastre` | 5,5 / true | 9 / false | 9 / false |
-| `InpPerdidaMaxOperacionPct` | 1,4 (regla 1,5 %) | 0 o 1,4 | 0 |
+| `InpPerdidaMaxOperacionPct` | 2,9 (3 % según terceros, sin confirmar) | 2,9 | 0 |
 | Nikkei / bitcoin | `JPCJPY.c` / `BTCUSD.nx` | igual | `JP225.cash` / `BTCUSD` (en FTMO bitcoin **no** compensa: desactívalo) |
 | `InpNikkeiCierreViernes` | 1555 | 1555 | revisar |
 

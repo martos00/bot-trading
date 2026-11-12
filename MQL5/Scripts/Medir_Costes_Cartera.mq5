@@ -32,6 +32,7 @@ input string InpGBPJPY  = "GBPJPY";
 input string InpEURUSD  = "EURUSD";
 input string InpNikkei  = "JP225.cash";   // nombre FTMO del Nikkei
 input string InpBitcoin = "BTCUSD";
+input string InpCobre   = "";        // cobre (C102 ruptura asiatica): nombre exacto en la cuenta, p. ej. "COPPER", "XCUUSD", "HG" (vacio = no medir)
 input group "Ajustes"
 input int    InpDias    = 180;            // dias naturales hacia atras (si faltan ticks, abre el grafico M1 del simbolo y desplazate atras)
 input ENUM_DST_SERVIDOR InpDSTServidor = DST_EUROPA;
@@ -204,6 +205,7 @@ void OnStart()
    for(int h = 8; h <= 14; h++) Medir(StringFormat("C93 oro dia anterior %02d:00", h), InpOro, 0, h, 0, 16, 45, 0, hoy);
    for(int h = 3; h <= 10; h++) Medir(StringFormat("C101 Nikkei rango asia %02d:00", h), InpNikkei, 0, h, 0, 16, 45, 0, hoy);
    // --- bitcoin 21-23 UTC (en NY: 16-18 en invierno, 17-19 en verano; se mide en invierno y en verano por separado) ---
+   if(InpCobre != "") for(int h = 3; h <= 10; h++) Medir(StringFormat("C102 cobre rango asia %02d:00", h), InpCobre, 0, h, 0, 16, 45, 0, hoy);
    Medir("Bitcoin 16:00-18:00 NY",   InpBitcoin, 0, 16, 0, 18, 0, 0, hoy);
    Medir("Bitcoin 17:00-19:00 NY",   InpBitcoin, 0, 17, 0, 19, 0, 0, hoy);
 
@@ -214,7 +216,7 @@ void OnStart()
    int fs = FileOpen("costes_cartera_simbolos.csv", FILE_WRITE | FILE_CSV | FILE_ANSI, ',');
    FileWrite(fs, "simbolo", "tamano_contrato", "lote_min", "paso_lote", "lote_max", "tick", "valor_tick", "decimales", "divisa_beneficio", "swap_largo", "swap_corto");
    DatosSimbolo(fs, InpOro); DatosSimbolo(fs, InpPlata); DatosSimbolo(fs, InpUSDJPY); DatosSimbolo(fs, InpEURJPY); DatosSimbolo(fs, InpGBPJPY);
-   DatosSimbolo(fs, InpEURUSD); DatosSimbolo(fs, InpNikkei); DatosSimbolo(fs, InpBitcoin);
+   DatosSimbolo(fs, InpEURUSD); DatosSimbolo(fs, InpNikkei); DatosSimbolo(fs, InpBitcoin); if(InpCobre != "") DatosSimbolo(fs, InpCobre);
    FileClose(fs);
    Print("Listo. Manda los 3 CSV de MQL5/Files (costes_cartera_resumen.csv, costes_cartera_detalle.csv, costes_cartera_simbolos.csv) y la COMISION por lote de cada simbolo de tu firma.");
   }
