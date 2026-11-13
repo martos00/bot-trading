@@ -1,0 +1,4 @@
+PRUDENTE Apex 150K EOD (examen 1,5, reintentos)           | 1.er cobro desde la compra: mediana 1.3 m (25 % ≤ 0.7, 75 % ≤ 2.1) | pierde la fondeada antes del 1.er cobro 40 % | gasto medio hasta ahí 524 $
+PRUDENTE TPT 150K (examen 1,0 supuesto, cuota 360 $/mes*) | 1.er cobro desde la compra: mediana 2.0 m (25 % ≤ 1.1, 75 % ≤ 3.4) | pierde la fondeada antes del 1.er cobro 78 % | gasto medio hasta ahí 3,780 $
+BACKTEST Apex 150K EOD (examen 1,5, reintentos)           | 1.er cobro desde la compra: mediana 0.9 m (25 % ≤ 0.6, 75 % ≤ 1.5) | pierde la fondeada antes del 1.er cobro 21 % | gasto medio hasta ahí 441 $
+BACKTEST TPT 150K (examen 1,0 supuesto, cuota 360 $/mes*) | 1.er cobro desde la compra: mediana 1.4 m (25 % ≤ 0.9, 75 % ≤ 2.4) | pierde la fondeada antes del 1.er cobro 66 % | gasto medio hasta ahí 1,940 $
