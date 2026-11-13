@@ -1,0 +1,11 @@
+σ oro viernes 11.3 pb | σ plata viernes 14.2 pb | viernes con datos de los dos: 788
+
+===== ORO viernes: 753 viernes =====
+Descriptivo: pico favorable medio 0.89 σ (mediana 0.63) | resultado final medio +0.35 σ | se devuelve de media 0.54 σ | acaban por debajo de la mitad de su pico 53 % | tocan +1 σ en algún momento 32 %
+Dentro de muestra (2010-2017), resultado medio por operación en σ: normal +0.270 | T1 +0.153 | T1.5 +0.189 | T2 +0.207 | R1 +0.163 | R2 +0.190 | R3 +0.209
+→ Ninguna regla supera a la salida normal dentro de muestra: NO HAY REGLA
+
+===== PLATA viernes: 748 viernes =====
+Descriptivo: pico favorable medio 0.90 σ (mediana 0.66) | resultado final medio +0.38 σ | se devuelve de media 0.52 σ | acaban por debajo de la mitad de su pico 49 % | tocan +1 σ en algún momento 34 %
+Dentro de muestra (2010-2017), resultado medio por operación en σ: normal +0.209 | T1 +0.105 | T1.5 +0.148 | T2 +0.178 | R1 +0.108 | R2 +0.114 | R3 +0.145
+→ Ninguna regla supera a la salida normal dentro de muestra: NO HAY REGLA

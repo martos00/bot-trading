@@ -68,6 +68,7 @@ tiempo de desaparecer). Cada prueba nueva se pre-registra antes de calcular. Con
 | Mejoras de la cartera CFD (Upcomers): bitcoin 21-23 UTC, euro E2, C113, oro viernes 16:55 | C116 | **Bitcoin (+0,26 Sharpe, t 3,55) y oro 16:55 (+0,17; tramo t 3,57) pasan**; euro (−0,47) y C113 (t 1,42) no. Cartera CFD 1,82 → 2,24 |
 | Ethereum 21-23 UTC en la cartera CFD (añadido o en cesta con bitcoin) | C117 | No: ETH neto +7,7 pb (t 3,09) pero correlación 0,77 con bitcoin; ΔSharpe +0,01 / −0,02 |
 | Bitcoin en la ventana del fixing de los ETF (15-16 NY) y reversión día/noche de 12 h en BTC/ETH (estudios de 2026) | C118 | No: F1 +0,48 pb (t 0,22); R1/R2 fuera de muestra t 0,75 / 0,36 |
+| Salida anticipada en el oro y la plata del viernes (objetivo fijo o stop que sigue al pico) | C119 | No: todas las reglas peores que salir a la hora (oro +0,27 σ frente a ≤ +0,21) |
 | Régimen de gamma de opciones del oro (GEX) y dirección intradía | C88 | No (−1,25 pb; al revés de la teoría) |
 | Cripto 21-23 UTC en SOL, XRP (y LTC, ADA, BNB informativos) | C91 | No: el efecto es general pero tras publicarse solo es significativo en BTC, ETH y BNB |
 | Presión antes del pago de funding de perpetuos (BTC, ETH) | C92 | No pasa; BTC 16:00 UTC (+8,9 pb, t 2,18) y ETH 08:00 (+7,6, t 1,96) desde 2023, a vigilar |
