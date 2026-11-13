@@ -1,0 +1,24 @@
+sin rupturas  PRUDENTE riesgo 1.00 | aprueba: empezando cualquier día  27 % | si el mes incluye el cambio de trimestre  32 % | si no  24 %
+sin rupturas  PRUDENTE riesgo 1.25 | aprueba: empezando cualquier día  33 % | si el mes incluye el cambio de trimestre  39 % | si no  30 %
+sin rupturas  PRUDENTE riesgo 1.50 | aprueba: empezando cualquier día  36 % | si el mes incluye el cambio de trimestre  44 % | si no  32 %
+sin rupturas  PRUDENTE riesgo 2.00 | aprueba: empezando cualquier día  41 % | si el mes incluye el cambio de trimestre  47 % | si no  38 %
+sin rupturas  BACKTEST riesgo 1.00 | aprueba: empezando cualquier día  33 % | si el mes incluye el cambio de trimestre  41 % | si no  29 %
+sin rupturas  BACKTEST riesgo 1.25 | aprueba: empezando cualquier día  41 % | si el mes incluye el cambio de trimestre  52 % | si no  35 %
+sin rupturas  BACKTEST riesgo 1.50 | aprueba: empezando cualquier día  47 % | si el mes incluye el cambio de trimestre  55 % | si no  42 %
+sin rupturas  BACKTEST riesgo 2.00 | aprueba: empezando cualquier día  55 % | si el mes incluye el cambio de trimestre  61 % | si no  51 %
++ C93         PRUDENTE riesgo 1.00 | aprueba: empezando cualquier día  26 % | si el mes incluye el cambio de trimestre  33 % | si no  23 %
++ C93         PRUDENTE riesgo 1.25 | aprueba: empezando cualquier día  34 % | si el mes incluye el cambio de trimestre  43 % | si no  29 %
++ C93         PRUDENTE riesgo 1.50 | aprueba: empezando cualquier día  38 % | si el mes incluye el cambio de trimestre  47 % | si no  33 %
++ C93         PRUDENTE riesgo 2.00 | aprueba: empezando cualquier día  41 % | si el mes incluye el cambio de trimestre  49 % | si no  36 %
++ C93         BACKTEST riesgo 1.00 | aprueba: empezando cualquier día  36 % | si el mes incluye el cambio de trimestre  43 % | si no  32 %
++ C93         BACKTEST riesgo 1.25 | aprueba: empezando cualquier día  43 % | si el mes incluye el cambio de trimestre  53 % | si no  37 %
++ C93         BACKTEST riesgo 1.50 | aprueba: empezando cualquier día  48 % | si el mes incluye el cambio de trimestre  58 % | si no  42 %
++ C93         BACKTEST riesgo 2.00 | aprueba: empezando cualquier día  52 % | si el mes incluye el cambio de trimestre  59 % | si no  48 %
++ C93 + C99   PRUDENTE riesgo 1.00 | aprueba: empezando cualquier día  28 % | si el mes incluye el cambio de trimestre  36 % | si no  24 %
++ C93 + C99   PRUDENTE riesgo 1.25 | aprueba: empezando cualquier día  35 % | si el mes incluye el cambio de trimestre  42 % | si no  31 %
++ C93 + C99   PRUDENTE riesgo 1.50 | aprueba: empezando cualquier día  39 % | si el mes incluye el cambio de trimestre  43 % | si no  37 %
++ C93 + C99   PRUDENTE riesgo 2.00 | aprueba: empezando cualquier día  41 % | si el mes incluye el cambio de trimestre  48 % | si no  37 %
++ C93 + C99   BACKTEST riesgo 1.00 | aprueba: empezando cualquier día  38 % | si el mes incluye el cambio de trimestre  46 % | si no  33 %
++ C93 + C99   BACKTEST riesgo 1.25 | aprueba: empezando cualquier día  44 % | si el mes incluye el cambio de trimestre  52 % | si no  39 %
++ C93 + C99   BACKTEST riesgo 1.50 | aprueba: empezando cualquier día  48 % | si el mes incluye el cambio de trimestre  55 % | si no  44 %
++ C93 + C99   BACKTEST riesgo 2.00 | aprueba: empezando cualquier día  50 % | si el mes incluye el cambio de trimestre  58 % | si no  45 %
