@@ -25,9 +25,9 @@ def pa(R, M):
 for hair, et, nex in ((0.6, 'PRUDENTE', 3.3), (1.0, 'BACKTEST', 2.2)):
     repo = nex * 219 + 159
     for r in (0.35, 0.5, 0.65, 0.8, 1.0):
-        x = (SA - SA.mean() * (1 - hair)) * CAP * r / 0.5
+        x = (SA - SA.mean() * (1 - hair)) * r / 0.5          # camino() ya multiplica por CAP
         for M in (0, 2000):
-            F = [pa(camino(x, 2000) / CAP * CAP, M) for _ in range(3000)]
+            F = [pa(camino(x, 2000), M) for _ in range(3000)]
             tot = np.array([sum(q) for q, _ in F]); vida = np.array([v for _, v in F]) / 21; n6 = np.mean([len(q) == 6 for q, _ in F])
             neto = (tot.mean() - repo) / vida.mean()
             print(f'{et:8s} riesgo fondeada {r:.2f} {"+ mitad cerca del límite" if M else "                        "} | 6 cobros {n6*100:3.0f} % | se pierde {100-n6*100:3.0f} % | cobrado {tot.mean():6,.0f} $ | '
