@@ -43,6 +43,7 @@ class Tpt:
         if s.bal <= piso: s.__init__(); return c, g
         if t % 5 == 0 and s.bal > 6500: q = s.bal - 6500; s.bal -= q; c = 0.8 * q
         return c, g
+CAP = 150000
 T = 8 * 252; rng = np.random.default_rng(77)
 for hair, et, pex in ((0.6, 'PRUDENTE', 0.31), (1.0, 'BACKTEST', 0.45)):
     X = {k: (J[k] - J[k].mean() * (1 - hair)).values for k in ('U', 'T', 'O', 'AP', 'TP')}
