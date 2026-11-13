@@ -1,0 +1,12 @@
+PRUDENTE tope diario sin tope | entre cobros mediana 2.8 m | 6 cobros  43 % | cobrado por cuenta  9,322 $ | vida 13.5 m | por plaza y mes   691 $ → 20 plazas  13,824 $/mes
+PRUDENTE tope diario 600 $    | entre cobros mediana 1.4 m | 6 cobros   0 % | cobrado por cuenta    178 $ | vida  3.5 m | por plaza y mes    51 $ → 20 plazas   1,027 $/mes
+PRUDENTE tope diario 900 $    | entre cobros mediana 1.4 m | 6 cobros   2 % | cobrado por cuenta  1,128 $ | vida  4.3 m | por plaza y mes   263 $ → 20 plazas   5,255 $/mes
+PRUDENTE tope diario 1,200 $  | entre cobros mediana 1.5 m | 6 cobros   6 % | cobrado por cuenta  2,606 $ | vida  5.0 m | por plaza y mes   522 $ → 20 plazas  10,434 $/mes
+PRUDENTE tope diario 1,500 $  | entre cobros mediana 1.7 m | 6 cobros  11 % | cobrado por cuenta  4,104 $ | vida  5.9 m | por plaza y mes   700 $ → 20 plazas  14,007 $/mes
+PRUDENTE tope diario 2,000 $  | entre cobros mediana 1.9 m | 6 cobros  23 % | cobrado por cuenta  5,998 $ | vida  7.6 m | por plaza y mes   789 $ → 20 plazas  15,777 $/mes
+BACKTEST tope diario sin tope | entre cobros mediana 2.0 m | 6 cobros  69 % | cobrado por cuenta 14,010 $ | vida 11.8 m | por plaza y mes 1,191 $ → 20 plazas  23,818 $/mes
+BACKTEST tope diario 600 $    | entre cobros mediana 1.4 m | 6 cobros   9 % | cobrado por cuenta  2,025 $ | vida  6.3 m | por plaza y mes   323 $ → 20 plazas   6,467 $/mes
+BACKTEST tope diario 900 $    | entre cobros mediana 1.5 m | 6 cobros  24 % | cobrado por cuenta  5,217 $ | vida  7.0 m | por plaza y mes   741 $ → 20 plazas  14,828 $/mes
+BACKTEST tope diario 1,200 $  | entre cobros mediana 1.5 m | 6 cobros  37 % | cobrado por cuenta  8,280 $ | vida  7.7 m | por plaza y mes 1,078 $ → 20 plazas  21,552 $/mes
+BACKTEST tope diario 1,500 $  | entre cobros mediana 1.6 m | 6 cobros  48 % | cobrado por cuenta 10,522 $ | vida  8.3 m | por plaza y mes 1,261 $ → 20 plazas  25,224 $/mes
+BACKTEST tope diario 2,000 $  | entre cobros mediana 1.6 m | 6 cobros  59 % | cobrado por cuenta 12,154 $ | vida  9.2 m | por plaza y mes 1,321 $ → 20 plazas  26,413 $/mes
