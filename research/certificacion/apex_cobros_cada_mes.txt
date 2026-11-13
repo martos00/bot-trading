@@ -1,0 +1,12 @@
+PRUDENTE todas a 0,5, cobrar siempre        | meses con cobro  33 % | racha más larga sin cobrar (media)  7.5 meses | cobrado medio  14,126 $/mes
+PRUDENTE riesgos mezclados 0,35-0,8         | meses con cobro  39 % | racha más larga sin cobrar (media)  7.2 meses | cobrado medio  12,935 $/mes
+PRUDENTE 0,5 + cola: máx. 5 cobros/mes      | meses con cobro  60 % | racha más larga sin cobrar (media)  6.0 meses | cobrado medio   8,530 $/mes
+PRUDENTE 0,5 + cola: máx. 3 cobros/mes      | meses con cobro  77 % | racha más larga sin cobrar (media)  4.0 meses | cobrado medio   6,521 $/mes
+PRUDENTE 0,5 + cola: máx. 2 cobros/mes      | meses con cobro  83 % | racha más larga sin cobrar (media)  3.1 meses | cobrado medio   4,680 $/mes
+PRUDENTE mezclados + cola máx. 3/mes        | meses con cobro  77 % | racha más larga sin cobrar (media)  3.9 meses | cobrado medio   6,480 $/mes
+BACKTEST todas a 0,5, cobrar siempre        | meses con cobro  49 % | racha más larga sin cobrar (media)  5.1 meses | cobrado medio  23,249 $/mes
+BACKTEST riesgos mezclados 0,35-0,8         | meses con cobro  59 % | racha más larga sin cobrar (media)  4.2 meses | cobrado medio  22,970 $/mes
+BACKTEST 0,5 + cola: máx. 5 cobros/mes      | meses con cobro  84 % | racha más larga sin cobrar (media)  2.6 meses | cobrado medio  13,272 $/mes
+BACKTEST 0,5 + cola: máx. 3 cobros/mes      | meses con cobro  94 % | racha más larga sin cobrar (media)  1.3 meses | cobrado medio   8,655 $/mes
+BACKTEST 0,5 + cola: máx. 2 cobros/mes      | meses con cobro  96 % | racha más larga sin cobrar (media)  0.8 meses | cobrado medio   5,891 $/mes
+BACKTEST mezclados + cola máx. 3/mes        | meses con cobro  95 % | racha más larga sin cobrar (media)  1.1 meses | cobrado medio   8,724 $/mes
