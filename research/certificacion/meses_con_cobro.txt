@@ -1,0 +1,18 @@
+
+PRUDENTE: % de meses con algún cobro (≥ 500 $)
+   Apex ×20                :  32 % de los meses | racha media más larga sin cobrar: 8.0 meses
+   TPT ×5                  :  43 % de los meses | racha media más larga sin cobrar: 7.6 meses
+   Tradeify ×5             :  29 % de los meses | racha media más larga sin cobrar: 10.2 meses
+   Upcomers 2M             :  22 % de los meses | racha media más larga sin cobrar: 10.6 meses
+   Apex + TPT              :  50 % de los meses | racha media más larga sin cobrar: 5.8 meses
+   Apex + TPT + Tradeify   :  57 % de los meses | racha media más larga sin cobrar: 5.3 meses
+   TODAS                   :  59 % de los meses | racha media más larga sin cobrar: 4.9 meses
+
+BACKTEST: % de meses con algún cobro (≥ 500 $)
+   Apex ×20                :  49 % de los meses | racha media más larga sin cobrar: 5.3 meses
+   TPT ×5                  :  61 % de los meses | racha media más larga sin cobrar: 4.6 meses
+   Tradeify ×5             :  49 % de los meses | racha media más larga sin cobrar: 6.6 meses
+   Upcomers 2M             :  34 % de los meses | racha media más larga sin cobrar: 7.0 meses
+   Apex + TPT              :  69 % de los meses | racha media más larga sin cobrar: 3.6 meses
+   Apex + TPT + Tradeify   :  77 % de los meses | racha media más larga sin cobrar: 3.0 meses
+   TODAS                   :  79 % de los meses | racha media más larga sin cobrar: 2.8 meses
