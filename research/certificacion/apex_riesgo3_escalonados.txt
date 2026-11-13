@@ -1,0 +1,9 @@
+σ oro viernes 11.3 pb | σ plata viernes 14.2 pb | viernes con datos de los dos: 788
+PRUDENTE riesgo 3 | 1 examen                       | aprueba al menos uno  31 % | coste 219 $
+PRUDENTE riesgo 3 | 2 en el mes (cada 2 semanas)   | aprueba al menos uno  45 % | coste 438 $
+PRUDENTE riesgo 3 | 4 en el mes (1 por semana)     | aprueba al menos uno  53 % | coste 876 $
+PRUDENTE exámenes necesarios de media para aprobar uno: 3.3 (≈ 716 $)
+BACKTEST riesgo 3 | 1 examen                       | aprueba al menos uno  45 % | coste 219 $
+BACKTEST riesgo 3 | 2 en el mes (cada 2 semanas)   | aprueba al menos uno  60 % | coste 438 $
+BACKTEST riesgo 3 | 4 en el mes (1 por semana)     | aprueba al menos uno  68 % | coste 876 $
+BACKTEST exámenes necesarios de media para aprobar uno: 2.2 (≈ 489 $)
