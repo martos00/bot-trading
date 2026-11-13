@@ -81,7 +81,7 @@ def examen(x):
     return 0
 for hair, et in ((0.6, 'PRUDENTE'), (1.0, 'BACKTEST')):
     TOPE = 6
-for rpct in (1.0, 2.0, 3.0):
+    for rpct in (1.0, 2.0, 3.0):
         r = rpct / 100
         xm, toq, nv = serie_dia(r, 2000, hair, True); xd, _, _ = serie_dia(r, 2000, hair, False)
         pm = np.mean([examen(xm[i:i + 21]) for i in range(len(xm) - 21)]); pd_ = np.mean([examen(xd[i:i + 21]) for i in range(len(xd) - 21)])
