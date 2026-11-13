@@ -1,0 +1,12 @@
+(1) Días anómalos (festivo o cierre anticipado en EE. UU.)
+   yen             : operaciones en días anómalos   4 de  100 | media en anómalos +0.15 R·100 frente a normal +0.29
+   cesta_yen       : operaciones en días anómalos   7 de   34 | media en anómalos -0.01 R·100 frente a normal +0.13
+   oro_vie_1655    : operaciones en días anómalos   1 de  411 | media en anómalos -0.29 R·100 frente a normal +0.22
+   oro_D-2         : operaciones en días anómalos   3 de  100 | media en anómalos +0.72 R·100 frente a normal +0.16
+   plata_visp_1655 : operaciones en días anómalos  10 de   76 | media en anómalos +0.34 R·100 frente a normal +0.36
+   plata_viernes   : operaciones en días anómalos   1 de  412 | media en anómalos +0.12 R·100 frente a normal +0.17
+   cartera: 17 días anómalos con operación, suman +2.4 % del beneficio total
+
+(2) Yen E9 (FXCM 2012-2026, 174 operaciones): spread mediano a la entrada 0.20 pb
+   días con spread > 2× su mediana: 9 | neto medio esos días +3.40 pb frente a +3.18 pb el resto
+   saltándolos: neto total +525 pb frente a +556 pb operando todos; t 5.15 frente a 5.27
