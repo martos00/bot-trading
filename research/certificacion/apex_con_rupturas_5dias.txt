@@ -1,0 +1,8 @@
+M2 (sin rupturas)  PRUDENTE | días ≥350 $ al mes 3.1 | 1.er cobro 1.9 m | entre cobros 2.8 m | 6 cobros 43 % | cobrado por cuenta 9,176 $
+M2 (sin rupturas)  BACKTEST | días ≥350 $ al mes 3.4 | 1.er cobro 1.8 m | entre cobros 1.9 m | 6 cobros 69 % | cobrado por cuenta 14,001 $
+M2 + C99           PRUDENTE | días ≥350 $ al mes 3.5 | 1.er cobro 1.7 m | entre cobros 2.4 m | 6 cobros 39 % | cobrado por cuenta 8,413 $
+M2 + C99           BACKTEST | días ≥350 $ al mes 3.8 | 1.er cobro 1.6 m | entre cobros 1.7 m | 6 cobros 66 % | cobrado por cuenta 13,565 $
+M2 + C93           PRUDENTE | días ≥350 $ al mes 3.3 | 1.er cobro 1.9 m | entre cobros 2.5 m | 6 cobros 43 % | cobrado por cuenta 9,137 $
+M2 + C93           BACKTEST | días ≥350 $ al mes 3.6 | 1.er cobro 1.6 m | entre cobros 1.8 m | 6 cobros 70 % | cobrado por cuenta 14,293 $
+M2 + C93 + C99     PRUDENTE | días ≥350 $ al mes 4.0 | 1.er cobro 1.6 m | entre cobros 2.2 m | 6 cobros 38 % | cobrado por cuenta 8,277 $
+M2 + C93 + C99     BACKTEST | días ≥350 $ al mes 4.5 | 1.er cobro 1.5 m | entre cobros 1.5 m | 6 cobros 64 % | cobrado por cuenta 13,212 $
