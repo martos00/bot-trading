@@ -11,7 +11,11 @@ fórmula de abajo. Hora de España = hora de Nueva York + 6 (válido hasta el 8-
 - No hay micro yen (MJY): el yen solo con 6J (12,5 millones de yenes ≈ 78.000 $ por contrato).
 - Toda operación con stop (bracket).
 
-## Tamaño: riesgo 0,5 % en examen y en fondeada
+## Tamaño: riesgo 0,5 % en la fondeada (en el examen, ver la nota)
+
+**Nota (simulación minuto a minuto, `apex_examen_minuto.py`):** con esta cartera, aprobar el examen de 30 días sale ~4-6 % a riesgo 0,5,
+~9-13 % a 0,8 y ~12-16 % a 1,0 (prudente-backtest). Para el examen se recomienda riesgo 1,0 (multiplica por 2 los contratos de la tabla,
+salvo el yen, limitado a 12 contratos en total) y varios exámenes escalonados.
 Exposición = 0,5 % × 150.000 / σ (tope 6 × 150.000 = 900.000 $). Contratos = exposición / (precio × multiplicador); se redondea al entero
 más cercano. Multiplicadores: MGC 10 oz, GC 100 oz, SIL 1.000 oz, SI 5.000 oz, 6J 12.500.000 ¥ / USDJPY, NKD 5 $ × índice.
 Stop = 2 σ desde la entrada (dentro del límite diario); salida a la hora indicada si no salta antes.

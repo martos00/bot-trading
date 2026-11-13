@@ -1,0 +1,11 @@
+σ oro viernes 11.3 pb | σ plata viernes 14.2 pb | viernes con datos de los dos: 788
+PRUDENTE riesgo examen 0.50 | aprueba en 30 días: minuto a minuto   4 % (antes, al cierre:   4 %) | viernes que tocan el límite de 2.000 $   4 % de 375
+PRUDENTE riesgo examen 0.65 | aprueba en 30 días: minuto a minuto   7 % (antes, al cierre:   9 %) | viernes que tocan el límite de 2.000 $   7 % de 375
+PRUDENTE riesgo examen 0.80 | aprueba en 30 días: minuto a minuto   9 % (antes, al cierre:  14 %) | viernes que tocan el límite de 2.000 $   9 % de 375
+PRUDENTE riesgo examen 1.00 | aprueba en 30 días: minuto a minuto  12 % (antes, al cierre:  19 %) | viernes que tocan el límite de 2.000 $  11 % de 375
+PRUDENTE riesgo examen 1.25 | aprueba en 30 días: minuto a minuto  14 % (antes, al cierre:  27 %) | viernes que tocan el límite de 2.000 $  11 % de 375
+BACKTEST riesgo examen 0.50 | aprueba en 30 días: minuto a minuto   6 % (antes, al cierre:   5 %) | viernes que tocan el límite de 2.000 $   3 % de 375
+BACKTEST riesgo examen 0.65 | aprueba en 30 días: minuto a minuto  11 % (antes, al cierre:  10 %) | viernes que tocan el límite de 2.000 $   6 % de 375
+BACKTEST riesgo examen 0.80 | aprueba en 30 días: minuto a minuto  13 % (antes, al cierre:  15 %) | viernes que tocan el límite de 2.000 $   7 % de 375
+BACKTEST riesgo examen 1.00 | aprueba en 30 días: minuto a minuto  16 % (antes, al cierre:  22 %) | viernes que tocan el límite de 2.000 $   9 % de 375
+BACKTEST riesgo examen 1.25 | aprueba en 30 días: minuto a minuto  21 % (antes, al cierre:  30 %) | viernes que tocan el límite de 2.000 $  10 % de 375
