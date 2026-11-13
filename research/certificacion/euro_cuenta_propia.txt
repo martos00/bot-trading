@@ -1,0 +1,5 @@
+Euro E2 bruto 2018-2026: +1.39 pb por operación, σ 13.6 pb
+  coste sin costes (imposible)                     | euro solo: Sharpe 1.57 | cartera completa 2.68 → con euro 2.91 | rentabilidad a riesgo 0,5: 24.8 % → 39.3 %
+  coste 0,3 pb (órdenes limitadas, muy optimista)  | euro solo: Sharpe 1.22 | cartera completa 2.68 → con euro 2.68 | rentabilidad a riesgo 0,5: 24.8 % → 36.3 %
+  coste 0,6 pb (futuro 6E grande a mercado)        | euro solo: Sharpe 0.86 | cartera completa 2.68 → con euro 2.46 | rentabilidad a riesgo 0,5: 24.8 % → 33.3 %
+  coste 1,0 pb (micro M6E a mercado)               | euro solo: Sharpe 0.39 | cartera completa 2.68 → con euro 2.17 | rentabilidad a riesgo 0,5: 24.8 % → 29.3 %
