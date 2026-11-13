@@ -1,0 +1,6 @@
+PRUDENTE riesgo examen 1 | aprueba en 30 días: EOD  12 % | Intraday  11 %
+PRUDENTE riesgo examen 2 | aprueba en 30 días: EOD  22 % | Intraday  18 %
+PRUDENTE riesgo examen 3 | aprueba en 30 días: EOD  30 % | Intraday  24 %
+BACKTEST riesgo examen 1 | aprueba en 30 días: EOD  16 % | Intraday  16 %
+BACKTEST riesgo examen 2 | aprueba en 30 días: EOD  31 % | Intraday  27 %
+BACKTEST riesgo examen 3 | aprueba en 30 días: EOD  44 % | Intraday  36 %
