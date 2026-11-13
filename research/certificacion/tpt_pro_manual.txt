@@ -1,0 +1,20 @@
+
+=== sin oro de madrugada: 11.4 %/año a riesgo 0,5 | Sharpe 1.93
+PRUDENTE examen 0.65 / PRO 0.5 / colchón extra     0 $ | por cuenta    203 $/mes (media    228) → 5 cuentas   1,016 $/mes (  1,140) | pierde la PRO en 5 años 3.1 veces de media
+PRUDENTE examen 1.0 / PRO 0.5 / colchón extra     0 $ | por cuenta    283 $/mes (media    312) → 5 cuentas   1,417 $/mes (  1,558) | pierde la PRO en 5 años 3.4 veces de media
+PRUDENTE examen 1.0 / PRO 0.5 / colchón extra  2000 $ | por cuenta    361 $/mes (media    370) → 5 cuentas   1,805 $/mes (  1,849) | pierde la PRO en 5 años 2.4 veces de media
+PRUDENTE examen 1.0 / PRO 0.65 / colchón extra  2000 $ | por cuenta    376 $/mes (media    410) → 5 cuentas   1,881 $/mes (  2,051) | pierde la PRO en 5 años 3.6 veces de media
+BACKTEST examen 0.65 / PRO 0.5 / colchón extra     0 $ | por cuenta    712 $/mes (media    717) → 5 cuentas   3,558 $/mes (  3,586) | pierde la PRO en 5 años 2.3 veces de media
+BACKTEST examen 1.0 / PRO 0.5 / colchón extra     0 $ | por cuenta    789 $/mes (media    795) → 5 cuentas   3,946 $/mes (  3,973) | pierde la PRO en 5 años 2.4 veces de media
+BACKTEST examen 1.0 / PRO 0.5 / colchón extra  2000 $ | por cuenta    903 $/mes (media    890) → 5 cuentas   4,513 $/mes (  4,452) | pierde la PRO en 5 años 1.1 veces de media
+BACKTEST examen 1.0 / PRO 0.65 / colchón extra  2000 $ | por cuenta  1,094 $/mes (media  1,097) → 5 cuentas   5,469 $/mes (  5,486) | pierde la PRO en 5 años 2.2 veces de media
+
+=== con oro de madrugada (C113): 12.9 %/año a riesgo 0,5 | Sharpe 2.12
+PRUDENTE examen 0.65 / PRO 0.5 / colchón extra     0 $ | por cuenta    254 $/mes (media    281) → 5 cuentas   1,271 $/mes (  1,403) | pierde la PRO en 5 años 3.4 veces de media
+PRUDENTE examen 1.0 / PRO 0.5 / colchón extra     0 $ | por cuenta    348 $/mes (media    362) → 5 cuentas   1,738 $/mes (  1,812) | pierde la PRO en 5 años 4.0 veces de media
+PRUDENTE examen 1.0 / PRO 0.5 / colchón extra  2000 $ | por cuenta    451 $/mes (media    460) → 5 cuentas   2,253 $/mes (  2,302) | pierde la PRO en 5 años 2.6 veces de media
+PRUDENTE examen 1.0 / PRO 0.65 / colchón extra  2000 $ | por cuenta    490 $/mes (media    518) → 5 cuentas   2,448 $/mes (  2,590) | pierde la PRO en 5 años 4.1 veces de media
+BACKTEST examen 0.65 / PRO 0.5 / colchón extra     0 $ | por cuenta    878 $/mes (media    874) → 5 cuentas   4,389 $/mes (  4,369) | pierde la PRO en 5 años 2.4 veces de media
+BACKTEST examen 1.0 / PRO 0.5 / colchón extra     0 $ | por cuenta    960 $/mes (media    961) → 5 cuentas   4,798 $/mes (  4,803) | pierde la PRO en 5 años 2.6 veces de media
+BACKTEST examen 1.0 / PRO 0.5 / colchón extra  2000 $ | por cuenta  1,058 $/mes (media  1,052) → 5 cuentas   5,292 $/mes (  5,258) | pierde la PRO en 5 años 1.2 veces de media
+BACKTEST examen 1.0 / PRO 0.65 / colchón extra  2000 $ | por cuenta  1,281 $/mes (media  1,292) → 5 cuentas   6,404 $/mes (  6,462) | pierde la PRO en 5 años 2.4 veces de media
