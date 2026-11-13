@@ -1,0 +1,12 @@
+PRUDENTE 1 examen, riesgo 1,5                                 → aprueba al menos uno  37 %
+PRUDENTE 3 exámenes el MISMO día, riesgo 1,5                  → aprueba al menos uno  37 %
+PRUDENTE 3 exámenes el mismo día con riesgos 1,0 / 1,5 / 2,0  → aprueba al menos uno  46 %
+PRUDENTE 3 exámenes escalonados (uno cada semana), riesgo 1,5 → aprueba al menos uno  53 %
+PRUDENTE 4 exámenes escalonados (cada semana), riesgo 1,5     → aprueba al menos uno  60 %
+PRUDENTE 4 escalonados cada 2 semanas, riesgo 1,5             → aprueba al menos uno  73 %
+BACKTEST 1 examen, riesgo 1,5                                 → aprueba al menos uno  47 %
+BACKTEST 3 exámenes el MISMO día, riesgo 1,5                  → aprueba al menos uno  47 %
+BACKTEST 3 exámenes el mismo día con riesgos 1,0 / 1,5 / 2,0  → aprueba al menos uno  58 %
+BACKTEST 3 exámenes escalonados (uno cada semana), riesgo 1,5 → aprueba al menos uno  64 %
+BACKTEST 4 exámenes escalonados (cada semana), riesgo 1,5     → aprueba al menos uno  71 %
+BACKTEST 4 escalonados cada 2 semanas, riesgo 1,5             → aprueba al menos uno  83 %
