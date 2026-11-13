@@ -1,0 +1,5 @@
+peso C93+C99 0.00: Sharpe 2.49 | 2018-21 2.21 | 2022-26 2.68 | caída máx -16.9 desv. | parte del riesgo que ponen las rupturas 0 %
+peso C93+C99 0.20: Sharpe 2.53 | 2018-21 2.03 | 2022-26 2.89 | caída máx -18.5 desv. | parte del riesgo que ponen las rupturas 9 %
+peso C93+C99 0.35: Sharpe 2.42 | 2018-21 1.79 | 2022-26 2.87 | caída máx -18.5 desv. | parte del riesgo que ponen las rupturas 23 %
+peso C93+C99 0.50: Sharpe 2.26 | 2018-21 1.57 | 2022-26 2.75 | caída máx -19.2 desv. | parte del riesgo que ponen las rupturas 38 %
+peso C93+C99 1.00: Sharpe 1.77 | 2018-21 1.02 | 2022-26 2.30 | caída máx -19.6 desv. | parte del riesgo que ponen las rupturas 72 %
