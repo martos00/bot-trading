@@ -1,0 +1,16 @@
+todas (con oro de madrugada)   PRUDENTE riesgo 1.5 | aprueba en 30 días  36 % | días que tocan el límite diario de 2.000 $  6.1 %
+todas (con oro de madrugada)   PRUDENTE riesgo 2.0 | aprueba en 30 días  41 % | días que tocan el límite diario de 2.000 $  8.5 %
+todas (con oro de madrugada)   PRUDENTE riesgo 2.5 | aprueba en 30 días  45 % | días que tocan el límite diario de 2.000 $  9.9 %
+todas (con oro de madrugada)   PRUDENTE riesgo 3.0 | aprueba en 30 días  44 % | días que tocan el límite diario de 2.000 $ 12.2 %
+todas (con oro de madrugada)   BACKTEST riesgo 1.5 | aprueba en 30 días  47 % | días que tocan el límite diario de 2.000 $  5.4 %
+todas (con oro de madrugada)   BACKTEST riesgo 2.0 | aprueba en 30 días  55 % | días que tocan el límite diario de 2.000 $  7.6 %
+todas (con oro de madrugada)   BACKTEST riesgo 2.5 | aprueba en 30 días  59 % | días que tocan el límite diario de 2.000 $  9.1 %
+todas (con oro de madrugada)   BACKTEST riesgo 3.0 | aprueba en 30 días  62 % | días que tocan el límite diario de 2.000 $ 10.2 %
+solo operaciones grandes       PRUDENTE riesgo 1.5 | aprueba en 30 días  35 % | días que tocan el límite diario de 2.000 $  5.7 %
+solo operaciones grandes       PRUDENTE riesgo 2.0 | aprueba en 30 días  42 % | días que tocan el límite diario de 2.000 $  7.0 %
+solo operaciones grandes       PRUDENTE riesgo 2.5 | aprueba en 30 días  46 % | días que tocan el límite diario de 2.000 $  7.7 %
+solo operaciones grandes       PRUDENTE riesgo 3.0 | aprueba en 30 días  47 % | días que tocan el límite diario de 2.000 $  8.3 %
+solo operaciones grandes       BACKTEST riesgo 1.5 | aprueba en 30 días  45 % | días que tocan el límite diario de 2.000 $  5.3 %
+solo operaciones grandes       BACKTEST riesgo 2.0 | aprueba en 30 días  54 % | días que tocan el límite diario de 2.000 $  6.6 %
+solo operaciones grandes       BACKTEST riesgo 2.5 | aprueba en 30 días  60 % | días que tocan el límite diario de 2.000 $  7.5 %
+solo operaciones grandes       BACKTEST riesgo 3.0 | aprueba en 30 días  64 % | días que tocan el límite diario de 2.000 $  7.8 %
