@@ -1,0 +1,8 @@
+Cartera completa (cuenta propia): Sharpe 2.65 | NG bruto +5.47 pb (n 2036, 2026: -9.06) | euro bruto +1.33 pb
+  + euro a 0,3 pb (peso 1)                   | Sharpe 2.68 (+0.04) | 2018-21 2.28 | 2022-26 3.02
+  + euro a 0,2 pb (peso 1)                   | Sharpe 2.76 (+0.11) | 2018-21 2.36 | 2022-26 3.09
+  + euro a 0,3 pb (peso 0,3)                 | Sharpe 2.69 (+0.04) | 2018-21 2.31 | 2022-26 3.01
+  + gas NG a 4 pb (a mercado, peso 0,2)      | Sharpe 2.48 (-0.17) | 2018-21 2.18 | 2022-26 2.72
+  + gas NG a 2 pb (limitadas, peso 0,2)      | Sharpe 2.54 (-0.11) | 2018-21 2.24 | 2022-26 2.78
+  + euro 0,3 (peso 0,3) + gas 2 pb (0,2)     | Sharpe 2.73 (+0.08) | 2018-21 2.30 | 2022-26 3.09
+  (referencia) cartera sola: 2018-21 2.35 | 2022-26 2.89
