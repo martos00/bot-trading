@@ -1,0 +1,12 @@
+PRUDENTE solo TPT ×5                          | mes medio   4,191 $ | mediana       0 | meses a 0 54.9 % | meses < 2.000 $ 62.4 % | 10 % mejores ≥  14,724
+PRUDENTE Apex regla neto ×20                  | mes medio  13,628 $ | mediana       0 | meses a 0 69.2 % | meses < 2.000 $ 69.5 % | 10 % mejores ≥  60,000
+PRUDENTE Apex regla neto ×20 + TPT ×5         | mes medio  17,818 $ | mediana     762 | meses a 0 47.7 % | meses < 2.000 $ 53.2 % | 10 % mejores ≥  69,309
+PRUDENTE solo TPT ×5                          | mes medio   4,201 $ | mediana       0 | meses a 0 55.0 % | meses < 2.000 $ 62.5 % | 10 % mejores ≥  14,689
+PRUDENTE Apex regla favorable ×20             | mes medio  25,573 $ | mediana       0 | meses a 0 50.1 % | meses < 2.000 $ 50.5 % | 10 % mejores ≥  70,500
+PRUDENTE Apex regla favorable ×20 + TPT ×5    | mes medio  29,773 $ | mediana   9,676 | meses a 0 37.2 % | meses < 2.000 $ 40.7 % | 10 % mejores ≥  81,385
+BACKTEST solo TPT ×5                          | mes medio   6,524 $ | mediana   2,914 | meses a 0 37.7 % | meses < 2.000 $ 46.2 % | 10 % mejores ≥  19,176
+BACKTEST Apex regla neto ×20                  | mes medio  23,196 $ | mediana       0 | meses a 0 52.7 % | meses < 2.000 $ 53.1 % | 10 % mejores ≥  70,000
+BACKTEST Apex regla neto ×20 + TPT ×5         | mes medio  29,720 $ | mediana   9,700 | meses a 0 30.1 % | meses < 2.000 $ 35.6 % | 10 % mejores ≥  84,387
+BACKTEST solo TPT ×5                          | mes medio   6,545 $ | mediana   3,005 | meses a 0 37.5 % | meses < 2.000 $ 46.1 % | 10 % mejores ≥  19,061
+BACKTEST Apex regla favorable ×20             | mes medio  34,263 $ | mediana  29,030 | meses a 0 31.2 % | meses < 2.000 $ 32.1 % | 10 % mejores ≥  78,000
+BACKTEST Apex regla favorable ×20 + TPT ×5    | mes medio  40,808 $ | mediana  34,724 | meses a 0 19.3 % | meses < 2.000 $ 22.8 % | 10 % mejores ≥  90,109
