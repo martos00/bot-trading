@@ -1,0 +1,6 @@
+PRUDENTE 50 % del beneficio NETO (lo que dicen las webs)  | 1.er cobro 1.9 m | entre cobros 2.8 m | llegan a 6 cobros 43 %
+PRUDENTE 50 % de la suma de días GANADORES                | 1.er cobro 1.6 m | entre cobros 1.5 m | llegan a 6 cobros 35 %
+PRUDENTE sin regla de consistencia (para comparar)        | 1.er cobro 1.5 m | entre cobros 1.4 m | llegan a 6 cobros 35 %
+BACKTEST 50 % del beneficio NETO (lo que dicen las webs)  | 1.er cobro 1.8 m | entre cobros 1.9 m | llegan a 6 cobros 71 %
+BACKTEST 50 % de la suma de días GANADORES                | 1.er cobro 1.5 m | entre cobros 1.4 m | llegan a 6 cobros 63 %
+BACKTEST sin regla de consistencia (para comparar)        | 1.er cobro 1.5 m | entre cobros 1.4 m | llegan a 6 cobros 64 %
