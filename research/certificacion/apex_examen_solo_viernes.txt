@@ -1,0 +1,4 @@
+σ oro viernes 11.3 pb | σ plata viernes 14.2 pb | viernes con datos de los dos: 788
+BACKTEST riesgo examen 1.00 | aprueba en 30 días: minuto a minuto   6 % (antes, al cierre:  13 %) | viernes que tocan el límite de 2.000 $   9 % de 375
+BACKTEST riesgo examen 2.00 | aprueba en 30 días: minuto a minuto   8 % (antes, al cierre:  32 %) | viernes que tocan el límite de 2.000 $  10 % de 375
+BACKTEST riesgo examen 3.00 | aprueba en 30 días: minuto a minuto   8 % (antes, al cierre:  44 %) | viernes que tocan el límite de 2.000 $  10 % de 375
