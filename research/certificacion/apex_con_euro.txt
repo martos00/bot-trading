@@ -1,0 +1,4 @@
+M2 (sin euro)   PRUDENTE Sharpe 2.49 | días ≥350 $ al mes 3.1 | aprueba en 30 días (examen 1,25) 34 % | entre cobros 2.8 m | 6 cobros 45 % | cobrado por cuenta 9,580 $
+M2 (sin euro)   BACKTEST Sharpe 2.49 | días ≥350 $ al mes 3.4 | aprueba en 30 días (examen 1,25) 42 % | entre cobros 1.9 m | 6 cobros 68 % | cobrado por cuenta 13,862 $
+M2 + euro E2    PRUDENTE Sharpe 2.08 | días ≥350 $ al mes 7.1 | aprueba en 30 días (examen 1,25) 40 % | entre cobros 1.1 m | 6 cobros 25 % | cobrado por cuenta 5,858 $
+M2 + euro E2    BACKTEST Sharpe 2.08 | días ≥350 $ al mes 7.8 | aprueba en 30 días (examen 1,25) 50 % | entre cobros 1.0 m | 6 cobros 39 % | cobrado por cuenta 8,498 $
