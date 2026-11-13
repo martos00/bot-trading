@@ -1,0 +1,15 @@
+E8 oro viernes (16:00-16:55)             | aporta  5.60 %/año (riesgo 0,5) |  26.2 % del beneficio total |    48 operaciones/año | Sharpe propio 1.57 | años en positivo  78 %
+Plata viernes (16:30-16:57)              | aporta  4.50 %/año (riesgo 0,5) |  21.0 % del beneficio total |    48 operaciones/año | Sharpe propio 1.26 | años en positivo  78 %
+E10 plata víspera de festivo             | aporta  1.73 %/año (riesgo 0,5) |   8.1 % del beneficio total |     9 operaciones/año | Sharpe propio 1.12 | años en positivo  89 %
+Bitcoin 21-23 UTC (0,2)                  | aporta  1.65 %/año (riesgo 0,5) |   7.7 % del beneficio total |   252 operaciones/año | Sharpe propio 1.06 | años en positivo  78 %
+E9 yen D-2 (07:00-08:00)                 | aporta  1.42 %/año (riesgo 0,5) |   6.6 % del beneficio total |    12 operaciones/año | Sharpe propio 0.77 | años en positivo  67 %
+C113 oro de madrugada (0,2)              | aporta  1.25 %/año (riesgo 0,5) |   5.8 % del beneficio total |   191 operaciones/año | Sharpe propio 0.79 | años en positivo  78 %
+E15 oro D-2 (09:30-10:00)                | aporta  1.09 %/año (riesgo 0,5) |   5.1 % del beneficio total |    12 operaciones/año | Sharpe propio 0.61 | años en positivo  89 %
+C102 ruptura asiática cobre (0,2)        | aporta  0.95 %/año (riesgo 0,5) |   4.4 % del beneficio total |   225 operaciones/año | Sharpe propio 0.63 | años en positivo  67 %
+C93 ruptura día anterior oro (0,2)       | aporta  0.72 %/año (riesgo 0,5) |   3.4 % del beneficio total |   183 operaciones/año | Sharpe propio 0.53 | años en positivo  78 %
+E13 Nikkei Q+2                           | aporta  0.70 %/año (riesgo 0,5) |   3.2 % del beneficio total |     4 operaciones/año | Sharpe propio 0.71 | años en positivo  78 %
+C99 ruptura asiática oro (0,2)           | aporta  0.52 %/año (riesgo 0,5) |   2.4 % del beneficio total |   229 operaciones/año | Sharpe propio 0.34 | años en positivo  56 %
+C101 ruptura asiática Nikkei (0,2)       | aporta  0.46 %/año (riesgo 0,5) |   2.1 % del beneficio total |   185 operaciones/año | Sharpe propio 0.34 | años en positivo  44 %
+E12 cesta materias primas                | aporta  0.43 %/año (riesgo 0,5) |   2.0 % del beneficio total |    10 operaciones/año | Sharpe propio 0.61 | años en positivo  78 %
+E16 Nikkei Q-2                           | aporta  0.20 %/año (riesgo 0,5) |   0.9 % del beneficio total |     3 operaciones/año | Sharpe propio 0.25 | años en positivo  44 %
+E11 yen fin de trimestre                 | aporta  0.19 %/año (riesgo 0,5) |   0.9 % del beneficio total |     4 operaciones/año | Sharpe propio 0.65 | años en positivo  89 %
