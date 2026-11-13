@@ -1,0 +1,4 @@
+PRUDENTE regla sobre el neto  | mes medio  13,628 $ | mediana       0 | 10 % peores ≤       0 | 10 % mejores ≥  60,000 | 1 % mejores ≥  95,218 | meses ≥ 50k 15.0 % | ≥ 100k  0.7 % | meses a 0 69.2 %
+PRUDENTE regla favorable      | mes medio  25,573 $ | mediana       0 | 10 % peores ≤       0 | 10 % mejores ≥  70,500 | 1 % mejores ≥ 110,000 | meses ≥ 50k 30.0 % | ≥ 100k  3.6 % | meses a 0 50.1 %
+BACKTEST regla sobre el neto  | mes medio  23,196 $ | mediana       0 | 10 % peores ≤       0 | 10 % mejores ≥  70,000 | 1 % mejores ≥ 104,316 | meses ≥ 50k 26.7 % | ≥ 100k  1.4 % | meses a 0 52.7 %
+BACKTEST regla favorable      | mes medio  34,263 $ | mediana  29,030 | 10 % peores ≤       0 | 10 % mejores ≥  78,000 | 1 % mejores ≥ 121,500 | meses ≥ 50k 37.8 % | ≥ 100k  3.8 % | meses a 0 31.2 %
