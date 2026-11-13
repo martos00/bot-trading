@@ -1,0 +1,34 @@
+PRUDENTE APEX 150K | sin regla                    | 6 cobros  43 % | se pierde  57 % | cobrado por cuenta  9,173 $ | vida 13.2 m | por plaza y mes   693 $
+PRUDENTE APEX 150K | margen < 1,000 $ → riesgo ×0.5 | 6 cobros  44 % | se pierde  56 % | cobrado por cuenta  9,405 $ | vida 13.7 m | por plaza y mes   684 $
+PRUDENTE APEX 150K | margen < 1,500 $ → riesgo ×0.5 | 6 cobros  47 % | se pierde  53 % | cobrado por cuenta  9,889 $ | vida 14.6 m | por plaza y mes   678 $
+PRUDENTE APEX 150K | margen < 2,000 $ → riesgo ×0.5 | 6 cobros  48 % | se pierde  52 % | cobrado por cuenta 10,222 $ | vida 15.3 m | por plaza y mes   669 $
+PRUDENTE APEX 150K | margen < 2,500 $ → riesgo ×0.5 | 6 cobros  50 % | se pierde  50 % | cobrado por cuenta 10,680 $ | vida 16.1 m | por plaza y mes   662 $
+PRUDENTE APEX 150K | margen < 1,500 $ → riesgo ×0.25 | 6 cobros  52 % | se pierde  48 % | cobrado por cuenta 11,050 $ | vida 17.2 m | por plaza y mes   642 $
+PRUDENTE APEX 150K | margen < 2,000 $ → riesgo ×0.25 | 6 cobros  58 % | se pierde  42 % | cobrado por cuenta 12,110 $ | vida 19.7 m | por plaza y mes   615 $
+PRUDENTE UPCOMERS 50K fondeada (24 m) | sin regla                | se pierde  97 % | cobros  2.9 | cobrado medio     4,295 $ (mediana     2,557)
+PRUDENTE UPCOMERS 50K fondeada (24 m) | margen < 2 % → riesgo ×0.5 | se pierde  91 % | cobros  3.1 | cobrado medio     4,726 $ (mediana     3,200)
+PRUDENTE UPCOMERS 50K fondeada (24 m) | margen < 3 % → riesgo ×0.5 | se pierde  78 % | cobros  3.3 | cobrado medio     4,991 $ (mediana     3,810)
+PRUDENTE UPCOMERS 50K fondeada (24 m) | margen < 4 % → riesgo ×0.5 | se pierde  63 % | cobros  3.2 | cobrado medio     4,893 $ (mediana     4,112)
+PRUDENTE UPCOMERS 50K fondeada (24 m) | margen < 3 % → riesgo ×0.25 | se pierde  32 % | cobros  3.0 | cobrado medio     4,458 $ (mediana     3,946)
+PRUDENTE UPCOMERS 2000K fondeada (24 m) | sin regla                | se pierde  69 % | cobros  4.4 | cobrado medio   177,127 $ (mediana    29,173)
+PRUDENTE UPCOMERS 2000K fondeada (24 m) | margen < 2 % → riesgo ×0.5 | se pierde  62 % | cobros  4.5 | cobrado medio   177,372 $ (mediana    41,524)
+PRUDENTE UPCOMERS 2000K fondeada (24 m) | margen < 3 % → riesgo ×0.5 | se pierde  56 % | cobros  4.5 | cobrado medio   170,752 $ (mediana    44,755)
+PRUDENTE UPCOMERS 2000K fondeada (24 m) | margen < 4 % → riesgo ×0.5 | se pierde  48 % | cobros  4.5 | cobrado medio   162,188 $ (mediana    43,544)
+PRUDENTE UPCOMERS 2000K fondeada (24 m) | margen < 3 % → riesgo ×0.25 | se pierde  35 % | cobros  4.4 | cobrado medio   155,303 $ (mediana    29,173)
+BACKTEST APEX 150K | sin regla                    | 6 cobros  69 % | se pierde  31 % | cobrado por cuenta 14,001 $ | vida 11.7 m | por plaza y mes 1,196 $
+BACKTEST APEX 150K | margen < 1,000 $ → riesgo ×0.5 | 6 cobros  71 % | se pierde  29 % | cobrado por cuenta 14,509 $ | vida 12.3 m | por plaza y mes 1,182 $
+BACKTEST APEX 150K | margen < 1,500 $ → riesgo ×0.5 | 6 cobros  73 % | se pierde  27 % | cobrado por cuenta 14,778 $ | vida 12.6 m | por plaza y mes 1,174 $
+BACKTEST APEX 150K | margen < 2,000 $ → riesgo ×0.5 | 6 cobros  75 % | se pierde  25 % | cobrado por cuenta 15,189 $ | vida 13.1 m | por plaza y mes 1,163 $
+BACKTEST APEX 150K | margen < 2,500 $ → riesgo ×0.5 | 6 cobros  78 % | se pierde  22 % | cobrado por cuenta 15,725 $ | vida 13.6 m | por plaza y mes 1,154 $
+BACKTEST APEX 150K | margen < 1,500 $ → riesgo ×0.25 | 6 cobros  79 % | se pierde  21 % | cobrado por cuenta 15,989 $ | vida 14.1 m | por plaza y mes 1,136 $
+BACKTEST APEX 150K | margen < 2,000 $ → riesgo ×0.25 | 6 cobros  85 % | se pierde  15 % | cobrado por cuenta 17,108 $ | vida 15.5 m | por plaza y mes 1,102 $
+BACKTEST UPCOMERS 50K fondeada (24 m) | sin regla                | se pierde  88 % | cobros  5.1 | cobrado medio     8,524 $ (mediana     6,486)
+BACKTEST UPCOMERS 50K fondeada (24 m) | margen < 2 % → riesgo ×0.5 | se pierde  74 % | cobros  5.7 | cobrado medio     9,523 $ (mediana     8,428)
+BACKTEST UPCOMERS 50K fondeada (24 m) | margen < 3 % → riesgo ×0.5 | se pierde  56 % | cobros  5.8 | cobrado medio     9,669 $ (mediana     9,602)
+BACKTEST UPCOMERS 50K fondeada (24 m) | margen < 4 % → riesgo ×0.5 | se pierde  38 % | cobros  5.6 | cobrado medio     9,299 $ (mediana     9,492)
+BACKTEST UPCOMERS 50K fondeada (24 m) | margen < 3 % → riesgo ×0.25 | se pierde  24 % | cobros  5.1 | cobrado medio     8,481 $ (mediana     8,376)
+BACKTEST UPCOMERS 2000K fondeada (24 m) | sin regla                | se pierde  64 % | cobros  7.1 | cobrado medio   418,689 $ (mediana   524,439)
+BACKTEST UPCOMERS 2000K fondeada (24 m) | margen < 2 % → riesgo ×0.5 | se pierde  55 % | cobros  7.2 | cobrado medio   420,927 $ (mediana   532,057)
+BACKTEST UPCOMERS 2000K fondeada (24 m) | margen < 3 % → riesgo ×0.5 | se pierde  45 % | cobros  7.2 | cobrado medio   412,127 $ (mediana   531,016)
+BACKTEST UPCOMERS 2000K fondeada (24 m) | margen < 4 % → riesgo ×0.5 | se pierde  38 % | cobros  7.1 | cobrado medio   396,144 $ (mediana   522,834)
+BACKTEST UPCOMERS 2000K fondeada (24 m) | margen < 3 % → riesgo ×0.25 | se pierde  33 % | cobros  6.9 | cobrado medio   380,748 $ (mediana   501,271)
