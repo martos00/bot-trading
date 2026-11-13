@@ -1,5 +1,4 @@
-Traceback (most recent call last):
-  File "/home/user/bot-trading/research/certificacion/camino_millon_todo.py", line 69, in <module>
-    for c in tp: q, g = c.dia(X['TP'][i] * CAP, t); mes += q - g
-                                           ^^^
-NameError: name 'CAP' is not defined. Did you mean: 'CA'?
+PRUDENTE Apex 6 exámenes/mes | propia riesgo 0.8 | 1 M en 3 años  16 %, 4  40 %, 5  64 %, 6  79 % | mediana 4.3 años | propia a 3 años    495,357 $, a 5  1,219,946 $ | prop firms neto medio años 2-3  24,919 $/mes | dinero a adelantar (mediana)  25,876 $
+PRUDENTE Apex 6 exámenes/mes | propia riesgo 1.0 | 1 M en 3 años  24 %, 4  55 %, 5  78 %, 6  90 % | mediana 3.8 años | propia a 3 años    631,136 $, a 5  1,590,877 $ | prop firms neto medio años 2-3  26,609 $/mes | dinero a adelantar (mediana)  23,734 $
+BACKTEST Apex 6 exámenes/mes | propia riesgo 0.8 | 1 M en 3 años  72 %, 4  96 %, 5  99 %, 6 100 % | mediana 2.6 años | propia a 3 años  1,277,246 $, a 5  4,046,406 $ | prop firms neto medio años 2-3  51,641 $/mes | dinero a adelantar (mediana)  17,134 $
+BACKTEST Apex 6 exámenes/mes | propia riesgo 1.0 | 1 M en 3 años  76 %, 4  97 %, 5 100 %, 6 100 % | mediana 2.4 años | propia a 3 años  1,517,507 $, a 5  5,277,801 $ | prop firms neto medio años 2-3  53,207 $/mes | dinero a adelantar (mediana)  17,336 $
