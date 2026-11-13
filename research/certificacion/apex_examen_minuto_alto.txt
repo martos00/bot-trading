@@ -1,0 +1,10 @@
+PRUDENTE riesgo examen 1.00 | aprueba en 30 días: minuto a minuto  12 % (antes, al cierre:  19 %) | viernes que tocan el límite de 2.000 $  11 % de 375
+PRUDENTE riesgo examen 1.50 | aprueba en 30 días: minuto a minuto  17 % (antes, al cierre:  33 %) | viernes que tocan el límite de 2.000 $  12 % de 375
+PRUDENTE riesgo examen 2.00 | aprueba en 30 días: minuto a minuto  22 % (antes, al cierre:  43 %) | viernes que tocan el límite de 2.000 $  12 % de 375
+PRUDENTE riesgo examen 2.50 | aprueba en 30 días: minuto a minuto  27 % (antes, al cierre:  48 %) | viernes que tocan el límite de 2.000 $  12 % de 375
+PRUDENTE riesgo examen 3.00 | aprueba en 30 días: minuto a minuto  30 % (antes, al cierre:  53 %) | viernes que tocan el límite de 2.000 $  12 % de 375
+BACKTEST riesgo examen 1.00 | aprueba en 30 días: minuto a minuto  16 % (antes, al cierre:  22 %) | viernes que tocan el límite de 2.000 $   9 % de 375
+BACKTEST riesgo examen 1.50 | aprueba en 30 días: minuto a minuto  24 % (antes, al cierre:  36 %) | viernes que tocan el límite de 2.000 $  10 % de 375
+BACKTEST riesgo examen 2.00 | aprueba en 30 días: minuto a minuto  31 % (antes, al cierre:  48 %) | viernes que tocan el límite de 2.000 $  10 % de 375
+BACKTEST riesgo examen 2.50 | aprueba en 30 días: minuto a minuto  39 % (antes, al cierre:  56 %) | viernes que tocan el límite de 2.000 $  10 % de 375
+BACKTEST riesgo examen 3.00 | aprueba en 30 días: minuto a minuto  44 % (antes, al cierre:  61 %) | viernes que tocan el límite de 2.000 $  10 % de 375
