@@ -1,0 +1,7 @@
+U: 13.8%/año, vol diaria 0.39%
+PRUDENTE riesgo 0.5: al MES de media año 1      83 (med      0) | año 2     816 (med      0) | año 3   1,915 (med  1,333) | año 4   3,788 (med  1,333) | exámenes en 6 años (mediana) 1 | 1.er aprobado mediana 12.0 meses
+PRUDENTE riesgo 0.65: al MES de media año 1     291 (med      0) | año 2   1,939 (med  1,333) | año 3   4,603 (med  2,667) | año 4   9,249 (med  4,000) | exámenes en 6 años (mediana) 2 | 1.er aprobado mediana 9.0 meses
+PRUDENTE riesgo 0.8: al MES de media año 1     667 (med      0) | año 2   3,871 (med  1,333) | año 3   9,291 (med  4,000) | año 4  14,663 (med  5,333) | exámenes en 6 años (mediana) 2 | 1.er aprobado mediana 7.0 meses
+BACKTEST riesgo 0.5: al MES de media año 1     264 (med      0) | año 2   2,698 (med  1,333) | año 3   7,568 (med  5,333) | año 4  18,031 (med 10,667) | exámenes en 6 años (mediana) 1 | 1.er aprobado mediana 8.1 meses
+BACKTEST riesgo 0.65: al MES de media año 1     881 (med      0) | año 2   6,298 (med  4,000) | año 3  19,381 (med 10,667) | año 4  33,945 (med 32,000) | exámenes en 6 años (mediana) 1 | 1.er aprobado mediana 5.9 meses
+BACKTEST riesgo 0.8: al MES de media año 1   1,862 (med  1,333) | año 2  13,508 (med  8,000) | año 3  35,029 (med 32,000) | año 4  46,545 (med 53,333) | exámenes en 6 años (mediana) 1 | 1.er aprobado mediana 4.6 meses
