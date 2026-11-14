@@ -1,0 +1,14 @@
+PRUDENTE sin coste plata       riesgo 1%/op: +10 % en 4 meses  0.0% | pierde la cuenta  0.0%
+PRUDENTE sin coste plata       riesgo 2%/op: +10 % en 4 meses  2.1% | pierde la cuenta  0.1%
+PRUDENTE sin coste plata       riesgo 3%/op: +10 % en 4 meses 12.4% | pierde la cuenta  1.1%
+PRUDENTE sin coste plata       riesgo 4%/op: +10 % en 4 meses 25.9% | pierde la cuenta  3.7%
+PRUDENTE sin coste plata       riesgo 5%/op: +10 % en 4 meses 35.6% | pierde la cuenta  7.7%
+PRUDENTE sin coste plata       riesgo 6%/op: +10 % en 4 meses 43.3% | pierde la cuenta 11.4%
+PRUDENTE sin coste plata       riesgo 8%/op: +10 % en 4 meses 54.8% | pierde la cuenta 19.2%
+PRUDENTE con coste plata CFD   riesgo 1%/op: +10 % en 4 meses  0.0% | pierde la cuenta  0.0%
+PRUDENTE con coste plata CFD   riesgo 2%/op: +10 % en 4 meses  1.1% | pierde la cuenta  0.1%
+PRUDENTE con coste plata CFD   riesgo 3%/op: +10 % en 4 meses  8.8% | pierde la cuenta  2.1%
+PRUDENTE con coste plata CFD   riesgo 4%/op: +10 % en 4 meses 17.7% | pierde la cuenta  6.0%
+PRUDENTE con coste plata CFD   riesgo 5%/op: +10 % en 4 meses 28.7% | pierde la cuenta 10.6%
+PRUDENTE con coste plata CFD   riesgo 6%/op: +10 % en 4 meses 36.2% | pierde la cuenta 16.6%
+PRUDENTE con coste plata CFD   riesgo 8%/op: +10 % en 4 meses 43.7% | pierde la cuenta 25.3%
