@@ -1,0 +1,16 @@
+
+=== con Nikkei y oro de madrugada: 12.9 %/año a riesgo 0,5 | Sharpe 2.12
+PRUDENTE examen 1.0 / fondeada 0.5 | por cuenta    291 $/mes (media    304) → 5 cuentas   1,518 $/mes | cobros en 5 años 11.0 | cuentas que llegan al 5.º cobro 1.0 | 1.er cobro (mediana)  7.9 m | pierde la fondeada 4.4 veces
+PRUDENTE examen 2.0 / fondeada 0.5 | por cuenta    301 $/mes (media    315) → 5 cuentas   1,575 $/mes | cobros en 5 años 12.4 | cuentas que llegan al 5.º cobro 1.1 | 1.er cobro (mediana)  7.4 m | pierde la fondeada 4.8 veces
+PRUDENTE examen 2.0 / fondeada 0.65 | por cuenta    350 $/mes (media    363) → 5 cuentas   1,816 $/mes | cobros en 5 años 12.6 | cuentas que llegan al 5.º cobro 1.2 | 1.er cobro (mediana)  7.0 m | pierde la fondeada 5.4 veces
+BACKTEST examen 1.0 / fondeada 0.5 | por cuenta    639 $/mes (media    640) → 5 cuentas   3,202 $/mes | cobros en 5 años 18.1 | cuentas que llegan al 5.º cobro 2.3 | 1.er cobro (mediana)  5.4 m | pierde la fondeada 3.9 veces
+BACKTEST examen 2.0 / fondeada 0.5 | por cuenta    682 $/mes (media    684) → 5 cuentas   3,418 $/mes | cobros en 5 años 19.8 | cuentas que llegan al 5.º cobro 2.6 | 1.er cobro (mediana)  4.9 m | pierde la fondeada 4.1 veces
+BACKTEST examen 2.0 / fondeada 0.65 | por cuenta    817 $/mes (media    818) → 5 cuentas   4,090 $/mes | cobros en 5 años 21.2 | cuentas que llegan al 5.º cobro 2.7 | 1.er cobro (mediana)  4.6 m | pierde la fondeada 4.9 veces
+
+=== con Nikkei, sin oro de madrugada: 11.4 %/año a riesgo 0,5 | Sharpe 1.93
+PRUDENTE examen 1.0 / fondeada 0.5 | por cuenta    286 $/mes (media    301) → 5 cuentas   1,507 $/mes | cobros en 5 años  9.0 | cuentas que llegan al 5.º cobro 0.9 | 1.er cobro (mediana)  9.7 m | pierde la fondeada 3.1 veces
+PRUDENTE examen 2.0 / fondeada 0.5 | por cuenta    275 $/mes (media    287) → 5 cuentas   1,436 $/mes | cobros en 5 años  9.6 | cuentas que llegan al 5.º cobro 1.0 | 1.er cobro (mediana)  8.6 m | pierde la fondeada 3.5 veces
+PRUDENTE examen 2.0 / fondeada 0.65 | por cuenta    327 $/mes (media    343) → 5 cuentas   1,717 $/mes | cobros en 5 años  9.4 | cuentas que llegan al 5.º cobro 1.0 | 1.er cobro (mediana)  9.3 m | pierde la fondeada 3.6 veces
+BACKTEST examen 1.0 / fondeada 0.5 | por cuenta    597 $/mes (media    604) → 5 cuentas   3,021 $/mes | cobros en 5 años 14.3 | cuentas que llegan al 5.º cobro 2.0 | 1.er cobro (mediana)  6.8 m | pierde la fondeada 2.4 veces
+BACKTEST examen 2.0 / fondeada 0.5 | por cuenta    617 $/mes (media    622) → 5 cuentas   3,108 $/mes | cobros en 5 años 15.1 | cuentas que llegan al 5.º cobro 2.1 | 1.er cobro (mediana)  6.1 m | pierde la fondeada 2.6 veces
+BACKTEST examen 2.0 / fondeada 0.65 | por cuenta    746 $/mes (media    758) → 5 cuentas   3,790 $/mes | cobros en 5 años 15.2 | cuentas que llegan al 5.º cobro 2.2 | 1.er cobro (mediana)  6.2 m | pierde la fondeada 2.7 veces
