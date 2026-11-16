@@ -8,3 +8,9 @@ No se pudieron leer: /help (403), respuestas del FAQ (plegadas), pestañas Maste
 - Master: sin cuota mensual; hasta 90 % del beneficio; máx. 5 cuentas Master/Fast Track/Momentum a la vez; exámenes ilimitados.
 - Sin leer: activación, frecuencia y topes de cobro, consistencia, colchón, qué pasa tras 3 cobros, copiador.
 Ya confirmado antes por el soporte: las Master siguen activas mientras se mantengan; tras 3 retiros en al menos una Master se te «considera» para real.
+
+## Reglas de retiro (página copiada por el usuario, 16-nov-2026)
+≥ 10 días de trading por periodo (empieza al completarse el pago anterior); mín. 1.000 $; máx. 2.000 $ (150K) los 3 primeros, luego < 50 %
+de la ganancia total de la Master; reserva 4.600 $ sobre el inicial tras el cobro; consistencia 40 % (1.er cobro desde el inicio, con la
+reserva incluida; se reinicia tras cada cobro); 90 % para el trader; pagos los miércoles (solicitud hasta el viernes 23:59 CT);
+W-8BEN firmado a mano + ID; ACH/transferencia o PayPal. Simulación: research/certificacion/bulenox_150k.py / .txt

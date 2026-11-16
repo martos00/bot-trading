@@ -1,0 +1,24 @@
+
+=== CON Nikkei: 21.3 %/año a riesgo 0,5 | Sharpe 2.49 | días con operación 79 %
+PRUDENTE examen 1.0 / Master 0.5 | por cuenta  1,086 $/mes (media  1,075) → 5 cuentas   5,374 $/mes | cobros en 5 años  6.7 | 1.er cobro (mediana)  7.7 meses | pierde la Master en 5 años 1.4 veces
+PRUDENTE examen 2.0 / Master 0.5 | por cuenta  1,205 $/mes (media  1,193) → 5 cuentas   5,963 $/mes | cobros en 5 años  7.0 | 1.er cobro (mediana)  5.6 meses | pierde la Master en 5 años 1.5 veces
+PRUDENTE examen 2.0 / Master 0.65 | por cuenta  1,589 $/mes (media  1,578) → 5 cuentas   7,892 $/mes | cobros en 5 años  6.9 | 1.er cobro (mediana)  5.3 meses | pierde la Master en 5 años 1.7 veces
+BACKTEST examen 1.0 / Master 0.5 | por cuenta  2,069 $/mes (media  2,065) → 5 cuentas  10,326 $/mes | cobros en 5 años 13.1 | 1.er cobro (mediana)  5.5 meses | pierde la Master en 5 años 0.8 veces
+BACKTEST examen 2.0 / Master 0.5 | por cuenta  2,171 $/mes (media  2,159) → 5 cuentas  10,794 $/mes | cobros en 5 años 13.3 | 1.er cobro (mediana)  3.9 meses | pierde la Master en 5 años 0.8 veces
+BACKTEST examen 2.0 / Master 0.65 | por cuenta  2,830 $/mes (media  2,829) → 5 cuentas  14,145 $/mes | cobros en 5 años 13.1 | 1.er cobro (mediana)  3.6 meses | pierde la Master en 5 años 1.0 veces
+
+=== SIN Nikkei: 20.2 %/año a riesgo 0,5 | Sharpe 2.40 | días con operación 78 %
+PRUDENTE examen 1.0 / Master 0.5 | por cuenta    988 $/mes (media    969) → 5 cuentas   4,847 $/mes | cobros en 5 años  6.1 | 1.er cobro (mediana)  8.4 meses | pierde la Master en 5 años 1.4 veces
+PRUDENTE examen 2.0 / Master 0.5 | por cuenta  1,119 $/mes (media  1,112) → 5 cuentas   5,560 $/mes | cobros en 5 años  6.7 | 1.er cobro (mediana)  6.0 meses | pierde la Master en 5 años 1.4 veces
+PRUDENTE examen 2.0 / Master 0.65 | por cuenta  1,475 $/mes (media  1,467) → 5 cuentas   7,337 $/mes | cobros en 5 años  6.6 | 1.er cobro (mediana)  5.6 meses | pierde la Master en 5 años 1.6 veces
+BACKTEST examen 1.0 / Master 0.5 | por cuenta  1,963 $/mes (media  1,944) → 5 cuentas   9,720 $/mes | cobros en 5 años 12.3 | 1.er cobro (mediana)  5.5 meses | pierde la Master en 5 años 0.7 veces
+BACKTEST examen 2.0 / Master 0.5 | por cuenta  2,066 $/mes (media  2,063) → 5 cuentas  10,316 $/mes | cobros en 5 años 12.9 | 1.er cobro (mediana)  4.3 meses | pierde la Master en 5 años 0.8 veces
+BACKTEST examen 2.0 / Master 0.65 | por cuenta  2,632 $/mes (media  2,636) → 5 cuentas  13,180 $/mes | cobros en 5 años 12.5 | 1.er cobro (mediana)  4.0 meses | pierde la Master en 5 años 0.9 veces
+
+=== SIN Nikkei ni oro de madrugada: 18.8 %/año a riesgo 0,5 | Sharpe 2.29 | días con operación 26 %
+PRUDENTE examen 1.0 / Master 0.5 | por cuenta    885 $/mes (media    865) → 5 cuentas   4,323 $/mes | cobros en 5 años  5.8 | 1.er cobro (mediana)  9.7 meses | pierde la Master en 5 años 1.1 veces
+PRUDENTE examen 2.0 / Master 0.5 | por cuenta  1,019 $/mes (media  1,012) → 5 cuentas   5,060 $/mes | cobros en 5 años  6.2 | 1.er cobro (mediana)  6.7 meses | pierde la Master en 5 años 1.2 veces
+PRUDENTE examen 2.0 / Master 0.65 | por cuenta  1,302 $/mes (media  1,276) → 5 cuentas   6,380 $/mes | cobros en 5 años  6.1 | 1.er cobro (mediana)  6.7 meses | pierde la Master en 5 años 1.4 veces
+BACKTEST examen 1.0 / Master 0.5 | por cuenta  1,776 $/mes (media  1,768) → 5 cuentas   8,839 $/mes | cobros en 5 años 11.0 | 1.er cobro (mediana)  6.5 meses | pierde la Master en 5 años 0.4 veces
+BACKTEST examen 2.0 / Master 0.5 | por cuenta  1,867 $/mes (media  1,882) → 5 cuentas   9,412 $/mes | cobros en 5 años 11.3 | 1.er cobro (mediana)  4.7 meses | pierde la Master en 5 años 0.5 veces
+BACKTEST examen 2.0 / Master 0.65 | por cuenta  2,435 $/mes (media  2,446) → 5 cuentas  12,229 $/mes | cobros en 5 años 11.4 | 1.er cobro (mediana)  4.6 meses | pierde la Master en 5 años 0.6 veces
