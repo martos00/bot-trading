@@ -14,3 +14,10 @@ Ya confirmado antes por el soporte: las Master siguen activas mientras se manten
 de la ganancia total de la Master; reserva 4.600 $ sobre el inicial tras el cobro; consistencia 40 % (1.er cobro desde el inicio, con la
 reserva incluida; se reinicia tras cada cobro); 90 % para el trader; pagos los miércoles (solicitud hasta el viernes 23:59 CT);
 W-8BEN firmado a mano + ID; ACH/transferencia o PayPal. Simulación: research/certificacion/bulenox_150k.py / .txt
+
+## Respuestas del soporte (16-nov-2026; parecen de su asistente automático y citan webs de terceros y Reddit)
+- Tras 3 cobros Bulenox PUEDE pasarte a cuenta real cuando decida; si no firmas, cierran la Master sin más pagos. Puede pasar a la vez otras Master con ≥ 1 cobro.
+  La cuenta real empieza de cero con pérdida 4.500 $ EOD (150K). Beneficio de la Master no pasa a la real.
+- Master 150K: pérdida 4.500 $ que se fija en 150.100 $ al llegar a 154.600 $. Con la opción EOD, límite diario 3.300 $ (se quita al fijarse).
+- Activación Master 150K: 498 $ (pago único).
+Simulación: research/certificacion/bulenox_150k_real.py / .txt (escenarios: la Master acaba 0, 3, 6 meses o nunca tras el 3.er cobro).
